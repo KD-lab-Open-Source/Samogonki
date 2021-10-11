@@ -1,0 +1,32 @@
+#include "IVISGENERIC\m3d_id.h"
+
+3ds_path	"RESOURCE\M3D\iScreen\"
+bmp_path	"RESOURCE\M3D\iScreen\TEXTURES\"
+
+object $M3D_iSCREEN {
+	type 100
+	scale 0.17
+	3ds_file "speed_bonus.3ds"
+}
+
+object $M3D_iSCREEN {
+	type 503
+	scale 0.7
+	attribute "$MESH_NOT_LIGHTING"
+	3ds_file "arrow.3ds"
+}
+
+object $M3D_iSCREEN {
+	type 504
+	scale 0.02
+	3ds_file "star.m3d"
+}
+
+/*
+object $M3D_iSCREEN {
+	type 505
+	scale 1.0
+	3ds_file "tab0.3ds"
+}
+*/
+

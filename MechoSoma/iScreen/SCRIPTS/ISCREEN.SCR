@@ -1,0 +1,6522 @@
+
+#include "ISCREEN\Scripts\common.inc"
+#include "ISCREEN\Scripts\vkeys.inc"
+#include "ISCREEN\aci_evnt.h"
+#include "ISCREEN\I-WorldEvent.h"
+#include "SOUND\snd_ids.h"
+
+#include "ISCREEN\Scripts\aci_ids.h"
+#include "ISCREEN\controls.h"
+#include "ISCREEN\Scripts\aci_str.inc"
+
+#define ACS_MOUSE_SELECT	0x800
+
+#define MAIN_FNT		1
+#define SMALL_FNT		1
+#define WRLD_FNT		1
+#define PRM_FNT 		1
+#define CONTROLS_FNT	2
+#define CD_FNT			2
+
+#define MAIN_MENU_SX		240
+#define MAIN_MENU_SY		35
+#define MAIN_MENU_DELTA 	1
+
+#define HOTSEAT_MENU_SX 	240
+
+#define PRM_MENU_SX0		240
+#define PRM_MENU_SX			100
+#define PRM_MENU_SY			30
+#define PRM_MENU_DELTA		1
+#define PRM_MENU_START_Y	0
+
+#define MENU_DX 		0
+/*
+#define MAIN_MENU_START_Y		40
+#define OPTIONS_MENU_START_Y	40
+#define HOTSEAT_MENU_START_Y	40
+*/
+#define MAIN_MENU_START_Y		0
+
+#define OPTIONS_MENU_START_Y	0
+#define HOTSEAT_MENU_START_Y	0
+
+#define OBJ_SX			50
+#define OBJ_SY			35
+
+#define WORLD_MENU_SX		280
+#define WORLD_MENU_SY		35
+#define WORLD_MENU_DELTA	10
+#define WORLD_MENU_START_Y	0
+
+#define TRACK_MENU_SX		280
+#define TRACK_MENU_SY		35
+#define TRACK_MENU_DELTA	10
+#define TRACK_MENU_START_Y	0
+
+#define SCR_FRAME	-1
+#define OPEN_FRAME	0
+#define CLOSE_FRAME	-2
+
+#define CREDITS_PX	100
+#define CREDITS_PY	80
+
+#define CREDITS_SX	560
+#define CREDITS_SY	270
+#define CREDITS_DY	50
+
+#define CONTROLS_SX	 300
+#define CONTROLS_SY	 310
+
+#define CONTROLS_COORDS 	x 230 \
+				y 160
+
+num_fonts	3
+font_dir	"FONTS"
+font_prefix	"font"
+/*
+#define ALPHA_SET0	alpha0	0 \
+alpha1 0 \
+alpha2 0 \
+d_alpha 8
+*/
+#define ALPHA_SET00	 alpha0  0 \
+alpha1 0 \
+alpha2 0 \
+d_alpha 8
+
+#define ALPHA_SET1	alpha0	0 \
+alpha1 0 \
+alpha2 0 \
+d_alpha 8
+
+
+#define ALPHA_SET0	alpha0	0 \
+alpha1 128 \
+alpha2 128 \
+d_alpha 16
+
+/*
+#define ALPHA_SET00	 alpha0  10 \
+alpha1 128 \
+alpha2 32 \
+d_alpha 8
+
+#define ALPHA_SET1	alpha0	1 \
+alpha1 1 \
+alpha2 1 \
+d_alpha 8
+*/
+#define BACK_COORDS	x	30 \
+			y	390 \
+			size_x	170 \
+			size_y	$OBJ_SY
+
+//			y	380 \
+
+#define BACK_COORDS2	x	30 \
+			y	350 \
+			size_x	100 \
+			size_y	$OBJ_SY
+
+#define COLOR0_0_BASE	136
+#define COLOR0_0_BASE_S	145
+#define COLOR0_1_BASE	159
+#define COLOR0_2_BASE	159
+
+#define COLOR0_0   "$COLOR0_0_BASE | (0 * 256)"
+#define COLOR0_0_S "$COLOR0_0_BASE_S | (0 * 256)"
+#define COLOR0_1   "$COLOR0_1_BASE | (0 * 256)"
+#define COLOR0_2   "$COLOR0_2_BASE | (0 * 256)"
+
+#define COLOR_SET0   col0    $COLOR0_0 \
+		     col1    $COLOR0_1 \
+		     col2    $COLOR0_2
+
+#define COLOR_SET0_S col0    $COLOR0_0_S \
+		     col1    $COLOR0_1 \
+		     col2    $COLOR0_2
+
+#define COLOR_SET00   col0    $COLOR0_0 \
+		     col1    $COLOR0_0 \
+		     col2    $COLOR0_0
+
+#define COLOR_SET1   col0    $COLOR0_1 \
+		     col1    $COLOR0_1 \
+		     col2    $COLOR0_1
+
+#define COLOR_SET2   col0    $COLOR0_0 \
+		     col1    $COLOR0_0 \
+		     col2    $COLOR0_0
+
+resource {
+	type	$ACS_PAL
+	ID	$ACS_MAIN_MENU_PAL0
+	file	"menu.pal"
+}
+
+resource {
+	type	$ACS_PAL
+	ID	$ACS_MAIN_MENU_PAL1
+	file	"main.pal"
+}
+
+#define NEW_GAME_EV	event {	\
+		code	$VK_MOUSE_LEFT	\
+		code	$VK_MOUSE_RIGHT	\
+	\
+		time	2	\
+	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME $SPLIT_MODE 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_SELECT_WORLD 7 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data	$ACS_EXT_ELECTIONARY_MODE 0 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_CHANGE_SCREEN_NEXT	\
+			ev_data 0 0 0 0	\
+			start_time 1	\
+		}	\
+	}
+
+// Startup screen with "CONTINUE WITH ..." and "CHANGE PLAYER" options...
+screen {
+	ID	$ACS_MAIN_MENU_SCR2
+
+	#define SPLIT_MODE		0
+
+	#define MAIN_MENU_SIZE	7
+
+	#define CONTINUE_Y		0
+	#define LOAD_Y			1
+	#define NEW_GAME_Y		2
+	#define DEMO_Y			3
+	#define MULTIPLAYER_Y	4
+	#define OPTIONS_Y		5
+	#define EXIT_Y			6
+
+	#define NG_UP		$ACS_LOAD_OPTION
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	#define ACS_NG_STR	$ACS_ABORT_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+
+	object {
+		ID	83		// Demo option
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DEMO_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $DEMO_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 0 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+/*
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_DEMO_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_DEMO_SCR 0 0 0
+					start_time 0
+			}
+		}
+*/
+	}
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_EXIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR2 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	1 $ACS_EXIT_OPTION
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_WITH_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_WORLD 7 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_LOAD_GAME 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_LOAD_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CHANGE_PLAYER_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $LOAD_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_INIT_SAVE_SCR 0 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_LOAD_GAME_SCR 0 0 0
+					start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_MULTIPLAYER_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_MULTIPLAYER_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		def_resource	$ACS_MULTIPLAYER_OPTION
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $MULTIPLAYER_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MULTIPLAYER_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	event {
+		code	$VK_ESCAPE
+
+		time	1
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+			start_time 0
+		}
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MAIN_MENU_DUMMY_SCR1 -1 0
+			start_time 0
+		}
+		ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MAIN_MENU_DUMMY_SCR1 0 0 0
+				start_time 0
+		}
+	}
+}
+
+
+// Startup screen with "CONTINUE WITH ..." option...
+screen {
+	ID	$ACS_MAIN_MENU_SCR1
+
+	#define SPLIT_MODE		0
+
+	#define MAIN_MENU_SIZE	6
+
+	#define CONTINUE_Y		0
+	#define NEW_GAME_Y		1
+	#define DEMO_Y			2
+	#define MULTIPLAYER_Y	3
+	#define OPTIONS_Y		4
+	#define EXIT_Y			5
+
+	#define NG_UP		$ACS_CONTINUE_OPTION
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	#define ACS_NG_STR	$ACS_ABORT_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+
+	object {
+		ID	83		// Demo option
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DEMO_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $DEMO_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 0 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+/*
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_DEMO_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_DEMO_SCR 0 0 0
+					start_time 0
+			}
+		}
+*/
+	}
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_EXIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR2 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+		obj_index	1 $ACS_EXIT_OPTION
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_WITH_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_WORLD 7 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_LOAD_GAME 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_MULTIPLAYER_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_MULTIPLAYER_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		def_resource	$ACS_MULTIPLAYER_OPTION
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $MULTIPLAYER_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MULTIPLAYER_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	event {
+		code	$VK_ESCAPE
+
+		time	1
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+			start_time 0
+		}
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MAIN_MENU_DUMMY_SCR1 -1 0
+			start_time 0
+		}
+		ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MAIN_MENU_DUMMY_SCR1 0 0 0
+				start_time 0
+		}
+	}
+}
+
+// Startup screen without "CONTINUE" option...
+screen {
+	ID	$ACS_MAIN_MENU_SCR0
+
+	#define SPLIT_MODE		0
+
+	#define MAIN_MENU_SIZE	5
+
+	#define NEW_GAME_Y		0
+	#define DEMO_Y			1
+	#define MULTIPLAYER_Y	2
+	#define OPTIONS_Y		3
+	#define EXIT_Y			4
+
+	#define NG_UP		$ACS_EXIT_OPTION
+	#define EXIT_DOWN	$ACS_NEW_GAME_OPTION
+
+	#define ACS_NG_STR	$ACS_NEW_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+
+	object {
+		ID	83		// Demo option
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DEMO_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $DEMO_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 0 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+/*
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_DEMO_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_DEMO_SCR 0 0 0
+					start_time 0
+			}
+		}
+*/
+	}
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_EXIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR2 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_MULTIPLAYER_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_MULTIPLAYER_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		def_resource	$ACS_MULTIPLAYER_OPTION
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $MULTIPLAYER_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MULTIPLAYER_SCR -1 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+					start_time 0
+			}
+		}
+	}
+
+	event {
+		code	$VK_ESCAPE
+
+		time	1
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+			start_time 0
+		}
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_MAIN_MENU_DUMMY_SCR1 -1 0
+			start_time 0
+		}
+		ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MAIN_MENU_DUMMY_SCR1 0 0 0
+				start_time 0
+		}
+	}
+}
+
+// Dummy screen
+screen {
+	ID	$ACS_MAIN_MENU_DUMMY_SCR0
+
+	event {
+		code	$ACS_STARTUP_KEY
+
+		ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MAIN_MENU_SCR0 0 0 0
+				start_time 0
+		}
+	}
+}
+
+// Dummy screen #2 - exit
+screen {
+	ID	$ACS_MAIN_MENU_DUMMY_SCR1
+
+	#define MAIN_MENU_SIZE		2
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_EXIT_Q_STR
+		font	$MAIN_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX)/2"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * 0 - 20"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	0 $ACS_ABORT_OPTION 
+		obj_index	2 $ACS_ABORT_OPTION 
+
+		str_len 25
+		string	$ACS_NO_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"320 + 40"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * 1 + 20"
+
+		size_x	50
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_N
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN_PREV
+					ev_data 0 0 0 0
+					start_time 1
+			}
+		}
+	}
+	object {
+		ID	$ACS_ABORT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	0 $ACS_CONTINUE_OPTION 
+		obj_index	2 $ACS_CONTINUE_OPTION 
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_YES_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"320 - 90"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * 1 + 20"
+
+		size_x	50
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_Y
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR2 0 0 0
+					start_time 1
+			}
+		}
+	}
+}
+
+// Dummy screen #3 - exit
+screen {
+	ID	$ACS_MAIN_MENU_DUMMY_SCR2
+
+	event {
+		code	$ACS_STARTUP_KEY
+		time	20
+
+		ev_comm {
+			code	$ACS_EXIT
+			ev_data $ACS_EXIT_GAME 0 0 0
+			start_time 19
+		}
+	}
+}
+
+// Dummy screen #4 - exit & launch online game
+screen {
+	ID	$ACS_MAIN_MENU_DUMMY_SCR3
+
+	event {
+		code	$ACS_STARTUP_KEY
+		time	20
+
+		ev_comm {
+			code	$ACS_EXIT
+			ev_data -1 0 0 0
+			start_time 19
+		}
+	}
+}
+
+// Second main menu screen - with "CONTINUE" option...
+screen {
+	ID	$ACS_MAIN_MENU_SCR3
+
+	#define SPLIT_MODE		-1
+
+	#define MAIN_MENU_SIZE	7
+
+	flag	0x20
+
+	#define CONTINUE_Y	0
+	#define ABORT_Y 	1
+	#define RESTART_Y	2
+	#define NEW_GAME_Y	4
+	#define OPTIONS_Y	5
+	#define EXIT_Y		6
+
+	#define NG_UP		$ACS_RESTART_OPTION
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	#define ACS_NG_STR	$ACS_ABORT_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_QUIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_QUIT 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	1 $ACS_EXIT_OPTION
+		obj_index	0 0 
+		obj_index	2 0 
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	$ACS_ABORT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ABORT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $ABORT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_ABORT_RACE 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_WORLD 7 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_RESTART_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $RESTART_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		str_len 25
+		string	$ACS_RESTART_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_ABORT_RACE 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+}
+
+// I-World main menu screen - with "CONTINUE" option...
+screen {
+	ID	$ACS_MAIN_MENU_SCR4
+
+	#define SPLIT_MODE		-1
+
+	#define MAIN_MENU_SIZE	4
+
+	#define CONTINUE_Y	0
+	#define NEW_GAME_Y	1
+	#define OPTIONS_Y	2
+	#define EXIT_Y		3
+	#define MODE_Y		5
+
+	#define NG_UP		$ACS_CONTINUE_OPTION
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	#define ACS_NG_STR	$ACS_ABORT_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+/*
+	object {
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_QUIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $ACS_CONTINUE_OPTION
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $MODE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		max_state	1
+		state_str	$ACS_RT_MODE_STR
+		state_str	$ACS_TB_MODE_STR
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_LEFT
+			code	$VK_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_TURNBASED 1 0 0
+				start_time 0
+			}
+		}
+	}
+*/
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_QUIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_QUIT 0 0 0
+				start_time 1
+			}
+		}
+	}
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	1 $ACS_EXIT_OPTION
+		obj_index	0 0 
+		obj_index	2 0 
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+#define NEW_GAME_EV	event {	\
+		code	$VK_MOUSE_LEFT	\
+		code	$VK_MOUSE_RIGHT	\
+	\
+		time	2	\
+	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_SET_GAME_MODE $MCH_ENTIRE_CONTROL_HS 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_CHANGE_SCREEN_NEXT	\
+			ev_data 0 0 0 0	\
+			start_time 1	\
+		}	\
+	}
+
+// Hotseat main menu screen...
+screen {
+	ID	$ACS_MAIN_MENU_SCR5
+
+	#define SPLIT_MODE		-1
+
+	#define MAIN_MENU_SIZE	7
+
+	#define CONTINUE_Y	0
+	#define ABORT_Y 	1
+	#define RESTART_Y	2
+	#define NEW_GAME_Y	4
+	#define OPTIONS_Y	5
+	#define EXIT_Y		6
+
+	#define NG_UP		$ACS_RESTART_OPTION
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	#define ACS_NG_STR	$ACS_ABORT_GAME_STR
+	#include "ISCREEN\Scripts\mainmenu.inc"
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_QUIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_QUIT 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	1 $ACS_EXIT_OPTION
+		obj_index	0 0 
+		obj_index	2 0 
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	$ACS_ABORT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ABORT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $ABORT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_ABORT_RACE 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_SPLIT_HS_SCR 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_RESTART_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $RESTART_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		str_len 25
+		string	$ACS_RESTART_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_ABORT_RACE 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+}
+
+// Online main menu screen...
+screen {
+	ID	$ACS_MAIN_MENU_SCR6
+
+	#define SPLIT_MODE		-1
+
+	#define MAIN_MENU_SIZE	4
+
+	#define CONTINUE_Y	0
+	#define CHANGE_Y 	1
+	#define OPTIONS_Y	2
+	#define EXIT_Y		3
+
+	#define EXIT_DOWN	$ACS_CONTINUE_OPTION
+
+	object {
+		ID	$ACS_OPTIONS_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		str_len 25
+		string	$ACS_OPTIONS_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		def_resource	$ACS_OPTIONS_OPTION
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $OPTIONS_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$ACS_STARTUP_KEY
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_INIT_ONLINE_MENU 0 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SAVE_SCREEN 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_LOAD_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		str_len 25
+		string	$ACS_CHANGE_PLAYER_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		def_resource	$ACS_OPTIONS_OPTION
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CHANGE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_CHANGE_PLAYER 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_EXIT_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_QUIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	3 $EXIT_DOWN
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $EXIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_EXIT_GAME 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	1 $ACS_EXIT_OPTION
+		obj_index	0 0 
+		obj_index	2 0 
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CONTINUE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX ) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $CONTINUE_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+// Options screen...
+screen {
+	ID	$ACS_OPTIONS_SCR
+
+	#include "ISCREEN\Scripts\options.inc"
+}
+
+// Credits...
+screen {
+	ID	$ACS_CREDITS_SCR
+
+	object {
+		ID	$ACS_CREDITS_TEXT
+		type	$ACS_INPUT_FIELD_OBJ
+
+		alpha0	80
+
+		flag	0x04
+		flag	0x100
+		flag	0x400
+		flag	0x200
+
+		str_len 2048
+		string	$ACS_CREDITS_TXT
+		font	$MAIN_FNT
+		$COLOR_SET1
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$CREDITS_PX
+		y	$CREDITS_PY
+
+		size_x	$CREDITS_SX
+		size_y	$CREDITS_SY
+	}
+
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		$BACK_COORDS
+//		x	10
+//		y	10
+
+		str_len 25
+		string	$ACS_OK_STR
+		font	$MAIN_FNT
+
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		size_x	50
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXIT
+				ev_data $ACS_CONTINUE_GAME 0 0 0
+				start_time 1
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_IWORLD_EVENT
+				ev_data $IW_MOVE_TO_PLACE 102 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+
+#define OPT_SY0 	30
+#define OPT_FNT 	1
+#define OPT_DY		10
+
+#define OPT_SX0 	290
+#define OPT_SX1 	150
+#define OPT_X0		100
+#define OPT_DX		50
+
+#define OPT_RES_BODY	x	$OPT_X	\
+y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $OPT_Y * ($OPT_SY0 + $OPT_DY)" \
+size_x	$OPT_SX \
+size_y	$OPT_SY0
+
+#define OPT_RES_BODY2	x	$OPT_X	\
+y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $OPT_Y * ($OPT_SY0 + $OPT_DY)" \
+size_x	$OPT_SX \
+size_y	"$OPT_SY0"
+
+#define OPT_OBJ_BODY	ID	$OPT_ID \
+type	$ACS_INPUT_FIELD_OBJ		\
+$ALPHA_SET1				\
+					\
+flag	0x04				\
+flag	$ACS_MOUSE_SELECT	\
+					\
+str_len 25				\
+string	$OPT_STR			\
+font	$OPT_FNT			\
+$OPT_COLOR_SET				\
+					\
+palette $ACS_MAIN_MENU_PAL0		
+
+#define OPT_EV	$ALPHA_SET0			\
+event { 					\
+	code	$VK_MOUSE_LEFT			\
+	code	$VK_RIGHT	\
+						\
+	time 1					\
+						\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 \
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_INC_STATE		\
+		ev_data $OPT_ID 0 0 0		\
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_GET_OPTION $OPT_CODE 0 0 \
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_UPDATE_OPTION $OPT_CODE 0 0 \
+		start_time 0			\
+	}					\
+}						\
+event { 					\
+	code	$VK_MOUSE_RIGHT 		\
+	code	$VK_LEFT	\
+						\
+	time 1					\
+						\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 \
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_DEC_STATE		\
+		ev_data $OPT_ID 0 0 0		\
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_GET_OPTION $OPT_CODE 0 0 \
+		start_time 0			\
+	}					\
+	ev_comm {				\
+		code	$ACS_EXT_EVENT		\
+		ev_data $ACS_EXT_UPDATE_OPTION $OPT_CODE 0 0 \
+		start_time 0			\
+	}					\
+}
+
+
+#define PRM_EV	event { 								\
+		code	$VK_MOUSE_LEFT							\
+		code	$VK_RIGHT	\
+											\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_INC_MM_OPTION $ACS_GRAPHICS_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}										\
+	event { 									\
+		code	$VK_MOUSE_RIGHT 						\
+		code	$VK_LEFT	\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_DEC_MM_OPTION $ACS_GRAPHICS_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}
+
+// Options Screens...
+#define OPT_X0		50
+screen {
+	ID	$ACS_GRAPHICS_SCR
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 3 $ACS_GR_SCREEN_RES1
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			#define OPT_CODE $ACS_OPT_FULLSCREEN
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_GET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_UPDATE_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			#define OPT_CODE $ACS_OPT_COLOR_DEPTH
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_GET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_UPDATE_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			#define OPT_CODE $ACS_OPT_RESOLUTION
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_GET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_UPDATE_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			#define OPT_CODE $ACS_OPT_FULLSCREEN
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_SET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			#define OPT_CODE $ACS_OPT_COLOR_DEPTH
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_SET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			#define OPT_CODE $ACS_OPT_RESOLUTION
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_SET_OPTION $OPT_CODE 0 0 
+				start_time 0			
+			}					
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define OPT_MENU_SZ	10
+
+	#define INTRO_Y		8
+
+	#define PRM_X0		120
+	#define PRM_X		"$OPT_X0 + $OPT_DX + $OPT_SX0"
+
+	object {
+		ID	$ACS_INTRO_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_IntroStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $INTRO_Y * ($OPT_SY0 + $OPT_DY)"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_INTRO_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 5
+
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $INTRO_Y * ($OPT_SY0 + $OPT_DY)" 
+
+		size_x	$OPT_SX1
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_INTRO_PRM
+		$PRM_EV
+	}
+
+	#define OPT_ID $ACS_GR_SCREEN_RES
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 0
+	#define OPT_STR $ACS_GR_SCREEN_RES_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_SCREEN_RES1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 0
+	#define OPT_STR $ACS_1280_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+
+		max_state	5
+
+		obj_index 1 $ACS_BACK_OPTION
+
+		state_str $ACS_640_STR
+		state_str $ACS_800_STR
+		state_str $ACS_1024_STR
+		state_str $ACS_1152_STR
+		state_str $ACS_1280_STR
+		state_str $ACS_1600_STR
+
+		#define OPT_CODE $ACS_OPT_RESOLUTION
+		$ALPHA_SET0
+		event { 					
+			code	$VK_MOUSE_LEFT			
+			code	$VK_RIGHT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_INC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}						
+		event { 					
+			code	$VK_MOUSE_RIGHT 		
+			code	$VK_LEFT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_DEC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}
+	}
+
+	#define OPT_ID $ACS_GR_COLOR_DEPTH
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 1
+	#define OPT_STR $ACS_GR_COLOR_DEPTH_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_COLOR_DEPTH1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 1
+	#define OPT_STR $ACS_GR_COLOR_DEPTH_STR16
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+
+		max_state	1
+
+//		obj_index 1 $ACS_BACK_OPTION
+
+		state_str $ACS_GR_COLOR_DEPTH_STR16
+		state_str $ACS_GR_COLOR_DEPTH_STR32
+
+		#define OPT_CODE $ACS_OPT_COLOR_DEPTH
+		$ALPHA_SET0
+		event { 					
+			code	$VK_MOUSE_LEFT			
+			code	$VK_RIGHT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_INC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}						
+		event { 					
+			code	$VK_MOUSE_RIGHT 		
+			code	$VK_LEFT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_DEC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}
+	}
+
+	#define OPT_ID $ACS_GR_FULLSCR
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 2
+	#define OPT_STR $ACS_GR_FULLSCR_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_FULLSCR1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 2
+	#define OPT_STR $ACS_GR_FULLSCR_MODE_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+
+		max_state	1
+
+//		obj_index 1 $ACS_BACK_OPTION
+
+		state_str $ACS_GR_WINDOW_MODE_STR
+		state_str $ACS_GR_FULLSCR_MODE_STR
+
+		#define OPT_CODE $ACS_OPT_FULLSCR
+		$ALPHA_SET0
+		event { 					
+			code	$VK_MOUSE_LEFT			
+			code	$VK_RIGHT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_INC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}						
+		event { 					
+			code	$VK_MOUSE_RIGHT 		
+			code	$VK_LEFT	
+								
+			time 1					
+								
+			ev_comm {				
+				code	$ACS_EXT_EVENT		
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0 
+				start_time 0			
+			}					
+			ev_comm {				
+				code	$ACS_DEC_STATE		
+				ev_data $OPT_ID 0 0 0		
+				start_time 0			
+			}					
+		}
+	}
+
+	#define OPT_ID $ACS_GR_SHADOWS
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 4
+	#define OPT_STR $ACS_GR_SHADOWS_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_SHADOWS1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 4
+	#define OPT_STR $ACS_OFF_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define OPT_CODE $ACS_OPT_SHADOWS
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_GR_SKY
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 5
+	#define OPT_STR $ACS_GR_SKY_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_SKY1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 5
+	#define OPT_STR $ACS_HIGH_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_LOW_STR
+		state_str	$ACS_HIGH_STR
+
+		#define OPT_CODE $ACS_OPT_SKY
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_GR_FURROWS
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 6
+	#define OPT_STR $ACS_GR_FURROWS_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_FURROWS1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 6
+	#define OPT_STR $ACS_OFF_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define OPT_CODE $ACS_OPT_FURROWS
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_GR_CHROME
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 7
+	#define OPT_STR $ACS_GR_CHROME_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_CHROME1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 7
+	#define OPT_STR $ACS_OFF_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define OPT_CODE $ACS_OPT_CHROME
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_GR_GAMMA
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 3
+	#define OPT_STR $ACS_GR_GAMMA_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_GR_GAMMA1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 3
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		type $ACS_SCROLLER_OBJ
+		flag		0x10
+		$OPT_RES_BODY2
+		$OPT_OBJ_BODY
+
+		flag	$ACS_MOUSE_SELECT
+
+		$ALPHA_SET0
+		$COLOR_SET0_S
+
+		max_value	256
+		cur_value	128
+
+		event {
+			code	$VK_LEFT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_DEC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_INC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_CHANGE_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_GAMMA 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+}
+#define OPT_X0		100
+
+screen {
+	ID	$ACS_SOUND_SCR
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 $ACS_SND_EFFECTS1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define OPT_MENU_SZ	4
+
+	#define OPT_ID $ACS_SND_EFFECTS
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 0
+	#define OPT_STR $ACS_SND_EFFECTS_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_SND_EFFECTS1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 0
+	#define OPT_STR $ACS_OFF_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		obj_index 1 $ACS_BACK_OPTION
+
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define OPT_CODE $ACS_OPT_SOUND
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_SND_EFF_VOL
+	#define OPT_SX $OPT_SX0
+//	#define OPT_X $OPT_X0
+	#define OPT_X "$OPT_X0 - 10"
+	#define OPT_Y 1
+	#define OPT_STR $ACS_SND_EFF_VOL_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_SND_EFF_VOL1
+	#define OPT_SX $OPT_SX1
+//	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0 + 30"
+	#define OPT_Y 1
+	#define OPT_STR $ACS_SND_MUS_VOL_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		type $ACS_SCROLLER_OBJ
+		flag		0x10
+		$OPT_RES_BODY2
+		$OPT_OBJ_BODY
+
+		$ALPHA_SET0
+		$COLOR_SET0_S
+
+		flag	$ACS_MOUSE_SELECT
+
+		max_value	256
+		cur_value	128
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_CHANGE_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_LEFT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_DEC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_INC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_SOUND_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define OPT_ID $ACS_SND_MUSIC
+	#define OPT_SX $OPT_SX0
+	#define OPT_X $OPT_X0
+	#define OPT_Y 2
+	#define OPT_STR $ACS_SND_MUSIC_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_SND_MUSIC1
+	#define OPT_SX $OPT_SX1
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_Y 2
+	#define OPT_STR $ACS_OFF_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define OPT_CODE $ACS_OPT_MUSIC
+		$OPT_EV
+	}
+
+	#define OPT_ID $ACS_SND_MUS_VOL
+	#define OPT_SX $OPT_SX0
+//	#define OPT_X $OPT_X0
+	#define OPT_X "$OPT_X0 - 10"
+	#define OPT_Y 3
+	#define OPT_STR $ACS_SND_MUS_VOL_STR
+	#define OPT_COLOR_SET $COLOR_SET2
+	object {
+		$OPT_RES_BODY
+		$OPT_OBJ_BODY
+	}
+
+	#define OPT_ID $ACS_SND_MUS_VOL1
+	#define OPT_SX $OPT_SX1
+//	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0"
+	#define OPT_X "$OPT_X0 + $OPT_DX + $OPT_SX0 + 30"
+	#define OPT_Y 3
+	#define OPT_STR $ACS_SND_MUS_VOL_STR
+	#define OPT_COLOR_SET $COLOR_SET0
+	object {
+		type $ACS_SCROLLER_OBJ
+		flag		0x10
+		$OPT_RES_BODY2
+		$OPT_OBJ_BODY
+
+		$ALPHA_SET0
+		$COLOR_SET0_S
+
+		flag	$ACS_MOUSE_SELECT
+
+		max_value	256
+		cur_value	128
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_CHANGE_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_LEFT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_DEC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_RIGHT
+
+			time	1
+
+			ev_comm {
+				code		$ACS_INC_SCROLLER
+				ev_data 	$OPT_ID 0 0 0
+				start_time	0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_GET_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_UPDATE_OPTION $ACS_OPT_MUSIC_VOL 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+		}
+	}
+/*
+	object {
+		ID	$ACS_SOUNDTRACK
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SOUNDTRACK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	380
+		y	430
+
+		size_x	250
+		size_y	$OBJ_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CD_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+*/
+}
+
+#define PRM_EV	event { 								\
+		code	$VK_MOUSE_LEFT							\
+		code	$VK_RIGHT	\
+											\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_INC_MM_OPTION $ACS_RACE_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}										\
+	event { 									\
+		code	$VK_MOUSE_RIGHT 						\
+		code	$VK_LEFT	\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_DEC_MM_OPTION $ACS_RACE_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}
+/*
+screen {
+	ID	$ACS_RACE_CFG_SCR
+
+	#define PRM_MENU_SIZE		5
+
+	#define LAPS_Y		0
+	#define ROBOTS_Y	1
+	#define ARCANES_Y	2
+	#define TS_Y		3
+	#define ESS_Y		4
+
+	#define PRM_X0		120
+	#define PRM_X		430
+
+	object {
+		ID	$ACS_NUM_LAPS_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_NumLapsStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $LAPS_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_NUM_LAPS_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 1 $ACS_BACK_OPTION
+
+		flag	0x04
+
+		str_len 3
+
+		string	"1"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $LAPS_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_NUM_LAPS_PRM
+		$PRM_EV
+	}
+	object {
+		ID	$ACS_NUM_ROBOTS_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_NumRobotsStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $ROBOTS_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_NUM_ROBOTS_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 3
+
+		string	"1"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $ROBOTS_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_NUM_ROBOTS_PRM
+		$PRM_EV
+	}
+	object {
+		ID	$ACS_BOT_ARCANES_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_BotArcanesStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $ARCANES_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_BOT_ARCANES_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 5
+
+		max_state	1
+		state_str	$ACS_NO_STR
+		state_str	$ACS_YES_STR
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $ARCANES_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_BOT_ARCANES_PRM
+		$PRM_EV
+	}
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		obj_index	3 $ACS_NUM_LAPS_PRM
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 1
+			}
+		}
+	}
+}	
+*/
+#define PRM_EV	event { 								\
+		code	$VK_MOUSE_LEFT							\
+		code	$VK_RIGHT	\
+											\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_INC_MM_OPTION $ACS_TB_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}										\
+	event { 									\
+		code	$VK_MOUSE_RIGHT 						\
+		code	$VK_LEFT	\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_DEC_MM_OPTION $ACS_TB_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}
+
+screen {
+	ID	$ACS_TB_CFG_SCR
+
+	#define PRM_MENU_SIZE		1
+
+	#define TIPS_Y		0
+
+	#define PRM_X0		120
+	#define PRM_X		430
+
+	object {
+		ID	$ACS_TIPS_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_TipsStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $TIPS_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_TIPS_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 5
+
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $TIPS_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_TIPS_PRM
+		$PRM_EV
+
+		obj_index	1 $ACS_BACK_OPTION
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		obj_index	3 $ACS_TIPS_PRM
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 1
+			}
+		}
+	}
+}	
+
+#define CONTROL_OBJS	object {			\
+		ID	$CTL_TXT_ID	\
+		type	$ACS_INPUT_FIELD_OBJ	\
+		$ALPHA_SET1		\
+					\
+		flag	0x04		\
+					\
+		str_len 25		\
+		string	$CTL_TXT_STR	\
+		font	$CONTROLS_FNT	\
+		$COLOR_SET00		\
+					\
+		palette $ACS_MAIN_MENU_PAL0	\
+					\
+		x	$CTL_TXT_X	\
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		\
+					\
+		size_x	$CTL_TXT_SX	\
+		size_y	$CTL_SY		\
+	}						\
+							\
+	object {				\
+		ID	$CTL_ID			\
+		type	$ACS_INPUT_FIELD_OBJ	\
+		$ALPHA_SET0			\
+						\
+		obj_index 1 $CTL_UP	\
+						\
+		flag	0x04			\
+						\
+		str_len 25			\
+		string	$ACS_NoneStr	\
+		font	$CONTROLS_FNT		\
+		$COLOR_SET0			\
+						\
+		palette $ACS_MAIN_MENU_PAL0	\
+						\
+		x	$CTL_X			\
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		\
+						\
+		size_x	$CTL_SX			\
+		size_y	$CTL_SY			\
+		event {					\
+			code	$VK_MOUSE_LEFT		\
+			code	$VK_MOUSE_RIGHT		\
+							\
+			time 2				\
+							\
+			ev_comm {			\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+				start_time 0		\
+			}				\
+			ev_comm {			\
+				code	$ACS_INPUT_KEYNAME	\
+				ev_data $CTL_ID 0 0 0		\
+				start_time 1		\
+			}				\
+			ev_comm {			\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_UPDATE_MM_OPTION $SCR_ID $CTL_ID 0 \
+				start_time 2		\
+			}				\
+		}					\
+	}						
+
+
+screen {
+	ID	$ACS_CONTROLS_SCR
+	#define SCR_ID	$ACS_CONTROLS_SCR
+
+	#define CTL_MENU_SZ		15
+	#define CTL_MENU_START_Y	-50
+
+	#define CTL_DELTA		3
+	#define CTL_MENU_START_Y	0
+
+	#define CTL_SX		100
+	#define CTL_SY		20
+	#define CTL_TXT_SX	200
+
+	#define CTL_TXT_X	100
+	#define CTL_X		450
+	
+	#define OPTIONS_MENU_SIZE	7
+/*
+	object {
+		ID		1
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_RESET_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 6"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_RESET_CONTROLS 0 0 0
+				start_time 0
+			}
+		}
+	}
+*/
+	object {
+		ID	$ACS_CONTROLS_SINGLE_SCR
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 1 $ACS_BACK_OPTION
+
+		str_len 25
+		string	$MCH_CONTROLS_SINGLE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 1"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_CONTROLLER 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_CONTROLS_SINGLE_SCR $ACS_CONTROLS_SCR 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SINGLE_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTROLS_SPLIT_SCR
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$MCH_CONTROLS_SPLIT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 2"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SPLIT_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_CONTROLS_HOTSEAT_SCR
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	3	$ACS_JOY_PRM2
+
+		str_len 25
+		string	$MCH_CONTROLS_HOTSEAT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 3"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_HOTSEAT_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define CTL_Y		10
+	#define CTL_UP		$ACS_CONTROLS_HOTSEAT_SCR
+
+	object { // Joystick on/off			
+		ID	$ACS_JOY_TXT2
+		type	$ACS_INPUT_FIELD_OBJ	
+		$ALPHA_SET1		
+					
+		flag	0x04		
+					
+		str_len 25		
+		string	$ACS_JOYSTICK_STR
+		font	1
+		$COLOR_SET00		
+					
+		palette $ACS_MAIN_MENU_PAL0	
+					
+		x	$CTL_TXT_X	
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		
+					
+		size_x	$CTL_TXT_SX	
+		size_y	$CTL_SY		
+	}						
+							
+	object {				
+		ID	$ACS_JOY_PRM2
+		type	$ACS_INPUT_FIELD_OBJ	
+		$ALPHA_SET0			
+						
+		obj_index 1 $CTL_UP	
+						
+		flag	0x04			
+						
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		str_len 25			
+		string	$ACS_OFF_STR
+		font	1		
+		$COLOR_SET0			
+						
+		palette $ACS_MAIN_MENU_PAL0	
+						
+		x	$CTL_X			
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		
+						
+		size_x	$CTL_SX			
+		size_y	$CTL_SY			
+
+		event {					
+			code	$VK_MOUSE_LEFT		
+			code	$VK_MOUSE_RIGHT		
+							
+			time 2				
+							
+			ev_comm {			
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	
+				start_time 0		
+			}				
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_INC_MM_OPTION $SCR_ID $ACS_JOY_PRM2 0
+				start_time 0
+			}
+			ev_comm {			
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_UPDATE_MM_OPTION $SCR_ID $ACS_JOY_PRM2 0 
+				start_time 1		
+			}				
+		}					
+	}						
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 1	$ACS_JOY_PRM2
+		obj_index 3 $ACS_CONTROLS_SINGLE_SCR
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+screen {
+	ID	$ACS_CONTROLS_SPLIT_SCR
+
+	#define OPTIONS_MENU_SIZE	2
+
+	object {
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 1 $ACS_BACK_OPTION
+
+		str_len 25
+		string	$ACS_PLAYER1_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 0"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_CONTROLLER 1 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_CONTROLS_SINGLE_SCR $ACS_CONTROLS_SPLIT_SCR 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SINGLE_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	2
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_PLAYER2_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2"
+		y	"$OPTIONS_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $OPTIONS_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * 1"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_CONTROLLER 2 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_PREV_SCR_ID $ACS_CONTROLS_SINGLE_SCR $ACS_CONTROLS_SPLIT_SCR 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SINGLE_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+screen {
+	ID	$ACS_CONTROLS_SINGLE_SCR
+	#define SCR_ID	$ACS_CONTROLS_SINGLE_SCR
+
+	#define CTL_MENU_SZ		15
+
+	#define CTL_MENU_START_Y	-50
+
+	#define CTL_UP		$ACS_BACK_OPTION
+	#define CTL_Y		0
+	#define CTL_ID		$MCH_KEY_MOVE_FORWARD
+	#define CTL_TXT_ID	$MCH_KEY_MOVE_FORWARD_TXT
+	#define CTL_TXT_STR	$MCH_KEY_MOVE_FORWARD_STR
+	$CONTROL_OBJS
+
+	#define CTL_UP		-1
+
+	#define CTL_Y		1
+	#define CTL_ID		$MCH_KEY_MOVE_BACKWARD
+	#define CTL_TXT_ID	$MCH_KEY_MOVE_BACKWARD_TXT
+	#define CTL_TXT_STR	$MCH_KEY_MOVE_BACKWARD_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		2
+	#define CTL_ID		$MCH_KEY_TURN_LEFT
+	#define CTL_TXT_ID	$MCH_KEY_TURN_LEFT_TXT
+	#define CTL_TXT_STR	$MCH_KEY_TURN_LEFT_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		3
+	#define CTL_ID		$MCH_KEY_TURN_RIGHT
+	#define CTL_TXT_ID	$MCH_KEY_TURN_RIGHT_TXT
+	#define CTL_TXT_STR	$MCH_KEY_TURN_RIGHT_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		4
+	#define CTL_ID		$MCH_KEY_ZOOM_IN
+	#define CTL_TXT_ID	$MCH_KEY_ZOOM_IN_TXT
+	#define CTL_TXT_STR	$MCH_KEY_ZOOM_IN_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		5
+	#define CTL_ID		$MCH_KEY_ZOOM_OUT
+	#define CTL_TXT_ID	$MCH_KEY_ZOOM_OUT_TXT
+	#define CTL_TXT_STR	$MCH_KEY_ZOOM_OUT_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		6
+	#define CTL_ID		$MCH_KEY_CENTER_VIEW
+	#define CTL_TXT_ID	$MCH_KEY_CENTER_VIEW_TXT
+	#define CTL_TXT_STR	$MCH_KEY_CENTER_VIEW_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		7
+	#define CTL_ID		$MCH_KEY_SET_ARCANE0
+	#define CTL_TXT_ID	$MCH_KEY_SET_ARCANE0_TXT
+	#define CTL_TXT_STR	$MCH_KEY_SET_ARCANE0_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		8
+	#define CTL_ID		$MCH_KEY_SET_ARCANE1
+	#define CTL_TXT_ID	$MCH_KEY_SET_ARCANE1_TXT
+	#define CTL_TXT_STR	$MCH_KEY_SET_ARCANE1_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		9
+	#define CTL_ID		$MCH_KEY_SET_ARCANE2
+	#define CTL_TXT_ID	$MCH_KEY_SET_ARCANE2_TXT
+	#define CTL_TXT_STR	$MCH_KEY_SET_ARCANE2_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		10
+	#define CTL_ID		$MCH_KEY_OK
+	#define CTL_TXT_ID	$MCH_KEY_OK_TXT
+	#define CTL_TXT_STR	$MCH_KEY_OK_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		11
+	#define CTL_ID		$MCH_KEY_CANCEL
+	#define CTL_TXT_ID	$MCH_KEY_CANCEL_TXT
+	#define CTL_TXT_STR	$MCH_KEY_CANCEL_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		12
+	#define CTL_ID		$MCH_KEY_SLOPE_CAM
+	#define CTL_TXT_ID	$MCH_KEY_SLOPE_CAM_TXT
+	#define CTL_TXT_STR	$MCH_KEY_SLOPE_CAM_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		13
+	#define CTL_ID		$MCH_KEY_HORN
+	#define CTL_TXT_ID	$MCH_KEY_HORN_TXT
+	#define CTL_TXT_STR	$MCH_KEY_HORN_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		14
+	#define CTL_ID		$MCH_KEY_MAP
+	#define CTL_TXT_ID	$MCH_KEY_MAP_TXT
+	#define CTL_TXT_STR	$MCH_KEY_MAP_STR
+	$CONTROL_OBJS
+
+
+	#define CTL_Y		16
+
+	object { // Joystick on/off			
+		ID	$ACS_JOY_TXT
+		type	$ACS_INPUT_FIELD_OBJ	
+		$ALPHA_SET1		
+					
+		flag	0x04		
+					
+		str_len 25		
+		string	$ACS_JOYSTICK_STR
+		font	1
+		$COLOR_SET00		
+					
+		palette $ACS_MAIN_MENU_PAL0	
+					
+		x	$CTL_TXT_X	
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		
+					
+		size_x	$CTL_TXT_SX	
+		size_y	$CTL_SY		
+	}						
+							
+	object {				
+		ID	$ACS_JOY_PRM
+		type	$ACS_INPUT_FIELD_OBJ	
+		$ALPHA_SET0			
+						
+		obj_index 1 $CTL_UP	
+						
+		flag	0x04			
+						
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		str_len 25			
+		string	$ACS_OFF_STR
+		font	1		
+		$COLOR_SET0			
+						
+		palette $ACS_MAIN_MENU_PAL0	
+						
+		x	$CTL_X			
+		y	"$CTL_MENU_START_Y + (480 - ($CTL_SY + $CTL_DELTA) * $CTL_MENU_SZ)/2 + ($CTL_SY + $CTL_DELTA ) * $CTL_Y"		
+						
+		size_x	$CTL_SX			
+		size_y	$CTL_SY			
+
+		event {					
+			code	$VK_MOUSE_LEFT		
+			code	$VK_MOUSE_RIGHT		
+							
+			time 2				
+							
+			ev_comm {			
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	
+				start_time 0		
+			}				
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_INC_MM_OPTION $SCR_ID $ACS_JOY_PRM 0
+				start_time 0
+			}
+			ev_comm {			
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_UPDATE_MM_OPTION $SCR_ID $ACS_JOY_PRM 0 
+				start_time 1		
+			}				
+		}					
+	}						
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 $MCH_KEY_MOVE_FORWARD
+		obj_index 0 1
+		obj_index 2 1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+		y	420
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_CONTROLLER 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_PREV
+				ev_data 0 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID		1
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_RESET_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+		x	320
+		y	420
+
+		obj_index 0 $ACS_BACK_OPTION
+		obj_index 2 $ACS_BACK_OPTION
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_RESET_CONTROLS $ACS_CONTROLS_SINGLE_SCR 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+screen {
+	ID	$ACS_CONTROLS_HOTSEAT_SCR
+	#define SCR_ID	$ACS_CONTROLS_HOTSEAT_SCR
+
+	#define CTL_TXT_X	110
+
+	#define CTL_MENU_SZ		7
+
+	#define CTL_UP		$ACS_BACK_OPTION
+	#define CTL_Y		0
+	#define CTL_ID		$MCH_KEY_START_TIME
+	#define CTL_TXT_ID	$MCH_KEY_START_TIME_TXT
+	#define CTL_TXT_STR	$MCH_KEY_START_TIME_STR
+	$CONTROL_OBJS
+
+	#define CTL_UP		-1
+
+	#define CTL_Y		1
+	#define CTL_ID		$MCH_KEY_REMOVE_SEED
+	#define CTL_TXT_ID	$MCH_KEY_REMOVE_SEED_TXT
+	#define CTL_TXT_STR	$MCH_KEY_REMOVE_SEED_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		2
+	#define CTL_ID		$MCH_KEY_ROTATE_CAM
+	#define CTL_TXT_ID	$MCH_KEY_ROTATE_CAM_TXT
+	#define CTL_TXT_STR	$MCH_KEY_ROTATE_CAM_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		3
+	#define CTL_ID		$MCH_KEY_REPLAY
+	#define CTL_TXT_ID	$MCH_KEY_REPLAY_TXT
+	#define CTL_TXT_STR	$MCH_KEY_REPLAY_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		4
+	#define CTL_ID		$MCH_KEY_REPLAY_ALL
+	#define CTL_TXT_ID	$MCH_KEY_REPLAY_ALL_TXT
+	#define CTL_TXT_STR	$MCH_KEY_REPLAY_ALL_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		5
+	#define CTL_ID		$MCH_KEY_SLOW_TIME
+	#define CTL_TXT_ID	$MCH_KEY_SLOW_TIME_TXT
+	#define CTL_TXT_STR	$MCH_KEY_SLOW_TIME_STR
+	$CONTROL_OBJS
+
+	#define CTL_Y		6
+	#define CTL_ID		$MCH_KEY_FAST_TIME
+	#define CTL_TXT_ID	$MCH_KEY_FAST_TIME_TXT
+	#define CTL_TXT_STR	$MCH_KEY_FAST_TIME_STR
+	$CONTROL_OBJS
+
+/*
+	#define CTL_Y		2
+	#define CTL_ID		$MCH_KEY_NEXT_SEED
+	#define CTL_TXT_ID	$MCH_KEY_NEXT_SEED_TXT
+	#define CTL_TXT_STR	$MCH_KEY_NEXT_SEED_STR
+	$CONTROL_OBJS
+*/
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 $MCH_KEY_START_TIME
+		obj_index 1 $MCH_KEY_FAST_TIME
+		obj_index 0 1
+		obj_index 2 1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_CONTROLS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID		1
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_RESET_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+//		x	340
+		x	320
+
+		obj_index 0 $ACS_BACK_OPTION
+		obj_index 2 $ACS_BACK_OPTION
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	3
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_RESET_CONTROLS $ACS_CONTROLS_HOTSEAT_SCR 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define CTL_TXT_X	100
+}
+
+#define ESSENCE_OBJ	object {	\
+		ID	"$ACS_ESSENCE_OBJ + $ESS_ID"	\
+										\
+		$ALPHA_SET0	\
+					\
+		x 20	\
+		y 20	\
+				\
+		size_x	80	\
+		size_y	80	\
+					\
+		flag 0x2000	\
+					\
+		event {		\
+			code	$VK_MOUSE_LEFT	\
+			code	$VK_MOUSE_RIGHT	\
+									\
+			time 2	\
+					\
+			ev_comm {	\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+				start_time 0	\
+			}	\
+			ev_comm {	\	
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_ESSENCE_EVENT $ESS_ID 0 0	\
+				start_time 0	\
+			}	\
+			ev_comm {	\
+				code	$ACS_CHANGE_SCREEN	\
+				ev_data $ACS_MAIN_MENU_SCR2 0 0 0	\
+				start_time 1	\
+			}	\
+		}	\
+	}
+
+screen {
+	ID	$ACS_ESSENCE_SCR
+
+	event {
+		code	$ACS_STARTUP_KEY
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_INIT_ESSENCES 0 0 0
+		}
+	}
+	event {
+		code	$VK_ESCAPE
+
+		time 2
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+			start_time 0
+		}
+		ev_comm {
+			code	$ACS_CHANGE_SCREEN
+			ev_data $ACS_MAIN_MENU_SCR2 0 0 0
+			start_time 2
+		}
+	}
+
+	#define ESS_ID	0
+	$ESSENCE_OBJ
+
+	#define ESS_ID	1
+	$ESSENCE_OBJ
+
+	#define ESS_ID	2
+	$ESSENCE_OBJ
+
+	#define ESS_ID	3
+	$ESSENCE_OBJ
+
+	#define ESS_ID	4
+	$ESSENCE_OBJ
+
+	#define ESS_ID	5
+	$ESSENCE_OBJ
+
+	#define ESS_ID	6
+	$ESSENCE_OBJ
+}	
+
+#include "ISCREEN\Scripts\I-World.inc"
+
+#define SAVE_OBJS	object { \
+	ID	$SAVE_ID	\
+	type	$ACS_INPUT_FIELD_OBJ	\
+	obj_index	1 "$UP_OBJ"	\
+	obj_index	3 "$DN_OBJ"	\
+	obj_index	0 "$SAVE_ID + 10"	\
+	obj_index	2 "$SAVE_ID + 10"	\
+	$ALPHA_SET0	\
+	$COLOR_SET0	\
+	\
+	flag	0x04	\
+	\
+	str_len 10	\
+	string	"Mechosh"	\
+	font	1	\
+	\
+	palette $ACS_MAIN_MENU_PAL0	\
+	\
+	x		170	\
+	y		"70 + ($SAVE_ID - 1) * 40"	\
+	size_x	150	\
+	size_y	40	\
+	event {	\
+		code	$VK_MOUSE_LEFT	\
+		code	$VK_MOUSE_RIGHT	\
+	\
+		time 1	\
+	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_SELECT_SAVE "$SAVE_ID - 1" 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_CHANGE_SCREEN	\
+			ev_data $ACS_MAIN_MENU_SCR2 0 0 0	\
+			start_time 0	\
+		}	\
+	}	\
+}	\
+object {	\
+	ID	"$SAVE_ID + 10"	\
+	type	$ACS_INPUT_FIELD_OBJ	\
+	obj_index	1 "$UP_OBJ2"	\
+	obj_index	3 "$DN_OBJ2"	\
+	obj_index	0 "$SAVE_ID"	\
+	obj_index	2 "$SAVE_ID"	\
+	$ALPHA_SET0	\
+	$COLOR_SET0	\
+	\
+	flag	0x04	\
+	\
+	str_len 10	\
+	string	$ACS_DELETE_STR	\
+	font	2	\
+	\
+	palette $ACS_MAIN_MENU_PAL0	\
+	\
+	x		370	\
+	y		"70 + ($SAVE_ID - 1) * 40" \
+	size_x	150	\
+	size_y	40	\
+	event {	\
+		code	$VK_MOUSE_LEFT	\
+		code	$VK_MOUSE_RIGHT	\
+	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+			start_time 0	\
+		}	\
+		ev_comm {	\
+			code	$ACS_EXT_EVENT	\
+			ev_data $ACS_EXT_DELETE_SAVE "$SAVE_ID - 1" 0 0	\
+			start_time 0	\
+		}	\
+	}	\
+}	
+
+screen {
+	ID	$ACS_LOAD_GAME_SCR
+
+	#define UP_OBJ	100
+	#define UP_OBJ2	100
+	#define DN_OBJ	2
+	#define DN_OBJ2	12
+	#define SAVE_ID		1
+	$SAVE_OBJS
+
+	#define UP_OBJ	1
+	#define UP_OBJ2	11
+	#define DN_OBJ	3
+	#define DN_OBJ2	13
+	#define SAVE_ID		2
+	$SAVE_OBJS
+
+	#define UP_OBJ	2
+	#define UP_OBJ2	12
+	#define DN_OBJ	4
+	#define DN_OBJ2	14
+	#define SAVE_ID		3
+	$SAVE_OBJS
+
+	#define UP_OBJ	3
+	#define UP_OBJ2	13
+	#define DN_OBJ	5
+	#define DN_OBJ2	15
+	#define SAVE_ID		4
+	$SAVE_OBJS
+
+	#define UP_OBJ	4
+	#define UP_OBJ2	14
+	#define DN_OBJ	6
+	#define DN_OBJ2	16
+	#define SAVE_ID		5
+	$SAVE_OBJS
+	
+	#define UP_OBJ	5
+	#define UP_OBJ2	15
+	#define DN_OBJ	101
+	#define DN_OBJ2	101
+	#define SAVE_ID		6
+	$SAVE_OBJS
+
+	object {
+		ID	100
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index	1	101
+		obj_index	3	0
+		obj_index	0	-1
+		obj_index	2	-1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_MORE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - 70) / 2"
+		y	20
+		size_x	70
+		size_y	40
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SCROLL_SAVES 0 0 0 
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	101
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index	1	5
+		obj_index	3	100
+		obj_index	0	-1
+		obj_index	2	-1
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_MORE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - 70) / 2"
+		y	320
+		size_x	70
+		size_y	40
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SCROLL_SAVES 1 0 0 
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	0	-1
+		obj_index	2	-1
+
+		str_len 25
+		string	$ACS_CANCEL_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_PREV
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+}
+
+#define PRM_EV	event { 								\
+		code	$VK_MOUSE_LEFT							\
+		code	$VK_RIGHT	\
+											\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_INC_MM_OPTION $ACS_SPLIT_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}										\
+	event { 									\
+		code	$VK_MOUSE_RIGHT 						\
+		code	$VK_LEFT	\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_DEC_MM_OPTION $ACS_SPLIT_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}
+
+#define PRM_FNT 		2
+
+screen {
+	ID	$ACS_SPLIT_CFG_SCR
+
+	#define PRM_MENU_SIZE		2
+
+	#define MODE_Y		0
+	#define BOTS_Y		1
+
+	#define PRM_X0		50
+	#define PRM_X		420
+
+	object {
+		ID	$ACS_SPLIT_MODE_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SPLIT_MODE_STR
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $MODE_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_SPLIT_MODE_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 1 $ACS_BACK_OPTION
+
+		flag	0x04
+
+		str_len 20
+
+		string	"1"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $MODE_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		max_state	1
+		state_str	$ACS_VERTICAL_STR
+		state_str	$ACS_HORIZONTAL_STR
+
+		#define PRM_ID	    $ACS_SPLIT_MODE_PRM
+		$PRM_EV
+	}
+
+	object {
+		ID	$ACS_SPLIT_BOTS_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SPLIT_BOTS_STR
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $BOTS_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_SPLIT_BOTS_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 $ACS_BACK_OPTION
+
+		flag	0x04
+
+		str_len 20
+
+		string	"1"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $BOTS_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		#define PRM_ID	    $ACS_SPLIT_BOTS_PRM
+		$PRM_EV
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		obj_index	1 $ACS_SPLIT_BOTS_PRM
+		obj_index	3 $ACS_SPLIT_MODE_PRM
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 1
+			}
+		}
+	}
+}	
+
+#define PRM_FNT 		1
+
+screen {
+	ID	$ACS_MULTIPLAYER_SCR
+
+	#define MAIN_MENU_SIZE	5
+
+	#define SPLIT_Y			2
+	#define HS_Y			0
+	#define HS2_Y			1
+	#define OL_Y			4
+
+	object {
+		ID	3
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_HOT_SEAT2_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+//		obj_index	0 0 
+//		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $HS2_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+/*
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_NA_SCR 0 0 0
+					start_time 0
+			}
+		}
+*/
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_ENTIRE_CONTROL_HS 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_SPLIT_HS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+/*
+	object {
+		ID	4
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_PBEM_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $PBEM_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_NA_SCR 0 0 0
+					start_time 0
+			}
+		}
+	}
+*/
+	object {
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SPLIT_SCREEN_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+//		obj_index	0 0 
+//		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $SPLIT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 1 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SELECT_WORLD 7 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data	$ACS_EXT_ELECTIONARY_MODE 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+	object {
+		ID	2
+		type	$ACS_INPUT_FIELD_OBJ
+
+		obj_index	1 $ACS_BACK_OPTION
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_HOT_SEAT_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $HS_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SPLIT_CONTROL_HS 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_SPLIT_HS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	4
+		type	$ACS_INPUT_FIELD_OBJ
+
+//		obj_index	1 $ACS_BACK_OPTION
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ONLINE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $OL_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR3 0 0 0
+					start_time 0
+			}
+		}
+	}
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 3 2
+		obj_index 1 4
+
+		str_len 25
+//		string	$ACS_MAIN_MENU_STR
+		string	$ACS_BACK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+//		x	90
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_PREV
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+}	
+
+screen {
+	ID	$ACS_SPLIT_HS_SCR
+	#define CUR_SCR	$ACS_SPLIT_HS_SCR
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	1	$ACS_PLAYER4_MECHOS
+		obj_index	3	$ACS_PLAYER0_MECHOS
+		obj_index	0	$ACS_NEW_GAME_OPTION
+		obj_index	2	2
+
+		str_len 25
+		string	$ACS_BACK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	$ACS_NEW_GAME_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_START_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	1	$ACS_PLAYER4_TYPE
+		obj_index	3	$ACS_PLAYER0_TYPE
+		obj_index	0	3
+		obj_index	2	$ACS_BACK_OPTION
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+		x	470
+
+		size_x	100
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_INIT_RACERS 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_NEXT
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+
+	object {
+		ID	2
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x1000
+
+		obj_index	1	$ACS_PLAYER4_NAME
+		obj_index	3	$ACS_PLAYER0_NAME
+		obj_index	0	$ACS_BACK_OPTION
+		obj_index	2	3
+
+		str_len 10
+		string	" "
+		font	$MAIN_FNT
+		$COLOR_SET0
+/*
+		obj_index	1	$ACS_PLAYER4_TYPE
+		obj_index	3	$ACS_PLAYER0_TYPE
+		obj_index	0	$ACS_BACK_OPTION
+		obj_index	2	$ACS_BACK_OPTION
+*/
+		palette $ACS_MAIN_MENU_PAL0
+
+		#define WSX		30
+
+		x	"320 - $WSX - 5"
+		y	330
+
+		size_x	$WSX
+		size_y	30
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_CHANGE_HS_WORLD 0 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	3
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x1000
+
+		obj_index	1	$ACS_PLAYER4_NAME
+		obj_index	3	$ACS_PLAYER0_NAME
+		obj_index	0	2
+		obj_index	2	$ACS_NEW_GAME_OPTION
+
+		str_len 10
+		string	" "
+		font	$MAIN_FNT
+		$COLOR_SET0
+/*
+		obj_index	1	$ACS_PLAYER4_TYPE
+		obj_index	3	$ACS_PLAYER0_TYPE
+		obj_index	0	$ACS_BACK_OPTION
+		obj_index	2	$ACS_BACK_OPTION
+*/
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"320 + 5"
+		y	330
+
+		size_x	$WSX
+		size_y	30
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_CHANGE_HS_WORLD 1 0 0
+				start_time 0
+			}
+		}
+	}
+
+	object {
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET00
+
+		flag	0x04
+		flag	0x1000
+
+		str_len 100
+		string	" "
+		font	$MAIN_FNT
+		$COLOR_SET00
+/*
+		obj_index	1	$ACS_PLAYER4_TYPE
+		obj_index	3	$ACS_PLAYER0_TYPE
+		obj_index	0	$ACS_BACK_OPTION
+		obj_index	2	$ACS_BACK_OPTION
+*/
+		palette $ACS_MAIN_MENU_PAL0
+
+		#define WSX		100
+
+		x	"(640 - $WSX)/2"
+		y	300
+
+		size_x	$WSX
+		size_y	30
+	}
+
+	#define CTL_MENU_SZ			5
+	#define CTL_MENU_START_Y	-70
+	#define CTL_SY				30
+	#define CTL_DELTA			15
+
+	#define MECHOS_X		30
+	#define MECHOS_SX		150
+	#define MECHOS_SY		30
+
+	#define NAME_X			210
+	#define NAME_SX			200
+
+	#define TYPE_X			460
+	#define TYPE_SX			130
+
+	#define CTL_UP		$ACS_NEW_GAME_OPTION
+	#define CTL_DOWN	-1
+	#define CTL_UP1		2
+	#define CTL_DOWN1	-1
+	#define CTL_UP2		$ACS_BACK_OPTION
+	#define CTL_DOWN2	-1
+
+	#define CTL_Y		0
+	#define NAME_ID		$ACS_PLAYER0_NAME
+	#define TYPE_ID		$ACS_PLAYER0_TYPE
+	#define MECHOS_ID	$ACS_PLAYER0_MECHOS
+	#include "iScreen\Scripts\player_cfg.inc"
+
+	#define CTL_UP		-1
+	#define CTL_UP1		-1
+	#define CTL_UP2		-1
+	#define CTL_DOWN	-1
+
+	#define CTL_Y		1
+	#define NAME_ID		$ACS_PLAYER1_NAME
+	#define TYPE_ID		$ACS_PLAYER1_TYPE
+	#define MECHOS_ID	$ACS_PLAYER1_MECHOS
+	#include "iScreen\Scripts\player_cfg.inc"
+
+	#define CTL_Y		2
+	#define NAME_ID		$ACS_PLAYER2_NAME
+	#define TYPE_ID		$ACS_PLAYER2_TYPE
+	#define MECHOS_ID	$ACS_PLAYER2_MECHOS
+	#include "iScreen\Scripts\player_cfg.inc"
+
+	#define CTL_Y		3
+	#define NAME_ID		$ACS_PLAYER3_NAME
+	#define TYPE_ID		$ACS_PLAYER3_TYPE
+	#define MECHOS_ID	$ACS_PLAYER3_MECHOS
+	#include "iScreen\Scripts\player_cfg.inc"
+
+	#define CTL_UP		-1
+	#define CTL_DOWN	$ACS_NEW_GAME_OPTION
+	#define CTL_DOWN2	$ACS_BACK_OPTION
+	#define CTL_UP1		-1
+	#define CTL_DOWN1	2
+
+	#define CTL_Y		4
+	#define NAME_ID		$ACS_PLAYER4_NAME
+	#define TYPE_ID		$ACS_PLAYER4_TYPE
+	#define MECHOS_ID	$ACS_PLAYER4_MECHOS
+	#include "iScreen\Scripts\player_cfg.inc"
+}
+
+#define BT_OBJ	object {	\
+		ID	"2 + $BT_ID"	\
+		type	$ACS_INPUT_FIELD_OBJ	\
+	\
+		$ALPHA_SET0	\
+		obj_index	1	0	\
+		obj_index	3	0	\
+		obj_index	0	$BT_L	\
+		obj_index	2	$BT_R	\
+	\
+		flag	0x04	\
+		flag	0x800	\
+		flag	0x1000	\
+	\
+		str_len 2	\
+		string	" "	\
+		font	$MAIN_FNT	\
+		$COLOR_SET0	\
+	\
+		palette $ACS_MAIN_MENU_PAL0	\
+	\
+		x	"200 + $WSX * $BT_ID + $BT_DX"	\
+		y	390	\
+	\
+		size_x	$WSX	\
+		size_y	$WSX	\
+	\
+		event {	\
+			code	$VK_MOUSE_LEFT	\
+			code	$VK_SPACE	\
+	\
+			ev_comm {	\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+				start_time 0	\
+			}	\
+			ev_comm {	\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_CHANGE_PART $BT_ID 1 0	\
+				start_time 0	\
+			}	\
+		}	\
+		event {	\
+			code	$VK_MOUSE_RIGHT	\
+	\
+			ev_comm {	\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0	\
+				start_time 0	\
+			}	\
+			ev_comm {	\
+				code	$ACS_EXT_EVENT	\
+				ev_data $ACS_EXT_CHANGE_PART $BT_ID 0 0	\
+				start_time 0	\
+			}	\
+		}	\
+	}
+
+screen {
+	ID	$ACS_CONSTRUCT_SCR
+
+	#define WSX		50
+
+	#define BT_ID	0
+	#define BT_DX	-15
+	#define BT_L	100
+	#define BT_R	3
+	$BT_OBJ
+
+	#define BT_ID	1
+	#define BT_L	2
+	#define BT_R	4
+	#define BT_DX	0
+	$BT_OBJ
+	#define BT_ID	2
+	#define BT_L	3
+	#define BT_R	5
+	$BT_OBJ
+	#define BT_ID	3
+	#define BT_L	4
+	#define BT_R	$ACS_BACK_OPTION
+	$BT_OBJ
+
+	object {
+		ID	10
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET00
+
+		obj_index	0 0
+		obj_index	1 0
+		obj_index	2 0
+		obj_index	3 0
+
+		str_len 2
+		string	" "
+		font	$MAIN_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	300
+		y	350
+
+		flag	0x1000
+
+		size_x	1
+		size_y	1
+	}
+
+	object {
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		obj_index	0 0
+		obj_index	1 0
+		obj_index	2 0
+		obj_index	3 0
+
+		flag	0x04
+		flag	0x1000
+
+		str_len 2
+		string	" "
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		#define WSX		200
+
+		x	"(640 - $WSX)/2"
+		y	"(480 - $WSX)/2 - 90"
+
+		size_x	$WSX
+		size_y	$WSX
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index	0 5
+		obj_index	1 0
+		obj_index	2 100
+		obj_index	3 0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CANCEL_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+		x	430
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FINIT_SHOP 1 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_SPLIT_HS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	100
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index	0 $ACS_BACK_OPTION
+		obj_index	1 0
+		obj_index	2 2
+		obj_index	3 0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_OK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+//		x	470
+
+		event {
+			code	$ACS_STARTUP_KEY
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_ZBUF 1 0 0
+			}
+		}
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_RETURN
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SET_ZBUF 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_FINIT_SHOP 0 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_SPLIT_HS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+#define PRM_EV	event { 								\
+		code	$VK_MOUSE_LEFT							\
+		code	$VK_RIGHT							\
+											\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_INC_MM_OPTION $ACS_HOTSEAT_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}										\
+	event { 									\
+		code	$VK_MOUSE_RIGHT 						\
+		code	$VK_LEFT 						\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0		\
+			start_time 0							\
+		}									\
+		ev_comm {								\
+			code	$ACS_EXT_EVENT						\
+			ev_data $ACS_EXT_DEC_MM_OPTION $ACS_HOTSEAT_CFG_SCR $PRM_ID 0	\
+			start_time 0							\
+		}									\
+	}
+
+
+#define PRM_FNT 		2
+
+screen {
+	ID	$ACS_HOTSEAT_CFG_SCR
+
+	#define PRM_MENU_SIZE		4
+
+	#define SEEDS_MAX_Y				0
+	#define TURN_TIME_Y				1
+	#define WAIT_TURN_TIME_Y		2
+	#define SEEDS_ACCUMULATION_Y	3
+	#define LAPS_Y					3
+
+	#define PRM_X0	130
+	#define PRM_X	520
+
+	object {
+		ID	$ACS_NUM_LAPS_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_NumLapsStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $LAPS_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_NUM_LAPS_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		obj_index 3 $ACS_BACK_OPTION
+
+		flag	0x04
+
+		str_len 3
+
+		string	"1"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $LAPS_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		#define PRM_ID	    $ACS_NUM_LAPS_PRM
+		$PRM_EV
+	}
+/*
+	object {
+		ID	$ACS_SEEDS_ACCUMULATION_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SeedsAccumulationStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $SEEDS_ACCUMULATION_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_SEEDS_ACCUMULATION_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x800
+
+		str_len 25
+
+		max_state	1
+		state_str	$ACS_OFF_STR
+		state_str	$ACS_ON_STR
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $SEEDS_ACCUMULATION_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		#define PRM_ID	    $ACS_SEEDS_ACCUMULATION_PRM
+		$PRM_EV
+	}
+*/
+	object {
+		ID	$ACS_WAIT_TURN_TIME_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_WaitTurnTimeStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $WAIT_TURN_TIME_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+
+		palette $ACS_MAIN_MENU_PAL0
+	}
+	object {
+		ID	$ACS_WAIT_TURN_TIME_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x800
+
+		str_len 25
+
+		string	"0000"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $WAIT_TURN_TIME_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		#define PRM_ID	    $ACS_WAIT_TURN_TIME_PRM
+		$PRM_EV
+	}
+	object {
+		ID	$ACS_TURN_TIME_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_TurnTimeStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $TURN_TIME_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_TURN_TIME_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x800
+
+		str_len 25
+
+		string	"0000"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $TURN_TIME_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		#define PRM_ID	    $ACS_TURN_TIME_PRM
+		$PRM_EV
+	}
+	object {
+		ID	$ACS_SEEDS_MAX_TXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_SeedsMaxStr
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $SEEDS_MAX_Y"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_SEEDS_MAX_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+		flag	0x800
+
+		str_len 25
+
+		obj_index 1		$ACS_BACK_OPTION
+
+		string	"00"
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"$PRM_MENU_START_Y + (480 - ($PRM_MENU_SY + $PRM_MENU_DELTA) * $PRM_MENU_SIZE)/2 + ($PRM_MENU_SY + $PRM_MENU_DELTA) * $SEEDS_MAX_Y"
+
+		size_x	$PRM_MENU_SX
+		size_y	$PRM_MENU_SY
+
+		#define PRM_ID	    $ACS_SEEDS_MAX_PRM
+		$PRM_EV
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index	3 $ACS_SEEDS_MAX_PRM
+
+		str_len 25
+		string	$ACS_DONE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_OPTIONS_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
+#define PRM_FNT 		1
+
+screen {
+	ID	$ACS_DEMO_SCR
+
+	#define MAIN_MENU_SIZE	2
+
+	#define RT_Y			0
+	#define TB_Y			1
+	#define IF_Y			2
+
+	object {	// Realtime option...
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_RT_MODE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $RT_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 0 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+	}
+	object {
+		ID	2		// Turnbased option...
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_TB_MODE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $TB_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 1 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+	}
+/*
+	object {
+		ID	2		// Interface option...
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_TB_MODE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $TB_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	2
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_PLAY_DEMO 1 0 0
+				start_time 0
+			}
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_FREE_RESOURCES 0 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_START_SOUND $EFF_INTERFACE_AMBIENT 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_EXT_EVENT	
+				ev_data $ACS_EXT_SET_GAME_MODE $MCH_SINGLE_GAME 0 0	
+				start_time 0	
+			}	
+			ev_comm {	
+				code	$ACS_CHANGE_SCREEN_NEXT	
+				ev_data 0 0 0 0	
+				start_time 1	
+			}	
+		}
+	}
+*/
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 3 1
+
+		str_len 25
+//		string	$ACS_MAIN_MENU_STR
+		string	$ACS_BACK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+//		x	90
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN_PREV
+				ev_data 0 0 0 0
+				start_time 1
+			}
+		}
+	}
+}	
+
+
+screen {
+	ID	$ACS_NA_SCR
+
+	#define MAIN_MENU_SIZE	2
+
+	object {	
+		ID	1
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_NA_STR1
+		font	$MAIN_FNT
+		$COLOR_SET00
+
+		obj_index	0 0 
+		obj_index	2 0 
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * 0"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+	}
+	object {
+		ID	2		
+		type	$ACS_INPUT_FIELD_OBJ
+
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_NA_STR2
+		font	$MAIN_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * 1"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		obj_index 3 1
+
+		str_len 25
+//		string	$ACS_MAIN_MENU_STR
+		string	$ACS_BACK_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+//		x	90
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+					start_time 0
+			}
+		}
+	}
+}	

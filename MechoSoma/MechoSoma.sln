@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graph3d", "VisGeneric\Graph3d\Graph3d.vcproj", "{1D901BDC-6775-41FE-A549-A7CFC1DB4313}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MechoSoma", "MechoSoma.vcproj", "{C5BB2F67-9911-429C-AAE9-C5FBF2744051}"
+	ProjectSection(ProjectDependencies) = postProject
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7} = {88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519} = {31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313} = {1D901BDC-6775-41FE-A549-A7CFC1DB4313}
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D} = {2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginMAX", "VisGeneric\PluginMAX\PluginMAX.vcproj", "{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisGeneric", "VisGeneric\VisGeneric.vcproj", "{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "md3d", "VisGeneric\md3d\md3d.vcproj", "{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Final|Win32 = Final|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Debug|Win32.Build.0 = Debug|Win32
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Final|Win32.ActiveCfg = Final|Win32
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Final|Win32.Build.0 = Final|Win32
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Release|Win32.ActiveCfg = Release|Win32
+		{1D901BDC-6775-41FE-A549-A7CFC1DB4313}.Release|Win32.Build.0 = Release|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Debug|Win32.Build.0 = Debug|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Final|Win32.ActiveCfg = Final|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Final|Win32.Build.0 = Final|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Release|Win32.ActiveCfg = Release|Win32
+		{C5BB2F67-9911-429C-AAE9-C5FBF2744051}.Release|Win32.Build.0 = Release|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Debug|Win32.Build.0 = Debug|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Final|Win32.ActiveCfg = Final|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Final|Win32.Build.0 = Final|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Release|Win32.ActiveCfg = Release|Win32
+		{88F7B7A4-F7F6-422B-8C53-ABEE2530AFD7}.Release|Win32.Build.0 = Release|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Debug|Win32.Build.0 = Debug|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Final|Win32.ActiveCfg = Final|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Final|Win32.Build.0 = Final|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Release|Win32.ActiveCfg = Release|Win32
+		{2A99C1EA-BF46-4367-AAD9-CFA823E2DD3D}.Release|Win32.Build.0 = Release|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Debug|Win32.Build.0 = Debug|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Final|Win32.ActiveCfg = Final|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Final|Win32.Build.0 = Final|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Release|Win32.ActiveCfg = Release|Win32
+		{31EA2BA7-8025-4BC6-9EC1-00D10D2E8519}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

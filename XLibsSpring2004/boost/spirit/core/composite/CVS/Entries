@@ -1,0 +1,18 @@
+D/impl////
+/actions.hpp/1.4/Wed Dec 17 09:57:24 2003//
+/alternative.hpp/1.1/Tue Dec 02 11:00:56 2003//
+/composite.hpp/1.4/Wed Dec 17 09:57:24 2003//
+/difference.hpp/1.1/Tue Dec 02 11:00:57 2003//
+/directives.hpp/1.5/Wed Dec 17 09:57:24 2003//
+/epsilon.hpp/1.6/Sat Apr 24 12:55:54 2004//
+/exclusive_or.hpp/1.1/Tue Dec 02 11:00:58 2003//
+/intersection.hpp/1.1/Tue Dec 02 11:00:59 2003//
+/kleene_star.hpp/1.1/Tue Dec 02 11:00:59 2003//
+/list.hpp/1.1/Tue Dec 02 11:00:59 2003//
+/no_actions.hpp/1.1/Tue Dec 02 11:00:59 2003//
+/operators.hpp/1.4/Wed Dec 17 09:57:24 2003//
+/optional.hpp/1.1/Tue Dec 02 11:01:00 2003//
+/positive.hpp/1.1/Tue Dec 02 11:01:00 2003//
+/sequence.hpp/1.1/Tue Dec 02 11:01:00 2003//
+/sequential_and.hpp/1.1/Tue Dec 02 11:01:00 2003//
+/sequential_or.hpp/1.1/Tue Dec 02 11:01:00 2003//

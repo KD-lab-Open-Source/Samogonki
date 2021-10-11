@@ -1,0 +1,109 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+sound $EFF_LOGO_BEE_1 {
+      channel         0
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_BEE_2 {
+      channel         1
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_BEE_3 {
+      channel         2
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_BEE_4 {
+      channel         3
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_BEE_5 {
+      channel         4
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_BEE_6 {
+      channel         5
+      priority        0
+      cropos          255
+      freq_mode       $EFF_FREQ_RND
+      pan_mode        $EFF_PAN_SCR_X
+      freq_delta      20
+
+      file            "RESOURCE\SOUND\EFF\LOGO\bee.wav"
+}
+
+sound $EFF_LOGO_SWARM_BEGIN {
+      channel         6
+      priority        1
+      cropos          255
+
+      file            "RESOURCE\SOUND\EFF\LOGO\swarm_begin.wav"
+}
+
+
+sound $EFF_LOGO_SWARM_LOOP {
+      channel         7
+      priority        1
+      cropos          255
+      flag            $EFF_LOOP
+
+      file            "RESOURCE\SOUND\EFF\LOGO\swarm_loop.wav"
+}
+
+sound $EFF_LOGO_SWARM_END {
+      channel         6
+      priority        0
+      cropos          255
+
+      file            "RESOURCE\SOUND\EFF\LOGO\swarm_end.wav"
+}
+
+sound $EFF_LOGO_LETTER {
+      channel         9
+      priority        1
+      cropos          255
+
+      file            "RESOURCE\SOUND\EFF\LOGO\letter.wav"
+}
+
+
+
+
+
+
+

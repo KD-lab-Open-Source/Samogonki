@@ -1,0 +1,158 @@
+section ArcansPrm ( declaration = "xreal\ArcansPrm.h", definition = "xreal\gen_arcans.cpp" )
+{
+
+//////////////////////////////////////////////////
+//	Transport Devices
+//////////////////////////////////////////////////
+// Feet
+float mechos_foot_speed_factor = 0.12;
+
+// Flying arcane 
+struct FlyingArcaneData
+{
+	float height = 70;
+	
+	float traction_force = 40;
+	float brake_force = 40;
+
+	float zero_speed_rudder = 40;
+	float rudder_torque_factor_manual = 0.03;
+	float rudder_torque_factor_point_controlled = 0.1;
+
+	float dragVx = 4;
+	float dragVy = 0.3;
+	float dragVz = 0.3;
+
+	float dragWxy = 1;
+	float dragWz = 2;
+
+	float up_lift = 2;
+	float down_lift = -0.2;
+	float lift_offset_y = 2;
+	float lift_offset_z = 20;
+};
+
+// Butterfly
+FlyingArcaneData butterfly_flying_data = 
+{
+	traction_force = 24;//35;
+};
+float butterfly_sweep_period = 300;
+float butterfly_sound_phase = 0.25;
+
+// Dirigible
+FlyingArcaneData dirigible_flying_data = 
+{
+	traction_force = 26;//40;
+};
+
+// Helicopter
+FlyingArcaneData helicopter_flying_data = 
+{
+	traction_force = 29;//44;
+};
+
+// DragonPower
+FlyingArcaneData dragon_power_flying_data = 
+{
+	traction_force = 32;//50;
+};
+float dragon_power_sweep_period = 800;
+float dragon_power_sound_phase = 0;
+
+
+// Cannon Ball
+float cannon_ball_height = 70;
+int cannon_ball_time = 3500;
+float cannon_ball_Vxy = 85.;
+float cannon_ball_Vz = 30.;
+float cannon_ball_rudder = 0.5;
+// Vect3f cannon_ball_dragV = { 4, 0.1, 0.1 };
+// Vect3f cannon_ball_dragW = { 5, 5, 5 };
+
+// Formicary
+float formicary_force = 2;
+
+// Jabasoma
+float jabasoma_jump_height = 70;
+float jabasoma_jump_velocity_xy = 85;
+float jabasoma_jump_velocity_xy_Forest5 = 75;
+float jabasoma_jump_velocity_xy_Forest5_point_controlled = 69;
+float jabasoma_jump_traction_force = 80;
+float jabasoma_jump_velocity_z = 20;
+float jabasoma_jump_force_factor = 2.5;
+float jabasoma_jump_stop_damping = 0.2;
+
+float jabasoma_dive_depth = 40;
+float jabasoma_dive_velocity_xy = 65;
+float jabasoma_dive_traction_force = 30;
+float jabasoma_dive_velocity_z = 20;
+float jabasoma_dive_force_factor = 4;
+float jabasoma_dive_torque = -1;
+float jabasoma_dive_stop_damping = 0.;
+float jabasoma_forest5_traction_force = 10;
+
+// Vect3f jabasoma_dragV = { 4, 0.1, 0.1 };
+// Vect3f jabasoma_dragW = { 2, 2, 2 };
+float jabasoma_stop_damping = 1;
+
+float jabasoma_rudder_manual = .6;
+float jabasoma_rudder_point_controlled = 1.;
+
+int jabasoma_animation_time = 800;
+float jabasoma_stop_phase = 0.3;
+int jabasoma_sitting_time = 500;
+int jabasoma_flying_time = 1000;
+
+
+// Acceleration spot
+int mechos_acceleration_spot_time = 1500;
+float mechos_acceleration_spot_traction = 20.;
+float mechos_acceleration_spot_max_speed = 90.;
+
+// Jump Pad
+float jump_pad_distance_prefetch = 20;
+float jump_pad_heigth = 120;
+float jump_pad_force_xy = 3.5;
+float jump_pad_force_z = 3.5;
+// Vect3f jump_pad_drag = { 1., 1., 1. };
+float jump_pad_rudder =  5;
+float jump_pad_finish_radius = 10;
+
+
+// Circle Map Arcans
+float wild_thicket_drag = 8;
+float red_track_damage = 3.;
+float mechos_red_track_time = 30000;
+float mechos_red_track_animation_period = 1000;
+float mechos_red_track_thickness_add = 1;
+int slime_duration = 700.;
+
+// Iron hip
+float iron_hip_damage = 8;
+float iron_hip_radius = 25;
+float iron_hip_period = 2000;
+
+// Humble
+float humble_scale = 0.4;
+float humble_mass_scale = 0.3;
+float humble_drag = 0.25;
+int humble_duration = 10000;
+
+// Magnetic field
+float magnetic_field_repulsion = 4.;
+float k_attraction_arcan = 4.;
+
+// MagneticCushion
+float magnetic_cushion_traction = 16;
+float magnetic_cushion_rudder_modulation = 1.;
+// Vect3f magnetic_cushion_dragV = { .4, 0.4, 0.4 };
+// Vect3f magnetic_cushion_dragW = { 2, 2, 2 };
+
+// Vortex
+float k_vortex_force = 5.e-002;
+float k_vortex_torque = 6.07753e-002;
+float k_vortex_attraction = 4.;
+float k_vortex_lift = 1.2;
+
+}

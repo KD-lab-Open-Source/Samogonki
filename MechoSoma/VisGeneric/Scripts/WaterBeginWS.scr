@@ -1,0 +1,51 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\waterbegin_snd.scb"
+
+AnimScript	2
+{ // 8000
+        music_track             16
+
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut32\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut32\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         3000	8000
+	}
+        Sound				$EFF_BEGIN_TELEPORT
+	{
+		animtime	         9000	12000
+	}
+
+        Sound				$EFF_BEGIN_GLASS_TUBE
+	{
+		animtime	         4000	9000
+	}
+        Sound				$EFF_BEGIN_GLASS
+	{
+		animtime	         4500	9000
+	}
+        Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 5000   6000
+        }
+        Sound				$EFF_BV_WATER_WHALE
+	{
+		animtime	         4500	9000
+	}
+
+        Sound				$EFF_BEGIN_GLASS_FRAGMENTS
+	{
+		animtime	         5150	10000
+	}
+
+        Sound				$EFF_BV_WATER_WHALE_CUT
+	{
+		animtime	         8000	11000
+	}
+
+
+}

@@ -1,0 +1,339 @@
+TO DO:
+
+Спрайты
+
+Везде проверка корректности вызовов.
+
+Приоритеты текстур
+
+Свободная память
+
+Color-key
+
+Constant alpha
+
+changing colors on the fly
+
+Что если при вызове d3dCacheTexture просто метить слот
+а потом грузить все кучей в BeginScene ?
+
+
+1. Инициализация
+
+MD3DERROR d3dInit(DWORD dwWidth, DWORD dwHeight, DWORD dwBpp, DWORD dwInitFlags, HINSTANCE hInst, HICON hIcon, TCHAR *szTitle)
+	// Инициализация графики
+
+	Флаги:
+
+	MD3D_BACKBUFFER    // Create and use a backbuffer
+	MD3D_ZBUFFER       // Create and use a zbuffer
+	MD3D_DEBUGMODE	   // Debug mode
+	MD3D_ALTDEVICE	   // Use alternative device (add-in card)
+
+
+MD3DERROR d3dClose()
+
+2. Управление экраном
+
+MD3DERROR d3dClear(DWORD dwColor)
+	// Очистка фреймбуфера и z-буфера. Фреймбуфер заполняется указанным цветом.
+	   (для формирования цвета можно юзать макрос RGBA_MAKE(r,g,b,a) )
+
+MD3DERROR d3dFlip()
+	// (aka Flush) Только что нарисованный back-buffer становиться видимым
+	// а front-buffer становиться back-buffer'ом и туда будет происходить
+	// вывод в следующем кадре
+
+MD3DERROR d3dSetClipRect(RECT* lprcClipRect)
+	// установить прямоугольник отсечения
+
+MD3DERROR d3dClearClipRect(DWORD dwColor)
+	// Очистить прямоугольник отсечения в нужный цвет 
+	// ( в отличии от d3dClear, z-буфер не очищается)
+	
+
+3. Управление текстурами
+
+В целях оптимизации быстродействия и улучшения совместимости с различными
+железками на размеры текстур накладываются следующие ограничения:
+
+1) Текстуры могут быть только квадратными
+2) Размер стороны квадрата должен быть степенью двойки
+3) Минимальный размер текстуры - 1x1
+4) Максимальный размер текстуры - 256x256
+
+Форматы текстур:
+
+D3DTEXFMT_RGB565
+D3DTEXFMT_RGB555
+D3DTEXFMT_ARGB4444
+D3DTEXFMT_ARGB1555
+D3DTEXFMT_RGBA8888
+D3DTEXFMT_PAL8
+
+BOOL d3dIsTextureFormatSupported( DWORD dwTexFormatID )
+	// Определяет, поддерживается ли указанный формат
+
+MD3DERROR d3dGetTextureFormatData( DWORD dwTexFormatID, M3DTEXTUREFORMAT* pData )
+	// Возвращает инфу о формате текстуры (см. M3DTEXTUREFORMAT в .h)
+
+MD3DERROR d3dCreateTexture( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat, DWORD dwFlags, DWORD* lpdwHandle )
+	// Создать текстуру заданных размеров и формата
+	// и получить хэндл
+
+MD3DERROR d3dTextureAttachPalette( DWORD dwTextureHandle, DWORD dwPaletteHandle )
+	// Аттачит палитру к текстуре
+
+MD3DERROR d3dDeleteTexture( DWORD dwHandle )
+	// Удалить текстуру по хэндлу
+
+MD3DERROR d3dLockTexture( DWORD dwHandle, VOID **lplpTexture, DWORD *lplpPitch )
+	// Залочить текстуру и получить указатель и pitch
+	// (после чего можно грузить данные)
+
+MD3DERROR d3dUnlockTexture( DWORD dwHandle )
+	// Разлочить текстуру
+
+MD3DERROR d3dCacheTexture( DWORD dwHandle )
+	// Говорит d3d что данная текстура будет использоваться
+	// в следующей сцене и ее надо закэшировать.
+	//
+	// Функция возвращает MD3D_OK если текстуру удалось закэшировать,
+	// иначе возвращается MD3DERR_VMCACHEFULL (кэш переполнен).
+	//
+	// В случае переполнения кэша нужно прекратить дальнейшее 
+	// кэширование и вывести те объекты для которых удалось 
+	// закэшировать текстуры. После завершения сцены, можно 
+	// кэшировать новую пачку текстур и рисовать очередную
+	// порцию объектов, и т.д.
+
+3.5 Управление палитрами
+
+MD3DERROR d3dCreatePalette( DWORD* lpdwHandle )
+	// Создать палитру и получить хэндл
+
+MD3DERROR d3dDeletePalette( DWORD dwHandle )
+	// Удалить палитру по хэндлу
+
+MD3DERROR d3dSetPaletteEntries( DWORD dwHandle, DWORD dwStartingEntry, DWORD dwCount, PALETTEENTRY *lpEntries )
+	// Загрузить элементы палитры
+
+MD3DERROR d3dGetPaletteEntries( DWORD dwHandle, DWORD dwStartingEntry, DWORD dwCount, PALETTEENTRY *lpEntries )
+	// Считать элементы палитры
+
+
+3.6 Спрайты
+
+Поддерживаемые Форматы спрайтов определяются поддерживаемыми форматами 
+текстур (кроме палетизованных). Используйте функции 
+d3dIsTextureFormatSupported и d3dGetTextureFormatData для определения 
+поддерживаемых форматов.
+
+Ограничения на размеры текстур не относятся к спрайтом.
+
+
+MD3DERROR d3dCreateSprite( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat, 
+					DWORD dwFlags, DWORD dwColorKey,  DWORD* lpdwHandle )
+
+	// Создать спрайт заданных размеров и формата и получить хэндл
+	//
+	// dwFlags:
+	//
+	// MD3DSP_OPAQUE - Спрайт будет выводиться без прозрачности
+	//
+	// MD3DSP_COLORKEY - Спрайт будет выводиться в режиме ColorKey
+	//			   (можно использовать для форматов RGB565 и RGB555 для
+	//				создания прозрачности)
+	//
+	// MD3DSP_ALPHA - Спрайт будет выводиться с альфа-каналом (для
+	//				форматов ARGB1555 и ARGB4444)
+	//
+	// Флаги MD3DSP_OPAQUE, MD3DSP_COLORKEY и MD3DSP_ALPHA являются
+	// взаимоисключающими
+
+MD3DERROR d3dSpriteAttachPalette( DWORD dwSpriteHandle, DWORD dwPaletteHandle )
+	// Аттачит палитру к спрайту (для формата PAL8)
+
+MD3DERROR d3dSetSpriteMode( DWORD dwHandle, DWORD dwFlags, DWORD dwColorKey )
+	// Установить новый режим прозрачности и ColorKey
+
+MD3DERROR d3dDeleteSprite( DWORD dwHandle )
+	// Удалить спрайт по хэндлу
+
+MD3DERROR d3dLockSprite( DWORD dwHandle, VOID **lplpSpriteData, DWORD *lplpPitch )
+	// Залочить спрайт и получить указатель и pitch (после чего можно 
+	// грузить данные)
+
+MD3DERROR d3dUnlockSprite( DWORD dwHandle )
+	// Разлочить спрайт
+
+MD3DERROR d3dCacheSprite( DWORD dwHandle )
+	// Загрузить спрайт в акселератор 
+	// Эту функцию необходимо вызвать до начала прорисовки сцены
+	// т.е. до d3dBeginScene(). В отличии от текстур, эта функция 
+	// гарантирует, что спрайт будет загружен (если конечно общий 
+	// объем спрайтов не привысит объем текстурной памяти). 
+
+MD3DERROR d3dDrawSprite( DWORD dwHandle, DWORD dwLeft, DWORD dwTop, 
+						 D3DVALUE dvScaleFactor )
+	// Нарисовать спрайт
+	// dvScaleFactor - коэффициент масштабирования спрайта
+	// Эту функцию можно вызывать только внутри сцены
+	// т.е. между d3dBeginScene() и d3dEndScene()
+
+
+4. Управление сценой и состоянием
+
+MD3DERROR d3dBeginScene()	// Весь вывод должен идти внутри блока 
+MD3DERROR d3dEndScene()  	// d3dBeginScene / d3dEndScene
+
+MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, DWORD dwRenderState)
+	// Изменение состояния
+	// см. приложение 
+
+MD3DERROR d3dSetTexture( DWORD dwHandle )		// Установить текущую текстуру
+
+//d3dSetTextureStage(Stage, hTex1, hTex2, OP, Flags);
+//d3dSetTextureStage(Stage, hTex1, hTex2, OP, Flags);
+
+//d3dSetTextureStageState(Stage, StateType, Value);
+
+//D3DTSS_MINFILTER 
+//D3DTSS_MAGFILTER 
+//D3DTSS_ADDRESS
+//D3DTSS_ADDRESSU 
+//D3DTSS_ADDRESSV
+
+
+5. Рисование
+
+ 5.1 Формат вертексов (dwVertexTypeDesc)
+
+ 1) D3DFVF_XYZRHW (Только координаты) 
+				-- D3DFVF_DIFFUSE компонент считается 
+				   по-умолчанию 0xFFFFFFFF 
+
+	  X,Y,Z, 1/W (floats)
+
+
+ 2)	D3DFVF_XYZRHW | D3DFVF_DIFFUSE (Координаты + Цвет)
+
+	  X,Y,Z, 1/W (floats)
+	  RGBA (32bit integer)
+	
+ 3)	D3DFVF_XYZRHW | D3DFVF_DIFFUSE  | D3DFVF_TEX0 ( ... + текстурные коорд.)
+
+	  X,Y,Z, 1/W (floats)
+	  RGBA (32bit integer)
+	  U (float)
+	  V (float)
+
+ 4)	D3DFVF_XYZRHW | D3DFVF_DIFFUSE  | D3DFVF_TEX0 | D3DFVF_TEX1
+	  ( ... + 2 набора текстурных коорд.)
+
+	  X,Y,Z, 1/W (floats)
+	  RGBA (32bit integer)
+	  U1 (float)
+	  V1 (float)
+	  U2 (float)
+	  V2 (float)
+
+ 5.2 Функции рисования
+
+MD3DERROR d3dTriangles(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount)
+MD3DERROR d3dTriangleStrip(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount)
+MD3DERROR d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount)
+MD3DERROR d3dPoints(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount)
+MD3DERROR d3dTrianglesIndexed(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount, LPWORD lpwIndices, DWORD dwIndexCount)
+
+Приложение 1 - состояния изменяемые функцией d3dSetRenderState
+==============================================================
+
+-- Альфа-блендинг
+
+D3DRENDERSTATE_ALPHABLENDENABLE - Включить/отключить альфа-блендинг
+
+    TRUE - Включить
+    FALSE - Отключить
+ 
+
+D3DRENDERSTATE_SRCBLEND - Source blending factor
+D3DRENDERSTATE_DESTBLEND - Destination blending factor
+
+    Устанавливает blend-коэффициенты для альфа-блендинга
+
+    Общая формула:
+
+    C(fb) = SRC_FACTOR*C(poly) + DEST_FACTOR*C(fb), где
+
+        C(fb) - цвет из фреймбуфера
+        C(poly) - цвет поступающего пиксела из полигона
+
+    SRC_FACTOR и DEST_FACTOR - бленд-коэффициенты:
+  
+
+    D3DBLEND_ZERO - (0, 0, 0, 0) 
+    D3DBLEND_ONE - (1, 1, 1, 1)
+    D3DBLEND_SRCCOLOR - (Rs, Gs, Bs, As)
+    D3DBLEND_INVSRCCOLOR - (1-Rs, 1-Gs, 1-Bs, 1-As)
+    D3DBLEND_SRCALPHA - (As, As, As, As)
+    D3DBLEND_INVSRCALPHA - (1-As, 1-As, 1-As, 1-As)
+    D3DBLEND_DESTCOLOR - (Rd, Gd, Bd, Ad)
+    D3DBLEND_INVDESTCOLOR - (1-Rd, 1-Gd, 1-Bd, 1-Ad)
+    D3DBLEND_BOTHINVSRCALPHA - (Только для D3DRENDERSTATE_SRCBLEND)
+	- эквивалент D3DRENDERSTATE_SRCBLEND = (1-As, 1-As, 1-As, 1-As) 
+		     D3DRENDERSTATE_DESTBLEND = (As, As, As, As)
+
+
+-- Z - Буфер
+
+D3DRENDERSTATE_ZFUNC - Функция, используемая для сравнения в z-буфере
+
+    D3DCMP_NEVER - Пиксел не проходит z-тест никогда
+    D3DCMP_LESS - Пиксел проходит z-тест если его z меньше z из буфера
+    D3DCMP_EQUAL - Пиксел проходит z-тест если его z равен z из буфера
+    D3DCMP_LESSEQUAL - (по умолчанию)
+    D3DCMP_GREATER - ...
+    D3DCMP_NOTEQUAL - ...
+    D3DCMP_GREATEREQUAL  - ...
+    D3DCMP_ALWAYS - Пиксел проходит z-тест всегда
+
+
+D3DRENDERSTATE_ZENABLE	- Режим отсечения примитивов по z-буфферу
+
+    D3DZB_TRUE - Примитивы отсекаются по z-буфферу
+    D3DZB_FALSE - Примитивы рисуются по-любому
+
+
+D3DRENDERSTATE_ZWRITEENABLE - Включение/отключение записи в z-буфер
+
+    TRUE - Z рисуемых пикселов прописывается в z-буфер
+    FALSE - Z рисуемых пикселов не прописывается в z-буфер
+
+
+-- Разное
+
+D3DRENDERSTATE_SHADEMODE - Режим закраски полигонов
+
+    D3DSHADE_FLAT - Одноцветная (по цвету первого вертекса)
+    D3DSHADE_GOURAUD - Закраска Гуро
+
+
+D3DRENDERSTATE_CULLMODE - Режим куллинга
+
+    D3DCULL_NONE - Нет куллинга
+    D3DCULL_CW - Куллить плоскости с вертксами ориентированными по часовой стрелке 
+    D3DCULL_CCW - Куллить плоскости с вертксами ориентированными против часовой стрелке 
+
+
+D3DRENDERSTATE_TEXTUREPERSPECTIVE - Перспективная коррекция текстур
+
+    TRUE - разрешить 
+    FALSE - запретить
+
+D3DRENDERSTATE_TEXTUREADDRESS  - Режим адресации текстур
+
+    D3DTADDRESS_WRAP - Tiling
+    D3DTADDRESS_MIRROR - Tiling+mirror
+    D3DTADDRESS_CLAMP - Отсечение 
+    D3DTADDRESS_BORDER - Фиксированный цвет 

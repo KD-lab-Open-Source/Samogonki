@@ -1,0 +1,255 @@
+section MechosPrm ( declaration = "xreal\MechosPrm.h", definition = "xreal\gen_mechos.cpp" )
+{
+
+// Mechos' Moment of Inertia scaling
+float moment_of_inertia_XY_scaling_factor = 2;
+float moment_of_inertia_Z_scaling_factor = 2;
+
+// Mechos' Restitution
+float mechos_k_restitution_plus_one = 1.25;
+
+// Elastic borders
+float mechos_obstacle_slope_z = 0.6;
+float horizontal_ellipsoid_factor = 1.5;
+float horizontal_Ig_inv_z_factor = 1.;//0.25;
+float horizontal_k_restitution_plus_one = 1.4;
+float horizontal_velocity_relaxation_value = 0.01;
+float mechos_collision_correction_restitution = 0.;
+int enable_vertical_analytics = 0;
+float vertical_velocity_relaxation_value = 5;
+
+// ”стойчивость колес
+float mechos_diagonal_element_scaling_factor = 1.1;
+float mechos_penalty_force_max = 300;
+float mechos_tangent_velocity_min = 0.001;
+float mechos_free_brake_damping = 0.05;
+float mechos_free_brake_torque = 0.05;
+
+// Low Gear
+float low_gear_velocity_threshould = 7;
+float low_gear_traction = 1.5;
+
+// –улевое управление
+float mechos_general_base_y = 25;
+float mechos_rudder_speed_decrease_factor_bot = 0.02;  // —нижение угла со скоростью: y = 1/(1 + factor*v), т.е. чем больше фактор, тем больше снижает
+
+// ¬ыруливание от преп€тствий
+int mechos_obstacle_rudder_enabled = 1;
+float max_rudder_angle_obstacle = 1.0;  // ћаксимальный угол поворота, когда преп€тствие
+float mechos_obstacle_rudder_velocity_threshould = 10; 
+float mechos_obstacle_rudder_pitch_threshould = 60; // degree
+float mechos_obstacle_rudder_t_factor = 10;
+float mechos_obstacle_rudder_t_avr_tau = 0.01;
+float mechos_obstacle_rudder_t_backward_wheel_start_threshould = 0.5;
+
+// Mechos' Dampings
+float mechos_dragV_free = 0.00;
+float mechos_dragW_free = 0.01;
+// Vect3f mechos_dragV_wheel = { 0.0, 0.0, 0.0 };
+// Vect3f mechos_dragW_wheel = { 2., 2., 2. };//{ 2, 2, 2.01 };
+// Vect3f mechos_dragV_flying = { 0.05, 0.05, 0.05 };
+// Vect3f mechos_dragW_flying = { 2, 2, 4 };
+float mechos_speed_bound_drag = 0.1;
+
+// Water
+float mechos_buoyancy = 0.15;
+// Vect3f mechos_dragV_water = { 2, 0.12, 1 };
+// Vect3f mechos_dragW_water = { 2, 2, 4 };
+float k_rudder_water = 1.2;
+float k_traction_water = 8.;
+float mechos_water_brake_damping = 0.7;
+
+// Swing
+float mechos_swing_lift_force = 5;
+float mechos_swing_torque = 1;
+float mechos_swing_phase = 1.8;
+
+// Max speeds for dynamic friction simulation
+float Vx_max_mechos = 8.;
+float Wz_max_mechos = 1.2;
+float V_brake_max = 30.;
+float rudder_force_max_mechos = 25.;
+
+// Dust
+float dust_speed_factor = 1.25e-002;
+
+// Personage
+float personage_rudder = 0.4;
+float personage_traction = 10;
+float personage_buoyancy = 0.15;
+// Vect3f personage_dragV = { 2, 0.1, 0.2 };
+// Vect3f personage_dragW = { 2, 2, 2 };
+
+// Standing Persomage
+float standing_personage_manual_rudder = 0.5;
+float standing_personage_automatic_rudder = 0.8;
+// Vect3f standing_personage_dragV = { 10, 10, 5 };
+// Vect3f standing_personage_dragW = { 2, 2, 1 };
+
+// Character_angles
+float character_angle_x_mass_inv = 0.6;
+float character_angle_y_mass_inv = 0.6;
+float character_angle_x_factor = 1.;
+float character_angle_y_factor = 2.;
+float character_angle_x_spot_acceleration = 2.;
+float character_angle_x_min = -0.7;
+float character_angle_x_max = 1.;//1.4;
+float character_angle_y_max = 0.79;
+
+// EffectsVelocityThreshoulds
+float collision_effect_velocity_threshould = 30;
+float stone_hit_effect_velocity_threshould = 5;
+float frozen_mechos_hit_velocity_threshould = 20;
+float hit_sound_velocity_threshould = 15;
+float mechos_upper_hit_velocity_threshould = 15;
+float mechos_upper_hit_theta_threshould = 0.7;
+ 
+ // SoundVolumeFactors
+ float mechos_hit_velocity2sound_factor = 0.05;
+ float terrain_hit_velocity2sound_factor = 0.05;
+ float terrain_wheels_hit_velocity2sound_factor = 0.05;
+
+ // Engine Sound
+ float mechos_wheels_sound_frequency_factor = 0.04;
+ float mechos_sound_factor_low_threshould = -0.8;
+ int mechos_engine_sound_on_delay = 100;
+ int mechos_engine_sound_off_delay = 100;
+
+// Animal obstacle
+float animal_obstacle_turns = 1;
+float animal_obstacle_rotation_speed = 2;
+float animal_obstacle_vertical_velocity = 60;
+float animal_obstacle_immunity_time = 5000;
+
+// Slime obstacle
+float slime_obstacle_turns = 1;
+float slime_obstacle_rotation_speed = 2;
+float slime_obstacle_horizontal_velocity = 20;
+float slime_obstacle_immunity_time = 5000;
+
+// Kinetic Impulse
+float kinetic_impulse_rotation_speed = 3;
+float kinetic_impulse_distance = 700;
+float kinetic_impulse_vertical_velocity = 40;
+
+// Trails
+float mechos_trail_dz = 2;
+float mechos_trail_length = 10;
+float mechos_trail_time = 5000;
+float mechos_trail_started_time = 50;
+
+// Trails Colors
+float ordinaryTrail[] = { 0.0, 0.0, 0.0, 0.5 };
+float snowTrail[] = { 1.0, 1.0, 1.0, 0.5 };
+float redSlimeTrail[] = { 0.25, 0.05, 0.15, 0.5 };
+float greenSlimeTrail[] = { 0.0, 0.5, 0.0, 0.5 };
+float yellowSlimeTrail[] = { 0.25, 0.5, 0.0, 0.5 };
+float blueSlimeTrail[] = { 0.1, 0.2, 0.5, 0.5 };
+float redTrackTrail[] = { 1.0, 0.2, 0.0, 0.8 };
+
+// Periods of Effects
+int main_period = 2000;
+int exult_period = 2000;
+int sadness_period = 3000;
+int outstrip_period = 2000;
+int hit_period = 200;
+int run_period = 700;
+int resting_disturb_random_delay = 8000;
+int hit_delay = 5000;
+
+// Teleportation
+float assembling_point_dist_eps = 0.5;
+float choose_teleportation_distance_xy_threshould = 300;
+float choose_teleportation_distance_z_threshould = 50;
+float choose_teleportation_time_threshould = 1000;
+float waiting_for_teleportation_time = 1000;
+float starting_teleportation_time = 1000;
+float finishing_teleportation_time = 1000;
+float teleportation_size = 2;
+float teleportation_spin = 6;
+float teleportation_spin_initial = 0.8;
+float teleportation_psi_error = 0.8;
+
+// Control points params
+float catch_width_general = 60;
+float catch_length_general = 30;
+float allowed_width_general = 25;
+float k_distance_to_traction = 3.2e-003;
+float back_moving_ymax = 71.;
+float back_moving_kmax = 0.989962;
+float backward_maneuver_threshold = 5.e-002;
+float front_moving_kmax = 1.;
+float curvature_factor = 300.;
+float brake_lower_speed = 25;
+float brake_upper_speed = 50;
+
+// Adaptive steering
+float rudder_step = 0.1;
+float min_relative_curvature = .8;
+float max_relative_curvature = 1.2;
+float curvature_denominator_anti_singular_addition = 6;
+
+// "Blind" obstacle determination system
+float traction_avr_zero = 0.25;
+float traction_avr_tau = 0.0075;
+float velocity_y_avr_zero = 2.;
+float velocity_y_avr_tau = 0.1;
+int backward_maneuver_obstacle_timer_duration = 800;
+int backward_maneuver_velocity_timer_duration = 2000;
+int backward_maneuver_duration = 1500;
+int control_point_approach_duration = 6000;
+float control_point_approach_epsilon = 0.5;
+
+// Simple obstacle system for mechos
+float obstacle_avr_tau = 0.1;
+float obstacle_avr_threshould = 0.4;
+
+// Assembling - destroying
+float part_link_force = 3;
+float part_buoyancy = 0.15;
+float part_dragV = 0.5;
+float part_dragW = 0.5;
+float part_dragW_formic = 1.5;
+float part_V = 15.;
+float part_W = 1.;
+float part_lift_force_factor = 1.2;
+float part_forced_moving_lift_force_factor = 2;
+float part_forced_moving_distance = 5;
+float part_colliding_duration = 50;
+int part_stopping_detection_delay = 3000;
+float part_merge_distance = 20;
+int disorganize_duration = 1000;
+float part_swing_lift_force = 5;
+float part_swing_torque = 1;
+
+// Teleportation
+float mechos_teleportation_time = 1000;
+float mechos_teleportation_rotation = 0.04;
+
+// Teleportation from interface
+float mechos_teleportation_z_offset = 30;
+
+// Penalty collision filter
+float upper_direction_penetration_max = 25;
+float lower_direction_penetration_max = 7;
+float horizontal_direction_penetration_max = 10;
+
+// Skidding
+float mechos_skidding_factor = 0.025;
+float mechos_skidding_avr_tau = .05;
+float mechos_skidding_factor_sound_threshould = 1;
+int mechos_skidding_sound_on_delay = 50;
+int mechos_skidding_sound_pause = 600;
+
+// Start acceleration
+float acceleration_chance_time = 200;
+
+// Jump (for Debug)
+float jump_velocity_y = 50;
+float jump_velocity_z = 100;
+
+// Debug
+int allow_transparency_of_bridges = 1;
+int parts_collision_flags = 0;
+
+}

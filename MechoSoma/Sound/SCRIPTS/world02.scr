@@ -1,0 +1,348 @@
+// ForesT
+
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 1900
+
+sound $EFF_WORLD_EXPLOSION {
+        include_tracks  "$TRACK5"
+        cropos          255
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\world_expl.wav" 
+}
+
+
+
+timer $EFF_WORLD_RND {
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event0.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event1.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event2.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event3.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event4.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event5.wav"
+}
+
+sound $EFF_WORLD_RND {
+        exclude_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event6.wav"
+}
+
+
+sound $EFF_WORLD_RND {
+        include_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event7.wav"
+}
+
+sound $EFF_WORLD_RND {
+        include_tracks  "$TRACK4"
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD02\event8.wav"
+}
+
+
+timer $EFF_HELIX {
+        exclude_tracks  "$TRACK4+$TRACK5"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_HELIX {
+        exclude_tracks  "$TRACK4+$TRACK5"
+        x               1308
+        y               1541
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\helix.wav"
+}
+
+timer $EFF_COURSE1 {
+        exclude_tracks  "$TRACK4"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_COURSE1 {
+        exclude_tracks  "$TRACK4"
+        x               650
+        y               2000
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\course1.wav"
+}
+
+sound $EFF_COURSE1 {
+        exclude_tracks  "$TRACK4"
+        x               1050
+        y               2000
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\course1.wav"
+}
+
+timer $EFF_COURSE2 {
+        exclude_tracks  "$TRACK4"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_COURSE2 {
+        exclude_tracks  "$TRACK4"
+        x               0
+        y               500
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\course2.wav"
+}
+
+sound $EFF_COURSE2 {
+        exclude_tracks  "$TRACK4"
+        x               0
+        y               1500
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\course2.wav"
+}
+
+timer $EFF_COURSE3 {
+        exclude_tracks  "$TRACK4"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_COURSE3 {
+        exclude_tracks  "$TRACK4"
+        x               0
+        y               0
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\course3.wav"
+}
+
+
+timer $EFF_BELLS {
+        exclude_tracks  "$TRACK4+$TRACK5"
+	period		25
+	rnd_value	2
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BELLS {               
+        exclude_tracks  "$TRACK4+$TRACK5"
+        x               374
+        y               603
+        channel         16
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\bells.wav"
+}
+
+sound $EFF_BELLS {
+        exclude_tracks  "$TRACK4+$TRACK5"
+        x               953
+        y               1774
+        channel         17
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\bells.wav"
+}
+
+sound $EFF_BELLS {
+        exclude_tracks  "$TRACK4+$TRACK5"
+        x               354
+        y               1555
+        channel         18
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\bells.wav"
+}
+
+
+timer $EFF_CHARGE {
+        exclude_tracks  "$TRACK4+$TRACK5"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_CHARGE {
+        exclude_tracks  "$TRACK4+$TRACK5"
+        x               900
+        y               724
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\charge.wav"
+}
+
+
+sound $EFF_BUTTERFLY {
+        exclude_tracks  "$TRACK4"
+        channel         4
+        priority        0
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\bfly.wav"
+}
+
+sound $EFF_FROG_JUMP {
+        exclude_tracks  "$TRACK4"
+        channel         19
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD02\frog.wav"
+}
+
+

@@ -1,0 +1,29 @@
+
+#include "RUNTIME\Scripts\mch_script.h"
+
+int[2]	track			$MCH_SCR_TRACK
+int		difficulty		$MCH_SCR_TRACK_LEVEL
+int		part			$MCH_SCR_TRACK_PART
+char*	name			$MCH_SCR_TRACK_NAME
+char*	boss			$MCH_SCR_TRACK_BOSS
+int		boss_id			$MCH_SCR_TRACK_BOSS_ID
+int		boss_figure_id	$MCH_SCR_TRACK_BOSS_FIGURE_ID
+int[2]	ai_level		$MCH_SCR_TRACK_AI_LEVEL
+int		length			$MCH_SCR_TRACK_LENGTH
+int		cd_track		$MCH_SCR_TRACK_CD	
+char*	open_movie		$MCH_SCR_TRACK_OPEN_MOVIE
+char*	close_movie		$MCH_SCR_TRACK_CLOSE_MOVIE
+void	enabled			$MCH_SCR_TRACK_ENABLED
+int		sound			$MCH_SCR_TRACK_SOUND
+char*	text			$MCH_SCR_TEXT
+
+int		action			$MCH_SCR_ACTION
+int		image			$MCH_SCR_IMAGE
+int		time			$MCH_SCR_TIME
+int[2]	coords			$MCH_SCR_COORDS
+char*	file			$MCH_SCR_FILE
+int		prev_coords		$MCH_SCR_PREV_COORDS
+int		ID				$MCH_SCR_ID
+int		slot			$MCH_SCR_SLOT
+double	scale			$MCH_SCR_SCALE
+int		alpha			$MCH_SCR_ALPHA

@@ -1,0 +1,311 @@
+// Interface
+
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 1900
+
+
+sound $EFF_TUB_BEEP {
+        channel         26
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\beep.wav" 
+}
+
+sound $EFF_TUB_INTERFACE {
+        channel         2
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\tub_world.wav" 
+}
+
+sound $EFF_INTERFACE_TUB {
+        channel         2
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\world_tub.wav" 
+}
+
+sound $EFF_TUB_TOGGLE {
+        channel         2
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\tub_toggle.wav" 
+}
+
+sound $EFF_BOTTOM_MENU {
+        channel         27
+        priority	1
+        cropos          255
+        pan_value       0
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+	
+	file	"RESOURCE\SOUND\EFF\WORLD07\bottom_menu.wav"
+}
+
+sound $EFF_PASSAGE_ENTER {
+        channel         2
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\passage.wav"
+}
+
+
+timer $EFF_BOSS_ROCK {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_ROCK {
+        x               1627
+        y               683
+        channel         21
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music05.wav"
+}
+
+
+timer $EFF_BOSS_DRAGON {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_DRAGON {
+        x               349
+        y               1391
+        channel         20
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music04.wav"
+}
+
+
+timer $EFF_BOSS_FROG {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_FROG {
+        x               1824
+        y               1288
+        channel         18
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music02.wav"
+}
+
+
+
+timer $EFF_BOSS_SPIDER {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_SPIDER {
+        x               1497
+        y               1815
+        channel         16
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music06.wav"
+}
+
+
+timer $EFF_BOSS_WHALE {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_WHALE {
+        x               744
+        y               1870
+        channel         19
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music01.wav"
+}
+
+timer $EFF_BOSS_TOWN {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSS_TOWN {
+        x               462
+        y               716
+        channel         17
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\music03.wav"
+}
+
+
+sound $EFF_TYPE_KEY {
+        channel         2
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\typekey.wav" 
+}
+
+sound $EFF_DOG_ROAR {
+        channel         27
+        priority        0
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file    "RESOURCE\SOUND\EFF\WORLD07\hit.wav" 
+}
+
+
+timer $EFF_SPANKING_STREAM_1 {
+	period		10
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+
+sound $EFF_SPANKING_STREAM_1 {   
+        x               1350
+        y               1360
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\stream.wav"
+}
+
+timer $EFF_SPANKING_STREAM_2 {
+	period		10
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_SPANKING_STREAM_2 {   
+        x               800
+        y               1410
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\stream.wav"
+}
+
+timer $EFF_SPANKING_STREAM_3 {
+	period		10
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_SPANKING_STREAM_3 {   
+        x               1300
+        y               940
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\stream.wav"
+}
+
+
+timer $EFF_FACTORY {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+
+sound $EFF_FACTORY {   
+        x               1050
+        y               1344
+        channel         22
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\factory.wav"
+}
+
+
+sound $EFF_ANDROID {
+        channel         23
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\WORLD07\android.wav"
+}
+
+
+

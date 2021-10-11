@@ -1,0 +1,40 @@
+
+#include "VISGENERIC\SCRIPTS\m3dsetup.h"
+
+char*	3ds_path	$M3D_3DS_PATH
+char*	bmp_path	$M3D_BMP_PATH
+int	object		$M3D_OBJECT
+int	type		$M3D_Type
+double	scale		$M3D_SCALE
+double	scale_x 	$M3D_SCALE_X
+double	scale_y 	$M3D_SCALE_Y
+double	scale_z 	$M3D_SCALE_Z
+double	size		$M3D_SIZE
+double	size_x		$M3D_SIZE_X
+double	size_y		$M3D_SIZE_Y
+double	size_z		$M3D_SIZE_Z
+char*	3ds_file	$M3D_3DS_FILE
+int	sound		$M3D_SOUND_ID
+
+char*	morph_file	$M3D_MORPH_FILE
+double	morph_time	$M3D_MORPH_TIME
+double	animation_phase $M3D_ANIMATION_PHASE
+int		animation_period $M3D_ANIMATION_PERIOD
+int		set_pivot	$M3D_SET_PIVOT
+int		attribute	$M3D_ATTRIBUTE
+
+int		default_attribute	$M3D_DEFAULT_ATTRIBUTE
+
+int 	arcane_data	$M3D_ARCANE
+char*	arcane_name	$M3D_ARCANE_NAME
+int 	ANSEED  	$M3D_ARCANE_ANSEED
+
+double	arcane_power			$M3D_ARCANE_POWER
+double	arcane_delta_power		$M3D_ARCANE_DELTA_POWER
+double	arcane_activate_power	$M3D_ARCANE_ACTIVATE_POWER
+double	arcane_charge_power		$M3D_ARCANE_CHARGE_POWER
+int		arcane_interruption		$M3D_ARCANE_INTERRUPTION
+char*	arcane_text				$M3D_ARCANE_TEXT
+
+int	bonus_arcane	$M3D_BONUS
+int	time		$M3D_BONUS_TIMER

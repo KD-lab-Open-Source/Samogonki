@@ -1,0 +1,90 @@
+'------------------------------------------------------------------------------
+'FILE DESCRIPTION: New Macro File
+'------------------------------------------------------------------------------
+
+Option Explicit
+'
+' This is the path to nasmw.exe
+'
+Public Const XPrmPath = "XPrm.exe "
+Public Const XPrmSwitches = "$(InputDir)\$(InputName).prm -Fo$(IntDir)\$(InputName).bpr"
+'
+' The total number of ASM files created so far
+'
+Sub AddNewPrmFile()
+'Description: Add a new Assembly File to your project
+	Dim TempConfiguration
+	Dim TempDocument
+	Dim TempFilename
+	Dim TempBackSlashPosition
+	Dim CurrentProject
+	Dim FileSystem
+
+	Set CurrentProject = Application.ActiveProject
+	TempFilename = "f.prm"
+
+	If CurrentProject.Type <> "Build" Then
+		MsgBox "This project is not a build project."
+
+	Else
+
+		TempBackSlashPosition = InStrRev(CurrentProject.FullName, "\")
+
+		TempFilename = Left(CurrentProject.FullName, TempBackSlashPosition) + TempFilename
+
+		TempFilename = InputBox("Enter the filename:", "Create PRM File", _
+			TempFilename)
+
+		If TempFileName = "" Then Exit Sub
+		
+		Application.Documents.Add "Text"
+		Application.ActiveDocument.Save(TempFilename)
+
+		CurrentProject.AddFile TempFileName
+
+		For Each TempConfiguration In CurrentProject.Configurations
+			TempConfiguration.AddCustomBuildStepToFile TempFilename, XPrmPath + _
+				XPrmSwitches, "$(IntDir)\$(InputName).bpr", _
+				"Compiling $(InputName).prm..."
+		Next
+
+	End If
+			
+End Sub
+
+Sub AddExistingPrmFile()
+'Description: Add an existing Assembly File to your project
+	Dim TempConfiguration
+	Dim TempDocument
+	Dim TempFilename
+	Dim TempBackSlashPosition
+	Dim CurrentProject
+	Dim FileSystem
+
+	Set CurrentProject = Application.ActiveProject
+	TempFilename = "f.prm"
+
+	If CurrentProject.Type <> "Build" Then
+		MsgBox "This project is not a build project."
+
+	Else
+
+		TempBackSlashPosition = InStrRev(CurrentProject.FullName, "\")
+
+		TempFilename = Left(CurrentProject.FullName, TempBackSlashPosition) + TempFilename
+
+		TempFilename = InputBox("Enter the filename:", "Add PRM File", TempFilename)
+
+		If TempFileName = "" Then Exit Sub
+
+		CurrentProject.AddFile TempFileName
+
+		For Each TempConfiguration In CurrentProject.Configurations
+			TempConfiguration.AddCustomBuildStepToFile TempFilename, XPrmPath + _
+				XPrmSwitches, "$(IntDir)\$(InputName).bpr", _
+				"Compiling $(InputName).prm..."
+		Next
+
+	End If
+			
+End Sub

@@ -1,0 +1,120 @@
+
+#include "iScreen\doggy.h"
+#include "iScreen\Scripts\aci_str.inc"
+
+phrase $IW_DOGGY_GREETING {
+	string	$IW_DOGGY_GREETING_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	0
+}
+
+phrase $IW_DOGGY_LOAD_GAME {
+	string	$IW_DOGGY_LOAD_GAME_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	1
+}
+
+phrase $IW_DOGGY_FIRST_RACE {
+	string	$IW_DOGGY_FIRST_RACE_TXT
+
+	priority	2
+}
+
+phrase $IW_DOGGY_NEW_RIDER {
+	string	$IW_DOGGY_NEW_RIDER_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	3
+}
+
+phrase $IW_DOGGY_ABORT_RACE {
+	string	$IW_DOGGY_ABORT_RACE_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	4
+}
+
+phrase $IW_DOGGY_RACE_LOST {
+	string	$IW_DOGGY_RACE_LOST_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	5
+}
+
+phrase $IW_DOGGY_RACE_WON {
+	string	$IW_DOGGY_RACE_WON_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	6
+}
+
+phrase $IW_DOGGY_NEW_PART {
+	string	$IW_DOGGY_NEW_PART_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	7
+}
+
+phrase $IW_DOGGY_NOT_ENOUGH_MONEY {
+	string	$IW_DOGGY_NOT_ENOUGH_MONEY_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	8
+}
+
+phrase $IW_DOGGY_BOSS_RACE_LOST {
+	string	$IW_DOGGY_BOSS_RACE_LOST_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	9
+}
+
+phrase $IW_DOGGY_BOSS_RACE_WON {
+	string	$IW_DOGGY_BOSS_RACE_WON_TXT
+
+	flag		$IW_DOGGY_ONE_TIME_FLAG
+	priority	10
+}
+
+phrase $IW_DOGGY_LAST_BOSS_WON {
+	string	$IW_DOGGY_LAST_BOSS_WON_TXT
+
+	priority	11
+}
+
+phrase $IW_DOGGY_NEW_WORLD {
+	string	$IW_DOGGY_NEW_WORLD_TXT
+
+	priority	12
+}
+
+phrase $IW_DOGGY_NEW_BOSS_WORLD {
+	string	$IW_DOGGY_NEW_BOSS_WORLD_TXT
+
+	priority	13
+}
+
+phrase $IW_DOGGY_INFO0 {
+	string	$IW_DOGGY_INFO0_TXT
+}
+
+phrase $IW_DOGGY_INFO1 {
+	string	$IW_DOGGY_INFO1_TXT
+}
+
+phrase $IW_DOGGY_INFO2 {
+	string	$IW_DOGGY_INFO2_TXT
+}
+
+phrase $IW_DOGGY_INFO3 {
+	string	$IW_DOGGY_INFO3_TXT
+}
+
+phrase $IW_DOGGY_INFO4 {
+	string	$IW_DOGGY_INFO4_TXT
+
+	priority	18
+}
+

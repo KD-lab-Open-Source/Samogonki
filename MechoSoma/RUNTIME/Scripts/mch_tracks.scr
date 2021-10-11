@@ -1,0 +1,405 @@
+
+#include "iScreen\Scripts\aci_str.inc"
+
+#define FOREST_CD		4
+#define WATER_CD		5
+#define TOWN_CD			3
+#define LAVA_CD			6
+#define WATCH_CD		8
+#define MOUNTAIN_CD		7
+#define BOSS_CD			22
+
+#define BOSS_FROG			10
+#define BOSS_WHALE			"$BOSS_FROG + 1"
+#define BOSS_SPIDER			"$BOSS_FROG + 2"
+#define BOSS_STONE			"$BOSS_FROG + 3"
+#define BOSS_DRAGON			"$BOSS_FROG + 4"
+
+#define BOSS_STONE_FIG		5
+#define BOSS_DRAGON_FIG		7
+#define BOSS_WHALE_FIG		9
+#define BOSS_FROG_FIG		6
+#define BOSS_SPIDER_FIG		8
+
+#define BOSS_STONE_SND		2
+#define BOSS_DRAGON_SND		1
+#define BOSS_WHALE_SND		1
+#define BOSS_FROG_SND		0
+#define BOSS_SPIDER_SND		0
+
+#define mountain0	track 0 0
+#define mountain1	track 0 1
+#define mountain2	track 0 2
+#define mountain3	track 0 3
+#define mountain4	track 0 4
+#define mountain5	track 0 5
+
+#define water0		track 1 0
+#define water1		track 1 1
+#define water2		track 1 2
+#define water3		track 1 3
+#define water4		track 1 4
+#define water5		track 1 5
+
+#define forest0		track 2 0
+#define forest1		track 2 1
+#define forest2		track 2 2
+#define forest3		track 2 3
+#define forest4		track 2 4
+#define forest5		track 2 5
+
+#define town0		track 3 0
+#define town1		track 3 1
+
+#define lava0		track 4 0
+#define lava1		track 4 1
+#define lava2		track 4 2
+#define lava3		track 4 3
+#define lava4		track 4 4
+
+#define watch0		track 8 0
+#define watch1		track 8 1
+#define watch2		track 8 2
+#define watch3		track 8 3
+#define watch4		track 8 4
+#define watch5		track 8 5
+
+$town0 {
+	difficulty	1
+//	difficulty	0
+	cd_track	$TOWN_CD
+
+	part	41 // Clown
+
+	enabled
+
+	name $town0_name
+	text $town0_text
+}
+
+$town1 {
+	difficulty	4
+	cd_track	$TOWN_CD
+
+	part	32 // Electric Body
+
+	name $town1_name
+	text $town1_text
+}
+
+$mountain0 {
+	difficulty	2
+//	difficulty	0
+	cd_track	$MOUNTAIN_CD
+
+	part	39 // Voodoo Master
+
+	enabled
+
+	name $mountain0_name
+	text $mountain0_text
+}
+
+$mountain1 {
+	difficulty	3
+	cd_track	$MOUNTAIN_CD
+
+	part	29 // Electric Seeds
+
+	name $mountain1_name
+	text $mountain1_text
+}
+
+$mountain2 {
+	difficulty	4
+	cd_track	$MOUNTAIN_CD
+
+	part	18 // Formicary
+
+	name $mountain2_name
+	text $mountain2_text
+}
+
+$mountain4 {
+	difficulty	6
+	cd_track	$MOUNTAIN_CD
+
+	part	11 // Scarlet Trace
+
+	name $mountain4_name
+	text $mountain4_text
+}
+
+$mountain5 {
+	difficulty	10
+	cd_track	$BOSS_CD
+
+	boss			"SmartStoneRacer"
+	boss_id			$BOSS_STONE
+	boss_figure_id	$BOSS_STONE_FIG
+	sound			$BOSS_STONE_SND
+
+	open_movie		"RESOURCE\WorldScript\MountainBeginWS.scb"
+	close_movie		"RESOURCE\WorldScript\MountainVictoryWS.scb"
+
+	name $mountain5_name
+	text $mountain5_text
+}
+
+$forest0 {
+	difficulty	0
+	cd_track	$FOREST_CD
+
+	part	5 // Pesky Mould
+
+	enabled
+
+	name $forest0_name
+	text $forest0_text
+}
+
+$forest1 {
+	difficulty	2
+	cd_track	$FOREST_CD
+
+	part	7 // Evil Eye
+
+	name $forest1_name
+	text $forest1_text
+}
+
+$forest2 {
+	difficulty	3
+	cd_track	$FOREST_CD
+
+	part	48 // Teleportation Trap
+
+	name $forest2_name
+	text $forest2_text
+}
+
+$forest3 {
+	difficulty	1
+	cd_track	$FOREST_CD
+
+	part	61 // Mines
+
+	name $forest3_name
+	text $forest3_text
+}
+
+$forest4 {
+	difficulty	4
+	cd_track	$FOREST_CD
+
+	part	19 // Soap-Bubbles
+
+	name $forest4_name
+	text $forest4_text
+}
+
+$forest5 {
+	difficulty	10
+	cd_track	$BOSS_CD
+
+	part	51 // Helicopter
+
+	boss			"FrogRacer"
+	boss_id			$BOSS_FROG
+	boss_figure_id	$BOSS_FROG_FIG
+	sound			$BOSS_FROG_SND
+
+	open_movie		"RESOURCE\WorldScript\ForestBeginWS.scb"
+	close_movie		"RESOURCE\WorldScript\ForestVictoryWS.scb"
+
+	name $forest5_name
+	text $forest5_text
+}
+
+$water0 {
+	difficulty	1
+	cd_track	$WATER_CD
+
+	part	59 // Butterfly
+
+	name $water0_name
+	text $water0_text
+}
+
+$water1 {
+	difficulty	3
+	cd_track	$WATER_CD
+
+	part	42	// Suicide
+
+	name $water1_name
+	text $water1_text
+}
+
+$water2 {
+	difficulty	0
+	cd_track	$WATER_CD
+
+	part	25 // Thunderstorm
+
+	enabled
+
+	name $water2_name
+	text $water2_text
+}
+
+$water3 {
+	difficulty	4
+//	difficulty	0
+	cd_track	$WATER_CD
+
+	part	17 // Spiders Attack
+
+	name $water3_name
+	text $water3_text
+}
+
+$water4 {
+	difficulty	5
+	cd_track	$WATER_CD
+
+	part	64 // SnowFall
+
+	name $water4_name
+	text $water4_text
+}
+
+$water5 {
+	difficulty	10
+	cd_track	$BOSS_CD
+
+	part	52 // Frog
+
+	boss			"WhaleRacer" 
+	boss_id			$BOSS_WHALE
+	boss_figure_id	$BOSS_WHALE_FIG
+	sound			$BOSS_WHALE_SND
+
+	open_movie		"RESOURCE\WorldScript\WaterBeginWS.scb"
+	close_movie		"RESOURCE\WorldScript\WaterVictoryWS.scb"
+
+	name	$water5_name
+	text	$water5_text
+}
+
+$watch0 {
+	difficulty	2
+	cd_track	$WATCH_CD
+
+	part	2 // Petard
+
+	name $watch0_name
+	text $watch0_text
+}
+
+$watch1 {
+	difficulty	6
+	cd_track	$WATCH_CD
+
+	part	33 // X-Ray Attack
+
+	name	$watch1_name
+	text	$watch1_text
+}
+
+$watch2 {
+	difficulty	0
+	cd_track	$WATCH_CD
+
+	part	37 // Bomb Attack
+
+	name	$watch2_name
+	text	$watch2_text
+}
+
+$watch4 {
+	difficulty	5
+	cd_track	$WATCH_CD
+
+	part	66 // Sparking
+
+	name	$watch4_name
+	text	$watch4_text
+}
+
+$watch5 {
+	difficulty	10
+	cd_track	$BOSS_CD
+
+	part	50 // Dragon's Power
+
+	boss			"SpiderRacer"
+	boss_id			$BOSS_SPIDER
+	boss_figure_id	$BOSS_SPIDER_FIG
+	sound			$BOSS_SPIDER_SND
+
+	open_movie		"RESOURCE\WorldScript\WatchBeginWS.scb"
+	close_movie		"RESOURCE\WorldScript\WatchVictoryWS.scb"
+
+	name	$watch5_name
+	text	$watch5_text
+}
+
+$lava0 {
+	difficulty	7
+	cd_track	$LAVA_CD
+
+	part	60 // Dirigible
+
+	name $lava0_name
+	text $lava0_text
+}
+
+$lava1 {
+	difficulty	3
+	cd_track	$LAVA_CD
+
+	part	24 // Star Shower
+
+	name $lava1_name
+	text $lava1_text
+}
+
+$lava2 {
+	difficulty	5
+	cd_track	$LAVA_CD
+
+	part	3 // Lurid Billow
+
+	name $lava2_name
+	text $lava2_text
+}
+
+$lava3 {
+	difficulty	6
+	cd_track	$LAVA_CD
+
+	part	40 // FireBall Attack
+
+	name $lava3_name
+	text $lava3_text
+}
+
+$lava4 {
+	difficulty	10
+	cd_track	$BOSS_CD
+
+	part	58 // 0-Trasportation
+
+	boss			"DragonRacer"
+	boss_id			$BOSS_DRAGON
+	boss_figure_id	$BOSS_DRAGON_FIG
+	sound			$BOSS_DRAGON_SND
+
+	open_movie		"RESOURCE\WorldScript\LavaBeginWS.scb"
+	close_movie		"RESOURCE\WorldScript\LavaVictoryWS.scb"
+
+	name	$lava4_name
+	text	$lava4_text
+}
+

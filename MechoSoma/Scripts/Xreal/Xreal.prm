@@ -1,0 +1,118 @@
+section XRealPrm ( declaration = "xreal\gen_xreal.h", definition = "xreal\gen_xreal.cpp" )
+{
+
+// SpeedCorrection
+int syncro_by_clock = 1;
+int STANDART_FRAME_PERIOD = 40;
+int MAX_TIME_INTERVAL = 300;
+int racer_quant_period = 91;
+int xreal_quant_period = 91;
+int xreal_evolve_period = 13;//20;
+
+// FX
+float fxlabServerQuantPeriod = 91;
+float fxlabGlobalTimeRateMs = 20;
+float fxlabParticleSystemScale = 1.0;
+
+// Timing
+float evolve_time_step_ms = 13;//20;
+float evolve_time_step = 0.07;//0.108;
+float real_time_to_evolve_time = 5.4;
+
+// General Physics params
+float Gravity = 25;//9.8;
+float Density = 1.e-004;
+float general_k_restitution_plus_one = 1.1;
+							 
+// General Body Restrictions
+float max_height_threshould = 1000.;
+float max_velocity_threshould_general = 90.;
+float max_velocity_threshould_meteorite = 140.;
+float max_angular_velocity_threshould = 4.;
+
+// General Body Dampings
+float free_linear_damping = 0.05;
+float free_angular_damping = 0.1;
+float contact_linear_damping = 2.;
+float contact_angular_damping = 2.;
+
+// Impulse Contact Logic params
+float hit_reaction_velocity_threshould = 5;
+float velocity_to_damage_factor = 0.01;
+
+// Force Contact Logic params
+float press_reaction_force_threshould = 0.5;
+
+// Sound Params
+float minimal_volume_level = 0.1;
+
+// Archimedean force
+float archimedean_force_wave_time_factor = 0.005; // 2Pi/T
+float archimedean_force_wave_distance_factor = 0.08; // 2Pi/Lambda
+float archimedean_force_wave_phase = 1.8; // between force and torque
+float archimedean_force_damping = 0.1;
+
+// Triangle clip
+float triangle_clip_epsilon = 0.01;
+float get_placement_pose_water_dz = -5;
+
+
+///////////////////////////////////////////////////////////
+//               Very Smart Params
+///////////////////////////////////////////////////////////
+// Rest System
+int rest_system_enabled = 0;
+float rest_force2_threshould = 1e-7;
+float rest_torque2_threshould = 1e-7;
+float rest_velocity2_threshould = 0.05;
+float rest_angular_velocity2_threshould = 0.05;
+
+
+// Impulse resolving
+int constraint_impulse_calculation = 2; // 0 - none, 1 - frictionless, 2 - frictional
+float impulse_resolve_velocity_threshould = 0.01;
+float velocity_relaxation_value = 0.01;
+
+// Force resolving
+int constraint_force_calculation = 0; // 0 - none, 1 - frictionless, 2 - frictional
+float force_resolve_acceleration_threshould = 0.01;
+float acceleration_relaxation_value = 0.01;
+float penetration2acceleration_relaxation_factor = 0.01;
+
+// Friction
+float impact_friction_factor = 1;
+float dynamic_friction_factor = 0.2;
+float static_friction_factor = 0.4;
+
+// Friction tuning
+float VelocityZeroThreshould = 0.001;
+float MinDynamicFrictionVelocity = 0.5;
+float AccelerationZeroThreshould = 0.0001;
+float FrictionZeroThreshould = 0.01;
+
+// Linear Projection
+float linear_projection_tolerance = 0.1;
+
+// Fast Car 
+int UseCollisionHandler = 0;
+int CollisionHandlerRelaxationType = 2;
+float CollisionHandlerRelaxationTime = 10;
+float CollisionHandlerTimeStep = 0;
+float CollisionHandlerVelocityTolerance = 0.01;
+float CollisionHandlerPenetrationTolerance = 0.01;
+
+}
+
+// @caiiiycuk
+///////////////////////////////////////////////////////////
+//          LCP Solver Params
+///////////////////////////////////////////////////////////
+// section LCPSolverPrm ( declaration = "xreal\LCP_Solver.h", definition = "xreal\LCP_Solver.cpp" )
+// {
+// double LCP_diagonal_element_scaling_factor = 1.01;
+// double LCP_delta_tolerance = 1e-9;
+// double LCP_tangential_zero_threshould = 1e-9;
+// int LCP_max_iterations = 120;
+// int LCP_solve_method = 1; // 0 - QR, 1 - LU, 2 - Cholesky, 3 - SVD
+// }
+

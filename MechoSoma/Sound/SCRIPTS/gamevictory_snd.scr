@@ -1,0 +1,52 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 4000
+
+sound $EFF_BV_STORM {
+        channel         1
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\bv_storm.wav"
+}
+
+sound $EFF_END_THUNDERSTORM_1 {
+        channel         2
+        priority        1
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\END\thunderstorm1.wav"
+}
+
+sound $EFF_END_THUNDERSTORM_2 {
+        channel         3
+        priority        1
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\END\thunderstorm2.wav"
+}
+
+sound $EFF_END_THUNDERSTORM_3 {
+        channel         4
+        priority        1
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\END\thunderstorm3.wav"
+}
+
+sound $EFF_END_START {
+        channel         5
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\END\start.wav"
+}
+
+

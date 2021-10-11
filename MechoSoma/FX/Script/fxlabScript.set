@@ -1,0 +1,41 @@
+#include "FX\fxlabID.h"
+
+//Section Definition
+
+void	KeySection		$FXLAB_SCRIPT_SECTION_KEY
+void	SpriteSection	$FXLAB_SCRIPT_SECTION_SPRITE
+
+//Sprite Definition
+
+int		SpriteID		$FXLAB_SCRIPT_SPRITE_ID
+int		SpritePhaseNum	$FXLAB_SCRIPT_SPRITE_PHASE_NUM
+int		SpriteKeyID		$FXLAB_SCRIPT_SPRITE_KEY_ID
+int		SpriteTextureID	$FXLAB_SCRIPT_SPRITE_TEXTURE_ID
+
+//Key Definition
+
+int		KeyID			$FXLAB_SCRIPT_KEY_ID
+char*	KeyDefine		$FXLAB_SCRIPT_KEY_DEFINITION
+double	KeyTime			$FXLAB_SCRIPT_KEY_TIME
+double	KeyData			$FXLAB_SCRIPT_KEY_DATA
+char*	KeyName			$FXLAB_SCRIPT_KEY_NAME
+int		KeyAttribute	$FXLAB_SCRIPT_KEY_ATTRIBUTE
+int		KeyMode			$FXLAB_SCRIPT_KEY_MODE
+
+//World Definition
+
+int		WorldID					$FXLAB_SCRIPT_WORLD_ID
+int[4]	WorldWaterColor			$FXLAB_SCRIPT_WATER_COLOR
+int[4]	WorldWaterDeltaColor	$FXLAB_SCRIPT_WATER_DELTA_COLOR
+int		WorldWaterDeltaHeight	$FXLAB_SCRIPT_WATER_DELTA_HEIGHT
+double	WorldWaterDeltaUV		$FXLAB_SCRIPT_WATER_DELTA_UV
+
+void	WorldReflectionEnable	$FXLAB_SCRIPT_WORLD_REFLECTION_ENABLE
+void	WorldTrackInfo			$FXLAB_SCRIPT_WORLD_TRACK_INFO
+
+int		WorldTrackRoot			$FXLAB_SCRIPT_TRACK_ROOT
+int[16]	WorldTrackDustStyle		$FXLAB_SCRIPT_TRACK_DUST_STYLE
+double	WorldTrackWaveRed		$FXLAB_SCRIPT_TRACK_WAVE_RED
+double	WorldTrackWaveGreen		$FXLAB_SCRIPT_TRACK_WAVE_GREEN
+double	WorldTrackWaveBlue		$FXLAB_SCRIPT_TRACK_WAVE_BLUE
+double	WorldTrackWaveAlpha		$FXLAB_SCRIPT_TRACK_WAVE_ALPHA

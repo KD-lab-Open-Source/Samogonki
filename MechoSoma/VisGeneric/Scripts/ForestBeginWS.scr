@@ -1,0 +1,49 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\forestbegin_snd.scb"
+
+AnimScript	2
+{ // 8000
+        music_track             14
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut34\"
+	name_wsc	        "RESOURCE\WORLDSCRIPT\Cut34\test.wsc"
+
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         1500	8000
+	}
+        Sound				$EFF_BEGIN_TELEPORT
+	{
+		animtime	         6700	12000
+	}
+        Sound				$EFF_BV_FOREST_FROG
+	{
+		animtime	         4000	8000
+	}
+        Sound				$EFF_BEGIN_GLASS_TUBE
+	{
+		animtime	         2000	4000
+	}
+        Sound				$EFF_BEGIN_GLASS
+	{
+		animtime	         2600	4000
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         2900	4000
+	}
+        Sound				$EFF_BV_FOREST_FROG_JUMP
+	{
+		animtime	         5400	10000
+	}
+        Sound				$EFF_BEGIN_GLASS_FRAGMENTS
+	{
+		animtime	         3150	8000
+	}
+      
+        
+
+}

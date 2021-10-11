@@ -1,0 +1,3 @@
+
+#define AI_ARCANE_DIST_PRM	0
+#define AI_ARCANE_RADIUS_PRM	1

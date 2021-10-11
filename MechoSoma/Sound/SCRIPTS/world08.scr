@@ -1,0 +1,347 @@
+// WatcH
+
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 1900
+
+sound $EFF_WORLD_EXPLOSION {
+        include_tracks  "$TRACK5"
+        channel         27
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\world_expl.wav" 
+}
+
+timer $EFF_WORLD_RND {
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_WORLD_RND {
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD08\event0.wav"
+}
+
+sound $EFF_WORLD_RND {
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD08\event1.wav"
+}
+
+sound $EFF_WORLD_RND {
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD08\event2.wav"
+}
+
+sound $EFF_WORLD_RND {
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD08\event3.wav"
+}
+
+sound $EFF_WORLD_RND {
+	channel 	5
+	priority	1
+        cropos          255 
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+	volume_mode	$EFF_VOL_DIST
+	pan_mode	$EFF_PAN_X
+
+       	file	"RESOURCE\SOUND\EFF\WORLD08\event4.wav"
+}
+
+timer $EFF_GEAR1 {
+        exclude_tracks  "$TRACK5"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_GEAR1 {
+        exclude_tracks  "$TRACK5"  
+        x               505
+        y               1694
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\gear1.wav"
+}
+
+timer $EFF_GEAR1 {
+        include_tracks  "$TRACK0"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+
+sound $EFF_GEAR1 {
+        include_tracks  "$TRACK0" 
+        x               1870	
+        y               1670
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\gear1.wav"
+}
+
+
+timer $EFF_GEAR2 {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_GEAR2 {
+        x               260	
+        y               1120
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\gear2.wav"
+}
+
+timer $EFF_GEAR3 {
+        exclude_tracks  "$TRACK5"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_GEAR3 {
+        exclude_tracks  "$TRACK5"
+        x               776
+        y               1790
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\gear3.wav"
+}
+
+timer $EFF_GEAR3 {
+        include_tracks  "$TRACK0"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+
+sound $EFF_GEAR3 {
+        include_tracks  "$TRACK0"
+        x               65
+        y               2000
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL2
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\gear3.wav"
+}
+
+
+timer $EFF_CLOCK {
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_CLOCK {
+        x               1322	
+        y               466
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\clock.wav"
+}
+
+sound $EFF_BLADE {
+        channel         4
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\blade.wav"
+}
+
+timer $EFF_ORGAN {
+        exclude_tracks  "$TRACK5"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_ORGAN {
+        exclude_tracks  "$TRACK5"
+        x               765
+        y               1505
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\organ.wav"
+}
+
+timer $EFF_SPIDER {
+        include_tracks  "$TRACK5"
+        period          80
+        rnd_value       2
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+
+sound $EFF_SPIDER {
+        include_tracks  "$TRACK5"
+        channel         20
+        priority        1
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\spider.wav"
+}
+
+timer $EFF_CIRCUS {
+        include_tracks  "$TRACK0"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_CIRCUS {
+        include_tracks  "$TRACK0"
+        x               165
+        y               670
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\circus.wav"
+}
+
+timer $EFF_BOSSGEAR {
+        include_tracks  "$TRACK5"
+	period		20
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BOSSGEAR {
+        include_tracks  "$TRACK5"
+        x               734
+        y               1521
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\bossgear.wav"
+}
+
+timer $EFF_BIGGEAR {
+        include_tracks  "$TRACK0"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BIGGEAR {
+        include_tracks  "$TRACK0"
+        x               1621
+        y               1242
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\biggear.wav"
+}
+
+
+
+timer $EFF_BIGGEAR {
+        include_tracks  "$TRACK4"
+	period		5
+	rnd_value	1
+
+	flag		$SND_TIMER_RND_COORDS
+}
+
+sound $EFF_BIGGEAR {
+        include_tracks  "$TRACK4"
+        x               1776
+        y               1082
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL2
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\WORLD08\biggear.wav"
+}
+

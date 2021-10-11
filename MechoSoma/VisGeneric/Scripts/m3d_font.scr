@@ -1,0 +1,397 @@
+#include "IVISGENERIC\m3d_id.h"
+
+3ds_path	"RESOURCE\M3D\FONT\"
+bmp_path	"RESOURCE\M3D\FONT\TEXTURES\"
+
+#define M3D_MECHOSOMA_SCALE	1.4
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 1"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "box.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 2"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "box1.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 43"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "+.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 61"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "=.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 45"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "-.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 33"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "!.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 94"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "^.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 64"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "@.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 36"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "buck.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 38"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "&.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 35"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "#.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 37"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "%.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 48"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "0.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 49"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "1.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 50"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "2.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 51"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "3.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 52"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "4.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 53"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "5.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 54"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "6.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 55"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "7.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 56"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "8.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 57"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "9.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 65"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "a.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 66"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "b.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 92"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "slash.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 62"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "bolshe.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 67"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 68"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "d.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 58"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "dvoetochie.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 69"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "e.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 70"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "f.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 71"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "g.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 72"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "h.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 73"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "i.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 74"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "j.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 75"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "k.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 76"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "l.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 123"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "l_figurnaya_skobka.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 40"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "l_skobka.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 77"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "m.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 126"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "~.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 60"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "menshe.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 78"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "n.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 95"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "niznee_podcherkivanie.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 79"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "o.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 80"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "p.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 81"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "q.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 63"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "vopros.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 82"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "r.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 125"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "r_figurnaya_skobka.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 41"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "r_skobka.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 83"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "s.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 47"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "backslash.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 84"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "t.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 46"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "tochka.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 59"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "tochka_s_zapyatoy.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 85"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "u.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 86"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "v.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 39"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "verhniaya_zapyataya.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 87"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "w.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 88"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "x.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 89"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "y.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 90"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "z.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 44"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "zapyataya.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 42"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "zvezdochka.3ds"
+}
+

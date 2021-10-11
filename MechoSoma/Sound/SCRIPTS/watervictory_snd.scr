@@ -1,0 +1,75 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 4000
+
+
+sound $EFF_BV_STORM {
+        channel         1
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\bv_storm.wav"
+}
+
+
+sound $EFF_BV_WATER_WHALE {
+        channel         2
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\WATER\whale.wav"
+}
+
+sound $EFF_BV_WATER_WHALE_CUT {
+        channel         3
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\WATER\whale_cut.wav"
+}
+
+sound $EFF_VICTORY_ROTATE {
+        channel         4
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_rotate.wav"
+}
+
+sound $EFF_VICTORY_OUT_TELEPORT {
+        channel         5
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_out_teleport.wav"
+}
+
+sound $EFF_VICTORY_TELEPORT {
+        channel         6
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_teleport.wav"
+}
+
+
+sound $EFF_BV_THUNDERSTORM {
+        channel         8
+        priority        0
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\thunderstorm_lite.wav"
+}
+
+sound $EFF_VICTORY_KINETIC {
+        channel         9
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\kinetic.wav"
+}

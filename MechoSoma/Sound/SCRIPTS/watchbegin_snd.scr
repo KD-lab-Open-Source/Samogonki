@@ -1,0 +1,81 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 4000
+
+
+sound $EFF_BV_STORM {
+        channel         1
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\bv_storm.wav"
+}
+
+
+sound $EFF_BV_THUNDERSTORM {
+        channel         2
+        priority        1
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\thunderstorm.wav"
+}
+
+
+sound $EFF_BV_WATCH_SPIDER {
+        channel         3
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\WATCH\spider.wav"
+}
+
+sound $EFF_BEGIN_TELEPORT {
+        channel         4
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\begin_teleport.wav"
+}
+
+sound $EFF_BEGIN_GLASS_TUBE {
+        channel         5
+        priority        1
+        cropos          255
+        pan_value       -400
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\begin_glass_tube.wav"
+}
+
+
+sound $EFF_BEGIN_GLASS {
+        channel         6
+        priority        1
+        cropos          255
+        pan_value       250
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\begin_glass.wav"
+}
+
+sound $EFF_BEGIN_GLASS_FRAGMENTS {
+        channel         7
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\begin_glass_fragments.wav"
+}
+
+sound $EFF_BEGIN_WATCH_ROTATION {
+        channel         8
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\WATCH\rotation.wav"
+}
+
+
+

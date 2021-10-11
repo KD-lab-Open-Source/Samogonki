@@ -1,0 +1,30 @@
+#include "VisGeneric\Scripts\WorldScript.h"
+// default
+char*		default_object3d_path	$WORLDSCRIPT_DEFOBJECT3D_PATH
+char*		default_texture_path	$WORLDSCRIPT_DEFTEXTURE_PATH
+char*		sound_script			$WORLDSCRIPT_SOUNDSCRIPT
+int			music_track				$WORLDSCRIPT_MUSICTRACK
+
+// world animtion script
+char*		AnimScript				$WORLDSCRIPT_ANIMSCRIPT
+char*		name_wsc				$WORLDSCRIPT_NAME_WSC
+char*		object3d_path			$WORLDSCRIPT_OBJECT3D_PATH
+int			VisibleAllObject		$WORLDSCRIPT_VISIBLEALLOBJECT
+char*		VisibleObject			$WORLDSCRIPT_VISIBLEOBJECT
+char*		InVisibleObject			$WORLDSCRIPT_INVISIBLEOBJECT
+// text
+char*		Text					$WORLDSCRIPT_TEXT
+double		fontsize				$WORLDSCRIPT_FONTSIZE
+int			numberfont				$WORLDSCRIPT_NUMBERFONT
+double[4]	color					$WORLDSCRIPT_COLORFONT
+double[2]	animtime				$WORLDSCRIPT_ANIMATION
+double[2]	pos						$WORLDSCRIPT_POSXY
+int			centered				$WORLDSCRIPT_CENTERED
+// sound
+int			Sound					$WORLDSCRIPT_SOUND
+char*		parent					$WORLDSCRIPT_PARENT
+int			Lighting				$WORLDSCRIPT_LIGHTING
+double[4]	startcolor				$WORLDSCRIPT_STARTCOLOR
+double[4]	finishcolor				$WORLDSCRIPT_FINISHCOLOR
+// sky
+int			Sky						$WORLDSCRIPT_SKY

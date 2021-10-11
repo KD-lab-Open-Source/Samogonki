@@ -1,0 +1,124 @@
+
+#include "Runtime\intro_movie_id.h"
+#include "Runtime\Scripts\intro_movie.inc"
+
+#define im_SCALE	2.0f
+#define V1			50
+#define V2			40
+
+image $im_SCENE1 {
+	file	"Intro_Movie\1.jpg"
+}
+image $im_SCENE2 {
+	file	"Intro_Movie\2.jpg"
+}
+image $im_SCENE3 {
+	file	"Intro_Movie\3.jpg"
+}
+image $im_SCENE4 {
+	file	"Intro_Movie\4.jpg"
+}
+image $im_SCENE5 {
+	file	"Intro_Movie\5.jpg"
+}
+image $im_SCENE6 {
+	file	"Intro_Movie\6.jpg"
+}
+image $im_SCENE7 {
+	file	"Intro_Movie\7.jpg"
+}
+
+#define im_SCENE	$im_SCENE1
+
+action $ia_LOAD {
+	image	$im_SCENE
+}
+action $ia_SET_SCALE {
+	image	$im_SCENE
+	scale	$im_SCALE
+}
+action $ia_SHOW {
+	image	$im_SCENE
+	time	200
+
+	coords -400 -300
+}
+action $ia_RND_SCROLL {
+	ID		$im_SCENE
+
+	image	$im_SCENE
+	time	2000
+
+	coords -400 -300
+	coords "-$V1" $V2
+}
+action $ia_SCALE {
+	prev_coords	1
+	ID		"$im_SCENE + 10"
+
+	image	$im_SCENE
+	time	2000
+
+	scale	$im_SCALE
+	scale	1.0
+}
+action $ia_DRAW {
+	image	$im_SCENE
+	time	4000
+}
+
+#define im_SCROLL_COORDS	coords -640 -400	\
+							coords $V1 $V2
+
+#define im_SLOT		1
+#define im_SCENE	$im_SCENE1
+#define im_SCENE_	$im_SCENE2
+$IMG_CHANGE
+
+
+#define im_SCROLL_COORDS	coords -200 -480	\
+							coords "-$V1" $V2
+
+#define im_SLOT		0
+#define im_SCENE	$im_SCENE2
+#define im_SCENE_	$im_SCENE3
+$IMG_CHANGE
+
+
+#define im_SCROLL_COORDS	coords 0 -200	\
+							coords "-$V2" "-$V1"
+
+#define im_SLOT		1
+#define im_SCENE	$im_SCENE3
+#define im_SCENE_	$im_SCENE4
+$IMG_CHANGE
+
+#define im_SCROLL_COORDS	coords 0 -480	\
+							coords "-$V2" $V1
+
+#define im_SLOT		0
+#define im_SCENE	$im_SCENE4
+#define im_SCENE_	$im_SCENE5
+$IMG_CHANGE
+
+#define im_SCROLL_COORDS	coords -640 -480	\
+							coords $V2 $V1
+
+#define im_SLOT		1
+#define im_SCENE	$im_SCENE5
+#define im_SCENE_	$im_SCENE6
+$IMG_CHANGE
+
+#define im_SCROLL_COORDS	coords -640 0	\
+							coords $V1 "-$V2"
+
+#define im_SLOT		0
+#define im_SCENE	$im_SCENE6
+#define im_SCENE_	$im_SCENE7
+$IMG_CHANGE
+
+action $ia_HIDE {
+	prev_coords	1
+	image	$im_SCENE7
+	time	400
+}

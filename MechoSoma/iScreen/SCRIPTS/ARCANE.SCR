@@ -1,0 +1,225 @@
+
+#include "RUNTIME\ArcaneDefine.h"
+#include "RUNTIME\AI_Arcane_Prm.h"
+
+ai_arcane_prm	$ARCANE002 // Petard
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE003 // Lurid Billow
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE004 // Fury of Slime
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE005 // Pesky Mould
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE007 // Evil Eye
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE008 // Bubble Gum
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE009 // Crystallization
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE011 // Scarlet Trace
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE012 // Overlarge Tomato
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE014 // Magnetic Cushion
+{
+}
+
+ai_arcane_prm	$ARCANE015 // Magnetic Field
+{
+	data	$AI_ARCANE_DIST_PRM	15
+}
+
+ai_arcane_prm	$ARCANE016 // Whirlwind
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE017 // Spiders Attack
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE018 // Formicary
+{
+}
+
+ai_arcane_prm	$ARCANE019 // Soap-Bubbles
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE021 // Caterpillars
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE022 // Nullification
+{
+}
+
+ai_arcane_prm	$ARCANE023 	// Skin Shield
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE024 	// Star Shower
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE025 // Thunderstorm
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE029 // Electric Seeds
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE030 // BioPower
+{
+}
+
+ai_arcane_prm	$ARCANE032	// Electric Body
+{
+	data	$AI_ARCANE_DIST_PRM	400
+}
+
+ai_arcane_prm	$ARCANE033 	// X-Ray Attack
+{
+	data	$AI_ARCANE_DIST_PRM	7
+}
+
+ai_arcane_prm	$ARCANE034 	// Kinetic Hit
+{
+	data	$AI_ARCANE_DIST_PRM	100
+}
+
+ai_arcane_prm	$ARCANE035 // Sting
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE036 	// Insatiable Tentacle
+{
+	data	$AI_ARCANE_DIST_PRM	150
+}
+
+ai_arcane_prm	$ARCANE037 	// Tomatoes Attack
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE038 	// Iron Side
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE039 	// Voodoo Master
+{
+	data	$AI_ARCANE_DIST_PRM	100
+}
+
+ai_arcane_prm	$ARCANE040 	// Fireballs
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE041 	// Clown
+{
+}
+
+ai_arcane_prm	$ARCANE042 	// Suicide
+{
+}
+
+ai_arcane_prm	$ARCANE045 	// Ball of Speed
+{
+}
+
+ai_arcane_prm	$ARCANE048 // Teleportation Trap
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE050 	// Dragon Power
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE051 	// Helicopter
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE052 	// Frog
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE056 	// Armor
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE057 	// Insulation
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE058 // 0-Transportation
+{
+}
+
+ai_arcane_prm	$ARCANE059 	// Butterfly
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE060 	// Dirigible
+{
+	data	$AI_ARCANE_DIST_PRM	5
+}
+
+ai_arcane_prm	$ARCANE061 	// Mines
+{
+	data	$AI_ARCANE_DIST_PRM	20
+}
+
+ai_arcane_prm	$ARCANE064 	// Snowfall
+{
+	data	$AI_ARCANE_DIST_PRM	10
+}
+
+ai_arcane_prm	$ARCANE066 	// Sparking
+{
+	data	$AI_ARCANE_DIST_PRM	7
+}

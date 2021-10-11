@@ -1,0 +1,28 @@
+#ifndef	__XREAL_H__
+#define __XREAL_H__
+
+//////////////////////////////////////////////////////////////////
+//		Includes
+//////////////////////////////////////////////////////////////////
+#include "BodyDispatcher.h"
+#include "Mechos.h"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//			Functions Prototypes
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Initialization, place it after M3D dispatcher has been initialized
+void Xreal_init();
+
+// DeInitialization
+void Xreal_finit();
+
+
+// Activated when F1 was pressed and make key == 0 if active.
+void Xreal_key_handler(int &key);
+
+// Draws some axilliary information (by OutText) and should be placed after main drawing proccess.
+void Xreal_draw_handler();
+
+#endif

@@ -1,0 +1,48 @@
+
+#include "Sound\snd_def.h"
+
+int channel		$SND_CHANNEL
+int priority	$SND_PRIORITY
+int cropos		$SND_CROPOS
+int flag		$SND_FLAG
+
+int volume_mode 	$SND_VOL_MODE
+
+int pan_mode		$SND_PAN_MODE
+int pan_value		$SND_PAN_VALUE
+
+int freq_mode		$SND_FREQ_MODE
+int freq_value		$SND_FREQ_VALUE
+int freq_delta_up	$SND_FREQ_DELTA_UP
+int freq_delta_dn	$SND_FREQ_DELTA_DN
+int freq_delta   	$SND_FREQ_DELTA
+char* file		$SND_FILE
+int period		$SND_PERIOD
+
+int sound		$SND_DATA
+int timer		$SND_TIMER
+
+int rnd_value		$SND_RND_VALUE
+
+int x			$SND_X
+int y			$SND_Y
+
+int[2] dynamic_channel1	$SND_DYNAMIC_CHANNEL1
+int[2] dynamic_channel2	$SND_DYNAMIC_CHANNEL2
+
+int max_panning		$SND_MAX_PANNING
+int visible_area	$SND_VISIBLE_AREA
+
+int h_volume_z0		$SND_HVOLUME_Z0	
+int h_volume_z1		$SND_HVOLUME_Z1	
+int h_volume_v0		$SND_HVOLUME_V0	
+int h_volume_v1		$SND_HVOLUME_V1
+
+int min_volume		$SND_MIN_VOLUME
+
+int include_tracks	$SND_INCLUDE_TRACKS
+int exclude_tracks	$SND_EXCLUDE_TRACKS
+
+double finish_volume	$SND_FINISH_VOLUME_VAL
+
+int loop_track		$SND_MUSIC_LOOP_FLAG

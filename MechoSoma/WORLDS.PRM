@@ -1,0 +1,45 @@
+/*
+	SurmapTech Worlds List File
+	<NumberOfWorlds>
+	<WorldName[0]> <RelativePathToVmpFile[0]>
+	... ... ... ... ...
+	<WorldName[NumberOfWorlds-1]> <RelativePathToVmpFile[NumberOfWorlds-1]>
+*/
+
+35
+Mountain0	RESOURCE\WORLDS\Mountain0\world.ini  0 0
+Mountain1	RESOURCE\WORLDS\Mountain1\world.ini  0 1
+Mountain2	RESOURCE\WORLDS\Mountain2\world.ini  0 2
+Mountain3	RESOURCE\WORLDS\Mountain3\world.ini  0 3
+Mountain4S	RESOURCE\WORLDS\Mountain4\world.ini  0 4
+Mountain5B	RESOURCE\WORLDS\Mountain5\world.ini  0 5
+Water0		RESOURCE\WORLDS\Water0\world.ini	  1 0
+Water1		RESOURCE\WORLDS\Water1\world.ini     1 1
+Water2		RESOURCE\WORLDS\Water2\world.ini     1 2
+Water3		RESOURCE\WORLDS\Water3\world.ini     1 3
+Water4S		RESOURCE\WORLDS\Water4\world.ini     1 4
+Water5B		RESOURCE\WORLDS\Water5\world.ini     1 5
+Forest0  	RESOURCE\WORLDS\Forest0\world.ini    2 0
+Forest1  	RESOURCE\WORLDS\Forest1\world.ini    2 1
+Forest2  	RESOURCE\WORLDS\Forest2\world.ini    2 2
+Forest3  	RESOURCE\WORLDS\Forest3\world.ini    2 3
+Forest4S  	RESOURCE\WORLDS\Forest4\world.ini    2 4
+Forest5B  	RESOURCE\WORLDS\Forest5\world.ini    2 5
+Town0		RESOURCE\WORLDS\Town0\world.ini      3 0
+Town1		RESOURCE\WORLDS\Town1\world.ini      3 1
+Lava0		RESOURCE\WORLDS\Lava0\world.ini      4 0
+Lava1		RESOURCE\WORLDS\Lava1\world.ini      4 1
+Lava2		RESOURCE\WORLDS\Lava2\world.ini      4 2
+Lava3		RESOURCE\WORLDS\Lava3\world.ini      4 3
+Lava4B		RESOURCE\WORLDS\Lava4\world.ini      4 4
+Dolly0	 	RESOURCE\WORLDS\Dolly0\world.ini     5 0
+Mechanic0	RESOURCE\WORLDS\Mechanic0\world.ini  6 0
+Interface0	RESOURCE\WORLDS\Interface0\world.ini 7 0
+Watch0		RESOURCE\WORLDS\Watch0\world.ini     8 0
+Watch1		RESOURCE\WORLDS\Watch1\world.ini     8 1
+Watch2		RESOURCE\WORLDS\Watch2\world.ini     8 2
+Watch3		RESOURCE\WORLDS\Watch3\world.ini     8 3
+Watch4		RESOURCE\WORLDS\Watch4\world.ini     8 4
+Watch5B		RESOURCE\WORLDS\Watch5\world.ini     8 5
+VID0		RESOURCE\WORLDS\VID0\world.ini       9 0
+

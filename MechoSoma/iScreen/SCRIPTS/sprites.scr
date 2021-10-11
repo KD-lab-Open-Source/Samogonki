@@ -1,0 +1,386 @@
+
+sprite_slot 0 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 1 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 2 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 3 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 4 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 5 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 6 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 7 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 8 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 9 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 10 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 11 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 12 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 13 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 14 {
+	size_x	64
+	size_y	64
+}
+
+sprite_slot 15 {
+	size_x	64
+	size_y	64
+}
+
+sprite 0 { // core
+	file "ARCANE\PICS\img.tga"
+}
+
+sprite 1 { 
+	file "ARCANE\PICS\img_00.tga"
+}
+
+sprite 02 {
+	file	"ARCANE\PICS\Img_002.tga"
+}
+
+sprite 03 {
+	file	"ARCANE\PICS\Img_003.tga"
+}
+
+sprite 04 {
+	file	"ARCANE\PICS\Img_004.tga"
+}
+
+sprite 05 {
+	file	"ARCANE\PICS\Img_005.tga"
+}
+
+sprite 07 {
+	file	"ARCANE\PICS\Img_007.tga"
+}
+
+sprite 09 {
+	file	"ARCANE\PICS\Img_009.tga"
+}
+
+sprite 11 {
+	file	"ARCANE\PICS\Img_011.tga"
+}
+
+sprite 12 {
+	file	"ARCANE\PICS\Img_012.tga"
+}
+
+sprite 14 {
+	file	"ARCANE\PICS\Img_014.tga"
+}
+
+sprite 15 {
+	file	"ARCANE\PICS\Img_015.tga"
+}
+
+sprite 16 {
+	file	"ARCANE\PICS\Img_016.tga"
+}
+
+sprite 17 {
+	file	"ARCANE\PICS\Img_017.tga"
+}
+
+sprite 18 {
+	file	"ARCANE\PICS\Img_018.tga"
+}
+
+sprite 19 {
+	file	"ARCANE\PICS\Img_019.tga"
+}
+
+sprite 21 {
+	file	"ARCANE\PICS\Img_021.tga"
+}
+
+sprite 22 {
+	file	"ARCANE\PICS\Img_022.tga"
+}
+
+sprite 23 {
+	file	"ARCANE\PICS\Img_023.tga"
+}
+
+sprite 24 {
+	file	"ARCANE\PICS\Img_024.tga"
+}
+
+sprite 25 {
+	file	"ARCANE\PICS\Img_025.tga"
+}
+
+sprite 29 {
+	file	"ARCANE\PICS\Img_029.tga"
+}
+
+sprite 30 {
+	file	"ARCANE\PICS\Img_030.tga"
+}
+
+sprite 32 {
+	file	"ARCANE\PICS\Img_032.tga"
+}
+
+sprite 33 {
+	file	"ARCANE\PICS\Img_033.tga"
+}
+
+sprite 34 {
+	file	"ARCANE\PICS\Img_034.tga"
+}
+
+sprite 36 {
+	file	"ARCANE\PICS\Img_036.tga"
+}
+
+sprite 37 {
+	file	"ARCANE\PICS\Img_037.tga"
+}
+
+sprite 38 {
+	file	"ARCANE\PICS\Img_038.tga"
+}
+
+sprite 39 {
+	file	"ARCANE\PICS\Img_039.tga"
+}
+
+sprite 40 {
+	file	"ARCANE\PICS\Img_040.tga"
+}
+
+sprite 41 {
+	file	"ARCANE\PICS\Img_041.tga"
+}
+
+sprite 42 {
+	file	"ARCANE\PICS\Img_042.tga"
+}
+
+sprite 45 {
+	file	"ARCANE\PICS\Img_045.tga"
+}
+
+sprite 48 {
+	file	"ARCANE\PICS\Img_048.tga"
+}
+
+sprite 50 {
+	file	"ARCANE\PICS\Img_050.tga"
+}
+
+sprite 51 {
+	file	"ARCANE\PICS\Img_051.tga"
+}
+
+sprite 52 {
+	file	"ARCANE\PICS\Img_052.tga"
+}
+
+sprite 56 {
+	file	"ARCANE\PICS\Img_056.tga"
+}
+
+sprite 57 {
+	file	"ARCANE\PICS\Img_057.tga"
+}
+
+sprite 58 {
+	file	"ARCANE\PICS\Img_058.tga"
+}
+
+sprite 59 {
+	file	"ARCANE\PICS\Img_059.tga"
+}
+
+sprite 60 {
+	file	"ARCANE\PICS\Img_060.tga"
+}
+
+sprite 61 {
+	file	"ARCANE\PICS\Img_061.tga"
+}
+
+sprite 64 {
+	file	"ARCANE\PICS\Img_064.tga"
+}
+
+sprite 66 {
+	file	"ARCANE\PICS\Img_066.tga"
+}
+
+// Riders...
+sprite 100 { // Mechosh
+	file	"ARCANE\BODY\body_000.tga"
+}
+
+sprite 101 { // Soma
+	file	"ARCANE\BODY\body_001.tga"
+}
+
+sprite 102 { // Esser
+	file	"ARCANE\BODY\body_002.tga"
+}
+
+sprite 103 { // Ark-a-n
+	file	"ARCANE\BODY\body_003.tga"
+}
+
+sprite 104 { // Muscull
+	file	"ARCANE\BODY\body_004.tga"
+}
+
+sprite 105 { 
+	file	"ARCANE\BODY\body_005.tga"
+}
+sprite 106 { 
+	file	"ARCANE\BODY\body_006.tga"
+}
+sprite 107 { 
+	file	"ARCANE\BODY\body_007.tga"
+}
+sprite 108 { 
+	file	"ARCANE\BODY\body_008.tga"
+}
+sprite 109 { 
+	file	"ARCANE\BODY\body_009.tga"
+}
+
+sprite 110 { // Frog
+	file	"ARCANE\BODY\boss_000.tga"
+}
+
+sprite 111 { // Whale
+	file	"ARCANE\BODY\boss_001.tga"
+}
+
+sprite 112 { // Spider
+	file	"ARCANE\BODY\boss_002.tga"
+}
+
+sprite 113 { // Stone
+	file	"ARCANE\BODY\boss_003.tga"
+}
+
+sprite 114 { // Dragon
+	file	"ARCANE\BODY\boss_004.tga"
+}
+
+sprite 201 {
+	file	"ARCANE\START\1.tga"
+}
+
+sprite 202 {
+	file	"ARCANE\START\2.tga"
+}
+
+sprite 203 {
+	file	"ARCANE\START\3.tga"
+}
+
+sprite 204 {
+	file	"ARCANE\START\4.tga"
+}
+
+sprite 205 {
+	file	"ARCANE\START\5.tga"
+}
+
+sprite 200 {
+	file	"ARCANE\START\go.tga"
+}
+
+sprite 211 {
+	file	"ARCANE\START\go1.tga"
+}
+
+sprite 212 {
+	file	"ARCANE\START\go2.tga"
+}
+
+sprite 300 {
+	file	"ARCANE\PICS\new_phrase.tga"
+}
+
+sprite 400 {
+	file	"INTRO\STRING\(k).tga"
+}
+
+sprite 401 {
+	file	"INTRO\STRING\(-).tga"
+}
+
+sprite 402 {
+	file	"INTRO\STRING\(d).tga"
+}
+
+sprite 403 {
+	file	"INTRO\STRING\(l).tga"
+}
+
+sprite 404 {
+	file	"INTRO\STRING\(a).tga"
+}
+
+sprite 405 {
+	file	"INTRO\STRING\(b).tga"
+}
+
+sprite 500 {
+	file	"ARCANE\energy.tga"
+}
+

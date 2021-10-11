@@ -1,0 +1,200 @@
+#include "IVISGENERIC\m3d_id.h"
+
+3ds_path	"RESOURCE\M3D\FONT\LOCAL\"
+bmp_path	"RESOURCE\M3D\FONT\LOCAL\TEXTURES\"
+
+
+#define M3D_MECHOSOMA_SCALE	1.4
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 192"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c192.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 193"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c193.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 194"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c194.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 195"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c195.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 196"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c196.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 197"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c197.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 198"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c198.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 199"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c199.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 200"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c200.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 201"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c201.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 202"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c202.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 203"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c203.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 204"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c204.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 205"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c205.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 206"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c206.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 207"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c207.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 208"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c208.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 209"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c209.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 210"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c210.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 211"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c211.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 212"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c212.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 213"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c213.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 214"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c214.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 215"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c215.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 216"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c216.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 217"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c217.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 218"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c218.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 219"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c219.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 220"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c220.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 221"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c221.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 222"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c222.3ds"
+}
+
+object $M3D_iSCREEN {
+	type "$M3D_CHAR0_KIND + 223"
+	scale $M3D_MECHOSOMA_SCALE
+	3ds_file "c223.3ds"
+}
+

@@ -1,0 +1,165 @@
+section AnimalArcansPrm ( declaration = "xreal\AnimalArcansPrm.h", definition = "xreal\gen_animalarcans.cpp" )
+{
+
+/////////////////////////////////////////////////////////////
+//			Common
+/////////////////////////////////////////////////////////////
+int death_by_water_duration = 1000;
+
+/////////////////////////////////////////////////////////////
+//			EvilEye
+/////////////////////////////////////////////////////////////
+float evil_eye_finish_size = 2;
+int evil_eye_time_to_live = 10000;
+int evil_eye_time_to_explode = 5000;
+int evil_eye_attack_latency_time = 1000;
+int evil_eye_jump_latency_time = 500;
+int evil_eye_period = 800;
+float evil_eye_joining_z_factor = 1.5;
+float evil_eye_joining_distance_factor = 0.8;
+float evil_eye_velocity_factor = 0.7;
+float evil_eye_delta_z = 100;
+float evil_eye_attack_distance = 300;
+float evil_eye_catch_distance = 70;
+float evil_eye_buoyancy = 0.2;
+
+/////////////////////////////////////////////////////////////
+//			LittleSpider
+/////////////////////////////////////////////////////////////
+int little_spider_flash_period = 1500;
+float little_spider_flash_amplitude = 2;
+int little_spider_time_to_live = 20000;
+
+/////////////////////////////////////////////////////////////
+//			Soap Bubble
+/////////////////////////////////////////////////////////////
+int bubble_time_to_live = 20000;
+int bubble_time_to_grow = 3000;
+int bubble_time_to_hold_mechos = 4000;
+int bubble_owner_protection_time = 2000;
+float bubble_active_size = 0.5;
+float bubble_restitution_plus_one = 1.9;
+float bubble_buoyancy = 0.01;
+float bubble_freeHeight = -10;
+float bubble_cargoHeight = 150;
+float bubble_freeGravity = 2.;
+float bubble_cargoGravity = 5.;
+float bubble_freeWind = 1;
+float bubble_cargoWind = 0.25;
+float bubble_field_source_radius_factor = 0.8;
+// Vect3f bubble_dragV = { 0.5, 0.5, 0.5 };
+// Vect3f bubble_dragW = { 0.5, 0.5, 0.5 };
+float bubble_field_z_offset = 0;
+float bubble_field_force = 2;
+float bubble_field_damping = 12;
+
+/////////////////////////////////////////////////////////////
+//			Suicide
+/////////////////////////////////////////////////////////////
+int suicide_time_to_live = 60000;
+int suicide_time_to_live_interface = 4000;
+int suicide_time_to_grow = 1000;
+float suicide_traction = 25;
+float suicide_rudder = 0.7;
+float suicide_dragVx = 5;
+float suicide_dragVy = 0.2;
+float suicide_dragVz = 0.2;
+float suicide_dragWxy = 0.8;
+float suicide_dragWz = 8;
+float suicide_bbox_x = 50;
+float suicide_bbox_y = 50;
+int suicide_laps = 2;
+float suicide_initial_Vy = 60;
+float suicide_max_distance_to_attack_mechos = 300;
+float suicide_average_stop_velocity = 20;
+int suicide_average_stop_delay = 500;
+float suicide_impact_velocity = 30;
+float suicide_impact_normal_y = 0.8;
+
+
+///////////////////////////////////////////////////
+//		BonusMan
+///////////////////////////////////////////////////
+float bonus_man_buoyancy = 0.045;
+float bonus_man_submersion_threshould = 0.8;
+float bonus_man_mechos_hit_velocity = 10;
+int bonus_man_switch_time_threshould = 1000;
+float bonus_man_shadow_height_threshould = 80;
+float bonus_man_beeped_distance = 300;
+int bonus_man_beeped_time = 4000;
+int bonus_man_burning_time = 500;
+
+
+///////////////////////////////////////////////////
+//		StaticBonus
+///////////////////////////////////////////////////
+int static_bonus_birth_delay = 3000;
+
+///////////////////////////////////////////////////
+//		BeepedBonus
+///////////////////////////////////////////////////
+float beeped_bonus_Vxy = 5;
+float beeped_bonus_Vz = 30;
+float beeped_bonus_W = 0.3;
+
+///////////////////////////////////////////////////
+//		Meteorite
+///////////////////////////////////////////////////
+float meteorite_W = 1;
+float bonus_meteorite_buoyancy = 0.1;
+
+float snow_ball_scale_radius = 4.;
+float snow_ball_dragV = .5;
+
+///////////////////////////////////////////////////
+//		Ball
+///////////////////////////////////////////////////
+int ball_time_to_live = 5000;
+float ball_drag_vw = 0.05;
+float ball_initial_V = 40;
+float ball_initial_W = 1;
+float ball_buoyancy = 0.2;
+float ball_traction_factor = 0.4;
+float ball_steering_factor = 0.025;
+float ball_max_Vxy = 40;
+
+///////////////////////////////////////////////////
+//		Clown
+///////////////////////////////////////////////////
+float clown_buoyancy = 0.05;
+
+///////////////////////////////////////////////////
+//		Tomato
+///////////////////////////////////////////////////
+float tomato_mass = 3;
+float tomato_TOI_scale = 10;
+float tomato_radius_scale = 0.8;
+float tomato_linear_damping = 2;
+float tomato_angular_damping = 4;
+float tomato_return_force = 0;
+float tomato_buoyancy = 0.04;
+float tomato_swing_lift_force = 10;
+float tomato_swing_torque = 1;
+
+///////////////////////////////////////////////////
+//		Titanium Ball
+///////////////////////////////////////////////////
+float titanium_ball_damage = 0; 
+float titanium_ball_time_to_grow = 1500; 
+float titanium_ball_time_to_live = 20000; 
+float titanium_ball_restitution_plus_one = 1.12;
+float titanium_ball_mass = 2;
+float titanium_ball_damping = 0.1;
+float titanium_ball_Vxy = 50; 
+float titanium_ball_Vz = 25;
+
+///////////////////////////////////////////////////
+//		Crystall
+///////////////////////////////////////////////////
+float crystal_max_slope = 0.4;
+float crystal_energy = 2;
+float crystal_damage_by_mechos = 0.1;
+
+
+
+}

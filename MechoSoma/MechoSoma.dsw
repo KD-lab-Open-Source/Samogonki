@@ -1,0 +1,89 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "Graph3d"=.\VisGeneric\Graph3d\Graph3d.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name md3d
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "MechoSoma"=.\MechoSoma.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name VisGeneric
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Graph3d
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name PluginMAX
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "PluginMAX"=.\VisGeneric\PluginMAX\PluginMAX.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "VisGeneric"=.\VisGeneric\VisGeneric.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "md3d"=.\VisGeneric\md3d\md3d.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

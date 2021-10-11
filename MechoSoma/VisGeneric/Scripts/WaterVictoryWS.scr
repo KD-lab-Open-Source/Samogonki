@@ -1,0 +1,66 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\watervictory_snd.scb"
+
+AnimScript	2
+{ // 7000
+        music_track             15
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut22\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut22\test.wsc"
+        
+	Sound				$EFF_VICTORY_ROTATE
+	{
+		animtime	         8400	12000
+	}
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         2800	8000
+	}
+	Sound				$EFF_VICTORY_OUT_TELEPORT
+	{
+		animtime	         2900   12000
+	}
+	Sound				$EFF_VICTORY_TELEPORT
+	{
+		animtime	         3700   12000
+	}
+        Sound				$EFF_BV_WATER_WHALE
+	{
+		animtime	         3800	9000
+	}
+
+        Sound				$EFF_BV_WATER_WHALE_CUT
+	{
+		animtime	         7600	11000
+	}
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 8200   8599
+        }
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 8600   9099
+        }
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 9100   9500
+        }
+	Sound				$EFF_ANIMATION_10_OUTRUN
+	{
+		animtime	         10500   14000
+	}
+	Sound				$EFF_ANIMATION_10_LUCKY
+	{
+		animtime	         11500   14000
+	}
+
+	Sound				$EFF_VICTORY_KINETIC
+	{
+		animtime	         9500   14000
+	}
+
+
+}

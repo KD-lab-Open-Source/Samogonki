@@ -1,0 +1,356 @@
+	
+#include "IVISGENERIC\m3d_id.h"
+
+3ds_path	"RESOURCE\M3D\"
+bmp_path	"RESOURCE\M3D\TEXTURES\"
+
+default_attribute	$MESH_NOT_LIGHTING
+
+object $M3D_EFFECT {
+	type 1
+	3ds_file "OrtAttract.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 15
+	3ds_file "attract.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 18
+	3ds_file "CheckPoint0.m3d"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 22
+	3ds_file "CheckPoint1.m3d"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 32
+	3ds_file "shokwave.3ds"
+	size 2.0
+}
+
+object $M3D_EFFECT
+{
+	type 36
+	scale 1.0
+
+	morph_file "SlizUlitka_S0_F0.3ds"
+	morph_time 0
+
+	morph_file "SlizUlitka_S0_F1.3ds"
+	morph_time 10
+
+	morph_file "SlizUlitka_S0_F2.3ds"
+	morph_time 20
+
+	morph_file "SlizUlitka_S0_F3.3ds"
+	morph_time 30
+
+	morph_file "SlizUlitka_S0_F4.3ds"
+	morph_time 40
+
+	morph_file "SlizUlitka_S0_F5.3ds"
+	morph_time 50
+
+	morph_file "SlizUlitka_S0_F6.3ds"
+	morph_time 60
+
+	morph_file "SlizUlitka_S0_F7.3ds"
+	morph_time 70
+
+	morph_file "SlizUlitka_S0_F8.3ds"
+	morph_time 80
+
+	morph_file "SlizUlitka_S0_F9.3ds"
+	morph_time 90
+
+	morph_file "SlizUlitka_S0_F0.3ds"
+	morph_time 100
+}
+
+//---------------------
+
+object $M3D_EFFECT
+{
+	type 38
+	scale 1.0
+
+	morph_file "Sliz_S1_F0.3ds"
+	morph_time 0
+
+	morph_file "Sliz_S1_F1.3ds"
+	morph_time 10
+
+	morph_file "Sliz_S1_F2.3ds"
+	morph_time 20
+
+	morph_file "Sliz_S1_F3.3ds"
+	morph_time 30
+
+	morph_file "Sliz_S1_F4.3ds"
+	morph_time 40
+
+	morph_file "Sliz_S1_F5.3ds"
+	morph_time 50
+
+	morph_file "Sliz_S1_F6.3ds"
+	morph_time 60
+
+	morph_file "Sliz_S1_F7.3ds"
+	morph_time 70
+
+	morph_file "Sliz_S1_F8.3ds"
+	morph_time 80
+
+	morph_file "Sliz_S1_F9.3ds"
+	morph_time 90
+
+	morph_file "Sliz_S1_F0.3ds"
+	morph_time 100
+}
+
+object $M3D_EFFECT
+{
+	type 53
+	size 20.0
+
+	morph_file "Plesen_F0.3ds"
+	morph_time 0
+
+	morph_file "Plesen_F1.3ds"
+	morph_time 10
+
+	morph_file "Plesen_F2.3ds"
+	morph_time 20
+
+	morph_file "Plesen_F3.3ds"
+	morph_time 30
+
+	morph_file "Plesen_F4.3ds"
+	morph_time 40
+}
+
+
+object $M3D_EFFECT {
+	type 54
+	3ds_file "teleport.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 55
+	3ds_file "teleport_f1.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 47
+	3ds_file "cherviak_razdavlen.3ds"
+	size 10.0
+}
+
+object $M3D_EFFECT {
+	type 48
+	3ds_file "worm_razdavlen.3ds"
+	size 8.0
+}
+
+object $M3D_EFFECT {
+	type 49
+	attribute "$MESH_NOT_LIGHTING"
+	3ds_file "petarda.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 60
+	3ds_file "s.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 61
+	3ds_file "t.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 62
+	3ds_file "a.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 63
+	3ds_file "r.3ds"
+	scale 1.0
+}
+
+
+object $M3D_EFFECT {
+	type 64
+	3ds_file "s_red.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 65
+	3ds_file "t_red.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 66
+	3ds_file "a_red.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 67
+	3ds_file "r_red.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 70
+	3ds_file "head.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 71
+	3ds_file "fx.3ds"
+	size 30
+}
+
+object $M3D_EFFECT {
+	type 72
+	3ds_file "skin.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 73
+	3ds_file "wave.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 74
+	3ds_file "TeleSpot2World1.3ds"
+	scale 1.0
+}
+
+
+object $M3D_EFFECT {
+	type 75
+	3ds_file "snow_snezinka.3ds"
+	scale 1.0
+}
+
+object $M3D_EFFECT {
+	type 76
+	3ds_file "meteor1.3ds"
+	scale 1.0
+}
+
+//--------------------- SHared XReal IDs------------------------
+
+object $M3D_XREAL {
+	type 200
+	3ds_file "meteor1.3ds"
+	size 5
+}
+
+object $M3D_XREAL {
+	type 201
+	3ds_file "meteor2.3ds"
+	size 5
+}
+
+object $M3D_XREAL {
+	type 202
+	3ds_file "meteor3.3ds"
+	size 5
+}
+
+object $M3D_XREAL {
+	type 203
+	3ds_file "meteor4.3ds"
+	size 5
+}
+
+object $M3D_XREAL {
+	type 204
+	3ds_file "meteor5.3ds"
+	size 5
+}
+
+
+object $M3D_XREAL {
+	type 205
+	3ds_file "yadro.3ds"
+	size 8
+}
+
+object $M3D_XREAL {
+	type 206
+	3ds_file "Box1.3ds"
+	size 10.0
+}
+
+object $M3D_XREAL {
+	type 207
+	3ds_file "Box2.3ds"
+	size 10.0
+}
+
+object $M3D_XREAL {
+	type 208
+	3ds_file "Box3.3ds"
+	size 10.0
+}
+
+object $M3D_XREAL {
+	type 209
+	3ds_file "Box4.3ds"
+	size 10.0
+}
+
+object $M3D_XREAL {
+	type 210
+	3ds_file "bomb.3ds"
+	size 20.0
+}
+
+object $M3D_XREAL {
+	type 211
+	3ds_file "oskolok.3ds"
+	size 2.0
+}
+
+object $M3D_XREAL {
+	type 212
+	3ds_file "snow_snezinka.3ds"
+	size 5.0
+}
+				
+object $M3D_XREAL {
+	type 213
+	3ds_file "shar.3ds"
+	size 5
+}
+
+object $M3D_XREAL {
+	type 214
+	3ds_file "molniya.m3d"
+	size 5
+}
+

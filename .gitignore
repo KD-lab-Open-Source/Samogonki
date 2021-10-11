@@ -1,0 +1,13 @@
+*.user
+*.ncb
+MechoSoma/Debug
+*.pdb
+/MechoSoma/VisGeneric/Debug/BuildLog.htm
+/MechoSoma/VisGeneric/Graph3d/Debug/BuildLog.htm
+/MechoSoma/VisGeneric/Graph3d/graph3d.lib
+/MechoSoma/VisGeneric/PluginMAX/Debug/BuildLog.htm
+/MechoSoma/VisGeneric/PluginMAX/pluginmax.lib
+/MechoSoma/VisGeneric/md3d/Debug/BuildLog.htm
+/MechoSoma/VisGeneric/md3d/md3d.lib
+/MechoSoma/VisGeneric/visgeneric.lib
+/MechoSoma/gameDbg.exe

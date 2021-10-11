@@ -1,0 +1,58 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\lavabegin_snd.scb"
+
+AnimScript	2
+{ // 8000
+        music_track             19
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut30\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut30\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         3100	8000
+	}
+        Sound				$EFF_BEGIN_TELEPORT
+	{
+		animtime	         14700	19000
+	}
+
+        Sound				$EFF_BEGIN_GLASS_TUBE
+	{
+		animtime	         4100	5000
+	}
+        Sound				$EFF_BEGIN_GLASS
+	{
+		animtime	         4600	6000
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         5000	6300
+	}
+        Sound				$EFF_BEGIN_GLASS_FRAGMENTS
+	{
+		animtime	         6000	8000
+	}
+        Sound				$EFF_BV_LAVA_DRAGON
+	{
+		animtime	         5400	8000
+	}
+        Sound				$EFF_VICTORY_FIRE_2
+	{
+		animtime	         11000	12150
+	}
+        Sound				$EFF_VICTORY_FIRE_1
+	{
+		animtime	         11600	19000
+	}
+        Sound				$EFF_VICTORY_FIRE_2
+	{
+		animtime	         12200	19000
+	}
+
+
+
+
+}

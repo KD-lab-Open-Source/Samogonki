@@ -1,0 +1,133 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 4000
+
+sound $EFF_VICTORY_ROTATE {
+        channel         1
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_rotate.wav"
+}
+
+sound $EFF_VICTORY_OUT_TELEPORT {
+        channel         2
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_out_teleport.wav"
+}
+
+sound $EFF_BV_STORM {
+        channel         3
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\bv_storm.wav"
+}
+
+
+sound $EFF_VICTORY_TELEPORT {
+        channel         4
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_teleport.wav"
+}
+
+/*
+sound $EFF_VICTORY_TRANSFORM_PAD {
+        channel         5
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\MOUNTAIN\transform_pad.wav"
+}
+*/
+
+sound $EFF_BV_THUNDERSTORM {
+        channel         6
+        priority        0
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\thunderstorm_lite.wav"
+}
+
+sound $EFF_BV_LAVA_DRAGON {
+        channel         7
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\dragon.wav"
+}
+
+sound $EFF_VICTORY_LAVA_SWORD {
+        channel         8
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\sword.wav"
+}
+
+sound $EFF_VICTORY_FIRE_1 {
+        channel         9
+        priority        0
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\fire1.wav"
+}
+
+sound $EFF_VICTORY_FIRE_2 {
+        channel         10
+        priority        0
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\fire2.wav"
+}
+
+sound $EFF_VICTORY_LAVA_EYE {
+        channel         11
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\eye.wav"
+}
+
+sound $EFF_VICTORY_LAVA_VOICE {
+        channel         12
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\voice.wav"
+}
+
+sound $EFF_VICTORY_LAVA_WING {
+        channel         0
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\LAVA\wing.wav"
+}
+
+sound $EFF_VICTORY_KINETIC {
+        channel         13
+        priority        1
+        cropos          255
+
+
+       	file	"RESOURCE\SOUND\EFF\kinetic.wav"
+}

@@ -1,0 +1,88 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+max_panning 4000
+
+sound $EFF_VICTORY_ROTATE {
+        channel         1
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_rotate.wav"
+}
+
+sound $EFF_VICTORY_OUT_TELEPORT {
+        channel         2
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_out_teleport.wav"
+}
+
+sound $EFF_BV_STORM {
+        channel         3
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\bv_storm.wav"
+}
+
+sound $EFF_BV_FOREST_FROG {
+        channel         4
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\FOREST\frog.wav"
+}
+
+sound $EFF_VICTORY_TELEPORT {
+        channel         5
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\victory_teleport.wav"
+}
+
+sound $EFF_VICTORY_FOREST_LAMP {
+        channel         6
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\FOREST\lamp.wav"
+}
+
+sound $EFF_VICTORY_TRANSFORM_PAD {
+        channel         7
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\FOREST\transform_pad.wav"
+}
+
+sound $EFF_BV_FOREST_FROG_JUMP {
+        channel         8
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\FOREST\jump.wav"
+}
+
+sound $EFF_VICTORY_FOREST_FROG_FALL {
+        channel         9
+        priority        1
+        cropos          255
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\FOREST\fall.wav"
+}
+
+sound $EFF_BV_THUNDERSTORM {
+        channel         10
+        priority        0
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+
+       	file	"RESOURCE\SOUND\EFF\ANIMATION\thunderstorm_lite.wav"
+}
+

@@ -1,0 +1,74 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\watchvictory_snd.scb"
+
+AnimScript	2
+{ // 6833
+        music_track             15
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut23\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut23\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         2900	8000
+	}
+
+	Sound				$EFF_VICTORY_OUT_TELEPORT
+	{
+		animtime	         2900   12000
+	}
+	Sound				$EFF_VICTORY_TELEPORT
+	{
+		animtime	         4100   12000
+	}
+        Sound				$EFF_BV_WATCH_SPIDER
+	{
+		animtime	         4000	11000
+	}
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 7200   7399
+        }
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 7400   7799
+        }
+	Sound                           $EFF_VICTORY_ROTATE
+        {
+                animtime                 7200   11000
+        }
+	Sound                           $EFF_VICTORY_KINETIC
+        {
+                animtime                 8400   10000
+        }
+
+	Sound                           $EFF_BV_THUNDERSTORM
+        {
+                animtime                 7800   9099
+        }
+	Sound                           $EFF_VICTORY_WATCH_ROTATE
+        {
+                animtime                 10700   11699
+        }
+	Sound                           $EFF_VICTORY_WATCH_EYE
+        {
+                animtime                 9100   9599
+        }
+	Sound                           $EFF_VICTORY_WATCH_EYE
+        {
+                animtime                 9600   9899
+        }
+	Sound                           $EFF_VICTORY_WATCH_EYE
+        {
+                animtime                 10200  11099   
+        }
+	Sound                           $EFF_VICTORY_WATCH_EYE
+        {
+                animtime                 11100   13000
+        }
+
+
+
+}

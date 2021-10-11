@@ -1,0 +1,183 @@
+section AnimalsPrm ( declaration = "xreal\AnimalsPrm.h", definition = "xreal\gen_animals.cpp" )
+{
+
+/////////////////////////////////////////////////
+//		Frog	 
+/////////////////////////////////////////////////
+float frog_damage_ability = 0.5;
+float frog_xy_impulse = 40;
+float frog_z_impulse = 15;
+float frog_rudder = 0.1;//0.05;
+float frog_contact_damping = 8;
+float frog_fly_damping_W = 2;
+float frog_start_jump_phase = 0;
+float frog_stop_jump_phase = 0.5;
+float frog_jump_animation_period = 1000;
+float frog_stop_animation_period = 1000;
+float frog_phase_incr = 0.05f;
+
+// Frog - environment
+int frog_rest_time = 10000;
+int frog_walk_distance = 10000;
+
+float frog_Vy = 76; // 65; // �������� �������
+float frog_az = 10;
+float frog_radius = 60;
+int frog_racer_recover_time = 2000;
+
+
+
+///////////////////////////////////////////////////
+//		Dragon 
+///////////////////////////////////////////////////
+float dragon_traction = 25;
+float dragon_racer_traction = 52;//44;
+float dragon_rudder = 0.07f;
+float dragon_width = 100;
+float dragon_length = 150;
+float dragon_height = 150;
+float dragon_lift_bias = 0.5;
+//Vect3f dragon_dragV = { 8, 0.6, 0.7 };
+//Vect3f dragon_dragW = { 1, 1, 8 };
+
+
+///////////////////////////////////////////////////
+//		Spider
+///////////////////////////////////////////////////
+float spider_max_distance = 200;
+float spider_traction = 20;
+float spider_boss_traction = 81; // �������� �����
+float spider_rudder = 0.5;
+float spider_boss_rudder = 4;
+//Vect3f spider_dragV = { 8, 0.6, 0.3 };
+//Vect3f spider_dragW = { 1, 2, 2 };
+float spider_antigravity_factor = 1;
+float spider_stick_factor = 4;
+float spider_levelling_factor = 3;
+int spider_not_colliding_avr_time = 50;
+float spider_catch_width = 60;
+float spider_catch_length = 50;
+float spider_foot_speed_factor = 1;
+//Vect3f spider_normal_target = { 0, 0.2, 1 };
+
+
+///////////////////////////////////////////////////
+//		Stone
+///////////////////////////////////////////////////
+float stone_torque = .3;
+float stone_TOI_scale = 0.5;
+float stone_initial_velocity_xy = 30;
+float stone_initial_velocity_z = 60;
+int stone_disable_collision_time = 500;
+float stone_restitution_plus_one = 1.5;
+float stone_sound_velocity_threshould = 3;
+
+///////////////////////////////////////////////////
+//		Debris
+///////////////////////////////////////////////////
+float debris_Vxy = 40.4055;
+float debris_Vz = 15.5034;
+float debris_W = 1.;
+float debris_damage_ability = 0.5;
+float debris_time_to_dwindle = 2000;
+
+///////////////////////////////////////////////////
+//		SmartStone
+///////////////////////////////////////////////////
+float smart_stone_damage_ability = 0.05;
+float smart_stone_traction = 2;
+float smart_stone_rudder = 0.1;
+float smart_stone_restitution = .95;
+float smart_stone_catch_point_distance = 100;
+int smart_stone_assembling_time = 800;
+float smart_stone_antigravity_factor = 1;
+float smart_stone_fly_velocity = 60;
+
+///////////////////////////////////////////////////
+//		Shark
+///////////////////////////////////////////////////
+float shark_spheres_radius = 10;
+float shark_distance = 500;
+float shark_damage = 1;
+float shark_buoyancy = 0.07;
+float shark_traction = 4;
+float shark_rudder = 0.04;
+float shark_animation_period = 1500;
+float shark_rudder_duration = 3000;
+
+///////////////////////////////////////////////////
+//		Fish
+///////////////////////////////////////////////////
+float fish_spheres_radius = 10;
+float fish_distance = 500;
+float fish_damage = 0.3;
+float fish_buoyancy = 0.02;
+float fish_traction = 2;
+
+///////////////////////////////////////////////////
+//		Whale
+///////////////////////////////////////////////////
+float whale_TOI_scale = 3;
+float whale_buoyancy = 0.015;
+float whale_sphere_offset_z = 20;
+float whale_traction = 49;//50;
+float whale_rudder = 0.05;
+//Vect3f whale_dragV = { 4, 0.6, 0.3 };
+//Vect3f whale_dragW = { 0.8, 1.5, 4 };
+int whale_jump_time = 2000;
+int whale_jump_reverse_time = 1000;
+float whale_jump_axis_z = 0.8;
+float whale_jump_torque = 0.4;
+float whale_jump_point_distance = 120;
+//Vect3f whale_jump_points[whale_jump_points_size] = { 
+//	{ 467, 618, 0 }, 
+//	{ 1494, 1549, 0 },  
+//	{ 742, 38, 0 }, 
+//	{ 1843, 1086, 0 }
+//	};
+
+
+///////////////////////////////////////////////////
+//		Dog
+///////////////////////////////////////////////////
+float dog_sensor_radius = 0.7;
+//Vect3f dog_sensor_offset = { 0, 1.2, .4 };
+float dog_hit_velocity2sound_factor = 1;
+float dog_activation_distance = 150;
+float dog_animation_period = 8000;
+
+///////////////////////////////////////////////////
+//		WickedButterfly
+///////////////////////////////////////////////////
+float wicked_butterfly_traction = 100;
+float wicked_butterfly_distance_to_traction_factor = 0.025;
+
+///////////////////////////////////////////////////
+//		Brevno
+///////////////////////////////////////////////////
+float brevno_spheres_radius = 25;
+float brevno_mass = 1;
+float brevno_return_force = 2;
+float brevno_linear_damping = 0.2;
+float brevno_angular_damping = 0.2;
+float brevno_buoyancy = 0.05;
+float brevno_torque = 0.05;
+
+// Raft
+float raft_spheres_radius = 10;
+float raft_mass = 1.25;
+float raft_buoyancy = 0.044;
+
+
+///////////////////////////////////////////////////
+//	Ship
+///////////////////////////////////////////////////
+float ship_spheres_radius = 8;
+float ship_buoyancy = 0.1;
+float ship_guard_distance = 500;
+float ship_turn_delay = 5000;
+float ship_damage = 50;
+float ship_traction = 2;
+float ship_rudder = 1;
+
+}

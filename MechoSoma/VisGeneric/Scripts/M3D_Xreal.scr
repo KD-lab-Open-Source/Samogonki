@@ -1,0 +1,405 @@
+
+#include "IVISGENERIC\m3d_id.h"
+
+3ds_path	"RESOURCE\M3D\"
+bmp_path	"RESOURCE\M3D\TEXTURES\"
+
+object $M3D_XREAL {
+	type 100 // Bound
+	3ds_file "bound.3ds"
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 1	// Камень
+	3ds_file "stone.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 2	// Умный валун
+	3ds_file "kolobok.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 3 // Червь
+	size 10
+	morph_file"Cherv_S0.3ds"
+    morph_time 0
+	morph_file"Cherv_S1.3ds"
+    morph_time 10
+	morph_file"Cherv_S0.3ds"
+    morph_time 20
+	animation_period 800
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 4	// Бабочка
+	3ds_file "Babocka.3ds"
+	size 60
+	attribute $MESH_REFLECTION
+	animation_period 500
+}
+
+object $M3D_XREAL {
+	type 5 // Лягушка								
+	size 100
+	morph_file"Frog_S0.3ds"
+    morph_time 0
+	morph_file"Frog_S1.3ds"
+    morph_time 10
+	morph_file"Frog_S2.3ds"
+    morph_time 20
+	morph_file"Frog_S3.3ds"							
+    morph_time 30
+	morph_file"Frog_S4.3ds"
+    morph_time 40
+	morph_file"Frog_S5.3ds"
+    morph_time 50
+	morph_file"Frog_S0.3ds"
+    morph_time 60
+	animation_period 0
+}
+
+
+object $M3D_XREAL {
+	type 6	// Снежный ком
+	3ds_file "SnowBall.3ds"
+	size 150
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 7	// Снежный Босс
+	3ds_file "SnowBoss.3ds"
+	size 70
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 8	// Осколки камня
+	3ds_file "Stone_Explode.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 9	// Clown
+	3ds_file "Kloun.3ds"
+	size 40
+	animation_period 2000
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 10	// Evil Eye
+	3ds_file "Glaz.3ds"
+	size 15
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 11	// Suicide
+	3ds_file "Kamikadze.3ds"
+	size 30
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 12 // Little Spider
+	size 40
+	animation_period 500
+
+	morph_file "ArcanePauk_1.3ds"
+	morph_time 0
+	morph_file "ArcanePauk_2.3ds"
+	morph_time 10
+	morph_file "ArcanePauk_1.3ds"
+	morph_time 20
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 13 // Formic
+	size 20
+	animation_period 500
+
+	morph_file "Muravey_F0.3ds"
+	morph_time 0
+	morph_file "Muravey_F1.3ds"
+	morph_time 10
+	morph_file "Muravey_F0.3ds"
+	morph_time 20
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 14 // Caterpillar
+	size 10
+	morph_file"Worm_f0.3ds"
+    morph_time 0
+	morph_file"Worm_f1.3ds"
+    morph_time 10
+	morph_file"Worm_f0.3ds"
+    morph_time 20
+	animation_period 800
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 15	// Ball
+	3ds_file "Ball.3ds"
+	size 30  // 18
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 16	// Bonus Bound
+	3ds_file "Ball.3ds"
+	size 20
+	attribute	$MESH_NOT_LIGHTING
+}
+
+object $M3D_XREAL {
+	type 17 // Whale
+	size 100
+	morph_file"Kit_f0.3ds"
+    morph_time 0
+	morph_file"Kit_f1.3ds"
+    morph_time 10
+	morph_file"Kit_f2.3ds"
+    morph_time 20
+	morph_file"Kit_f0.3ds"
+    morph_time 30
+	animation_period 1500
+}
+
+object $M3D_XREAL {
+	type 18 // Man1
+	size 25
+	3ds_file "Bonus1.m3d"
+	animation_period 1500
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 19 // Man2
+	size 25
+	3ds_file "Bonus2.m3d"
+	animation_period 1500
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 20 // Man3
+	size 25
+	3ds_file "Bonus3.m3d"
+	animation_period 1500
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 21 // Man4
+	size 25
+	3ds_file "Bonus4.m3d"
+	animation_period 1500
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 22	// Снежный Камень
+	3ds_file "stone_snow.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 23	// Осколки снежного камня
+	3ds_file "Stone_Explode_Snow.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 24	// Pig
+	3ds_file "Piggy.m3d"
+	attribute $MESH_REFLECTION
+	size 50
+}
+
+object $M3D_XREAL {
+	type 25	// Penguin
+	3ds_file "Pinguin.m3d"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+	size 50
+}
+
+object $M3D_XREAL {
+	type 26	// Brevno
+	3ds_file "Water_Brevno.3ds"
+	size 75
+	attribute 0
+}
+
+object $M3D_XREAL {
+	type 27	// Dog
+	//3ds_file "Dog.m3d"
+	3ds_file "Robot.m3d"
+	attribute $MESH_REFLECTION
+	size 75
+}
+
+object $M3D_XREAL {
+	type 28	// Shark
+	3ds_file "shark1.m3d"
+	attribute $MESH_REFLECTION
+	size 80
+}
+
+object $M3D_XREAL {
+	type 29	// Fish
+	3ds_file "fish.m3d"
+	attribute $MESH_REFLECTION
+	size 45
+}
+
+object $M3D_XREAL {
+	type 30 // StaticBonusMana
+	size 25
+	animation_period 1000
+	3ds_file "Bonus_Mana.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 31 // StaticBonusLife
+	size 25
+	animation_period 1000
+	3ds_file "Bonus_Life.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+
+object $M3D_XREAL {
+	type 32 // BeepedBonus1
+	size 15
+	animation_period 1000
+	3ds_file "Bonus_Acceleration.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 33 // BeepedBonus2
+	size 15
+	animation_period 1000
+	3ds_file "Bonus_Life.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 34 // BeepedBonus3
+	size 15
+	animation_period 1000
+	3ds_file "Bonus_Mana.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 35 // BeepedBonus4
+	size 15
+	animation_period 1000
+	3ds_file "Bonus_Star.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+        type 36
+		size 80
+		animation_period 2000
+		morph_file"DragonF_f0.3ds"
+        morph_time 0
+        morph_file"DragonF_f1.3ds"
+        morph_time 10
+        morph_file"DragonF_f2.3ds"
+        morph_time 20
+        morph_file"DragonF_f3.3ds"
+        morph_time 40
+        morph_file"DragonF_f4.3ds"
+        morph_time 50
+        morph_file"DragonF_f5.3ds"
+        morph_time 60
+        morph_file"DragonF_f6.3ds"
+        morph_time 70
+        morph_file"DragonF_f7.3ds"
+        morph_time 80
+        morph_file"DragonF_f8.3ds"
+        morph_time 90
+        morph_file"DragonF_f9.3ds"
+        morph_time 100
+        morph_file"DragonF_f10.3ds"
+        morph_time 110
+        morph_file"DragonF_f0.3ds"
+        morph_time 120
+}
+
+object $M3D_XREAL {
+	type 37
+	3ds_file "ship.3ds"
+	size 80
+	set_pivot 1
+}
+
+object $M3D_XREAL {
+	type 38				   
+	size 100
+
+	animation_period 1
+	set_pivot 1
+
+	morph_file "Pauk_1.3ds"
+	morph_time 0
+	morph_file "Pauk_2.3ds"
+	morph_time 10
+	morph_file "Pauk_1.3ds"
+	morph_time 20
+}
+
+object $M3D_XREAL {
+	type 39	 
+	3ds_file "bubble.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+	size 60.0
+}
+	
+object $M3D_XREAL {
+	type 40
+	3ds_file "Cristall.3ds"
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+	size 50
+}
+
+object $M3D_XREAL {
+	type 41
+	//3ds_file "titshar.3ds"
+	3ds_file "TitanBall.3ds"
+	size 40
+}
+
+object $M3D_XREAL {
+	type 42				  
+	3ds_file "pomidor_f0.3ds"
+	size 80
+	attribute "$MESH_REFLECTION+$MESH_NOT_LIGHTING"
+}
+
+object $M3D_XREAL {
+	type 43	// Умный валун
+	3ds_file "kolobok_explode.3ds"
+	size 70
+}
+
+object $M3D_XREAL {
+	type 44	// Плот
+	3ds_file "Plot.3ds"
+	size 100
+}
+

@@ -1,0 +1,25 @@
+
+// iwDoggyPhrase::flags 
+#define IW_DOGGY_ONE_TIME_FLAG		0x01
+#define IW_DOGGY_READ_FLAG		0x02
+
+// Phrase IDs
+#define IW_DOGGY_GREETING		0
+#define IW_DOGGY_LOAD_GAME		1
+#define IW_DOGGY_FIRST_RACE		2
+#define IW_DOGGY_NEW_RIDER		3
+#define IW_DOGGY_ABORT_RACE		4
+#define IW_DOGGY_RACE_LOST		5
+#define IW_DOGGY_RACE_WON		6
+#define IW_DOGGY_NEW_PART		7
+#define IW_DOGGY_NOT_ENOUGH_MONEY	8
+#define IW_DOGGY_BOSS_RACE_LOST		9
+#define IW_DOGGY_BOSS_RACE_WON		10
+#define IW_DOGGY_LAST_BOSS_WON		11
+#define IW_DOGGY_NEW_WORLD		12
+#define IW_DOGGY_NEW_BOSS_WORLD		13
+#define IW_DOGGY_INFO0			14
+#define IW_DOGGY_INFO1			15
+#define IW_DOGGY_INFO2			16
+#define IW_DOGGY_INFO3			17
+#define IW_DOGGY_INFO4			18

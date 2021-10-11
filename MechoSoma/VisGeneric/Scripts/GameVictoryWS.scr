@@ -1,0 +1,97 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\gamevictory_snd.scb"
+
+AnimScript	2
+{  
+        music_track             21
+	object3d_path		"RESOURCE\WORLDSCRIPT\END\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\END\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         3100	4300
+	}
+	name_wsc			"RESOURCE\WORLDSCRIPT\END\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         4301	7000
+	}
+
+	Sound				$EFF_END_START
+	{
+		animtime	         7300	18000
+	}
+
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         666	999
+	}
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         1000	1999
+	}
+	Sound				$EFF_END_THUNDERSTORM_2
+	{
+		animtime	         2000	2665
+	}
+	Sound				$EFF_END_THUNDERSTORM_3
+	{
+		animtime	         2666	3999
+	}
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         4000	4332
+	}
+	Sound				$EFF_END_THUNDERSTORM_3
+	{
+		animtime	         4333	4999
+	}
+	Sound				$EFF_END_THUNDERSTORM_2
+	{
+		animtime	         5000	5665
+	}
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         9000	9665
+	}
+	Sound				$EFF_END_THUNDERSTORM_3
+	{
+		animtime	         9666	10332
+	}
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         10333	10665
+	}
+	Sound				$EFF_END_THUNDERSTORM_2
+	{
+		animtime	         10666	11665
+	}
+	Sound				$EFF_END_THUNDERSTORM_2
+	{
+		animtime	         11666	12332
+	}
+	Sound				$EFF_END_THUNDERSTORM_3
+	{
+		animtime	         12333	12665
+	}
+	Sound				$EFF_END_THUNDERSTORM_1
+	{
+		animtime	         12666	14000
+	}
+
+	Sky					1
+	{
+		animtime		7000	19000
+		startcolor		0	0	0	1
+		finishcolor		0.7	0.7	0.7	1
+	}
+	Lighting			1
+	{
+		animtime		16000	19000
+		startcolor		0	0	0	0.0
+		finishcolor		0	0	0	1.0
+	}
+}

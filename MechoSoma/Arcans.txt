@@ -1,0 +1,50 @@
+Engines:
+1	
+2	
+3	
+4	
+5	
+
+Fronts:
+1	Iron Side  Железный Бок
+2	Sparking Искрение
+3	Suicide  Камикадзе
+4	Tomatoes Attack  Томатная Атака
+5	Voodoo Master  Вуду Мастер
+6	X-Ray Attack  Рентген
+7	Kinetic Hit  Кинетический Удар
+8	Electric Body  Электрическое Тело
+9	FireBall Attack  Огненные Шары
+10	Insatiable Tentacle  Жадное Щупальце
+11	Thunderstorm Грозовые Разряды  
+12 Star Shower Метеоритный Дождь  
+13 SnowFall Снегопад
+14 Clown Клоун 
+15 Petard Хлопушка  
+
+Forward Wheels:
+1	0-Trasportation  0-Транспортация
+2	Ball of Speed  Полет на ядре
+3	Butterfly  Мотылек
+4	Dirigible  Дирижабль
+5	Formicary  Муравейник
+6	Frog  Жабасома
+7	Helicopter  Вертолет
+8	Dragon's Power  Сила Дракона
+//9	Magnetic Cushion  Магнитная  Подушка
+
+Backward Wheels:
+1	Mines Мины
+2	Caterpillars  Гусеницы
+3	Ловушка-телепорт
+4	Electric Seeds Электрические Семена
+5	Crystallization  Кристаллизация
+6	Fury of Slime  Ярость  Слизи
+//7	Magnetic Field  Магнитное  Поле
+8	Pesky Mould  Бешеная  Плесень
+9	Стена огня
+10 Soap-Bubbles  Мыльные  Пузыри
+11	Evil Eye  Глаз Дъявола
+12	Overlarge Tomato Томатотрон  
+13  Spiders Пауки
+14  Алые следы

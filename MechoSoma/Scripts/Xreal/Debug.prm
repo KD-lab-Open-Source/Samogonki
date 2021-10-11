@@ -1,0 +1,102 @@
+section DebugPrm ( declaration = "xreal\DebugPrm.h", definition = "xreal\gen_debug.cpp" )
+{
+
+enum WriteModes {
+	WRITE_BODY_STATE = 1,
+	WRITE_CAMERA_STATE = 2,
+	WRITE_BODY_DISPATCHER_STATISTICS = 4
+	};
+
+enum ShowModes {
+	SHOW_BODIES = 1,
+	SHOW_TERRAIN = 2,
+	SHOW_CAMERA = 4,
+	SHOW_FIELDS = 8,
+	SHOW_MAP_OBJECTS = 16
+	};
+
+int Xreal_write_mode = 0;
+int Xreal_show_mode = 0;
+int terrain_show_distance = 300;
+int terrain_show_grid_color = 0;
+
+// General
+int environment_disabled = 0;
+int exclusive_keyboard_control = 0;
+int disable_point_control = 0;
+
+// mechos_defualt_config
+int mechos_default_config_enable = 0;
+struct MechosConfig {
+	int array[] = { 0, 0, 0, 0 };
+};
+MechosConfig mechos_default_config[] = { 
+	{ array = { 6, 11, 6, 10 }; },
+	{ array = { 7, 12, 7, 6 }; },
+	{ array = { 8, 13, 8, 12 }; },
+	{ array = { 9, 14, 1, 8 }; },
+	{ array = { 10, 15, 2, 14 }; }
+};
+
+// random assembling
+int enable_random_assembling = 0;
+//struct RandomPart
+//{
+//	int size = 0;
+//	int excluded[n_excluded] = { 0, 0, 0 };
+//};
+//RandomPart random_assembling_kinds[] = { 
+	//{ size = 10; excluded = {}; }, 
+	//{ size = 15; excluded = {}; }, 
+	//{ size = 8; excluded = {}; }, 
+	//{ size = 14; excluded = { 6, 7, 8 }; }
+//};
+
+// Show Body
+int show_body_active_only = 1;
+int show_body_radius = 0;
+int show_body_polyhedrons = 1;
+int show_body_spheres = 1;
+int show_body_contacts = 1;
+int show_body_velocity = 0;
+int show_point_controlled_points = 0;
+int show_map_borders = 0;//200;
+float show_vector_scale = 10;
+float show_map_x_scale = 0.27;
+float show_map_y_scale = 0.22;
+float show_map_x_offset = 20;
+float show_map_y_offset = 10;
+
+// Camera switches
+int camera_perspective = 1;
+int camera_world_share = 1;
+
+int triangle_show_m3d_objects = 1;
+int triangle_show_terrain = 0;
+
+int triangle_show_ForTestCollision = 1;
+int triangle_show_ForRayCasting = 0;
+int triangle_show_ForTestSpot = 0;
+
+int triangle_show_brush = 0;
+int triangle_show_grid_area = 0;
+int triangle_show_normal_by_color = 1;
+int triangle_show_by_normals = 0;
+
+float show_vector_zmin = 200;
+float show_vector_zmax = 4000;
+
+// Debug
+int camera_show_track = 1;
+int camera_show_clip_buffer = 0;
+int camera_free_fly_by_key = 1;
+int camera_disable_zoom_by_speed = 0;
+
+// Devoted
+/*
+int smart_look_up_table[smart_look_up_table_size] = { 1870030148, 543450484, 1830842228, 1919033465, 1701344367, 1833181298, 
+1769108585, 1867194489, 1634298996, 1460276594, 1814065000, 1684371055, 1835099936, 539784037, 
+544503138, 544432488, 1701736295, 1869575200, 1918985504, 774797676, 537529646, 538976288, 538976288, 
+538976288, 538976288, 538976288, 1092624416, 1635280236, 1919247470, 1953450784, 1918986604, -842150656 };
+*/
+}

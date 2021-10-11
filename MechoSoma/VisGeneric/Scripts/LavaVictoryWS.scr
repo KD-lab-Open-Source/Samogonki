@@ -1,0 +1,101 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\lavavictory_snd.scb"
+
+AnimScript	2
+{ // 10000
+        music_track             17
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut20\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut20\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         2500	8000
+	}
+
+	Sound				$EFF_VICTORY_OUT_TELEPORT
+	{
+		animtime	         3500   12000
+	}
+	Sound				$EFF_VICTORY_TELEPORT
+	{
+		animtime	         3700   12000
+	}
+        Sound                           $EFF_BV_LAVA_DRAGON
+	{
+		animtime	         3700   12000
+	}
+        Sound                           $EFF_ANIMATION_8_OUTRUN
+	{
+		animtime	         14000  16000
+	}
+
+        Sound                           $EFF_VICTORY_LAVA_SWORD
+	{
+		animtime	         16400   18000
+	}
+        Sound                           $EFF_VICTORY_FIRE_1
+	{
+		animtime	         5666   6333
+	}
+        Sound                           $EFF_VICTORY_FIRE_2
+	{
+		animtime	         6300   6966
+	}
+        Sound                           $EFF_VICTORY_FIRE_1
+	{
+		animtime	         6600   7300
+	}
+
+        Sound                           $EFF_VICTORY_FIRE_1
+	{
+		animtime	         7966   8666
+	}
+        Sound                           $EFF_VICTORY_FIRE_2
+	{
+		animtime	         8466   9433
+	}
+        Sound                           $EFF_VICTORY_FIRE_1
+	{
+		animtime	         9333   10166
+	}
+        Sound                           $EFF_VICTORY_LAVA_WING
+	{
+		animtime	         8200   12000
+	}
+
+        Sound                           $EFF_BV_THUNDERSTORM
+	{
+		animtime	         11200   12000
+	}
+        Sound                           $EFF_BV_THUNDERSTORM
+	{
+		animtime	         12100   13000
+	}
+        Sound                           $EFF_BV_THUNDERSTORM
+	{
+		animtime	         13300   16000
+	}
+	Sound				$EFF_VICTORY_KINETIC
+	{
+		animtime	         13550   14300
+	}
+	Sound				$EFF_VICTORY_ROTATE
+	{
+		animtime	         11500  15000
+	}
+	Sound				$EFF_VICTORY_LAVA_EYE
+	{
+		animtime	         16900  17200
+	}
+        Sound                           $EFF_ANIMATION_8_BONUS
+	{
+		animtime	         17100  19000
+	}
+
+
+
+
+}

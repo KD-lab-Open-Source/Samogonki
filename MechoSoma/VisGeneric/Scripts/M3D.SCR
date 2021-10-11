@@ -1,0 +1,911 @@
+
+#include "IVISGENERIC\m3d_id.h"
+
+#include "RUNTIME\ArcaneDefine.h"
+#include "SOUND\snd_ids.h"
+#include "VISGENERIC\SCRIPTS\arcane_name.inc"
+#include "VISGENERIC\SCRIPTS\arcane.inc"
+
+3ds_path	"RESOURCE\M3D\"
+bmp_path	"RESOURCE\M3D\TEXTURES\"
+default_attribute	0
+
+//#define MECHOS_SIZE		0.06
+#define MECHOS_SIZE		0.04
+
+
+//////////////////////// Characters
+
+object $M3D_ENGINE {
+	type 1
+	3ds_file "Character1.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 2
+	3ds_file "Character2.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 3
+	3ds_file "Character3.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 4
+	3ds_file "Character4.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 5
+	3ds_file "Character5.m3d"
+	scale $MECHOS_SIZE
+}
+
+object $M3D_ENGINE {
+	type 6
+	3ds_file "Character6.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 7
+	3ds_file "Character7.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 8
+	3ds_file "Character8.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 9
+	3ds_file "Character9.m3d"
+	scale $MECHOS_SIZE
+}
+object $M3D_ENGINE {
+	type 10
+	3ds_file "Character10.m3d"
+	scale $MECHOS_SIZE
+}
+
+// New character
+object $M3D_iSCREEN {
+	type 601
+	3ds_file "Character11_Int.m3d"
+	scale 0.04
+}
+
+//////////////////////// Fronts
+
+// Железный бок
+object $M3D_FRONT {
+	type 1
+	3ds_file "Front01.3ds"
+	scale $MECHOS_SIZE
+/*
+	morph_file "Front01_S1_f0.3ds"
+	morph_time 0
+	morph_file "Front01_S1_f1.3ds"
+	morph_time 10
+	morph_file "Front01_S1_f2.3ds"
+	morph_time 20
+	morph_file "Front01_S1_f3.3ds"
+	morph_time 30
+	morph_file "Front01_S1_f4.3ds"
+	morph_time 40
+	morph_file "Front01_S1_f5.3ds"
+	morph_time 50
+	morph_file "Front01_S1_f6.3ds"
+	morph_time 60
+	morph_file "Front01_S1_f7.3ds"
+	morph_time 70
+	morph_file "Front01_S1_f8.3ds"
+	morph_time 80
+	morph_file "Front01_S1_f9.3ds"
+	morph_time 90
+	morph_file "Front01_S1_f0.3ds"
+	morph_time 100
+*/
+	$ARCANE038_body
+}
+
+// Жало
+object $M3D_FRONT {
+	type 2
+	3ds_file "Front02_F0.3ds"
+	scale $MECHOS_SIZE
+	$ARCANE066_body
+}
+
+
+// Камикадзе
+object $M3D_FRONT {
+	type 3
+	3ds_file "Front03.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE042_body
+}
+
+// Томатная Атака
+object $M3D_FRONT {
+	type 4
+	scale $MECHOS_SIZE
+	3ds_file "Front04.3ds"
+	$ARCANE037_body
+}
+
+// Вуду Мастер
+object $M3D_FRONT {
+	type 5
+	scale $MECHOS_SIZE
+	3ds_file "Front05.3ds"
+	$ARCANE039_body
+}
+
+// Рентген
+object $M3D_FRONT {
+	type 6
+	scale $MECHOS_SIZE
+	3ds_file "Front06.3ds"
+	$ARCANE033_body
+}
+
+// Кинетический Удар
+object $M3D_FRONT {
+	type 7
+	scale $MECHOS_SIZE
+	3ds_file "Front07.3ds"
+	$ARCANE034_body
+}
+
+// Электрическое Тело
+object $M3D_FRONT {
+	type 8
+	scale $MECHOS_SIZE
+	3ds_file "Front08.3ds"
+	$ARCANE032_body
+}
+
+// Огненные Шары
+object $M3D_FRONT {
+	type 9
+	scale $MECHOS_SIZE
+	3ds_file "Front09.3ds"
+	$ARCANE040_body
+}
+
+// Жадное Щупальце
+object $M3D_FRONT {
+	type 10
+	scale $MECHOS_SIZE
+	3ds_file "Front10.3ds"
+	$ARCANE036_body
+}
+
+// Thunderstorm
+object $M3D_FRONT {
+	type 11
+	scale $MECHOS_SIZE
+	3ds_file "Front11.3ds"
+	$ARCANE025_body
+}
+
+// Star Shower
+object $M3D_FRONT {
+	type 12
+	scale $MECHOS_SIZE
+	3ds_file "Front12.3ds"
+	$ARCANE024_body
+}
+
+//SnowFall
+object $M3D_FRONT {
+	type 13
+	scale $MECHOS_SIZE
+	3ds_file "Front13.3ds"
+	$ARCANE064_body
+}
+
+//Clown
+object $M3D_FRONT {
+	type 14
+	scale $MECHOS_SIZE
+	3ds_file "Front14.3ds"
+	$ARCANE041_body
+}
+
+//Petard
+object $M3D_FRONT {
+	type 15
+	scale $MECHOS_SIZE
+	3ds_file "Front15.3ds"
+	$ARCANE002_body
+}
+
+
+/////////////////////// Front Wheels
+
+// 0-Транспортация
+object $M3D_RF_WHEEL {
+	type 1
+	3ds_file "F_Wheel01R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE058_body
+}
+object $M3D_LF_WHEEL {
+	type 1
+	3ds_file "F_Wheel01L.3ds"
+	scale $MECHOS_SIZE
+}
+
+// Полет на ядре
+object $M3D_RF_WHEEL {
+	type 2
+	3ds_file "F_Wheel02R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE045_body
+}
+object $M3D_LF_WHEEL {
+	type 2
+	3ds_file "F_Wheel02L.3ds"
+	scale $MECHOS_SIZE
+}
+
+///////////////////////////////////////////////
+//		Мотылек
+///////////////////////////////////////////////
+#define BUTTERFLY_TYPE	3
+// normal state
+object $M3D_RF_WHEEL {
+	type $BUTTERFLY_TYPE
+	scale $MECHOS_SIZE
+	$ARCANE059_body
+
+	morph_file "F_Wheel03R_S0_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel03R_S0_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel03R_S0_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel03R_S0_f3.3ds"
+	morph_time 30
+	morph_file "F_Wheel03R_S0_f0.3ds"
+	morph_time 40
+}
+
+object $M3D_LF_WHEEL {
+	type $BUTTERFLY_TYPE
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel03L_S0_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel03L_S0_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel03L_S0_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel03L_S0_f3.3ds"
+	morph_time 30
+	morph_file "F_Wheel03L_S0_f0.3ds"
+	morph_time 40
+}
+
+// morph
+object $M3D_RF_WHEEL {
+	type "$BUTTERFLY_TYPE + 64"
+	scale $MECHOS_SIZE
+	$ARCANE059_body
+
+	morph_file "F_Wheel03R_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel03R_S1_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel03R_S1_f2.3ds"
+	morph_time 20
+}
+object $M3D_LF_WHEEL {
+	type "$BUTTERFLY_TYPE + 64"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel03L_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel03L_S1_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel03L_S1_f2.3ds"
+	morph_time 20
+}
+
+// activated state
+object $M3D_RF_WHEEL {
+	type "$BUTTERFLY_TYPE + 128"
+	scale $MECHOS_SIZE
+	$ARCANE059_body
+
+	3ds_file "F_Wheel03R_S2_f0.3ds"
+}
+object $M3D_LF_WHEEL {
+	type "$BUTTERFLY_TYPE + 128"
+	scale $MECHOS_SIZE
+
+	3ds_file "F_Wheel03L_S2_f0.3ds"
+}
+
+
+///////////////////////////////////////////////
+//		Дирижабль
+///////////////////////////////////////////////
+object $M3D_RF_WHEEL {
+	type 4
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel04R_S0.3ds"
+	morph_time 0
+	morph_file "F_Wheel04R_S1.3ds"
+	morph_time 10
+
+	$ARCANE060_body
+}
+
+object $M3D_LF_WHEEL {
+	type 4
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel04L_S0.3ds"
+	morph_time 0
+	morph_file "F_Wheel04L_S1.3ds"
+	morph_time 10
+}
+
+///////////////////////////////////////////////
+//		Муравейник
+///////////////////////////////////////////////
+object $M3D_RF_WHEEL {
+	type 5
+	3ds_file "F_Wheel05R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE018_body
+}
+object $M3D_LF_WHEEL {
+	type 5
+	3ds_file "F_Wheel05L.3ds"
+	scale $MECHOS_SIZE
+}
+
+///////////////////////////////////////////////
+//		Жабасома
+///////////////////////////////////////////////
+#define FROGSHAPE_TYPE	6
+// normal state
+object $M3D_RF_WHEEL {
+	type $FROGSHAPE_TYPE
+	scale $MECHOS_SIZE
+	$ARCANE052_body
+
+	morph_file "F_Wheel06R_S0_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel06R_S0_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel06R_S0_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel06R_S0_f3.3ds"
+	morph_time 30
+	morph_file "F_Wheel06R_S0_f4.3ds"
+	morph_time 40
+	morph_file "F_Wheel06R_S0_f5.3ds"
+	morph_time 50
+	morph_file "F_Wheel06R_S0_f0.3ds"
+	morph_time 60
+}
+object $M3D_LF_WHEEL {
+	type $FROGSHAPE_TYPE
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel06L_S0_f3.3ds"
+	morph_time 0
+	morph_file "F_Wheel06L_S0_f4.3ds"
+	morph_time 10
+	morph_file "F_Wheel06L_S0_f5.3ds"
+	morph_time 20
+	morph_file "F_Wheel06L_S0_f0.3ds"
+	morph_time 30
+	morph_file "F_Wheel06L_S0_f1.3ds"
+	morph_time 40
+	morph_file "F_Wheel06L_S0_f2.3ds"
+	morph_time 50
+	morph_file "F_Wheel06L_S0_f3.3ds"
+	morph_time 60
+}
+
+// morph
+object $M3D_RF_WHEEL {
+	type "$FROGSHAPE_TYPE + 64"
+	scale $MECHOS_SIZE
+	$ARCANE052_body
+
+	morph_file "F_Wheel06R_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel06R_S1_f1.3ds"
+	morph_time 10
+}
+object $M3D_LF_WHEEL {
+	type "$FROGSHAPE_TYPE + 64"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel06L_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel06L_S1_f1.3ds"
+	morph_time 10
+}
+
+// activated state
+object $M3D_RF_WHEEL {
+	type "$FROGSHAPE_TYPE + 128"
+	scale $MECHOS_SIZE
+	$ARCANE052_body
+
+	morph_file "F_Wheel06R_S2_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel06R_S2_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel06R_S2_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel06R_S2_f3.3ds"
+	morph_time 30
+	morph_file "F_Wheel06R_S2_f4.3ds"
+	morph_time 40
+	morph_file "F_Wheel06R_S2_f5.3ds"
+	morph_time 50
+	morph_file "F_Wheel06R_S2_f0.3ds"
+	morph_time 60
+}
+object $M3D_LF_WHEEL {
+	type "$FROGSHAPE_TYPE + 128"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel06L_S2_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel06L_S2_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel06L_S2_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel06L_S2_f3.3ds"
+	morph_time 30
+	morph_file "F_Wheel06L_S2_f4.3ds"
+	morph_time 40
+	morph_file "F_Wheel06L_S2_f5.3ds"
+	morph_time 50
+	morph_file "F_Wheel06L_S2_f0.3ds"
+	morph_time 60
+}
+
+
+
+///////////////////////////////////////////////
+//		Вертолет
+///////////////////////////////////////////////
+#define HELICOPTER_TYPE	7
+// normal state
+object $M3D_RF_WHEEL {
+	type $HELICOPTER_TYPE
+	scale $MECHOS_SIZE
+	$ARCANE051_body
+
+	3ds_file "F_Wheel07R_S0_f0.3ds"
+}
+object $M3D_LF_WHEEL {
+	type $HELICOPTER_TYPE
+	scale $MECHOS_SIZE
+
+	3ds_file "F_Wheel07L_S0_f0.3ds"
+}
+
+// morph
+object $M3D_RF_WHEEL {
+	type "$HELICOPTER_TYPE + 64"
+	scale $MECHOS_SIZE
+	$ARCANE051_body
+
+	morph_file "F_Wheel07R_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel07R_S1_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel07R_S1_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel07R_S1_f3.3ds"
+	morph_time 30
+}
+object $M3D_LF_WHEEL {
+	type "$HELICOPTER_TYPE + 64"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel07L_S1_f0.3ds"
+	morph_time 0
+	morph_file "F_Wheel07L_S1_f1.3ds"
+	morph_time 10
+	morph_file "F_Wheel07L_S1_f2.3ds"
+	morph_time 20
+	morph_file "F_Wheel07L_S1_f3.3ds"
+	morph_time 30
+}
+
+// activated state
+object $M3D_RF_WHEEL {
+	type "$HELICOPTER_TYPE + 128"
+	scale $MECHOS_SIZE
+	$ARCANE051_body
+
+	3ds_file "F_Wheel07R_S2_f0.3ds"
+}
+object $M3D_LF_WHEEL {
+	type "$HELICOPTER_TYPE + 128"
+	scale $MECHOS_SIZE
+
+	3ds_file "F_Wheel07L_S2_f0.3ds"
+}
+
+
+///////////////////////////////////////////////
+// Сила Дракона
+///////////////////////////////////////////////
+#define DRAGON_WHEELS_TYPE	8
+object $M3D_LF_WHEEL {
+	type $DRAGON_WHEELS_TYPE
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08L_walk0.3ds"
+	morph_time 0
+	morph_file "F_Wheel08L_walk1.3ds"
+	morph_time 10
+	morph_file "F_Wheel08L_walk2.3ds"
+	morph_time 20
+	morph_file "F_Wheel08L_walk3.3ds"
+	morph_time 30
+	morph_file "F_Wheel08L_walk4.3ds"
+	morph_time 35
+	morph_file "F_Wheel08L_walk0.3ds"
+	morph_time 40
+}
+object $M3D_RF_WHEEL {
+	type 8
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08R_walk2.3ds"
+	morph_time 0
+	morph_file "F_Wheel08R_walk3.3ds"
+	morph_time 10
+	morph_file "F_Wheel08R_walk4.3ds"
+	morph_time 15
+	morph_file "F_Wheel08R_walk0.3ds"
+	morph_time 20
+	morph_file "F_Wheel08R_walk1.3ds"
+	morph_time 30
+	morph_file "F_Wheel08R_walk2.3ds"
+	morph_time 40
+
+	$ARCANE050_body
+}
+
+// Сила Дракона - Morph
+object $M3D_LF_WHEEL {
+	type "$DRAGON_WHEELS_TYPE + 64"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08L_morph0.3ds"
+	morph_time 0
+	morph_file "F_Wheel08L_morph1.3ds"
+	morph_time 10
+	morph_file "F_Wheel08L_morph2.3ds"
+	morph_time 20
+}
+object $M3D_RF_WHEEL {
+	type "$DRAGON_WHEELS_TYPE + 64"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08R_morph0.3ds"
+	morph_time 0
+	morph_file "F_Wheel08R_morph1.3ds"
+	morph_time 10
+	morph_file "F_Wheel08R_morph2.3ds"
+	morph_time 20
+
+	$ARCANE050_body
+}
+  
+// Сила Дракона - Fly
+object $M3D_LF_WHEEL {
+	type "$DRAGON_WHEELS_TYPE + 128"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08L_fly6.3ds"
+	morph_time 0
+	morph_file "F_Wheel08L_fly5.3ds"
+	morph_time 10
+	morph_file "F_Wheel08L_fly4.3ds"
+	morph_time 20
+	morph_file "F_Wheel08L_fly3.3ds"
+	morph_time 30
+	morph_file "F_Wheel08L_fly2.3ds"
+	morph_time 40
+	morph_file "F_Wheel08L_fly1.3ds"
+	morph_time 50
+	morph_file "F_Wheel08L_fly0.3ds"
+	morph_time 60
+}
+object $M3D_RF_WHEEL {
+	type "$DRAGON_WHEELS_TYPE + 128"
+	scale $MECHOS_SIZE
+
+	morph_file "F_Wheel08R_fly6.3ds"
+	morph_time 0
+	morph_file "F_Wheel08R_fly5.3ds"
+	morph_time 10
+	morph_file "F_Wheel08R_fly4.3ds"
+	morph_time 20
+	morph_file "F_Wheel08R_fly3.3ds"
+	morph_time 30
+	morph_file "F_Wheel08R_fly2.3ds"
+	morph_time 40
+	morph_file "F_Wheel08R_fly1.3ds"
+	morph_time 50
+	morph_file "F_Wheel08R_fly0.3ds"
+	morph_time 60
+
+	$ARCANE050_body
+}
+
+/*
+// Магнитная Подушка
+object $M3D_RF_WHEEL {
+	type 9
+	3ds_file "F_Wheel09R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE014_body
+}
+object $M3D_LF_WHEEL {
+	type 9
+	3ds_file "F_Wheel09L.3ds"
+	scale $MECHOS_SIZE
+}
+*/
+
+/////////////////////// Rear Wheels
+
+//Mines
+object $M3D_RB_WHEEL {
+	type 1
+	3ds_file "R_Wheel01R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE061_body
+}
+
+object $M3D_LB_WHEEL {
+	type 1
+	3ds_file "R_Wheel01L.3ds"
+	scale $MECHOS_SIZE
+}
+
+// Гусеницы
+object $M3D_RB_WHEEL {
+	type 2
+	3ds_file "R_Wheel02R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE021_body
+}
+object $M3D_LB_WHEEL {
+	type 2
+	3ds_file "R_Wheel02L.3ds"
+	scale $MECHOS_SIZE
+}
+
+// Teleportation Trap
+object $M3D_RB_WHEEL {
+	type 3
+	3ds_file "R_Wheel03R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE048_body
+}
+object $M3D_LB_WHEEL {
+	type 3
+	3ds_file "R_Wheel03L.3ds"
+	scale $MECHOS_SIZE
+}
+
+// Электрические семена
+object $M3D_RB_WHEEL {
+	type 4
+	3ds_file "R_Wheel04R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE029_body
+}
+object $M3D_LB_WHEEL {
+	type 4
+	3ds_file "R_Wheel04L.3ds"
+	scale $MECHOS_SIZE
+}
+
+// Кристаллизация
+object $M3D_RB_WHEEL {
+	type 5
+	3ds_file "R_Wheel05R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE009_body
+}
+object $M3D_LB_WHEEL {
+	type 5
+	3ds_file "R_Wheel05L.3ds"
+	scale $MECHOS_SIZE
+}
+
+//Ярость слизи
+object $M3D_RB_WHEEL {
+	type 6
+	$ARCANE004_body
+	scale $MECHOS_SIZE
+	morph_file "R_Wheel_06R_f0.3ds"
+	morph_time 0
+	morph_file "R_Wheel_06R_f1.3ds"
+	morph_time 10
+	morph_file "R_Wheel_06R_f2.3ds"
+	morph_time 20
+	morph_file "R_Wheel_06R_f3.3ds"
+	morph_time 30
+	morph_file "R_Wheel_06R_f0.3ds"
+	morph_time 40                        
+}
+
+object $M3D_LB_WHEEL {
+	type 6
+	scale $MECHOS_SIZE
+	morph_file "R_Wheel_06L_f2.3ds"
+	morph_time 0
+	morph_file "R_Wheel_06L_f3.3ds"
+	morph_time 10
+	morph_file "R_Wheel_06L_f0.3ds"
+	morph_time 20
+	morph_file "R_Wheel_06L_f1.3ds"
+	morph_time 30
+	morph_file "R_Wheel_06L_f2.3ds"
+	morph_time 40                        
+}
+
+
+// Магнитное Поле
+/*object $M3D_RB_WHEEL {
+	type 7
+	3ds_file "R_Wheel07R.3ds"
+	scale $MECHOS_SIZE
+
+	$ARCANE015_body
+}
+object $M3D_LB_WHEEL {
+	type 7
+	3ds_file "R_Wheel07L.3ds"
+	scale $MECHOS_SIZE
+}*/
+
+
+// Бешенная Плесень
+object $M3D_RB_WHEEL {
+	type 8
+	$ARCANE005_body
+	scale $MECHOS_SIZE
+	3ds_file "RB_Wheel_08BM_f0.3ds"
+}
+object $M3D_LB_WHEEL {
+	type 8
+	scale $MECHOS_SIZE
+	3ds_file "LB_Wheel_08BM_f0.3ds"
+}
+
+// Lurid Billow
+object $M3D_RB_WHEEL {
+	type 9
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel09R.3ds"
+	$ARCANE003_body
+}
+object $M3D_LB_WHEEL {
+	type 9
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel09L.3ds"
+}
+
+//Soup Bubbles
+object $M3D_RB_WHEEL {
+	type 10
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel10R.3ds"
+	$ARCANE019_body
+}
+object $M3D_LB_WHEEL {
+	type 10
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel10L.3ds"
+}
+
+//Evil Eye
+object $M3D_RB_WHEEL {
+	type 11
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel11R.3ds"
+	$ARCANE007_body
+}
+object $M3D_LB_WHEEL {
+	type 11
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel11L.3ds"
+}
+
+//Tomato
+object $M3D_RB_WHEEL {
+	type 12
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel12R.3ds"
+	$ARCANE012_body
+}
+object $M3D_LB_WHEEL {
+	type 12
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel12L.3ds"
+}
+
+// Spiders
+object $M3D_RB_WHEEL {
+	type 13
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel13R.3ds"
+	$ARCANE017_body
+}
+object $M3D_LB_WHEEL {
+	type 13
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel13L.3ds"
+}
+
+// Алые следы
+object $M3D_RB_WHEEL {
+	type 14
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel14R.3ds"
+	$ARCANE011_body
+}
+object $M3D_LB_WHEEL {
+	type 14
+	scale $MECHOS_SIZE
+	3ds_file "R_Wheel14L.3ds"
+}
+
+
+
+
+///////////////////////////////////
+// Axilliary objects
+///////////////////////////////////
+object $M3D_MECHOSOMA {
+	type $M3D_CONTROL_POINT_KIND
+	3ds_file "ctl_point.3ds"
+	scale 0.10
+}
+
+object $M3D_MECHOSOMA {
+	type $M3D_MOUSE3D_KIND
+	3ds_file "mouse.3ds"
+	scale 0.15
+}
+
+object $M3D_MECHOSOMA {
+	type $M3D_ISCREEN_BACK_KIND
+	3ds_file "iscreen_back.3ds"
+	scale 1.0
+}
+
+

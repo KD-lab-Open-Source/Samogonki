@@ -1,0 +1,928 @@
+#include "FX\fxlabID.h"
+#include "RUNTIME\ArcaneDefine.h"
+#include "Sound\snd_ids.h"
+
+KeySection
+{
+	#include "FX\Script\Action.inc"
+	#include "FX\Script\BallWind.inc"
+	#include "FX\Script\Bonus.inc"
+	#include "FX\Script\BubbleRush.inc"
+	#include "FX\Script\Charge.inc"
+	#include "FX\Script\CheckPoint.inc"
+	#include "FX\Script\Clown.inc"
+	#include "FX\Script\Dust.inc"
+	#include "FX\Script\Electric.inc"
+	#include "FX\Script\Explosive.inc"
+	#include "FX\Script\FireBall.inc"
+	#include "FX\Script\FireRose.inc"
+	#include "FX\Script\FireStone.inc"
+	#include "FX\Script\FireWorld.inc"
+	#include "FX\Script\ForestWorld.inc"
+	#include "FX\Script\FuryFungus.inc"
+	#include "FX\Script\Kinetic.inc"
+	#include "FX\Script\LightningBolt.inc"
+	#include "FX\Script\Mine.inc"
+	#include "FX\Script\MountainWorld.inc"
+	#include "FX\Script\Movies.inc"
+	#include "FX\Script\Petard.inc"
+	#include "FX\Script\PlasmaClaw.inc"
+	#include "FX\Script\Protection.inc"
+	#include "FX\Script\Revolt.inc"
+	#include "FX\Script\ScarletTrace.inc"
+	#include "FX\Script\Skin.inc"
+	#include "FX\Script\Shaft.inc"
+	#include "FX\Script\Slime.inc"
+	#include "FX\Script\SnowFall.inc"
+	#include "FX\Script\Spike.inc"
+	#include "FX\Script\Storm.inc"
+	#include "FX\Script\Suicide.inc"
+	#include "FX\Script\Tomato.inc"
+	#include "FX\Script\Teleportation.inc"
+	#include "FX\Script\Voodoo.inc"
+	#include "FX\Script\Volcano.inc"
+	#include "FX\Script\WaterWorld.inc"
+	#include "FX\Script\WorldIrradiate.inc"
+
+
+	KeyID	$FXLAB_ID_KEY_CORE_SPLINE_WAY
+	{
+		KeyAttribute	$FXLAB_KEY_ATTRIBUTE_REPEAT
+
+		KeyDefine	Red
+		KeyDefine	Green
+		KeyDefine	Blue
+		KeyDefine	Alpha
+		KeyDefine	Size
+		KeyDefine	Angle
+		KeyDefine	Frame
+
+		KeyTime	0.0
+
+		KeyName	Red
+		KeyData	1.0
+
+		KeyName	Green
+		KeyData	1.0
+
+		KeyName Blue
+		KeyData	3.0
+
+		KeyName Alpha
+		KeyData 1.0
+
+		KeyName	Size
+		KeyData	4.0
+
+		KeyName	Angle
+		KeyData	0.0
+
+		KeyName	Frame
+		KeyData	0.0
+
+
+		KeyTime	32.0
+
+		KeyName	Red
+		KeyData	1.0
+
+		KeyName	Green
+		KeyData	1.0
+
+		KeyName Blue
+		KeyData	0.3
+
+		KeyName Alpha
+		KeyData 1.0
+
+		KeyName	Size
+		KeyData	4.0
+
+		KeyName	Angle
+		KeyData	3.14
+
+		KeyName	Frame
+		KeyData	1.0
+	}
+}
+
+SpriteSection
+{
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_CHARGE
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_CHARGE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_JUMP
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_JUMP
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_NITRO
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_NITRO
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_MANA
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_MANA
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_STARS
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_STARS
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_FISHWATER
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FISHWATER
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_WATERPUMP
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_WATERPUMP
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_DRAGON_FIRE
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_DRAGON_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_WILD_CLAW
+	{
+		SpritePhaseNum		8
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_WILD_CLAW
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CANNON_DUST
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CANNON_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE		
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_EXPLOSION_FIRE
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_EXPLOSION_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_VOLCANIC_FIRE
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_VOLCANIC_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_VOLCANIC_DUST
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_VOLCANIC_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_VOLCANIC_STONE_FIRE
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_VOLCANIC_STONE_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_ROSE_FIRE
+	{
+		SpritePhaseNum		32
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_ROSE_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_HEAD_BREATH
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_HEAD_BREATH
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_LAVA_WIND
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_LAVA_WIND
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+
+	SpriteID $FXLAB_ID_SPRITE_WATER_BUBBLE_FLUX
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_WATER_BUBBLE_FLUX
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_FOREST_BUBBLE_FLUX
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FOREST_BUBBLE_FLUX
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_STONE_BUBBLE_FLUX
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_STONE_BUBBLE_FLUX
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_ALTAR_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_ALTAR_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_ALTAR_DUST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_ALTAR_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_HEAD_STREAM
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_HEAD_STREAM
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_BALLWIND_PASSIVE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BALLWIND_PASSIVE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_BALLWIND_ACTIVE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BALLWIND_ACTIVE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_SUICIDE_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SUICIDE_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_RED
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_RED
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_ORANGE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_ORANGE
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_YELLOW
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_YELLOW
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_GREEN
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_GREEN
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_LIGHT_BLUE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_LIGHT_BLUE
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_BLUE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_BLUE
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CLOWN_MAGENTA
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CLOWN_MAGENTA
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TOMATO
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TOMATO
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_FIREBALL
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FIREBALL
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_LIGHTNING_BOLT_SPARK
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_LIGHTNING_BOLT_SPARK
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_SNOW_CLOUDS
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SNOW_CLOUDS
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_STORM_CLOUDS
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_STORM_CLOUDS
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_FURY_FUNGUS_FOG
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FURY_FUNGUS_FOG
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_VOODOO_HEAD
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_VOODOO_HEAD
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_LIGHTNING_SPARK
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_LIGHTNING_SPARK
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_SPIKE_BURST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SPIKE_BURST
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR5S
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CHARGE_ENERGY
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CHARGE_ENERGY
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CHARGE_MANA
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CHARGE_MANA
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_JUMP_ACTION
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_JUMP_ACTION
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_NITRO_ACTION
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_NITRO_ACTION
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_PLACE_ENERGY_FOG
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_PLACE_ENERGY_FOG
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_PLACE_ENERGY_STAR
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_PLACE_ENERGY_STAR
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_PLACE_MANA_STAR
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_PLACE_MANA_STAR
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_BUBBLE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_BUBBLE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_BURN
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_BURN
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TELEPORT_BURN
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TELEPORT_BURN
+		SpriteTextureID		$FXLAB_ID_IMAGE_BUBBLE/*$FXLAB_ID_IMAGE_STAR83*/
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST000
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST000
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_DAMAGE_WARNING
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_DAMAGE_WARNING
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR8	
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_BUBBLE_RUSH
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BUBBLE_RUSH
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MINE_DUST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MINE_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TELEPORT_BURN_LAST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TELEPORT_BURN_LAST
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR83
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_LAVA_ALTAR_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_LAVA_ALTAR_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_SCARLET_TRACK_LINE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SCARLET_TRACK_LINE
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR8
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_STONE_DUST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_STONE_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_SNOW_LAYER
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SNOW_LAYER
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+//TownDust
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST302
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST302
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST303
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST303
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST305
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST305
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+//LavaDust
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST400
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST400
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST402
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST402
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST412
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST412
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+//WaterDust
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST100
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST100
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST102
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST102
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST142
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST142
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+//ForestDust
+//0
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST200
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST200
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST202
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST202
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST207
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST207
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+//1
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST210
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST210
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST212
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST212
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+//2
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST220
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST220
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST222
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST222
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST227
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST227
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+//3
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST230
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST230
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST232
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST232
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST237
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST237
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+//4
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST240
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST240
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MECHOS_DUST242
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MECHOS_DUST242
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_WHITE_STONE_DUST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_WHITE_STONE_DUST
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+//TakeBonusProtection
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_PROTECTION_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_PROTECTION_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_PROTECTION_ELECTRIC
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_PROTECTION_ELECTRIC
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_PROTECTION_ARMOR
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_PROTECTION_ARMOR
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_TAKE_BONUS_PROTECTION_BIO
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_TAKE_BONUS_PROTECTION_BIO
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_SNOW_FALL_EXPLOSION
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SNOW_FALL_EXPLOSION
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_SNOW_FALL
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SNOW_FALL
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR5S
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_FIRE_CLOUDS
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FIRE_CLOUDS
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_SNOW_BULLET
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SNOW_BULLET
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_FIRE_BULLET
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_FIRE_BULLET
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_BONUS_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BONUS_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_DRAGON_ROSE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_DRAGON_ROSE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_SPLINE_WAY
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_SPLINE_WAY
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_HEAD_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_HEAD_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_SPRAY
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_SPRAY
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_STORM_SPARK
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_STORM_SPARK
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_CLOUDS
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_CLOUDS
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_QUAD_SPARK
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_QUAD_SPARK
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_SPARK
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_SPARK
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_BUBBLE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_BUBBLE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_TREE_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_TREE_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+
+	SpriteID $FXLAB_ID_SPRITE_CHARACTER_BUBBLE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CHARACTER_BUBBLE
+		SpriteTextureID		$FXLAB_ID_IMAGE_BUBBLE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_BOSS_STEAM
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BOSS_STEAM
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}	
+
+	SpriteID $FXLAB_ID_SPRITE_BOSS_SMOKE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BOSS_SMOKE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_WATERFALL_FOG
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_WATERFALL_FOG
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_BOSS_WATER
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_BOSS_WATER
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_CHARACTER_WORLD_BURST
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CHARACTER_WORLD_BURST
+		SpriteTextureID		$FXLAB_ID_IMAGE_STAR4
+	}
+	
+	SpriteID $FXLAB_ID_SPRITE_CHARACTER_WORLD_EXPLOSION
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_CHARACTER_WORLD_EXPLOSION
+		SpriteTextureID		$FXLAB_ID_IMAGE_BUBBLE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_DRAGON_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_DRAGON_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_ROCKET_FIRE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_ROCKET_FIRE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+
+	SpriteID $FXLAB_ID_SPRITE_MOVIE_ROCKET_SMOKE
+	{
+		SpritePhaseNum		16
+		SpriteKeyID			$FXLAB_ID_KEY_CORE_MOVIE_ROCKET_SMOKE
+		SpriteTextureID		$FXLAB_ID_IMAGE_SPHERE
+	}
+}

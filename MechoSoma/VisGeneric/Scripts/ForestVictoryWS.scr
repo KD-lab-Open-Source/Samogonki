@@ -1,0 +1,84 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\forestvictory_snd.scb"
+
+AnimScript	2
+{ // 7166
+        music_track             15
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut24\"
+        name_wsc			"RESOURCE\WORLDSCRIPT\Cut24\test.wsc"
+	Sound				$EFF_VICTORY_ROTATE
+	{
+		animtime	         7500	12000
+	}
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         2300	8000
+	}
+
+	Sound				$EFF_VICTORY_OUT_TELEPORT
+	{
+		animtime	         2900   12000
+	}
+	Sound				$EFF_VICTORY_TELEPORT
+	{
+		animtime	         3700   12000
+	}
+        Sound				$EFF_VICTORY_FOREST_FROG_FALL
+	{
+		animtime	         5090	6900
+	}
+	Sound				$EFF_BV_FOREST_FROG
+	{
+		animtime	         3600   12000
+	}
+        Sound				$EFF_BV_FOREST_FROG_JUMP
+	{
+		animtime	         5350	7000
+	}
+        Sound				$EFF_VICTORY_FOREST_FROG_FALL
+	{
+		animtime	         7050	10000
+	}
+
+        Sound				$EFF_BV_FOREST_FROG_JUMP
+	{
+		animtime	         7200	10000
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         7300	7699
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         7700	8100
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         8150	8650
+	}
+
+	Sound				$EFF_VICTORY_TRANSFORM_PAD
+	{
+		animtime	         8200   12000
+	}
+	Sound				$EFF_ANIMATION_7_OUTRUN
+	{
+		animtime	         9100   12000
+	}
+
+	Sound				$EFF_VICTORY_FOREST_LAMP
+	{
+		animtime	         9200   12000
+	}
+	Sound				$EFF_ANIMATION_7_BONUS
+	{
+		animtime	         11000   13000
+	}
+
+
+         
+}

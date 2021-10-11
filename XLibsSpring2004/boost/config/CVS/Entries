@@ -1,0 +1,14 @@
+/posix_features.hpp/1.15/Sat Oct 04 11:28:55 2003//
+/select_platform_config.hpp/1.6/Sat Oct 04 11:28:55 2003//
+/select_stdlib_config.hpp/1.9/Sat Oct 04 11:28:55 2003//
+D/abi////
+D/compiler////
+D/platform////
+D/stdlib////
+/abi_prefix.hpp/1.1/Tue Nov 25 18:28:08 2003//
+/abi_suffix.hpp/1.1/Tue Nov 25 18:28:08 2003//
+/suffix.hpp/1.30/Wed Dec 17 08:57:13 2003//
+/requires_threads.hpp/1.1/Sat Dec 20 11:54:47 2003//
+/select_compiler_config.hpp/1.10/Tue Jan 06 08:37:58 2004//
+/user.hpp/1.7/Tue Jan 13 16:26:39 2004//
+/auto_link.hpp/1.9/Thu Feb 05 16:02:57 2004//

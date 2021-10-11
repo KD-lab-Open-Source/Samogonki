@@ -1,0 +1,21 @@
+section GamePrm ( declaration = "xreal\gen_game.h", definition = "xreal\gen_game.cpp" )
+{
+
+// Forest5 
+float Forest5_water_damage = 8.;
+
+// Bonus: Acceleration / Life / Mana / Star
+string bonus_men_cfg = "3 2 2 1";
+
+// Speed bonus
+float mechos_speed_increment_by_bonus_factor = 1.2;
+float mechos_max_bonus_to_take = 10.;
+
+// Max tractions
+float MountainBossMaxTraction = 1.2;
+float WaterBossMaxTraction = 1.07;
+float ForestBossMaxTraction = 1;
+float LavaBossMaxTraction = 1.4;
+float WatchBossMaxTraction = 1.6;
+
+}

@@ -1,0 +1,46 @@
+#include "VisGeneric\Scripts\WorldSetup.h"
+// default
+char*		default_object3d_path	$WORLD_DEFAULT_OBJECT3D_PATH
+char*		default_texture_path	$WORLD_DEFAULT_TEXTURE_PATH
+char*		default_water_path		$WORLD_DEFAULT_WATER_PATH
+int			default_attribute		$WORLD_DEFAULT_ATTRIBUTE
+int			default_air_height		$WORLD_DEFAULT_AIR_HEIGHT
+int			default_cloud_height	$WORLD_DEFAULT_CLOUD_HEIGHT
+int			RadiusShare				$WORLD_RADIUS_SHARE
+char*		default_texture_sun		$WORLD_DEFAULT_TEXTURE_SUN
+char*		default_texture_moon	$WORLD_DEFAULT_TEXTURE_MOON
+char*		default_file_tilemap	$WORLD_DEFAULT_FILE_TILEMAP
+char*		default_file_objectmap	$WORLD_DEFAULT_FILE_OBJECTMAP
+char*		default_file_omnimap	$WORLD_DEFAULT_FILE_OMNIMAP
+// map
+int			world					$WORLD_STRUCT
+char*		object3d_path			$WORLD_OBJECT3D_PATH
+char*		texture_path			$WORLD_TEXTURE_PATH
+char*		file_tilemap			$WORLD_FILE_TILEMAP
+char*		file_objectmap			$WORLD_FILE_OBJECTMAP
+char*		file_omnimap			$WORLD_FILE_OMNIMAP
+int			attribute				$WORLD_ATTRIBUTE
+// water
+int			WaterTailSize			$WORLD_WATER_TILESIZE
+char*		WaterTexture			$WORLD_WATER_TEXTURE
+int			WaterEnvMap				$WORLD_WATER_ENVMAP
+double[7]	WaterTextureScale		$WORLD_WATER_TEXTURE_SCALE
+double[7]	WaterTextureVelocityX	$WORLD_WATER_TEXTURE_VELOCITYX
+double[7]	WaterTextureVelocityY	$WORLD_WATER_TEXTURE_VELOCITYY
+// небо мира
+char*		AirTexture				$WORLD_AIR_TEXTURE
+int			AirTileSize				$WORLD_AIR_TILESIZE
+double[7]	AirTextureScale			$WORLD_AIR_TEXTURE_SCALE
+double[7]	AirTextureVelocityX		$WORLD_AIR_TEXTURE_VELOCITYX
+double[7]	AirTextureVelocityY		$WORLD_AIR_TEXTURE_VELOCITYY
+// облака мира
+char*		CloudTexture			$WORLD_CLOUD_TEXTURE
+char*		CloudOpacity			$WORLD_CLOUD_OPACITY
+int			CloudTileSize			$WORLD_CLOUD_TILESIZE
+double[7]	CloudTextureScale		$WORLD_CLOUD_TEXTURE_SCALE
+double[7]	CloudTextureVelocityX	$WORLD_CLOUD_TEXTURE_VELOCITYX
+double[7]	CloudTextureVelocityY	$WORLD_CLOUD_TEXTURE_VELOCITYY
+//
+double[4]	ColorAmbientAir			$WORLD_COLOR_AMBIENT_AIR
+double		KoofReflectionSurface	$WORLD_REFLECTION_SURFACE
+double[7]	ColorAmbientObject		$WORLD_COLOR_AMBIENT_OBJECT

@@ -1,0 +1,444 @@
+#include "IVISGENERIC\world_id.h"
+
+default_object3d_path		"RESOURCE\MODEL3D\"
+default_texture_path		"RESOURCE\MODEL3D\TEXTURES\"
+default_water_path			"RESOURCE\FX\WAVE\"
+default_attribute			0
+default_air_height			700								// высота неба над миром
+default_cloud_height		650								// высота облаков над миром
+RadiusShare					1500
+default_texture_sun			"sun.bmp"
+default_texture_moon		"moon.bmp"
+default_file_tilemap		"output.tlm"
+default_file_objectmap		"m3d.dat"
+default_file_omnimap		"cls.dat"
+
+world $WORLD_MOUNTAIN
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"mount_water0.bmp mount_water1.bmp mount_water2.bmp mount_water3.bmp mount_water4.bmp mount_water5.bmp mount_water6.bmp mount_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"mount_air0.bmp mount_air1.bmp mount_air2.bmp mount_air3.bmp mount_air4.bmp mount_air5.bmp mount_air6.bmp mount_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"mount_cloud0.bmp mount_cloud1.bmp mount_cloud2.bmp mount_cloud3.bmp mount_cloud4.bmp mount_cloud5.bmp mount_cloud6.bmp mount_cloud7.bmp"
+	CloudOpacity			"mount_clouda0.bmp mount_clouda1.bmp mount_clouda2.bmp mount_clouda3.bmp mount_clouda4.bmp mount_clouda5.bmp mount_clouda6.bmp mount_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface	0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_WATER 
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"water_water0.bmp water_water1.bmp water_water2.bmp water_water3.bmp water_water4.bmp water_water5.bmp water_water6.bmp water_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"water_air0.bmp water_air1.bmp water_air2.bmp water_air3.bmp water_air4.bmp water_air5.bmp water_air6.bmp water_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.0002	0.000	0.0002	0.0002	0.0002	0.0002	0.0002
+// облака мира
+	CloudTexture			"water_cloud0.bmp water_cloud1.bmp water_cloud2.bmp water_cloud3.bmp water_cloud4.bmp water_cloud5.bmp water_cloud6.bmp water_cloud7.bmp"
+	CloudOpacity			"water_clouda0.bmp water_clouda1.bmp water_clouda2.bmp water_clouda3.bmp water_clouda4.bmp water_clouda5.bmp water_clouda6.bmp water_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_FOREST
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_TOWN
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"town_water0.bmp town_water1.bmp town_water2.bmp town_water3.bmp town_water4.bmp town_water5.bmp town_water6.bmp town_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"town_air0.bmp town_air1.bmp town_air2.bmp town_air3.bmp town_air4.bmp town_air5.bmp town_air6.bmp town_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_LAVA
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"lava_water0.bmp lava_water1.bmp lava_water2.bmp lava_water3.bmp lava_water4.bmp lava_water5.bmp lava_water6.bmp lava_water7.bmp"
+	WaterEnvMap				0
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"lava_air0.bmp lava_air1.bmp lava_air2.bmp lava_air3.bmp lava_air4.bmp lava_air5.bmp lava_air6.bmp lava_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"lava_cloud0.bmp lava_cloud1.bmp lava_cloud2.bmp lava_cloud3.bmp lava_cloud4.bmp lava_cloud5.bmp lava_cloud6.bmp lava_cloud7.bmp"
+	CloudOpacity			"lava_clouda0.bmp lava_clouda1.bmp lava_clouda2.bmp lava_clouda3.bmp lava_clouda4.bmp lava_clouda5.bmp lava_clouda6.bmp lava_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_DOLLY
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_MECHANIC
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_INTERFACE
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"interface_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"interface_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface	0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_WATCH
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"watch_air0.bmp watch_air1.bmp watch_air2.bmp watch_air3.bmp watch_air4.bmp watch_air5.bmp watch_air6.bmp watch_air7.bmp"
+//	WaterTexture			"watch_water0.bmp watch_water1.bmp watch_water2.bmp watch_water3.bmp watch_water4.bmp watch_water5.bmp watch_water6.bmp watch_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"watch_air0.bmp watch_air1.bmp watch_air2.bmp watch_air3.bmp watch_air4.bmp watch_air5.bmp watch_air6.bmp watch_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"watch_cloud0.bmp watch_cloud1.bmp watch_cloud2.bmp watch_cloud3.bmp watch_cloud4.bmp watch_cloud5.bmp watch_cloud6.bmp watch_cloud7.bmp"
+	CloudOpacity			"watch_clouda0.bmp watch_clouda1.bmp watch_clouda2.bmp watch_clouda3.bmp watch_clouda4.bmp watch_clouda5.bmp watch_clouda6.bmp watch_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_VID
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_FORESTS
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_WATERS
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}
+
+world $WORLD_MOUNTS
+{
+// полигональная карта ммра
+//	object3d_path			"RESOURCE\MODEL3D\"
+//	texture_path			"RESOURCE\MODEL3D\TEXTURES\"
+	attribute				0
+// вода на мире
+	WaterTailSize			32
+	WaterTexture			"forest_water0.bmp forest_water1.bmp forest_water2.bmp forest_water3.bmp forest_water4.bmp forest_water5.bmp forest_water6.bmp forest_water7.bmp"
+	WaterEnvMap				1
+	WaterTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0		
+	WaterTextureVelocityX	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	
+	WaterTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0		
+// небо мира
+	AirTexture				"forest_air0.bmp forest_air1.bmp forest_air2.bmp forest_air3.bmp forest_air4.bmp forest_air5.bmp forest_air6.bmp forest_air7.bmp"
+	AirTileSize				256
+	AirTextureScale			4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	AirTextureVelocityX		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+	AirTextureVelocityY		0.00002	0.00002	0.00002	0.00002	0.00002	0.00002	0.00002
+// облака мира
+	CloudTexture			"forest_cloud0.bmp forest_cloud1.bmp forest_cloud2.bmp forest_cloud3.bmp forest_cloud4.bmp forest_cloud5.bmp forest_cloud6.bmp forest_cloud7.bmp"
+	CloudOpacity			"forest_clouda0.bmp forest_clouda1.bmp forest_clouda2.bmp forest_clouda3.bmp forest_clouda4.bmp forest_clouda5.bmp forest_clouda6.bmp forest_clouda7.bmp"
+	CloudTileSize			256
+	CloudTextureScale		4.0		4.0		4.0		4.0		4.0		4.0		4.0
+	CloudTextureVelocityX	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002	0.0002
+	CloudTextureVelocityY	0.0		0.0		0.0		0.0		0.0		0.0		0.0
+// амбиентный источник света для неба и облаков
+	ColorAmbientAir			0.0 0.0 0.0 1.0
+	KoofReflectionSurface   0.70
+// белый амбиентный источник света для объектов
+	ColorAmbientObject		0.0		0.0		0.0		0.0		0.0		0.0		0.0
+}

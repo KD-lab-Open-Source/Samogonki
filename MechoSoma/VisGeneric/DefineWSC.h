@@ -1,0 +1,22 @@
+#ifndef __DEFINEWSC_H__
+#define __DEFINEWSC_H__
+
+#define WSC_VERSION						"WSC 1.0"
+
+// описание dummy
+#define WSC_CONNECT_OBJECT				"$CONNECT"
+#define WSC_STARTFRAME					"$STARTFRAME"
+#define WSC_FINISHFRAME					"$FINISHFRAME"
+#define WSC_NUMBERFRAME					"$NUMBERFRAME"
+#define WSC_SECPERFRAME					"$SECPERFRAME"
+#define WSC_CREATE_OBJECT				"$CREATE_OBJECT"
+#define WSC_CONNECT_VISIBLE				"$Vis"
+#define WSC_CONNECT_POSITION			"$Pos"
+#define WSC_CONNECT_ROTATION			"$Rot"
+#define WSC_CONNECT_SCALE				"$Scale"
+#define WSC_ORIENTATION					"$ORIENTATION"
+#define WSC_CREATE_SPECIALEFFECT		"$CREATE_SPECIALEFFECT"
+#define WSC_CREATE_CAMERA				"$CREATE_CAMERA"
+#define WSC_TARGET						"$TARGET"
+
+#endif //__DEFINEWSC_H__

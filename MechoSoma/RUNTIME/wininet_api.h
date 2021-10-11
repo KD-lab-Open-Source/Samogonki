@@ -1,0 +1,97 @@
+
+#ifndef __WININET_API_H__
+#define __WININET_API_H__
+
+struct wiCriticalSection
+{
+	void* csection;
+	wiCriticalSection(void *section);
+	~wiCriticalSection(void);
+};
+
+const int WI_TEMP_BUFFER_SIZE	= 512;
+
+enum wiStatus 
+{
+	WI_IDLE = 0,
+	WI_GET,
+	WI_POST,
+	WI_FINISHED,
+	WI_LOAD_FILE,
+	WI_ERROR
+};
+
+// wiDispatcher::flags
+const int WI_REQUEST_COMPLETED	= 0x01;
+
+class wiDispatcher
+{
+	int flags;
+	int status;
+
+	void* hConnect;
+	void* hRequest;
+
+	void* reqContext;
+
+	int inSize;
+	int inPos;
+	char* inBuffer;
+
+	int outSize;
+	int outPos;
+	char* outBuffer;
+
+//	char tmpBuffer[WI_TEMP_BUFFER_SIZE];
+
+public:
+	void set_error(void){ 
+		status = WI_ERROR; 
+	}
+
+	void set_status(int st){
+		status = st;
+	}
+
+	int get_status(void) const { return status; }
+	int get_request_status(void);
+	char* get_request_status_str(void);
+
+	void alloc_inbuf(int sz);
+	void expand_inbuf(int sz);
+	void free_inbuf(void);
+
+	void alloc_outbuf(int sz);
+	void free_outbuf(void);
+
+	int input_pos(void) const { return inPos; }
+	int input_size(void) const { return inSize; }
+	char* input_buffer(void) { return inBuffer; }
+
+	int output_pos(void) const { return outPos; }
+	int output_size(void) const { return outSize; }
+	char* output_buffer(void) { return outBuffer; }
+
+	int connect(char* server,unsigned int port);
+	void disconnect(void);
+
+	int open_request(int action,char* obj,char* header = 0,int header_len = 0,char* data = 0,int data_len = 0);
+	void close_request(void);
+
+	void quant(void);
+
+	wiDispatcher(void);
+	~wiDispatcher(void);
+};
+
+void wiInit(void);
+void wiFinit(void);
+
+extern wiDispatcher wi_D;
+extern char* wiServerName;
+extern char* wiGameURL;
+extern int wiServerPort;
+
+extern void* wiCritical;
+
+#endif /* __WININET_API_H__ */

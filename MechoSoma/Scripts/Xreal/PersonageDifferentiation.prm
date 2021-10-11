@@ -1,0 +1,260 @@
+section PersonageDifferetiationPrm ( declaration = "xreal\PersonageDifferetiationPrm.h", definition = "xreal\gen_personagedifferntiation.cpp")
+{
+
+float mechos_energy_max = 100; // самая большая энергия 
+
+struct PersonageDifferetiationData
+{
+string name = "default";
+string russian_name = "default";
+
+float energy_max = 100; 
+float mana_charge_factor = 1; // Скорость зарядки маны
+float mana_using_speed = 1;	// Скорость использования маны
+float arcan_using_effectiveness = 1;	// Эффективность использования арканов
+
+/////////// Динамические праметры по умолчанию  /////////////////
+
+// Rudder
+float rudder_incr = 1.2;  // скорость поворота колес (возвращаются мгновенно) (relative to evolve_time_step)
+float max_rudder_angle_original = .8;	// Максимальный угол поворота колес - Handling
+float mechos_rudder_speed_decrease_factor = 0.05;  // Снижение угла со скоростью: y = 1/(1 + factor*v), т.е. чем больше фактор, тем больше снижает
+
+// Traction
+float mechos_max_velocity_threshould = 75;
+float mechos_traction_speed_decrease_factor = 0.1;
+float mechos_forward_wheel_drive_torque = 100;
+float mechos_backward_wheel_drive_torque = 100;
+
+// Brake
+float mechos_auto_brake_torque = 4;
+float mechos_auto_brake_damping = .8;
+float mechos_brake_torque = 100;
+
+
+/////////// Configuration  //////////////
+// General
+float mechos_density = 1.e-004;
+float mechos_CM_z_offset = 0;  // над осями колес
+
+// Параметры подвески
+float mechos_wheel_mass = .1;
+float mechos_wheel_penetration = 6;
+float mechos_wheel_z_offset = 3;
+float mechos_suspension_damping_scale = 0.1;
+float mechos_wheel_friction_factor = 1;  //  Множитель для базового трения, определяемого поверхностью
+
+// Wheels
+float mechos_wheel_radius = 7;
+
+// Box scale
+float mechos_xsize_scale = 1;
+float mechos_zsize_scale = 0.6;
+
+// Spherical bound
+float mechos_front_sphere_radius = 12;
+float mechos_front_sphere_dy = 10;  // вперед от оси колес
+float mechos_front_sphere_dz = 12;  // над осью колеса 
+float mechos_border_sphere_radius = 12;
+float mechos_border_sphere_dx = 0;  // от оси колеса
+float mechos_border_sphere_dy = 0;  // от оси колеса
+float mechos_border_sphere_dz = 12;  // над осью колеса
+float mechos_engine_sphere_radius = 12;
+float mechos_engine_sphere_dz = 12;  // над осью колеса
+};
+
+PersonageDifferetiationData personage_diff_data[] = {
+
+//////////////////////////////////////////////////////////////
+//                Main personages
+//////////////////////////////////////////////////////////////
+
+{	
+russian_name = "РАЗБУХ";
+name = "PADDER";
+
+energy_max = 130; 
+
+max_rudder_angle_original = .8;
+mechos_forward_wheel_drive_torque = 90;
+mechos_backward_wheel_drive_torque = 90;
+
+},
+
+
+{	
+russian_name = "ХВОЗДЬ";
+name = "NAILER";
+
+energy_max = 120; 
+
+max_rudder_angle_original = .72;
+mechos_forward_wheel_drive_torque = 100;
+mechos_backward_wheel_drive_torque = 100;
+
+}, 
+
+{	
+russian_name = "ТЮТЕЛЬ";
+name = "GOGGLEM";
+
+energy_max = 100; 
+
+max_rudder_angle_original = .88;
+mechos_forward_wheel_drive_torque = 110;
+mechos_backward_wheel_drive_torque = 110;
+
+}, 
+
+{	
+russian_name = "АРКАН";
+name = "ARK-A-N";
+
+energy_max = 120; 
+
+max_rudder_angle_original = .8;
+mechos_forward_wheel_drive_torque = 100;
+mechos_backward_wheel_drive_torque = 100;
+
+}, 
+
+{	
+russian_name = "ГИРЯ";
+name = "BELLA";
+
+energy_max = 140; 
+
+max_rudder_angle_original = 0.64; // .72;  80 %
+mechos_forward_wheel_drive_torque = 110;
+mechos_backward_wheel_drive_torque = 110;
+
+}, 
+
+
+//////////////////////////////////////////////////////////////
+//                 Additional
+//////////////////////////////////////////////////////////////
+
+{	
+russian_name = "ПИСТОН";
+name = "4eyes";
+
+energy_max = 200; 
+
+max_rudder_angle_original = .72;
+mechos_forward_wheel_drive_torque = 100;
+mechos_backward_wheel_drive_torque = 100;
+
+}, 
+
+{	
+russian_name = "ЛАМПА";
+name = "Lipman";
+
+energy_max = 180; 
+
+max_rudder_angle_original = .8;
+mechos_forward_wheel_drive_torque = 90;
+mechos_backward_wheel_drive_torque = 90;
+
+}, 
+
+{	
+russian_name = "САМУРАЙ";
+name = "Swab";
+
+energy_max = 200; 
+
+max_rudder_angle_original = .88;
+mechos_forward_wheel_drive_torque = 90;
+mechos_backward_wheel_drive_torque = 90;
+
+}, 
+
+{	
+russian_name = "МЯСОРУБКА";
+name = "Leechy";
+
+energy_max = 200; 
+
+max_rudder_angle_original = .96; //.8;  120 %
+mechos_forward_wheel_drive_torque = 90;
+mechos_backward_wheel_drive_torque = 90;
+
+}, 
+
+
+{	
+russian_name = "КАСПЕР";
+name = "Vampo";
+
+energy_max = 160; 
+
+max_rudder_angle_original = .72;
+mechos_forward_wheel_drive_torque = 100;
+mechos_backward_wheel_drive_torque = 100;
+
+} 
+
+
+};
+
+/////////////////////////////////////////////////////////////////////
+//		Параметры поверхности
+/////////////////////////////////////////////////////////////////////
+struct WheelContactProperty
+{
+	float static_friction = 2.5;
+	float dynamic_friction = 2.5;
+	float brake_torque = 0;
+	float brake_damping = 0;
+};
+
+WheelContactProperty terrain_contact_property_array[] = {
+
+{ // Asphalt
+	static_friction = 5;
+	dynamic_friction = 5;
+	brake_torque = 0;
+},
+
+{ // Soil
+	static_friction = 5;
+	dynamic_friction = 5;
+	brake_torque = 0;
+},
+
+{ // Sand
+	static_friction = 1.;
+	dynamic_friction = 1.;
+	brake_torque = 0;
+},
+
+{ // Ice
+	static_friction = .9;
+	dynamic_friction = .9;
+	brake_torque = 0;
+}
+
+};
+
+
+WheelContactProperty gear_contact_property = {
+	static_friction = 2.5;
+	dynamic_friction = 2.5;
+	brake_torque = 0;
+};
+
+WheelContactProperty slime_contact_property = {
+	static_friction = .8;
+	dynamic_friction = .8;
+	brake_torque = 0;
+};
+
+WheelContactProperty stream_contact_property = {
+	static_friction = .8;
+	dynamic_friction = .8;
+	brake_torque = 0;
+};
+
+}

@@ -1,0 +1,134 @@
+section CameraPrm ( declaration = "xreal\CameraPrm.h", definition = "xreal\gen_camera.cpp" )
+{
+
+// General
+float fCamera = 512;
+int camera_integration_steps = 1;
+float camera_distance_min = 30;
+
+// Zoom
+int enable_zoom_by_wheel = 1;
+float camera_mouse_wheel_sensitivity = 0.125;
+float camera_zoom_sensitivity = 0.01;
+
+// Dynamic properties
+float camera_slope_mass_inv = 0.002;
+float camera_water_slope_mass_inv = 0.001;
+float camera_turn_mass_inv = 0.003;//0.025;
+float camera_distance_mass_inv = 0.0001;//0.001;
+float camera_centering_mass_inv = 0.001;
+float camera_const_input_mass_inv = 0.003;
+float camera_damping_factor = 1.9;
+
+// Cliped dynamic props
+float camera_position_mass_inv_cliped = 0.1;
+float camera_slope_mass_inv_cliped_up = 0.1;
+float camera_slope_mass_inv_cliped_down = 0.005;
+float camera_turn_mass_inv_cliped = 0.05;
+float camera_distance_mass_inv_cliped = 0.6;
+float camera_damping_factor_cliped = 3;
+
+// isInterpolationCompleted Logic
+int camera_setMode_interpolation_time = 1000;
+int camera_runStartTimeScenario_interpolation_time = 2000;
+int camera_setObserver_interpolation_time = 1000;
+
+// Clipping
+int camera_enable_clipping = 0;
+int camera_enable_static_objects_clipping = 0;
+int camera_enable_gears_clipping = 1;
+float camera_angle_step = 0.1;
+int from_desired_search_attempts = 50;
+float camera_theta_dominance = 10.;
+float camera_transparensy_distance = 35;
+float camera_transparensy_power = 3.5;
+float clip_ray_radius = 20;
+float clip_ray_t_min = 0.025;
+
+
+// S2G
+float S2G_clip_ray_radius = 0.01;
+
+// Scrolling
+float camera_scroll_damping_factor = 1.9;
+float camera_scroll_force_of_distance = 0.2;
+float camera_scroll_mass_inv = 1;
+float camera_fly_stop_time_scale_x = 0.3;
+float camera_fly_stop_time_scale_y = 0.3;
+float camera_scroll_move_of_distance = 0.002;
+float camera_scroll_move_max = 200;
+
+// Centering
+float centering_delta_default = 0.2; 
+float centering_delta_max = 0.4;
+
+// ускор€ющий спот
+float spot_acc_time = 2000;
+float spot_acc_front = 500;
+
+// наклон когда летишь
+float fly_slope = 60; 
+
+// зоом камеры при движении
+float zoom_by_speed = 0.4; // коэффициент
+float zoom_by_speed_velocity_max = 50; // максимальна€ скорость 
+
+// Start Scenario
+float start_scenario_slope0 = 90;
+float start_scenario_distance0 = 700;
+int start_scenario_time1 = 2000;
+int start_scenario_time2 = 400;
+
+// вращение на финише
+float finish_fly_angle_increment = .7f; 
+
+// скорость трек демонстрации
+float track_fly_z_offset = 90;
+int track_fly_enable_binary_search = 1;
+float track_fly_distance = 5;
+float track_fly_increment_initial = 1;
+float track_fly_increment_epsilon = 0.005f;
+float track_fly_increment = 0.1;
+
+// стоп тайм
+int rotation_when_stop_time_time = 250;
+float rotation_when_stop_time_speed = 1;
+float stop_time_z_offset = 50;
+float stop_time_dxy = 1e-4;
+float stop_time_max_step = 5;
+float stop_time_precision = 1;
+int stop_time_max_iterations = 100;
+float stop_time_hCamera = 512;
+float stop_time_share_radius_factor = 0.45;
+
+// free fly
+float free_fly_body_radius = 40;
+float free_fly_max_climb_angle = 1.8;
+float free_fly_roll_angle_decrement_factor = 0.01;
+// Vect3f free_fly_dragV = {4., 4., 4.};
+// Vect3f free_fly_torque_factor = {0.0025,0.01,-0.0025};
+// Vect3f free_fly_force_factor = {-200,-200,-200};
+
+// New clipping
+int camera_new_clip = 1;
+int camera_new_clip_reuse_clipping_number = 4;
+int camera_new_clip_x_size = 15;
+int camera_new_clip_y_size = 40;
+int camera_new_clip_average_distance = 100;
+float camera_z_buffer_x_dominance = 10;
+float camera_z_buffer_delta_z = 30;
+float camera_z_buffer_z_min = 10;
+float MAX_SLOPE_ANGLE = 90; // degree
+float SCAN_X_MAX = 100; 
+float camera_min_slope_angle_to_change_psi = 25; 
+float camera_clip_delta_origin = 60;
+float camera_clip_delta_final = 60;
+float camera_clip_distance_delta = 0;
+float camera_clip_distance_factor = 1.;
+
+// StaticObserverRotation
+float static_observer_rotation_speed = 1;
+
+float camera_turn_angle_delta = 0; // degrees
+												
+}

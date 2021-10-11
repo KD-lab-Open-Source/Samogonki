@@ -1,0 +1,71 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\mountainvictory_snd.scb"
+
+AnimScript	0
+{ // 6666
+        music_track             15
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut21\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut21\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         2600	8000
+	}
+	Sound				$EFF_VICTORY_OUT_TELEPORT
+	{
+		animtime	         3300   12000
+	}
+	Sound				$EFF_BV_MOUNTAIN_STONE
+	{
+		animtime	         3600   12000
+	}
+
+	Sound				$EFF_VICTORY_TELEPORT
+	{
+		animtime	         4400   12000
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         6000	6499
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         6500	8100
+	}
+	Sound				$EFF_VICTORY_KINETIC
+	{
+		animtime	         7500   14000
+	}
+        Sound                           $EFF_VICTORY_ROTATE
+        {
+                animtime                 6000   8000
+        }
+       
+        Sound                           $EFF_VICTORY_MOUNTAIN_WINDING
+        {
+                animtime                 8450   14000
+        }
+        Sound                           $EFF_VICTORY_MOUNTAIN_ROTATE
+        {
+                animtime                 9100   9799
+        }
+        Sound                           $EFF_VICTORY_MOUNTAIN_ROTATE
+        {
+                animtime                 9800   14000
+        }
+        Sound                           $EFF_ANIMATION_6_OUTRUN
+        {
+                animtime                 10600   14000
+        }
+
+        
+}
+
+
+
+
+
+

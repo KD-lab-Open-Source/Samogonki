@@ -1,0 +1,874 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+sound_script				"RESOURCE\SOUND\interface_snd.scb"
+
+
+// INTRO *****************************************************************
+
+AnimScript	"intro"
+{ // 12000
+	animtime		0	12000
+        music_track          14
+	Lighting			2
+	{
+		animtime		0	12000
+		startcolor		0	0	0	1
+		finishcolor		0	0	0	1
+	}
+	Text				"Far away, in a different dimension of life,"
+	{
+		animtime		0	11000
+		pos			0.25	0.3
+		color			1 1 0 1
+	}
+
+	Text				"There is another little world, the world of Samog..."
+	{
+		animtime		1000	11050
+		pos			0.25	0.36
+		color			1 1 0 1
+	}
+	Text				"With it's own rules and it's own legends."
+	{
+		animtime		2000	11100
+		pos			0.25	0.42
+		color			1 1 0 1
+	}
+	Text				"Learn the history of Samog's inhabitants,"
+	{
+		animtime		3000	11150
+		pos			0.25	0.48
+		color			1 1 0 1
+	}
+	Text				"They need your help now."
+	{
+		animtime		4000	11200
+		pos			0.25	0.54
+		color			1 1 0 1
+	}
+	Text				"Help them... If you can..."
+	{
+		animtime		5000	11250
+		pos			0.25	0.6
+		color			1 1 0 1
+	}
+
+}
+
+// DANCE1 *****************************************************************
+
+AnimScript	"cut00"
+{ // 8000
+        music_track					15
+  	object3d_path		"RESOURCE\WORLDSCRIPT\Cut00\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut00\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		0	0	0	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		7800	8000
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+	Sound				$EFF_INTRO_DANCE1
+	{
+		animtime		0	8000
+		parent			"Dragon_cut2"
+	}
+	Sound				$EFF_INTRO_DANCE2
+	{
+		animtime		0	8000
+		parent			"Tukan_cut02"
+	}
+	Sound				$EFF_INTRO_DANCE3
+	{
+		animtime		0	8000
+		parent			"Fat_cut2"
+	}
+	Sound				$EFF_INTRO_CHILDREN
+	{
+		animtime		0	8000
+		parent			"Tree"
+        }
+        Sound				$EFF_INTRO_PASSAGE
+	{
+		animtime		3000	8000
+        }
+	Text				"Some time ago it used to be a completely happy world!"
+	{
+		animtime		1500	7000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+}
+
+
+// DANCE2 ******************************************************************
+
+AnimScript	"cut01"
+{ // 5800
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut01\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut01\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		0	0	0	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		5500	5800
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+	Sound				$EFF_INTRO_DANCE1
+	{
+		animtime		0	8000
+		parent			"Dragon_cut2"
+	}
+	Sound				$EFF_INTRO_DANCE2
+	{
+		animtime		0	8000
+		parent			"Tukan_cut2"
+	}
+	Sound				$EFF_INTRO_DANCE3
+	{
+		animtime		0	8000
+		parent			"Fat_cut02"
+	}
+	Sound				$EFF_INTRO_CHILDREN
+	{
+		animtime		0	5800
+		parent			"Tree"
+	}
+	Text				"All inhabitants had a nice time playing and going about together..."
+	{
+		animtime		500	5000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+// DANCE3 ****************************************************************
+
+AnimScript	"cut02"
+{ // 8000
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut02\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut02\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		0	0	0	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		7500	8000
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+	Sound				$EFF_INTRO_DANCE1
+	{
+		animtime		0	8000
+		parent			"Dragon_cut2"
+	}
+	Sound				$EFF_INTRO_DANCE2
+	{
+		animtime		0	8000
+		parent			"Tukan_cut2"
+	}
+	Sound				$EFF_INTRO_DANCE3
+	{
+		animtime		0	8000
+		parent			"Fat_cut02"
+	}
+	Sound				$EFF_INTRO_CHILDREN
+	{
+		animtime		0	8000
+		parent			"Tree"
+	}
+	Sound				$EFF_INTRO_BIRD
+	{
+		animtime		2000	8000
+	}
+	Text				"It was a period of Real Happiness!"
+	{
+		animtime		500	7000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"All the dwellers thought that nobody could disturb their Airiness..."
+	{
+		animtime		3000	7000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+// SWIMMING SUPERMAN ********************************************************
+
+AnimScript	"cut03"
+{ // 5666
+        music_track                     16
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut03\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut03\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		1	1	1	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		5300	5700
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+      	Sound				$EFF_INTRO_SUPERMAN_PREJUMP
+	{
+		animtime		4000	5666
+		parent			"Super_Hero_cut3"
+	}
+	Sound				$EFF_INTRO_SUPERMAN_PREJUMP
+	{
+		animtime		4500	5666
+		parent			"Super_Hero_cut3"
+	}
+
+	Sound				$EFF_INTRO_SUPERMAN_JUMP
+	{
+		animtime		5000	5666
+		parent			"Super_Hero_cut3"
+	}
+	Text				"The core of Samog is a beautiful central planet,"
+	{
+		animtime		500	5000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"which is linked with other remote spheres by portals..."
+	{
+		animtime		500	5000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+AnimScript	"cut03a"
+{ // 12966
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut03a\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut03a\test.wsc"
+	Sound				$EFF_INTRO_HERO_LAUGH
+	{
+		animtime		9000	12000
+		parent			"Super_Hero_cut3"
+	}
+
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		1	1	1	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		12500	13000
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+	Text				"The first rule of Samog was:"
+	{
+		animtime		500	12000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Every inhabitant can freely travel from one planet to another..."
+	{
+		animtime		2000	12000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+}
+
+// LAVAMAN's FIREBELCH ****************************************************
+
+AnimScript	"cut05"
+{ // 13866
+        music_track					17
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut05\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut05\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		0	0	0	0
+//	}
+//	Lighting			2
+//	{
+//		animtime		13300	13900
+//		startcolor		0	0	0	0
+//		finishcolor		0	0	0	0.5
+//	}
+	Sound				$EFF_START_TELEPORT
+	{
+		animtime		0	3000
+		parent			"Dracon_cut5"
+	}
+	Sound				$EFF_INTRO_LAVA_BLOWN
+	{
+		animtime		2000	3000
+		parent			"Dracon_cut5"
+	}
+	Text				"It was so impressive to visit outer worlds and get back home with new experience."
+	{
+		animtime		500	5000
+		pos			0.05	0.91
+		color			1 1 0 1
+	}
+	Text				"Oh, that unforgettable planet of Lava!"
+	{
+		animtime		700	5000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"They could even fly sometimes!"
+	{
+		animtime		7000	13000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+// DOG'S JUMPS ************************************************************
+
+AnimScript	"cut06"
+{ // 20000
+        music_track					18
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut06\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut06\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   0.5
+//		finishcolor		0	0	0	0
+//	}
+	Lighting			2
+	{
+		animtime		200	20000
+		startcolor		0	0	0	0
+		finishcolor		0	0	0	0.5
+	}
+	Sound				$EFF_INTRO_GIRL_LAUGH
+	{
+		animtime		1000	20000
+		parent			"Girl_cut6"
+	}
+	Sound				$EFF_INTRO_DOG_BARK
+	{
+		animtime		5000	20000
+		parent			"dog_cut6"
+	}
+	Sound				$EFF_INTRO_DOG_BARK
+	{
+		animtime		6500	20000
+		parent			"dog_cut6"
+	}
+	Text				"Things looked fine. Samog lived it's own easygoing life..."
+	{
+		animtime		2000	10000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"But suddenly......"
+	{
+		animtime		12000	15000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Something really awful happened..."
+	{
+		animtime		15500	19000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+      
+}
+
+// PERSONAGES RUN AWAY ***************************************************
+
+AnimScript	"cut07a"
+{ // 2700
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut07a\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut07a\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor      0   0   0   1.0
+//		finishcolor		0	0	0	0.6
+//	}
+	Lighting			2
+	{
+		animtime		0	2700
+		startcolor		0	0	0	0.6
+		finishcolor		0	0	0	0.6
+	}
+//	Lighting			3
+//	{
+//		animtime		2200	2700
+//		startcolor		0	0	0	0.6
+//		finishcolor		0	0	0	1.0
+//	}
+	Text				"Evil Mage was the name of this disaster!"
+	{
+		animtime		200	2500
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+}
+
+// LAVAMAN RUNS ***********************************************************
+
+AnimScript	"cut08"
+{ // 2300
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut08\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut08\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+	Text				"Poor dwellers attempted to run away..."
+	{
+		animtime		200	2100
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+// LAVAMAN -> DRAGON ******************************************************
+
+AnimScript	"cut09"
+{ // 10000
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut09\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut09\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+	Lighting			3
+	{ // молния
+		animtime		3500	3900
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Sound				$EFF_INTRO_TRANSFORM
+	{
+		animtime		5000	10000
+		parent			"Dracon_cut7"
+	}
+	Sound				$EFF_INTRO_SCREAM_LAVA
+	{
+		animtime		5500	10000
+		parent			"Dragon_Fly_cut7"
+	}
+	Sound				$EFF_INTRO_WIND
+	{
+		animtime		7000	10000
+	}
+	Text				"But it was impossible..."
+	{
+		animtime		500	9000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Evil Mage grabbed them all and took away their souls..."
+	{
+		animtime		2500	9000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+        
+}
+
+// OCHKARIK -> STONE *******************************************************
+
+AnimScript	"cut10"
+{ // 6666
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut10\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut10\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+	Lighting			3
+	{ // молния
+		animtime		300	1000
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Sound				$EFF_SOAP_BUBBLE_ADD
+	{
+		animtime		800	6666
+		parent			"Boy_cut8"
+	}
+	Sound				$EFF_KINETIC_HIT
+	{
+		animtime		4500	6666
+		parent			"StoneBoss_cut8"
+	}
+	Sound				$EFF_INTRO_SCREAM_MOUNTAIN
+	{
+		animtime		3100	6666
+		parent			"StoneBoss_cut8"
+	}
+	Sound				$EFF_INTRO_WIND
+	{
+		animtime		5000	6666
+	}
+	Text				"Many inhabitants were bewitched in dire monsters..."
+	{
+		animtime		500	6000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+ 
+// DOG FEARS **************************************************************
+
+AnimScript	"cut11"
+{ // 10000
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut11\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut11\test.wsc"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+        Sound				$EFF_INTRO_DOG_FEAR
+	{
+		animtime		0	8000
+		parent			"Dog_cut11"
+	}
+        Sound				$EFF_INTRO_TREE_BURNING
+	{
+		animtime		6000	10000
+		parent			"Tree"
+	}
+       
+	Lighting			3
+	{ // молния
+		animtime		800	1300
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Lighting			4
+	{ // молния
+		animtime		2200	3000
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Lighting			5
+	{ // молния
+		animtime		5100	5600
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Text				"The only creature that managed to survive"
+	{
+		animtime		500	9000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"was a friendly dog Borsh..."
+	{
+		animtime		3000	9000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+}
+
+// GIRL -> FROG ************************************************************
+
+AnimScript	"cut12"
+{ // 11000
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut12\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut12\test.wsc"
+	VisibleObject		"Boss_Death.3DS"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+	Lighting			3
+	{ // молния
+		animtime		4400	5000
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Lighting			4
+	{ // молния
+		animtime		6600	7000
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Sound				$EFF_INTRO_TRANSFORM
+	{
+		animtime		7500	11000
+		parent			"Frog_cut16"
+	}
+	Sound				$EFF_INTRO_SCREAM_FOREST
+	{
+		animtime		8500	11000
+		parent			"FrogBody_cut16"
+	}
+	Sound				$EFF_INTRO_WIND
+	{
+		animtime		9500	11000
+	}
+	Text				"Half of Samog's population were turned into scary Bosses"
+	{
+		animtime		1000	10000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"who immediately started to guard the portals to outer spheres..."
+	{
+		animtime		3000	10000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+
+// SAILOR -> WHALE ********************************************************** 
+
+AnimScript	"cut13"
+{ // 8000
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut13\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut13\test.wsc"
+	VisibleObject		"Boss_Death.3DS"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	100000
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.5
+	}
+	Lighting			3
+	{ // молния
+		animtime		2300	3000
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Lighting			4
+	{ // молния
+		animtime		3100	3600
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Lighting			5
+	{ // молния
+		animtime		5000	5500
+		startcolor		1	1	1	0.5
+		finishcolor		1	1	1	0.0
+	}
+	Sound				$EFF_INTRO_TRANSFORM
+	{
+		animtime		5600	8000
+		parent			"Fat_cut15"
+	}
+	Sound				$EFF_INTRO_SCREAM_WATER
+	{
+		animtime		6100	8000
+		parent			"Kit_cut15"
+	}
+	Text				"No one was allowed to use the portals the usual way..."
+	{
+		animtime		1000	7000
+		pos			0.5	0.91
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"From now on you need to pay! - such was a new rule from Evil Mage."
+	{
+		animtime		3000	7000
+		pos			0.5	0.95
+		color			1 1 0 1
+		centered		1
+	}
+
+}
+
+//  STATUE ***************************************************************
+AnimScript	"cut14"
+{ // 21700
+        music_track					19
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut14\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut14\test.wsc"
+//	VisibleAllObject	1
+	VisibleObject		"Boss_Death.3DS"
+	VisibleObject		"Boss_Pauk.3ds"
+	VisibleObject		"Boss_Kit.3DS"
+	VisibleObject		"Boss_Dragon.3DS"
+	VisibleObject		"Boss_Frog.3DS"
+	VisibleObject		"Boss_Stone.3DS"
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	1
+//		finishcolor		0	0	0	0.5
+//	}
+	Lighting			2
+	{
+		animtime		0	21700
+		startcolor		0	0	0	0.5
+		finishcolor		0	0	0	0.0
+	}
+//	Lighting			3
+//	{
+//		animtime		21300	21700
+//		startcolor		0	0	0	0.0
+//		finishcolor		0	0	0	0.5
+//	}
+	Text				"Samog's Universe became completely changed..."
+	{
+		animtime		500	4000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Now it is only you who can save the bewitched friends!"
+	{
+		animtime		6000	20000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+}
+
+// EPILOGUE ****************************************************************
+
+AnimScript	"cut15"
+{ // 20000
+        music_track					20
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut15\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut15\test.wsc"
+//	VisibleAllObject	1
+	VisibleObject		"Boss_Death.3DS"
+	VisibleObject		"Boss_Pauk.3ds"
+	VisibleObject		"Boss_Kit.3DS"
+	VisibleObject		"Boss_Dragon.3DS"
+	VisibleObject		"Boss_Frog.3DS"
+	VisibleObject		"Boss_Stone.3DS"
+	Sound				$EFF_INTRO_DOG_EPILOGUE
+	{
+		animtime		1500	20000
+	}
+
+
+//	Lighting			1
+//	{
+//		animtime		0   200
+//		startcolor		0	0	0	0.5
+//		finishcolor		0	0	0	0.0
+//	}
+	Text				"Control the Runners and earn the Stars in the races!"
+	{
+		animtime		1000	7000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Use magic spells to win!"
+	{
+		animtime		8000	14000
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+	Text				"Beat the Bosses and save the Samog from Evil Mage!"
+	{
+		animtime		15000	19500
+		pos			0.5	0.93
+		color			1 1 0 1
+		centered		1
+	}
+}
+

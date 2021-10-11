@@ -1,0 +1,12 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+sound $EFF_INTRO_AMBIENCE {
+        channel         1
+        priority        1
+        cropos          255
+        flag            $EFF_LOOP
+
+       	file	"RESOURCE\SOUND\EFF\INTRO\ambience.wav"
+}
+

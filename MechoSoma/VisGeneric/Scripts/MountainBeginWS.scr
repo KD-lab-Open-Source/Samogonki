@@ -1,0 +1,57 @@
+#include "Sound\snd_ids.h"
+
+default_object3d_path		"RESOURCE\WORLDSCRIPT\"
+default_texture_path		"RESOURCE\WORLDSCRIPT\TEXTURES"
+
+sound_script				"RESOURCE\SOUND\mountainbegin_snd.scb"
+
+AnimScript	2
+{ // 8000
+        music_track             18
+	object3d_path		"RESOURCE\WORLDSCRIPT\Cut31\"
+	name_wsc			"RESOURCE\WORLDSCRIPT\Cut31\test.wsc"
+	Sound				$EFF_BV_STORM
+	{
+		animtime	         3000	8000
+	}
+        Sound				$EFF_BEGIN_TELEPORT
+	{
+		animtime	         8700	12000
+	}
+
+        Sound				$EFF_BEGIN_GLASS_TUBE
+	{
+		animtime	         4000	5500
+	}
+        Sound				$EFF_BEGIN_GLASS
+	{
+		animtime	         4500	6000
+	}
+        Sound				$EFF_BV_THUNDERSTORM
+	{
+		animtime	         4800	7000
+	}
+        Sound				$EFF_BEGIN_GLASS_FRAGMENTS
+	{
+		animtime	         4900	8000
+	}
+        Sound				$EFF_BV_MOUNTAIN_STONE
+	{
+		animtime	         5000	8000
+	}
+        Sound				$EFF_BEGIN_MOUNTAIN_HIT
+	{
+		animtime	         5420	6299
+	}
+        Sound				$EFF_BEGIN_MOUNTAIN_HIT
+	{
+		animtime	         6300	7399
+	}
+        Sound				$EFF_BEGIN_MOUNTAIN_HIT
+	{
+		animtime	         7400	9000
+	}
+
+
+
+}

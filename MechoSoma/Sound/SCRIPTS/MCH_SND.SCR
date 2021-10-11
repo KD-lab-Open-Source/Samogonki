@@ -1,0 +1,2528 @@
+#include "Sound\snd_ids.h"
+#include "Sound\Scripts\common.inc"
+
+// Music loop
+loop_track	2
+loop_track	3
+loop_track	4
+loop_track	5
+loop_track	6
+loop_track	7
+loop_track	8
+loop_track	9
+loop_track	10
+loop_track	11
+loop_track	12
+loop_track	13
+loop_track	22
+
+// Finish:  0.0 - silence, 1.0 - volume unchanged
+finish_volume		0.6
+
+// Dynamic channels
+
+dynamic_channel1 10 6
+dynamic_channel2  6 4
+
+// Global volume
+
+h_volume_z0 200
+h_volume_z1 800
+
+h_volume_v0 0
+h_volume_v1 0
+
+
+// Variable volume
+
+min_volume  3000
+
+
+// Visible area
+
+visible_area 660
+
+// Test 
+/*
+sound $EFF_TEST {
+        cropos           255
+        pan_mode         $EFF_PAN_X
+        volume_mode      $EFF_VOL_DIST
+        flag             $EFF_DYNAMIC_CHANNEL
+        flag             $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\test.wav" 
+}
+
+sound $EFF_TEST_CYCLIC {
+        cropos           255
+        pan_mode         $EFF_PAN_X
+        volume_mode      $EFF_VOL_DIST
+        flag             $EFF_DYNAMIC_CHANNEL
+        flag             $EFF_IGNORE_GLOBAL_VOLUME
+        flag             $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\test1.wav" 
+}
+*/
+
+
+// Arcanes
+
+sound $EFF_LURID_BILLOW {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\billow.wav" 
+}
+
+sound $EFF_LURID_BILLOW_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL
+ 
+        file    "RESOURCE\SOUND\EFF\billow1.wav" 
+}
+
+sound $EFF_THUNDERSTORM {
+        cropos           255
+        pan_mode         $EFF_PAN_X
+        volume_mode      $EFF_VOL_DIST
+        flag             $EFF_DYNAMIC_CHANNEL
+        freq_mode        $EFF_FREQ_RND
+        freq_delta       6
+
+        file    "RESOURCE\SOUND\EFF\thunderstorm.wav" 
+}
+         
+sound $EFF_THUNDERSTORM_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      5
+
+        file    "RESOURCE\SOUND\EFF\storm.wav" 
+}
+
+sound $EFF_TENTACLE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\tentacle.wav" 
+}
+
+sound $EFF_TENTACLE_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\tentacle1.wav" 
+}
+
+sound $EFF_CRYSTALLIZATION {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\crystal.wav" 
+}
+
+sound $EFF_CRYSTAL_HIT {  
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\crys_hit.wav"
+}
+
+sound $EFF_CRYSTAL_BREAK {  
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\crys_break.wav"
+}
+
+   
+sound $EFF_TITANIUM_BALLS {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\titan.wav" 
+}
+   
+sound $EFF_TITANIUM_BALLS_ADD {
+        cropos          1
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\smash.wav" 
+}
+
+sound $EFF_BULLET_FLIGHT {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        
+        file    "RESOURCE\SOUND\EFF\bullet.wav"
+}
+
+sound $EFF_BULLET_FLIGHT_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+        
+        file    "RESOURCE\SOUND\EFF\bullet1.wav"
+}
+
+sound $EFF_FIREBALLS {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        
+        file    "RESOURCE\SOUND\EFF\fireball.wav"
+}
+
+sound $EFF_METEORITE_SWARM {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+        
+        file    "RESOURCE\SOUND\EFF\meteorite.wav"
+}
+
+sound $EFF_METEORITE_SWARM_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        
+        file    "RESOURCE\SOUND\EFF\meteorite_explosion.wav"
+} 
+
+sound $EFF_STAR_SHOWER {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        
+        file    "RESOURCE\SOUND\EFF\meteorite1.wav"
+} 
+
+sound $EFF_STATIC_ELECTRICITY {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\static.wav"
+}
+   
+sound $EFF_STATIC_ELECTRICITY_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST       
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      15
+
+        file    "RESOURCE\SOUND\EFF\discharge.wav"
+}
+
+sound $EFF_MASTER_VOODOO {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\voodoo.wav"
+} 
+   
+sound $EFF_ELM {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+                
+        file    "RESOURCE\SOUND\EFF\elm.wav"
+}
+
+sound $EFF_X_RENTGEN {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\rentgen.wav"
+}
+
+sound $EFF_TOMATO {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\tomato.wav"
+}
+
+sound $EFF_TOMATO_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\tomato1.wav"
+}
+
+sound $EFF_KINETIC_HIT {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\kinetic.wav"
+}
+
+sound $EFF_WILD_FUNGUS {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP           
+
+        file    "RESOURCE\SOUND\EFF\fungus.wav"
+}
+
+sound $EFF_TELEPORT {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\teleport.wav"
+}
+
+sound $EFF_TELEPORT_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\teleport1.wav"
+}
+
+sound $EFF_START_TELEPORT {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\teleport_start.wav"
+}
+
+sound $EFF_SLIME_FURY {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\slime1.wav"
+}
+
+sound $EFF_SLIME_FURY_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\slime.wav"
+}
+
+sound $EFF_DRAGON_POWER {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\wing.wav"
+}
+
+sound $EFF_DRAGON_POWER_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\dragon.wav"
+}
+
+sound $EFF_DIRIGIBLE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\dirigible.wav"
+}
+
+sound $EFF_DIRIGIBLE_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\dirigible1.wav"
+}
+
+sound $EFF_SOAP_BUBBLE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\bubble.wav"
+}
+
+sound $EFF_SOAP_BUBBLE_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\bubble1.wav"
+}
+
+sound $EFF_CATERPILLAR {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\caterpillar.wav"
+}
+
+sound $EFF_WORM_ADD {
+        cropos          1
+        volume_mode     $EFF_VOL_DIST
+        pan_mode        $EFF_PAN_X
+        flag            $EFF_DYNAMIC_CHANNEL
+      
+        file    "RESOURCE\SOUND\EFF\worm.wav" 
+}
+
+
+sound $EFF_IRON_SIDE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\ironside.wav"
+}
+
+sound $EFF_WING_BUTTERFLY {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\butterfly.wav"
+}
+
+sound $EFF_WING_BUTTERFLY_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\butterfly1.wav"
+}
+
+sound $EFF_HELI {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\heli.wav"
+}
+
+sound $EFF_HELI_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\heli1.wav"
+}
+
+sound $EFF_FROG {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\frog.wav"
+}
+
+sound $EFF_FROG_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\frog1.wav"
+}
+
+sound $EFF_EVIL_EYE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\eye.wav"
+}
+
+sound $EFF_EVIL_EYE_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\eye1.wav"
+}
+
+sound $EFF_EVIL_EYE_ATTACK {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\eye_attack.wav"
+}
+
+sound $EFF_SUICIDE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\suicide.wav"
+}
+
+sound $EFF_SUICIDE_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\suicide1.wav"
+}
+
+sound $EFF_CLOWN {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\clown.wav"
+}
+
+sound $EFF_CLOWN_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\clown1.wav"
+}
+
+sound $EFF_CLOWN_BALL {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\clown2.wav"
+}
+
+sound $EFF_CLOWN_BALL_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\ball.wav"
+}
+
+sound $EFF_FORMICARY {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\formicary.wav"
+}
+
+sound $EFF_FORMICARY_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\formicary1.wav"
+}
+
+sound $EFF_PETARD_START {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\petard.wav"
+}
+
+sound $EFF_PETARD_EXPLOSION {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\petard1.wav"
+}
+
+sound $EFF_PETARD_MINIMIZE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\minimize.wav"
+}
+
+sound $EFF_PETARD_MAXIMIZE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\maximize.wav"
+}
+
+sound $EFF_PETARD_IMMORTALITY {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\immortality.wav"
+}
+
+
+
+sound $EFF_MINES {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\mines.wav"
+}
+
+sound $EFF_SCARLET_TRACE {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\trace.wav"
+}
+
+sound $EFF_SPIDERS_ATTACK {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\spiders.wav"
+}
+
+sound $EFF_SPIDERS_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\spiders1.wav"
+}
+
+sound $EFF_SNOW_FALL {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\snowfall.wav"
+}
+
+sound $EFF_SNOW_FALL_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\snowfall1.wav"
+}
+
+sound $EFF_LIGHT_BOLT {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\lightbolt.wav"
+}
+
+sound $EFF_LIGHT_BOLT_ADD {
+        cropos          255
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\lightbolt1.wav"
+}
+
+
+
+
+// Bonuses
+
+sound $EFF_BONUS_JUMP {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\jump.wav" 
+}
+
+sound $EFF_BONUS_ENERGY {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\energy.wav"
+}                	
+
+sound $EFF_BONUS_NITRO {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\nitro.wav"
+}
+
+sound $EFF_BONUS_SPELL {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\spell.wav"
+}
+
+sound $EFF_BONUS_SPEED {
+        cropos          0
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+        file    "RESOURCE\SOUND\EFF\speed.wav"
+}
+
+
+// Player Sounds
+
+sound $EFF_KLAXON {
+        channel         28
+        priority        0
+        cropos          255
+        
+        file	"RESOURCE\SOUND\EFF\klaxon.wav"
+}
+
+
+sound $EFF_MENU_SHOW {
+        channel         1
+        priority	1
+        cropos          255
+        pan_value       -200 
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+	
+	file	"RESOURCE\SOUND\EFF\menu.wav"
+}
+
+
+sound $EFF_DISORGANIZE {
+        channel         2
+        priority	1
+        cropos          255 
+
+	file	"RESOURCE\SOUND\EFF\disorganize.wav"
+} 
+
+sound $EFF_PASS_CHP {
+        channel         24
+        priority	0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+
+	file	"RESOURCE\SOUND\EFF\checkpoint.wav"
+}  
+
+sound $EFF_JOIN_PART {  
+        channel         2
+        priority        1
+        cropos          255
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      8
+
+        file    "RESOURCE\SOUND\EFF\detail.wav"
+}
+
+sound $EFF_TERRAIN_WHEELS_HIT {  
+        channel         30
+        priority        1
+        cropos          1
+        volume_mode     $EFF_VOL_DIST
+
+        file    "RESOURCE\SOUND\EFF\wheels_hit.wav"
+}
+
+
+sound $EFF_TERRAIN_HIT {  
+        channel         31
+        priority        3
+        cropos          1
+        volume_mode     $EFF_VOL_DIST
+
+        file    "RESOURCE\SOUND\EFF\terrain_hit.wav"
+}
+
+sound $EFF_MECHOS_HIT {  
+        channel         31
+        priority        2
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+        file    "RESOURCE\SOUND\EFF\mech_hit.wav"
+}
+
+sound $EFF_HIT {  
+        channel         31
+        priority        1
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+        freq_mode       $EFF_FREQ_RND
+        freq_delta      10
+
+        file    "RESOURCE\SOUND\EFF\hit.wav"
+}
+
+
+sound $EFF_BONUS {
+        channel         25
+        priority        1
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+	
+	file	"RESOURCE\SOUND\EFF\bonus.wav"
+}
+
+sound $EFF_MECHOS_WATER {
+        channel         2
+        priority        2
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\water.wav"
+} 
+
+sound $EFF_FIRE {
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+        flag            $EFF_LOOP
+
+        file	"RESOURCE\SOUND\EFF\fire.wav"
+}
+
+
+sound $EFF_SEED {
+        channel         3
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+       
+        file	"RESOURCE\SOUND\EFF\seed.wav"
+}
+
+sound $EFF_SEED_DELETE {
+        channel         3
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+       
+        file	"RESOURCE\SOUND\EFF\delete.wav"
+}
+
+sound $EFF_SEED_PICKUP {
+        channel         3
+        priority        0
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+       
+        file	"RESOURCE\SOUND\EFF\pickup.wav"
+}
+
+
+sound $EFF_STOP_TIME {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+       
+        file	"RESOURCE\SOUND\EFF\stoptime.wav"
+}
+
+sound $EFF_START_TIME {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+       
+        file	"RESOURCE\SOUND\EFF\starttime.wav"
+}
+
+sound $EFF_FINISH {
+        channel         26
+        priority        1
+        cropos          255
+      
+        file    "RESOURCE\SOUND\EFF\raceover.wav" 
+}
+
+sound $EFF_RACE_LAP {
+        channel         24
+        priority        0
+        cropos          255
+      
+        file    "RESOURCE\SOUND\EFF\lap.wav" 
+}
+
+sound $EFF_RACE_GO {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+      
+        file    "RESOURCE\SOUND\EFF\go.wav" 
+}
+
+sound $EFF_RACE_COUNTDOWN {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+      
+        file    "RESOURCE\SOUND\EFF\countdown.wav" 
+}
+
+sound $EFF_DROP {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+      
+        file    "RESOURCE\SOUND\EFF\drop.wav" 
+}
+
+
+sound $EFF_DROP_COUNTDOWN {
+        channel         24
+        priority        1
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+      
+        file    "RESOURCE\SOUND\EFF\drop_countdown.wav" 
+}
+
+
+sound $EFF_MECHOS_BRAKE {
+        channel         1
+        priority        3
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+
+        file    "RESOURCE\SOUND\EFF\brake.wav" 
+}
+
+sound $EFF_MECHOS_SLIME {
+        channel         1
+        priority        2
+        cropos          255
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_LOOP
+
+        file    "RESOURCE\SOUND\EFF\m_slime.wav" 
+}
+
+sound $EFF_ROTATION {
+        channel         3
+        priority        1
+        cropos          255
+
+        file    "RESOURCE\SOUND\EFF\rotation.wav" 
+}
+
+sound $EFF_ROUND_MENU_TOGGLE {
+        channel         3
+        priority        1
+        cropos          255
+
+        file    "RESOURCE\SOUND\EFF\round_toggle.wav" 
+}
+
+
+
+
+// Interface
+
+sound $EFF_STARS_COUNTER {
+        channel         1
+        priority        0
+        cropos          255
+        pan_value       200
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\counter.wav"
+}
+
+sound $EFF_FINISH_KEY {
+        channel         2
+        priority        0
+        cropos          255
+        pan_value       -300
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\key.wav" 
+}
+
+
+sound $EFF_STAR_MOVE {
+        channel         3
+        priority        1
+        cropos          255
+        pan_value       700
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\star.wav"
+}
+
+sound $EFF_LETTERS_MOVE {
+        channel         1
+        priority        0
+        cropos          255
+        pan_value       900
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\letters.wav"
+}
+
+sound $EFF_LETTERS_MOVE_ADD {
+        channel         3
+        priority        0
+        cropos          255
+        pan_value       100
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\letters1.wav"
+}
+
+
+sound $EFF_SCREEN_FINISH {
+        channel         1
+        priority        1
+        cropos          255
+        pan_value       400
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\screen_finish.wav"
+}
+
+
+sound $EFF_INTERFACE_AMBIENT {
+        channel         4
+        priority        1
+        cropos          255
+        flag            $EFF_LOOP
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\interface.wav"
+}
+
+sound $EFF_MAIN_MENU_BUTTON {
+        channel         0
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\select.wav" 
+}
+
+sound $EFF_TOGGLE {
+        channel         2
+        priority        0
+        cropos          255
+        flag            $EFF_IGNORE_GLOBAL_VOLUME
+
+        file    "RESOURCE\SOUND\EFF\toggle.wav" 
+}
+
+
+             
+// Engines
+
+sound $EFF_ENGINE {
+	channel 	0
+	priority	2
+        cropos          255 
+        flag            $EFF_LOOP
+	freq_mode	$EFF_FREQ_V
+	freq_delta_up	45
+        freq_delta_dn   30
+        volume_mode     $EFF_VOL_DIST
+
+
+       	file	"RESOURCE\SOUND\EFF\engine.wav"
+}
+
+sound $EFF_ENGINE_ALIEN {
+        cropos          255 
+        flag            $EFF_LOOP
+	freq_mode	$EFF_FREQ_V
+	freq_delta_up	45
+        freq_delta_dn   30
+        pan_mode        $EFF_PAN_X
+        volume_mode     $EFF_VOL_DIST
+        flag            $EFF_DYNAMIC_CHANNEL
+
+       	file	"RESOURCE\SOUND\EFF\engine1.wav"
+}
+
+// Animation
+
+// 1 - Gin
+
+sound $EFF_ANIMATION_1_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1outrun.wav"
+}
+
+
+sound $EFF_ANIMATION_1_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1outdriven.wav"
+}
+
+sound $EFF_ANIMATION_1_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1collision.wav"
+}  
+
+sound $EFF_ANIMATION_1_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1lucky.wav"
+}
+
+
+
+sound $EFF_ANIMATION_1_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_1_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_1_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_1_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_1_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_1_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\1crush.wav"
+}
+ 
+
+// 2 - Shkaf
+
+
+sound $EFF_ANIMATION_2_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2outrun.wav"
+}
+
+
+sound $EFF_ANIMATION_2_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2outdriven.wav"
+}
+
+sound $EFF_ANIMATION_2_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2collision.wav"
+}  
+
+sound $EFF_ANIMATION_2_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_2_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_2_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_2_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_2_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_2_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_2_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_2_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\2crush.wav"
+}
+
+
+
+// 3 - Dracon
+
+sound $EFF_ANIMATION_3_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+	file	"RESOURCE\SOUND\EFF\3outrun.wav"
+}
+
+     
+sound $EFF_ANIMATION_3_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3outdriven.wav"
+} 
+ 
+
+sound $EFF_ANIMATION_3_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3collision.wav"
+}  
+
+sound $EFF_ANIMATION_3_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_3_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_3_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_3_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_3_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_3_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_3_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_3_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\3crush.wav"
+}
+
+
+
+
+// 4 - Ark-a-n
+ 
+sound $EFF_ANIMATION_4_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+	file	"RESOURCE\SOUND\EFF\4outrun.wav"
+}
+
+     
+sound $EFF_ANIMATION_4_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4outdriven.wav"
+} 
+ 
+
+sound $EFF_ANIMATION_4_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4collision.wav"
+}  
+
+sound $EFF_ANIMATION_4_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_4_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_4_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_4_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_4_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_4_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_4_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_4_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\4crush.wav"
+}
+
+
+
+// 5 - Gira
+
+sound $EFF_ANIMATION_5_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_5_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_5_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5collision.wav"
+} 
+
+sound $EFF_ANIMATION_5_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_5_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5lucky_2.wav"
+}
+
+sound $EFF_ANIMATION_5_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_5_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_5_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_5_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_5_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_5_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	12
+
+
+	file	"RESOURCE\SOUND\EFF\5crush.wav"
+}
+
+
+
+
+// IGR
+
+
+sound $EFF_ANIMATION_6_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_6_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_6_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6collision.wav"
+} 
+
+
+sound $EFF_ANIMATION_6_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_6_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_6_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6sadness.wav"
+}
+
+
+sound $EFF_ANIMATION_6_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_6_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_6_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6bonus_2.wav"
+}
+
+sound $EFF_ANIMATION_6_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\6crush.wav"
+}
+
+
+// 7 - Lampa
+
+sound $EFF_ANIMATION_7_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_7_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_7_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7collision.wav"
+} 
+
+
+sound $EFF_ANIMATION_7_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_7_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_7_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_7_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_7_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_7_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7bonus.wav"
+}
+
+
+sound $EFF_ANIMATION_7_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\7crush.wav"
+}
+
+
+// 8 - Samuray
+
+
+sound $EFF_ANIMATION_8_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_8_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_8_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8collision.wav"
+} 
+
+
+sound $EFF_ANIMATION_8_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_8_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_8_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_8_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_8_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_8_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_8_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8bonus_2.wav"
+}
+
+
+sound $EFF_ANIMATION_8_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\8crush.wav"
+}
+
+
+
+// 9 - Glaz
+
+
+sound $EFF_ANIMATION_9_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_9_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_9_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9collision.wav"
+} 
+
+
+sound $EFF_ANIMATION_9_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_9_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_9_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_9_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_9_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_9_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9bonus.wav"
+}
+
+
+
+sound $EFF_ANIMATION_9_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\9crush.wav"
+}
+
+
+ 
+// 10 - Ruber the Clown
+
+
+sound $EFF_ANIMATION_10_OUTRUN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10outrun.wav"
+} 
+     
+sound $EFF_ANIMATION_10_OUTDRIVEN {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10outdriven.wav"
+}  
+
+sound $EFF_ANIMATION_10_COLLISION {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10collision.wav"
+} 
+
+
+sound $EFF_ANIMATION_10_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10lucky_1.wav"
+}
+
+sound $EFF_ANIMATION_10_LUCKY {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10lucky_2.wav"
+}
+
+
+sound $EFF_ANIMATION_10_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10sadness_1.wav"
+}
+
+sound $EFF_ANIMATION_10_SADNESS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10sadness_2.wav"
+}
+
+
+sound $EFF_ANIMATION_10_BACK {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10nitro.wav"
+}
+
+
+sound $EFF_ANIMATION_10_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10bonus_1.wav"
+}
+
+sound $EFF_ANIMATION_10_BONUS {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10bonus_2.wav"
+}
+
+
+sound $EFF_ANIMATION_10_CRUSH {
+        channel         29
+        priority        0
+        cropos          255 
+        volume_mode     $EFF_VOL_DIST
+	freq_mode	$EFF_FREQ_V
+	freq_delta	20
+
+
+	file	"RESOURCE\SOUND\EFF\10crush.wav"
+}
+
+
+
+

@@ -1,0 +1,89 @@
+
+#include "iScreen\Scripts\scr_defs.h"
+
+int	x		$ASCR_POS_X
+int	y		$ASCR_POS_Y
+
+void	resource	$ASCR_RESOURCE
+int	type			$ASCR_TYPE
+char*	file		$ASCR_FILE_NAME
+
+void	key			$ASCR_KEY_OBJ
+int	code			$ASCR_CODE
+int opt_code		$ASCR_OPT_CODE
+
+void	ev_comm 	$ASCR_EV_COMMAND
+int[4]	ev_data 	$ASCR_EV_COMM_DATA
+
+void	event		$ASCR_EVENT
+int		time		$ASCR_TIME
+
+void	frame_seq	$ASCR_FRAME_SEQ
+int		ID			$ASCR_ID
+int		resID		$ASCR_RES_ID
+int		fon_resID	$ASCR_FON_RES_ID
+int		start_time	$ASCR_START_TIME
+int		end_time	$ASCR_END_TIME
+int		delta		$ASCR_DELTA
+
+// aciScreenObject...
+void	object		$ASCR_OBJECT
+int	size_x			$ASCR_SIZE_X
+int	size_y			$ASCR_SIZE_Y
+int	def_resource	$ASCR_DEFAULT_RES
+int	cur_frame		$ASCR_CUR_FRAME
+
+int[2] obj_index	$ASCR_OBJ_INDEX
+int align_x			$ASCR_ALIGN_X
+int align_y			$ASCR_ALIGN_Y
+
+// aciScreenInputField...
+char*	string		$ASCR_STRING
+int	col0			$ASCR_COLOR0
+int	col1			$ASCR_COLOR1
+int	col2			$ASCR_COLOR2
+int	font			$ASCR_FONT
+int	space			$ASCR_SPACE
+int	str_len 		$ASCR_STR_LEN
+int 	max_state	$ASCR_MAX_STATE
+int 	cur_state	$ASCR_CUR_STATE
+char* 	state_str	$ASCR_STATE_STR
+int 	alpha0		$ASCR_ALPHA0
+int 	alpha1		$ASCR_ALPHA1
+int 	alpha2		$ASCR_ALPHA2
+int 	d_alpha		$ASCR_D_ALPHA
+
+// aciScreenScroller...
+int	cur_value	$ASCR_CUR_VALUE
+int	max_value	$ASCR_MAX_VALUE
+
+int	flag		$ASCR_FLAG
+
+void	screen		$ASCR_SCREEN
+int		next_screen	$ASCR_NEXT_SCREEN
+int		prev_screen	$ASCR_PREV_SCREEN
+
+// Parameters...
+char*	font_dir	$ASCR_FONTS_DIR
+char*	font_prefix	$ASCR_FONTS_PREFIX
+int	num_fonts	$ASCR_FONTS_NUM
+
+int	palette 	$ASCR_PALETTE_ID
+
+int 	arcane_symbol	$ARC_SCR_SYMBOL
+char*	critical_str	$ARC_SCR_CRITICAL
+
+// AI arcane parameters
+int		ai_arcane_prm	$ARC_PRM
+int[2]	data			$ARC_PRM_DATA
+
+// SpriteDispatcher
+int		sprite_slot	$SPRD_SLOT
+int		sprite		$SPRD_SPRITE
+
+// Doggy
+int		phrase		$IW_DOGGY_PHRASE
+int		priority	$IW_DOGGY_PHRASE_PRIORITY
+
+// iTexts
+int 		itext		$ASCR_iTEXT
