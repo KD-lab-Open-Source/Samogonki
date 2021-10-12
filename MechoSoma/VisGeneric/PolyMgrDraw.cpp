@@ -455,7 +455,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 									ConvertorObjectToScreen.ConvertPoint(Point[i].pos,BufPointAttribute[i].pv,*(Vect3f*)&BufPoint[i]);
 									BufPointAttribute[i].clip=GET_CLIP(BufPoint[i].xe,BufPoint[i].ye,BufPointAttribute[i].pv.z);
 								}
-								for(i=0;i<tile->GetNumberPolygon();i++)
+								for(int i=0;i<tile->GetNumberPolygon();i++)
 								{ 
 									// передача геометрических координат
 									int i3=i*3;
