@@ -20,8 +20,8 @@ Cannon::Cannon(cMesh* model_)
 	model = model_;
 	assert(model);
 
-	A = model -> Dummies.Find(M3D_VECTOR_A);
-	B = model -> Dummies.Find(M3D_VECTOR_B);
+	//A = model -> Dummies.Find(M3D_VECTOR_A);
+	//B = model -> Dummies.Find(M3D_VECTOR_B);
 
 	//@caiiiycuk
 	//model -> SetFrame(KFRAME_STOP);
