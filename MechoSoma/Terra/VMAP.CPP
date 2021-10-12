@@ -1079,6 +1079,7 @@ void vrtMap::analyzeINI(const char* name)
 	M3DFileName = strdup(GetINIstringV(name,secM3D,"M3D File"));
 	CLSFileName = strdup(GetINIstringV(name,secCLS,"CLS File"));
 	Ch_pointsFileName = strdup(GetINIstringV(name,secCh_points,"Ch_points File"));
+	//Ch_pointsFileName = "CH_P.TK0";
 //	FxFileName = strdup(GetINIstringV(name,secFx,"Fx File"));
 
 	int tmax = atoi(GetINIstringV(name,secRender,"Terrain Max"));
@@ -4611,6 +4612,7 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 
 		const char* secCh_points = "Ch_points Parameters";
 		char* ini_str=GetINIstringV(tS,secCh_points,"Ch_points File");
+		//ini_str = "CH_P.TK0";
 		char* Ch_pointsFileName;
 		if(ini_str!=NULL) Ch_pointsFileName = strdup(ini_str);
 		else continue;

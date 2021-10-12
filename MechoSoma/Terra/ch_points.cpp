@@ -105,20 +105,23 @@ void sCh_points::load(char* fname,int number_track)
 	xb < fname < itoa(number_track,tmpstr,10);
 	currient_track=number_track;
 	if(!Cmap.open(xb,XS_IN)) return;
+	long s = Cmap.size();
+	char temp[7];
+	Cmap.read(temp,sizeof(temp));
 	Cmap.read(&El,sizeof(El));
-	Cmap.read(&Link,sizeof(Link));
 	Cmap.read(&max_number,sizeof(max_number));
 	Cmap.read(&St,sizeof(St));
 	Cmap.read(&max_start,sizeof(max_start));
+	Cmap.read(&Link,sizeof(Link));
 	Cmap.close();
 	for (i=0;i<max_number;i++) 
 		for (int j=0;j<max_number;j++) 
-			if(Link[i][j]!=Link[j][i] && max_number != 0) 
+			if(Link[i][j]!=Link[j][i]/* && max_number != 0*/) 
 				ErrH.Abort("Invalid Ch_points file"); 
-	if (max_number == 0) {
-		max_number = 3;
-		max_start = 3;
-	}
+	//if (max_number == 0) {
+//		max_number = 3;
+//		max_start = 0;
+//	}
 #ifdef _MECHOSOMA_
 	for (i=0;i<max_number;i++) {
 		El[i].x2=calcDX(El[i].x1, El[i].x2);
