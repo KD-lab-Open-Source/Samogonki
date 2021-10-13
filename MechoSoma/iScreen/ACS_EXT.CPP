@@ -1321,9 +1321,16 @@ int acsQuant(void)
 		k = KeyBuf -> get();
 		acsScrD -> KeyTrap(k);
 	}
+	//mchA_d3dPrepare();
+	gb_IGraph3d->Fill(0,0,0);
+	//resource_dispatcher.quant();
+	gb_IGraph3d->BeginScene();
 
 	ret = acsScrD -> Quant();
 	acsScrD -> RedrawQuant();
+		gb_IGraph3d->EndScene();
+	gb_IGraph3d->Flush();
+	//gb_IVisGeneric->PostDraw(0x7FFFFFFF);
 	return ret;
 }
 
