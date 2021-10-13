@@ -357,7 +357,7 @@ struct aciScreenObject : XListElement
 struct aciScreenInputField : aciScreenObject
 {
 	//@caiiiycuk
-	int SizeX, SizeY, PosX, PosY;
+	//int SizeX, SizeY, PosX, PosY;
 
 	char* string;
 	int MaxStrLen;

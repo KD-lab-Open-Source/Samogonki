@@ -409,7 +409,9 @@ aciScreenObject::aciScreenObject(void)
 	objIndex[0] = objIndex[2] = 0;
 
 	PosX = PosY = -1;
-	SizeX = SizeY = 0;
+	PosX0 = PosY0 = -1;
+	SizeX = SizeY = -1;
+	SizeX0 = SizeY0 = -1;
 
 	align_x = align_y = -1;
 
