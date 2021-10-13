@@ -120,7 +120,7 @@
 #define ACS_WRLD_CHOOSE_KEY			2000
 
 // @caiiiycuk TODO: find correct constants
-#define ACS_KEY_INPUT_MODE	1
-#define ACS_KEYB_SELECT 0
-#define ACS_NO_BACKGROUND 0
+#define ACS_KEY_INPUT_MODE	10
+#define ACS_KEYB_SELECT 0x1000
+#define ACS_NO_BACKGROUND 0x2000
 #define ACS_NO_RESIZE 0
