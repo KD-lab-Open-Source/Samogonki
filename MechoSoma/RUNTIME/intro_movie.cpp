@@ -1,7 +1,5 @@
-
-#ifdef withvideo
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
-#include <StdAfx.h>
+#include "StdAfx.h"
 
 #include "aci_parser.h"
 #include "intro_movie.h"
@@ -9,7 +7,6 @@
 
 #include "sound.h"
 
-#include "PlayMpp.h"
 #include "PlayMpeg.h"
 #include "md3d.h"
 
@@ -23,6 +20,8 @@
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */
+
+extern MpegSound* mpeg_player;
 
 extern cInterfaceGraph3d* gb_IGraph3d;
 extern float mchA_FontScaleX[];
@@ -563,10 +562,18 @@ void mchIntroMovieDispatcher::init_texts(void)
 
 		tm = 1000;
 		p1 = p;
+		if (!mpeg_player) {
+			mpeg_player = new MpegSound();
+		}
 		while(p1){
 			mpeg_name.init();
 			mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= i + 1 < "_" <= id + 1 < ".mp+";
-			len = MpegGetLen(mpeg_name);
+			int volume_temp = mpeg_player->GetVolume();
+			mpeg_player->SetVolume(0);
+			mpeg_player->OpenToPlay(mpeg_name, 0);
+			mpeg_player->Stop();
+			mpeg_player->SetVolume(volume_temp);
+			len = mpeg_player->GetLen();
 
 			if(len != -1)
 				len = len * 1000 / 44100;
@@ -624,9 +631,13 @@ int mchIntroMovieDispatcher::skip(void)
 	p = acnList.search(id + 1 + 20);
 	if(!p) return 1;
 
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+
 	if(curTxt){
 		if(!mchSoundMute)
-			MpegStop();
+			mpeg_player->Stop();
 		curTxt = NULL;
 	}
 
@@ -716,9 +727,13 @@ void mchIntroMovieText::start(void)
 
 	cur_time = 0; 
 
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+
 	mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= mpeg_actionID < "_" <= mpeg_phraseID < ".mp+";
 	if(!mchSoundMute)
-		MpegOpenToPlay(mpeg_name,0);
+		mpeg_player->OpenToPlay(mpeg_name,0);
 }
 
 void mchIntroMovieText::draw(void)
@@ -814,4 +829,3 @@ void im_d3dSaveSprite(int spr)
 	d3dUnlockSprite(im_d3dSprite[spr]);
 #endif
 }
-#endif

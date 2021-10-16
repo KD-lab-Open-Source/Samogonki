@@ -34,9 +34,9 @@ public:
 	void set_owner(mchIntroMovieDispatcher* ow){ owner = ow; }
 	void set_duration(int tm){ duration = tm; }
 
-	void start(void){};
-	void quant(int dt){};
-	void draw(void){};
+	void start(void);
+	void quant(int dt);
+	void draw(void);
 
 	int type(void) const { return Type; }
 	int time(void) const { return cur_time; }
@@ -44,8 +44,8 @@ public:
 
 	int is_finished(void) const { return cur_time >= duration; }
 
-	mchIntroMovieAction(void* scr_p){};
-	~mchIntroMovieAction(void){};
+	mchIntroMovieAction(void* scr_p);
+	~mchIntroMovieAction(void);
 };
 
 class mchIntroMovieImage
@@ -66,20 +66,20 @@ public:
 	mchIntroMovieImage* prev;
 	mchIntroMovieImage* next;
 
-	int size_x(void){};
-	int size_y(void){};
+	int size_x(void);
+	int size_y(void);
 
-	void load_image(int slot){};
-	void free_image(void){};
+	void load_image(int slot);
+	void free_image(void);
 
-	void draw(int x,int y,int alpha = 255){};
-	void clip(Vect2f& coords){};
+	void draw(int x,int y,int alpha = 255);
+	void clip(Vect2f& coords);
 
-	void set_file(char* fn){};
+	void set_file(char* fn);
 	void set_scale(float sc){ scale = sc; }
 
-	mchIntroMovieImage(void* scr_p){};
-	~mchIntroMovieImage(void){};
+	mchIntroMovieImage(void* scr_p);
+	~mchIntroMovieImage(void);
 };
 
 class mchIntroMovieText
@@ -115,12 +115,12 @@ public:
 	int start_time(void) const { return start_time_; }
 	int is_finished(void) const { return (cur_time >= duration); }
 
-	void start(void){};
+	void start(void);
 	void quant(int dt){ cur_time += dt; }
-	void draw(void){};
+	void draw(void);
 
-	mchIntroMovieText(void){};
-	~mchIntroMovieText(void){};
+	mchIntroMovieText(void);
+	~mchIntroMovieText(void);
 };
 
 class mchIntroMovieDispatcher
@@ -135,22 +135,22 @@ class mchIntroMovieDispatcher
 	int timer;
 public:
 
-	void init(void){};
-	void init_texts(void){};
-	void init_text(char* txt){};
+	void init(void);
+	void init_texts(void);
+	void init_text(char* txt);
 
-	void set_time(void){};
+	void set_time(void);
 
-	void start(void){};
-	void text_quant(int dt){};
-	int quant(void){return 0;};
+	void start(void);
+	void text_quant(int dt);
+	int quant(void);
 
-	int skip(void){return 0;};
+	int skip(void);
 
 	mchIntroMovieImage* get_image(int id){ return imgList.search(id); }
 
-	mchIntroMovieDispatcher(void){};
-	~mchIntroMovieDispatcher(void){};
+	mchIntroMovieDispatcher(void);
+	~mchIntroMovieDispatcher(void);
 };
 
 extern RandomGenerator im_random_generator;

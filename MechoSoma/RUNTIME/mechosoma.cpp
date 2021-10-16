@@ -29,7 +29,7 @@
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
 #include "savegame.h"
-//#include "intro_movie.h"
+#include "intro_movie.h"
 
 #include "demo_dispatcher.h"
 
@@ -77,7 +77,7 @@ extern int acsMouseRPFlag;
 extern int acsLoadFlag;
 extern int mchTurn;
 extern int iwElectionaryFlag;
-//extern int iwEnableIntroMovie;
+extern int iwEnableIntroMovie;
 
 extern float mchA_FontScaleX[];
 extern float mchA_FontScaleY[];
@@ -386,11 +386,11 @@ int setTimerToProfile = 0;
 
 SystemResourceDispatcher resource_dispatcher;
 
-cInterfaceVisGeneric	*gb_IVisGeneric=0;		// ��������� ��� ������ � ����������� ������
-cInterfaceGraph3d		*gb_IGraph3d=0;			// ��������� ��� ������ ��������
-cUnknownClass			*gb_URenderDevice=0;	// ���������� ������
-cUnknownClass			*gb_UScene=0;			// ������� �������� �����
-cUnknownClass			*iCamera=0;			// ������������ ������
+cInterfaceVisGeneric	*gb_IVisGeneric=0;		// интерфейс для работы с библиотекой вывода
+cInterfaceGraph3d		*gb_IGraph3d=0;			// интерфейс для работы графикой
+cUnknownClass			*gb_URenderDevice=0;	// устройство вывода
+cUnknownClass			*gb_UScene=0;			// текущая активная сцена
+cUnknownClass			*iCamera=0;			// интерфейсная камера
 
 #ifdef _MCH_LOG_
 XStream __mch_logFile;
@@ -471,15 +471,15 @@ int xtInitApplication(void)
 	MainMenuRTO* mPtr = new MainMenuRTO;
 	mch_imageRTO = new ShowImageRTO;
 	mch_loadingRTO = new LoadingRTO;
-//	IntroMovieRTO* iPtr = new IntroMovieRTO;
-//	iPtr -> SetNext(RTO_LOADING_ID);
+	IntroMovieRTO* iPtr = new IntroMovieRTO;
+	iPtr -> SetNext(RTO_LOADING_ID);
 //	iPtr -> SetNext(-1);
 
 	xtCreateRuntimeObjectTable(RTO_MAX_ID);
 
 	xtRegisterRuntimeObject(gPtr);
 	xtRegisterRuntimeObject(mPtr);
-	//xtRegisterRuntimeObject(iPtr);
+	xtRegisterRuntimeObject(iPtr);
 	xtRegisterRuntimeObject(mch_imageRTO);
 	xtRegisterRuntimeObject(mch_loadingRTO);
 
@@ -540,16 +540,16 @@ int xtInitApplication(void)
 	CONTROL_FP();
 
 	gb_UScene=gb_IVisGeneric->CreateScene();
-	gb_IVisGeneric->SetScene(gb_UScene);			// ��������� �������� �����
+	gb_IVisGeneric->SetScene(gb_UScene);			// установка активной сцены
 
 	iCamera=gb_IVisGeneric->CreateCamera();
 	gb_IVisGeneric->SetCameraPosition(iCamera,&Vect3f(0,0,512),&Vect3f(0,0,0),&Vect3f(0,0,512));
-	gb_IVisGeneric->SetCameraFrustum(iCamera,	// ��������������� �������� ���������
-		&Vect2f(0.5f,0.5f),						// ����� ������
-		&sRectangle4f(-0.499f,-0.499f,0.499f,0.499f),		// ������� ������� ������
-		&Vect2f(1.0f,1.0f),						// ����� ������
-		&Vect2f(10.0f,3000.0f),					// ��������� � ������� z-��������� ���������
-		&Vect2f(0.2f,0.90f));						// zNear � zFar ��� ����������� � zBuffer
+	gb_IVisGeneric->SetCameraFrustum(iCamera,	// устанавливается пирамида видимости
+		&Vect2f(0.5f,0.5f),						// центр камеры
+		&sRectangle4f(-0.499f,-0.499f,0.499f,0.499f),		// видимая область камеры
+		&Vect2f(1.0f,1.0f),						// фокус камеры
+		&Vect2f(10.0f,3000.0f),					// ближайший и дальний z-плоскости отсечения
+		&Vect2f(0.2f,0.90f));						// zNear и zFar для мапирования в zBuffer
 	gb_IVisGeneric->AttachCameraViewPort(iCamera,gb_URenderDevice);
 
 	gameWnd = new mchGameWindow;
@@ -620,7 +620,7 @@ void xtDoneApplication(void)
 	fxlabFinit();
 	if(gb_IVisGeneric)
 	{
-		gb_IVisGeneric->ReleaseWorld(); // �������� ����
+		gb_IVisGeneric->ReleaseWorld(); // выгрузка мира
 		if(camera_dispatcher){
 			delete camera_dispatcher;
 			camera_dispatcher = 0;
@@ -629,10 +629,10 @@ void xtDoneApplication(void)
 			delete camera_dispatcher2;
 			camera_dispatcher2 = 0;
 			}
-		if(iCamera)	gb_IVisGeneric->ReleaseCamera(iCamera); // �������� �������� ������
-		if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // �������� �����
-		gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // �������� ���� ������
-		gb_IVisGeneric->Release();	// �������� ����������
+		if(iCamera)	gb_IVisGeneric->ReleaseCamera(iCamera); // удаление ненужной камеры
+		if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // удаление сцены
+		gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // закрытие окна вывода
+		gb_IVisGeneric->Release();	// закрытие библиотеки
 		gb_UScene=0; gb_URenderDevice=0; gb_IGraph3d=0; gb_IVisGeneric=0;
 	}
 	if(!mchMusicMute) sndMusicStop();
@@ -937,7 +937,7 @@ int GameQuantRTO::Quant(void)
 	mch_demoD.quant();
 
 	start_timer(IVG_Draw, STAT_TOTAL);
-// �������� �� ������ ����� (� ��������� �����������)
+// действия до начала сцены (в частности кэширование)
 	gb_IVisGeneric->SetTime(global_time());
 	TestWorldScriptPlay.Animate();
 
@@ -949,7 +949,7 @@ int GameQuantRTO::Quant(void)
 
 	gb_IVisGeneric->PreDraw(DrawMask&0x7FFFFFFF);
 
-//////////////////////////////////////// ������ ����� /////////////////////////////////////////
+//////////////////////////////////////// НАЧАЛО СЦЕНЫ /////////////////////////////////////////
 	gb_IGraph3d->BeginScene();
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -991,7 +991,7 @@ int GameQuantRTO::Quant(void)
 */
 	}
 
-///////////////////////////////////////// ����� ����� /////////////////////////////////////////
+///////////////////////////////////////// КОНЕЦ СЦЕНЫ /////////////////////////////////////////
 	gb_IGraph3d->EndScene();
 	gb_IGraph3d->Flush();
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1000,7 +1000,7 @@ int GameQuantRTO::Quant(void)
 
 	if(mchScreenShotMode)
 		mchScreenShot(1);
-// ������ �������� ����� ��������� �����
+// прочие действия после отрисовки сцены
 	gb_IVisGeneric->PostDraw(0x7FFFFFFF);
 
 	if(!mchXRecorderMode)
@@ -1110,8 +1110,8 @@ int MainMenuRTO::Quant(void)
 				mchGameMode = MCH_ENTIRE_CONTROL_HS;
 
 			if(!mchResourcesFlag){
-				//if(iwElectionaryFlag && !mchSplitScreenGame && mchGameMode == MCH_SINGLE_GAME && !acsLoadFlag && iwEnableIntroMovie && !mchPlayerRecorder)
-				//	return RTO_INTRO_MOVIE_ID;
+				if(iwElectionaryFlag && !mchSplitScreenGame && mchGameMode == MCH_SINGLE_GAME && !acsLoadFlag && iwEnableIntroMovie && !mchPlayerRecorder)
+					return RTO_INTRO_MOVIE_ID;
 
 				return RTO_LOADING_ID;
 			}
@@ -1616,41 +1616,41 @@ void mchKeyTrap(void)
 */
 				break;	
 /*
-			case 'A': // ������ ���������� ������� 
+			case 'A': // только отраженные объекты 
 				if(DrawMask&0x0000000F)
 					DrawMask&=~0x0000000F;
 				else
 					DrawMask|=0x0000000F; 
 				break;
-			case 'S': // ���������� �� ���������� ������� ����
+			case 'S': // глобальные не прозрачные объекты мира
 				if(DrawMask&0x000000F0)
 					DrawMask&=~0x000000F0; 
 				else
 					DrawMask|=0x000000F0;
 				break;
-			case 'D': // ������������ �� ���������� �������
+			case 'D': // динамические не прозрачные объекты
 				if(DrawMask&0x00000F00)
 					DrawMask&=~0x00000F00;
 				else
 					DrawMask|=0x00000F00;
 				break;
-			case 'F': // ���������� ���������� ������� ����
+			case 'F': // глобальные прозрачные объекты мира
 				if(DrawMask&0x0000F000)
 					DrawMask&=~0x0000F000;
 				else
 					DrawMask|=0x0000F000;
 				break;
-			case 'G': // ��������� ����� ������ ��� �����
+			case 'G': // установка цвета экрана под водой
 				if(DrawMask&0x00F00000)
 					DrawMask&=~0x00F00000;
 				else
 					DrawMask|=0x00F00000;
 				break;
-			case 'K': // ��������� ����� ������ ��� �����
+			case 'K': // установка цвета экрана под водой
 				extern float gb_LodValue;
 				gb_LodValue*=0.5f;
 				break;
-			case 'J': // ��������� ����� ������ ��� �����
+			case 'J': // установка цвета экрана под водой
 				extern float gb_LodValue;
 				gb_LodValue*=2.0f;
 				break;
@@ -1710,7 +1710,7 @@ void mchWorldsInit(void)
 
 	vMap -> loadTrack(0);//mchCurrentTrack
 
-	// �������� �������������� ����, ����, ���� � �.�.
+	// создание полигонального мира, воды, неба и т.д.
 	gb_IVisGeneric->CreateWorld("RESOURCE\\world.scb",mchCurrentWorld,mchCurrentTrack);
 
 	mchLoadTrack();
@@ -2876,7 +2876,7 @@ void mchRestore(void)
 	if(gb_IVisGeneric)
 	{
 		if(gb_URenderDevice) 
-			gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // �������� ���� ������
+			gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // закрытие окна вывода
 		gb_UScene=0; gb_URenderDevice=0; gb_IGraph3d=0; gb_IVisGeneric=0;
 	}
 	XJoystickCleanup();
@@ -2982,10 +2982,10 @@ void mchDrawQuant(void)
 
 	fxlabClientQuant();
 
-// �������� �� ������ ����� (� ��������� �����������)
+// действия до начала сцены (в частности кэширование)
 	if(!mchFreezeTime) gb_IVisGeneric->dSetTime(0);
 	gb_IVisGeneric->PreDraw(0x7FFFFFFF);
-//////////////////////////////////////// ������ ����� /////////////////////////////////////////
+//////////////////////////////////////// НАЧАЛО СЦЕНЫ /////////////////////////////////////////
 	gb_IGraph3d->BeginScene();
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3013,7 +3013,7 @@ void mchDrawQuant(void)
 	tMap -> duOfsPolyGrid = u;
 	tMap -> dvOfsPolyGrid = v;
 */
-///////////////////////////////////////// ����� ����� /////////////////////////////////////////
+///////////////////////////////////////// КОНЕЦ СЦЕНЫ /////////////////////////////////////////
 	gb_IGraph3d->EndScene();
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	gb_IVisGeneric->PostDraw();
@@ -3575,10 +3575,30 @@ void mchInitOutro(void)
 	mchFreeResourcesFlag = 1;
 }
 
+void IntroMovieRTO::Init(int id)
+{
+	mchIntroMovieActive = 1;
+
+	mchStopSound();
+	sndMusicStop();
+	sndMusicSetVolume(mchSoundVolume);
+
+	mchLoadIntroMovieSound();
+
+	XGR_Obj.set_clip(0,0,XGR_MAXX,XGR_MAXY);
+
+	if(!mch_introMovieD){
+		mch_introMovieD = new mchIntroMovieDispatcher();
+		mch_introMovieD -> init();
+	}
+
+	mch_introMovieD -> start();
+
+	mchStartSoundEFF(EFF_INTRO_AMBIENCE);
+}
 
 int IntroMovieRTO::Quant(void)
 {
-	/*
 	int k,ret = 0;
 
 	if(d3dIsActive()){
@@ -3606,7 +3626,7 @@ int IntroMovieRTO::Quant(void)
 	
 	if(ret)
 		return NextID;
-	*/
+
 	return 0;
 }
 
@@ -3616,10 +3636,10 @@ void IntroMovieRTO::Finit(void)
 	sndMusicStop();
 	sndMusicSetVolume(mchMusicVolume);
 
-	//delete mch_introMovieD;
-	//mch_introMovieD = NULL;
+	delete mch_introMovieD;
+	mch_introMovieD = NULL;
 
 //	mchReInitGraph(xgrGameMode);
 
-	//mchIntroMovieActive = 0;
+	mchIntroMovieActive = 0;
 }
