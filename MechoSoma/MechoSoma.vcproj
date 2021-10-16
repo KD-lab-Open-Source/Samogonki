@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="RUNTIME;Terra;Xreal;XMath;iScreen;iScreen\SCRIPTS;FX;SOUND;Network;VisGeneric\SCRIPTS;VisGeneric;IVisGeneric;VisGeneric\Graph3d;VisGeneric\Util;Xreal\Joystick;Runtime\Scripts;Xreal\TnT;VisGeneric\md3d;&quot;$(SolutionDir)\..\MSDXSDK_02_06\Include&quot;;&quot;$(SolutionDir)\..\stl&quot;;&quot;$(SolutionDir)\..\XLibsSpring2004&quot;"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MECHOSOMA_;_FINAL_VERSION_"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_MECHOSOMA_;_FINAL_VERSION_;_MPPLUS_SOUNDTRACK_"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				RuntimeTypeInfo="true"

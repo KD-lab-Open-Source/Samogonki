@@ -70,6 +70,8 @@ int sndCameraVolumeZ1 = 1000;
 int sndCameraVolumeV0 = 0;
 int sndCameraVolumeV1 = -3000;
 
+MpegSound* mpeg_player = 0;
+
 int sndMinVolume = 4000;
 
 unsigned sndRndVal = 83838383;
@@ -381,7 +383,11 @@ void sndMusicPlay(int track)
 	if(track < 10) buf < "0";
 	buf <= track < ".mp+";
 
-	if(MpegOpenToPlay(buf.address(),sndTrackLoop[track]))
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+
+	if(mpeg_player->OpenToPlay(buf.address(),sndTrackLoop[track]))
 		sndMPPlusCurTrack = track;
 	else
 		sndMPPlusCurTrack = 0;
@@ -393,7 +399,10 @@ void sndMusicPlay(int track)
 void sndMusicStop(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	MpegStop();
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+	mpeg_player->Stop();
 	sndMPPlusCurTrack = 0;
 #else
 	//xsStopCD();
@@ -403,7 +412,10 @@ void sndMusicStop(void)
 void sndMusicPause(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	MpegPause();
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+	mpeg_player->Pause();
 #else
 	//xsPauseCD();
 #endif
@@ -412,8 +424,11 @@ void sndMusicPause(void)
 void sndMusicResume(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if(MpegIsPlay() == MPEG_PAUSE)
-		MpegResume();
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+	if(mpeg_player->IsPlay() == MPEG_PAUSE)
+		mpeg_player->Resume();
 #else
 	//xsResumeCD();
 #endif
@@ -422,7 +437,10 @@ void sndMusicResume(void)
 int sndMusicStatus(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	switch(MpegIsPlay()){
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+	switch(mpeg_player->IsPlay()){
 		case MPEG_PLAY:
 			return XCD_PLAYING;
 		case MPEG_PAUSE:
@@ -458,7 +476,10 @@ int sndMusicNumTracks(void)
 void sndMusicSetVolume(int val)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	MpegSetVolume(val);
+	if (!mpeg_player) {
+		mpeg_player = new MpegSound();
+	}
+	mpeg_player->SetVolume(val);
 #else
 	//xsSetVolumeCD(val);
 #endif
