@@ -15,6 +15,7 @@ public:
         ID = 0;
     }
     void set_owner(int ID, int time) {
+		this->ID = ID;
 		this->time = time;
     }
 	int duration() {
