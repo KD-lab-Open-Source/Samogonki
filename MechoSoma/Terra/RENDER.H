@@ -5,7 +5,7 @@
 #endif //_MSC_VER
 
 //@caiiiycuk can't find defined of SHIFT_FRACTION_VX
-#define SHIFT_FRACTION_VX 0
+#define SHIFT_FRACTION_VX 6
 #define VX_FRACTION 6 // from LAND.CPP
 #define MAX_VX_HEIGHT 255 // from LAND>CPP
 

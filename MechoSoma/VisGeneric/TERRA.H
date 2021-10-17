@@ -102,7 +102,12 @@ const unsigned char DELTA_MASK = 1 | (1 << 1);
 inline unsigned char& ZV(int i,int j) { return vMap->VxBuf[0][j][i]; }
 inline unsigned char& Z(int i) { return vMap->VxBuf[0][0][i]; }
 #else
-inline unsigned char& ZV(int i, int j){ return vMap->VxBuf[0][0][((j>>kmVxBuf)<<(H_SIZE_POWER-kmVxBuf))+(i>>kmVxBuf)]; }
+inline unsigned short ZV(int x,int y)
+{
+//	if(!(vMap->fl_kmVxBuf)) return (vMap -> VxBuf[0][y][x]);
+//	else 
+	return (vMap -> VxBuf[0][0][((y>>kmBuf)<<(H_SIZE_POWER-kmBuf))+ (x>>kmBuf)])<<(8-SHIFT_FRACTION_VX);
+}
 inline unsigned char& Z(int i) { return vMap->VxBuf[0][0][(i>>kmVxBuf)>>kmVxBuf ]; }
 #endif
 
