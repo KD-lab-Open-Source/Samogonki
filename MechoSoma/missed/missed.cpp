@@ -56,10 +56,13 @@ void* win32_load_icon(void) {
 void win32_shell_execute(char* command) {
 }
 
-char* win32_get_path_from_regkey(int key_id,char* subkey_name,char* value_name) {
-	char* path = (char*)malloc(3);
-	path[0] = 'F';
-	path[1] = ':';
-	path[2] = 0;
-	return path;
+std::string win32_get_path_from_regkey(int key_id,char* subkey_name,char* value_name) {
+	DWORD dwType = REG_SZ;
+	HKEY hKey = 0;
+	char value[1024];
+	DWORD value_length = 1024;
+	const char* subkey = "Software\\SamoGonki";
+	RegOpenKey(HKEY_CURRENT_USER,subkey,&hKey);
+	RegQueryValueEx(hKey, "SourcePath", NULL, &dwType, (LPBYTE)&value, &value_length);
+	return std::string(value);
 }
