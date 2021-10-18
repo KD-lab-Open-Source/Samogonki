@@ -34,8 +34,7 @@ void Crystal::setPositionInit()
 
 int Crystal::is_colliding_with(const Body& body)
 {
-	//@caiiiycuk
-	return false;//!body.is_static() && owner() != body.ID;
+	return !body.is_static() && owner() != body.ID;
 }
 
 void Crystal::post_quant()
@@ -51,22 +50,20 @@ void Crystal::post_quant()
 
 void Crystal::body_hit_reaction(const Body& body, const Contact& c)
 {
-//@caiiiycuk
-//	if(!alive() || owner() == body.ID)
-//		return;
-//	if(alive())
-//		startSound(EFF_CRYSTAL_HIT);
+	if(!alive() || owner() == body.ID)
+		return;
+	if(alive())
+		startSound(EFF_CRYSTAL_HIT);
 }		    
 
 void Crystal::body_overlap_reaction(Body& body)
 {
-//@caiiiycuk	
-//	if(body.type() != MECHOS || owner() == body.ID)
-//		return;
-//	damage(crystal_damage_by_mechos);
-//	if(!alive())
-//		startSound(EFF_CRYSTAL_BREAK);
-//	putArcaneStatistics(body.ID);
+	if(body.type() != MECHOS || owner() == body.ID)
+		return;
+	damage(crystal_damage_by_mechos);
+	if(!alive())
+		startSound(EFF_CRYSTAL_BREAK);
+	putArcaneStatistics(body.ID);
 }		    
 
 void Crystal::kill(void)

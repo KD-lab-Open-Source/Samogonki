@@ -5,9 +5,10 @@
 #define __CRYSTAL_H__
 
 #include "ArcaneStatistics.h"
+#include "OwnerProtection.h"
 #include "GrowingBody.h"
 
-class Crystal : public GrowingBody, ArcaneStatisticsService {
+class Crystal : public GrowingBody, public OwnerProtection, ArcaneStatisticsService {
 	friend class Mechos;
 	int collisions;
 	int FrameTime, MaxTime;
