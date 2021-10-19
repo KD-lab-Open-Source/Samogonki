@@ -44,10 +44,5 @@ https://developer.microsoft.com/ru-ru/windows/downloads/sdk-archive/
 В самом низу есть версия для Windows 7 и Windows XP (на Windows 10 он тоже подойдет).
 
 ## Запуск игры
-* В game.ini установите show_images=0, resources=0
-* Распакуйте все resource.pak файлы
-* Скопируйте файл GameDBG в папку с игрой.
-
-Игра запускается командой `gamedbg /W7-0 /skipmenu`. Это позволяет сразу попасть в мир-лобби.
-
-Мир, в котором игра точно работает - Аллея Светлячков
+* Желательно: распакуйте все resource.pak файлы и установить в game.ini resources=0
+* Скопируйте файл GameDBG.exe в папку с игрой.
