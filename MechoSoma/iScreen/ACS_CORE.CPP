@@ -1978,10 +1978,10 @@ int aciScreenDispatcher::ObjectQuant(int mx,int my)
 {
 	int ret = 0;
 
-	if(mx == -1 || my == -1){
+//	if(mx == -1 || my == -1){
 		mx = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 		my = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
-	}
+//	}
 
 	aciScreenObject* p = (aciScreenObject*)curScr -> objList -> fPtr;
 	while(p){
@@ -2785,10 +2785,10 @@ void aciScreenInputField::Quant(int mx,int my)
 
 	aciScreenObject::Quant(mx,my);
 
-	if(mx == -1 || my == -1){
+	//if(mx == -1 || my == -1){
 		mx = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 		my = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
-	}
+	//}
 
 	if(!(flags & ACS_ACTIVE_STRING)){
 		if(Color1 != -1 && CheckXY(mx,my)){
@@ -3042,10 +3042,10 @@ void aciScreenDispatcher::PrepareChangeScreen(int id)
 
 void aciScreenObject::Quant(int mx,int my)
 {
-	if(mx == -1 || my == -1){
+//	if(mx == -1 || my == -1){
 		mx = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 		my = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
-	}
+//	}
 
 	if(!(flags & ACS_HIDDEN) && CheckXY(mx,my)){
 		acsMouseMaxZ = -60.0f;
