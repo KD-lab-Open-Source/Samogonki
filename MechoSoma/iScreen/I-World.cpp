@@ -2489,7 +2489,7 @@ void iWorldDispatcher::ScaleScreen(aciScreen* scr)
 		if(p -> type == ACS_INPUT_FIELD_OBJ && p -> align_x == 1){
 			fp = (aciScreenInputField*)p; 
 			fp -> SizeX = acsStrLen(fp -> font,(unsigned char*)fp -> string,fp -> Space);
-			//fp -> PosX = viewport -> PosX + viewport -> SizeX - fp -> SizeX - (640 - fp -> SizeX0 - fp -> PosX0);
+			fp -> PosX = viewport -> PosX + viewport -> SizeX - fp -> SizeX - (640 - fp -> SizeX0 - fp -> PosX0);
 		}
 		p = (aciScreenObject*)p -> next;
 	}

@@ -347,7 +347,16 @@ struct aciScreenObject : XListElement
 	};
 	virtual void scale_coords(float x,float y);
 	virtual void Scale(float dx,float dy) {
-		//@caiiiycuk? maybe call scale_coords?
+		if (PosX0 == -1) {
+			PosX0 = PosX;
+			PosY0 = PosY;
+			SizeX0 = SizeX;
+			SizeY0 = SizeY;
+		}
+		PosX = PosX0 * dx;
+		PosY = PosY0 * dy;
+		SizeX = SizeX0 * dx;
+		SizeY = SizeY0 * dy;
 	}
 
 	aciScreenObject(void);

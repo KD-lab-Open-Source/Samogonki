@@ -3238,7 +3238,6 @@ void aciScreenDispatcher::MouseQuant(void)
 
 void aciScreenObject::scale_coords(float x,float y)
 {
-	return;
 	int sx,sy,dx,dy;
 
 	sx = 640.0f * x;
