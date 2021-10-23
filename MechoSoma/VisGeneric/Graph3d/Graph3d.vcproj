@@ -190,7 +190,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\Util,..,..\..,..\..\IVisGeneric,..\md3d"
+				AdditionalIncludeDirectories="..\Util;..;..\..;..\..\IVisGeneric;..\md3d;&quot;$(SolutionDir)\..\MSDXSDK_02_06\Include&quot;;&quot;$(SolutionDir)\..\XLibsSpring2004&quot;"
 				PreprocessorDefinitions="NO_STRICT;_WINDOWS;NDEBUG;WIN32;_FINAL_VERSION_"
 				StringPooling="true"
 				RuntimeLibrary="0"

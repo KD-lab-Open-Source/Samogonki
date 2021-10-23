@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\IVisGeneric,Scripts,Graph3d,PluginMAX,Util,Terra,..\RUNTIME,..\XREAL,..\FX,..\TERRA,..\XMath,PluginMAX\src,PluginMAX\inc,..\Sound,md3d"
+				AdditionalIncludeDirectories="..\IVisGeneric;Scripts;Graph3d;PluginMAX;Util;Terra;..\RUNTIME;..\XREAL;..\FX;..\TERRA;..\XMath;PluginMAX\src;PluginMAX\inc;..\Sound;md3d;&quot;$(SolutionDir)\..\XLibsSpring2004&quot;;&quot;C:\Program Files\Microsoft SDKs\Windows\v7.1\Include\&quot;;&quot;$(SolutionDir)\..\stl&quot;;&quot;$(SolutionDir)\..\MSDXSDK_02_06\Include\&quot;"
 				PreprocessorDefinitions="_USE_TILEMAP_;_USE_TERRA_;NO_STRICT;_MECHOSOMA_;_USE_XTOOL_;_WINDOWS;NDEBUG;WIN32;_FINAL_VERSION_"
 				StringPooling="true"
 				RuntimeLibrary="0"

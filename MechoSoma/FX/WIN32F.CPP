@@ -77,8 +77,8 @@ void allocation_tracking(char* title, AllocationAccumulator* state)
 */
 #else
 void allocation_tracking_clear(){}
-void allocation_tracking(char* title){}
-void allocation_tracking(char* title, AllocationAccumulator* state){}
+//void allocation_tracking(char* title){}
+//void allocation_tracking(char* title, AllocationAccumulator* state)}
 #endif
 
 	
