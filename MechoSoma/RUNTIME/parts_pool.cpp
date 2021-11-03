@@ -1,9 +1,9 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "dispatcher.h"
+#include "Dispatcher.h"
 
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #include "parts_pool.h"
 
 #include "mch_common.h" // For far target

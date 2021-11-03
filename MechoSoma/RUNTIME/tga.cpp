@@ -2,7 +2,7 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "tga.h"
+#include "TGA.H"
 
 #include "mch_common.h" // For far target
 

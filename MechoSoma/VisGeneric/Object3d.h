@@ -3,7 +3,7 @@
 
 #include "Math3d.h"
 #include "Object.h"
-#include "base.h"
+#include "Base.h"
 #include "BaseClass.h"
 #include "BoundingBox.h"
 #include "Material.h"
@@ -263,6 +263,8 @@ protected:
 	friend class cAnimChain;
 };
 
+class cMesh;
+
 class cList
 {
 	friend class cMesh;
@@ -343,7 +345,7 @@ public:
 	void dSetScale(float dScale)						{ dSetScale(Vect3f(dScale,dScale,dScale)); }
 	void dSetScale(const Vect3f &dScale)				{ Vect3f ds=dScale; if(ds.x<=0) ds.x=1e-10f; if(ds.y<=0) ds.y=1e-10f; if(ds.z<=0) ds.z=1e-10f; ScaleMesh(ds); }
 	void SetScale(float Scale)							{ SetScale(Vect3f(Scale,Scale,Scale)); }
-	void SetScale(const Vect3f &scale)					{ Vect3f s=scale; if(s.x<=0) s.x=1e-10f; if(s.y<=0) s.y=1e-10f; if(s.z<=0) s.z=1e-10f; ScaleMesh(s/Scale); }
+	void SetScale(const Vect3f &scale)					{ Vect3f s=scale; if(s.x<=0) s.x=1e-10f; if(s.y<=0) s.y=1e-10f; if(s.z<=0) s.z=1e-10f; Vect3f t = s/Scale; ScaleMesh(t); }
 	void SetPosition(const class MatXf &Matrix)			{ LocalMatrix=Matrix; CalcMatrix(); }
 	void SetPosition(const class Mat3f& matrix3x3, const class Vect3f& vector3) { SetPosition(MatXf(matrix3x3, vector3)); }
 	void SetOrientation(const class Mat3f& matrix3x3)	{ LocalMatrix.rot()=matrix3x3; CalcMatrix(); }
@@ -396,7 +398,7 @@ public:
 	void GetTotalBound(int types,cMesh *center,sBox6f &box);
 	void SetWireSize(const Vect3f &size);
 	void SetDescription(char *string);
-	inline char* GetDescription()							{ if(description) return description; return ""; }
+	inline const char* GetDescription()							{ if(description) return description; return ""; }
 
 	template <class Operation>
 	void ScanHierarchy(Operation& op) // operator()(cMesh&) ������ ���������� 1 ��� ����������� ������������

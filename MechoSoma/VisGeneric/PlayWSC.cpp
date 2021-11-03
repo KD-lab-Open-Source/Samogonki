@@ -6,19 +6,19 @@
 #include "IGraph3d.h"
 #include "CameraDispatcher.h"
 #include "AnimChannelNode.h"
-#include "maths.h"
+#include "Maths.h"
 #include "sound.h"
 #include "sound_api.h"
 #include "PolyMgr.h"
 #include "RenderDevice.h"
 #include "VisGeneric.h"
 
-// для работы со скриптами
+// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #include "WorldScript.h"
 #include "BaseDefine.h"
 #include "aci_parser.h"
 
-extern void fxlabMovieUpdateProcess(const char* name,Vect3f& position,Vect3f& velocity,int status);
+extern void fxlabMovieUpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status);
 extern void fxlabMovieDestroy(void);
 
 cWorldScriptPlay TestWorldScriptPlay;
@@ -53,7 +53,7 @@ protected:
 };
 
 class cConnectBaseWSC : public cElementWorldScript, public cAnimChainNode
-{ // соннект базовый для объектов и спецэффектов
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 public:
 	cConnectBaseWSC()														{}
 	virtual ~cConnectBaseWSC()												{ cAnimChainNode::Release(); }
@@ -209,9 +209,9 @@ public:
 		}
 	}
 	inline void SetText(char *pText)								{ Text=pText; }
-	inline void SetPos(Vect2f &ScrPos)								{ Pos=ScrPos; }
+	inline void SetPos(const Vect2f &ScrPos)						{ Pos=ScrPos; }
 	inline void SetNumberFont(int NumberFont)						{ nFont=NumberFont; }
-	inline void SetFontSize(Vect2f &fSize)							{ FontSize=fSize; }
+	inline void SetFontSize(const Vect2f &fSize)					{ FontSize=fSize; }
 	inline void SetCentered(int n)									{ centered=n; }
 	inline sColor4f& GetColor()										{ return Color; }
 };
@@ -253,7 +253,7 @@ public:
 		return 1;
 	}
 	inline void SetSound(int SoundID)								{ Sound=SoundID; }
-	inline void SetPos(Vect2f &WorldPos)							{ Pos=WorldPos; }
+	inline void SetPos(const Vect2f &WorldPos)						{ Pos=WorldPos; }
 	inline void SetParent(cElementWorldScript *ParentWS)			{ Parent=ParentWS; }
 };
 class cLighingWSC : public cElementWorldScript
@@ -328,7 +328,7 @@ int cWorldScriptPlay::OpenWorldScript(char *fname)
 	if(IVisGeneric==0) return 1;
 	if(root) delete root;
 	root=loadScript(fname);
-	// идентификация начальных данных
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	scrDataBlock *p,*p1;
 	p=root->find(WORLDSCRIPT_DEFOBJECT3D_PATH);
 	if(p) DefaultPathObject3d=(char*)p->c_dataPtr;
@@ -341,7 +341,7 @@ int cWorldScriptPlay::OpenWorldScript(char *fname)
 	if((!DefaultPathObject3d)||(!DefaultPathTexture)) 
 		return 1;
 	p=root->nextLevel->first();
-	// кэширование сцены
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	CurrentPathObject3d=DefaultPathObject3d;
 	while(p)
 	{
@@ -377,7 +377,7 @@ int cWorldScriptPlay::OpenWorldScript(char *fname)
 	}
 	current=root->nextLevel->first();
 	mch_sndD->Free(1);
-	if(SoundScriptName) mch_sndD->Load(SoundScriptName,1); // загрузить скрипт, мировые звуки при этом сами выгрузятся
+	if(SoundScriptName) mch_sndD->Load(SoundScriptName,1); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	return 0;
 }
 void cWorldScriptPlay::CloseWorldScript()
@@ -394,7 +394,7 @@ void cWorldScriptPlay::CloseWorldScript()
 		sndMusicStop();
 		sndMusicSetVolume(mchMusicVolume);
 	}
-	mchLoadWorldSound(); // после ролика загрузить на место мировые звуки/выгрузить скрипт от ролика
+	mchLoadWorldSound(); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }
 int cWorldScriptPlay::LoadNextWorldScript()
 {
@@ -605,10 +605,10 @@ int cWorldScriptPlay::LoadWSC(void *buffer,int length)
 			strcpy(ConnectName,buf);
 			while(InWSC.eof()==0&&buf[0]!='{') InWSC>>buf;
 			while(InWSC.eof()==0&&buf[0]!='}') 
-			{ // чтение connect'а
+			{ // пїЅпїЅпїЅпїЅпїЅпїЅ connect'пїЅ
 				InWSC>>buf;
 				while(InWSC.eof()==0&&buf[0]!='$'&&buf[0]!='}')
-					InWSC>>buf; // пропускает лишнее
+					InWSC>>buf; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				if(stricmp(buf,WSC_CONNECT_POSITION)==0)
 				{
 					sKey3f &key=Connect->GetNewPos();
@@ -674,10 +674,10 @@ int cWorldScriptPlay::LoadWSC(void *buffer,int length)
 					InWSC>>buf;
 					Orientation->SetName(buf);
 					while(InWSC.eof()==0&&buf[0]!='}') 
-					{ // чтение orientation'а
+					{ // пїЅпїЅпїЅпїЅпїЅпїЅ orientation'пїЅ
 						InWSC>>buf;
 						while(InWSC.eof()==0&&buf[0]!='$'&&buf[0]!='}')
-							InWSC>>buf; // пропускает лишнее
+							InWSC>>buf; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 						if(stricmp(buf,WSC_CONNECT_POSITION)==0)
 						{
 							sKey3f &key=Orientation->GetNewPos();

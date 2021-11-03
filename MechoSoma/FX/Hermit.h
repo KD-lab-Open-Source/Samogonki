@@ -4,11 +4,11 @@
 //	(C) 1999 K-D Lab
 //	Author: Alexandre Kotliar
 ////////////////////////////////////////////////////////////////////////////////
-#include <slist>
+#include <list>
 
 template <class Vector>
 class HermitIterator {
-	typedef stlp_std::_List_iterator<Vector, stlp_std::_Nonconst_traits<Vector>>  iterator;
+	typedef typename list<Vector>::iterator iterator;
 	float t;
 	Vector P[4];
 	list<Vector>* points;

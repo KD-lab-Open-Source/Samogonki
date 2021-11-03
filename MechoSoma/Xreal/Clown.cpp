@@ -47,12 +47,16 @@ void Clown::body_overlap_reaction(Body& body)
 	if(body.type() == MECHOS && body.completed() && owner() != body.ID && !job_latency && body.life_time() > 6000){
 		Mdisp -> attachBody(new Ball(&body));
 		job_latency.start(300);
-		fxlabClownProcess(Vect3f(R()));
+		Vect3f v1(R());
+		fxlabClownProcess(v1);
 		}
 } 
 
 void Clown::quant()
 {
 	if(!wave_timer && submersion())
-		fxlabBubbleSource(Vect3f(R()),wave_timer);
+	{
+		Vect3f v1(R());
+		fxlabBubbleSource(v1,wave_timer);
+	}
 }

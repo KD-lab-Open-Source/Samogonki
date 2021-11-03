@@ -13,7 +13,7 @@
 #ifndef INDEX_H
 #define INDEX_H
 
-#include "subscrpt.h"
+#include "SUBSCRPT.H"
 
 namespace TNT
 {

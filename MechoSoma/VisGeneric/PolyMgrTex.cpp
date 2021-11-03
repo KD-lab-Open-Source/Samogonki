@@ -432,10 +432,10 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 	int aShift4444=RenderDevice->GetTexFmt4444().aBitShift;
-	int dwShade=(round(1.f*((1<<RenderDevice->GetTexFmt4444().aBitCount)-1))<<RenderDevice->GetTexFmt4444().aBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().rBitCount)-1))<<RenderDevice->GetTexFmt4444().rBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().gBitCount)-1))<<RenderDevice->GetTexFmt4444().gBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().bBitCount)-1))<<RenderDevice->GetTexFmt4444().bBitShift);
+	int dwShade=(int(round(1.f*((1<<RenderDevice->GetTexFmt4444().aBitCount)-1)))<<RenderDevice->GetTexFmt4444().aBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().rBitCount)-1)))<<RenderDevice->GetTexFmt4444().rBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().gBitCount)-1)))<<RenderDevice->GetTexFmt4444().gBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().bBitCount)-1)))<<RenderDevice->GetTexFmt4444().bBitShift);
 
 	int xSh=TERRA_XCYCL(round(PosShade.x)),ySh=TERRA_YCYCL(round(PosShade.y)),zSh=round(PosShade.z);
 	short *shadeBuf=shade;

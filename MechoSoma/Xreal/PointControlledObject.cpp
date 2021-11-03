@@ -3,7 +3,7 @@
 #include "PointControlledObject.h"
 #include "Params.h"
 #include "MechosPrm.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "BodyDispatcher.h"
 #include "DebugPrm.h"
 
@@ -158,7 +158,7 @@ void PointControlledObject::point_control()
 	  
 	// Check if point is passed
 	if(fabs(T.x) < catch_width && fabs(T.y) < catch_length){
-		target_achieved();  // Подбор семени
+		target_achieved();  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		setRudder(0);
 		return;
 		}
@@ -166,7 +166,7 @@ void PointControlledObject::point_control()
 	// Calc rudder & traction
 	if(backward_maneuver() || (T.y < 0 && T.y > -back_moving_ymax && fabs(T.x/T.y) < back_moving_kmax)){
 		// Backward moving
-		if(Vlocal().y > 0)  // Еще не остановился 
+		if(Vlocal().y > 0)  // пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 			setRudder(0);
 		else{
 			Vect3f D(T.x, T.y, 0);
@@ -179,10 +179,10 @@ void PointControlledObject::point_control()
 			else{
 				float r = 2*acos(D.y)/M_PI;
 				setRudder(D.x > 0 ? r : -r);
-				// Проверка на выключение маневра
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				if(backward_maneuver_obstacle_timer(backwardObstacle(), backward_maneuver_obstacle_timer_duration) 
-				  || fabs(r) < backward_maneuver_threshold // Выровнялся на цель
-				  || backward_maneuver_velocity_timer(velocity_y_avr < velocity_y_avr_zero && traction_avr < -traction_avr_zero, backward_maneuver_velocity_timer_duration)){ // Есть тяга, но нет хода
+				  || fabs(r) < backward_maneuver_threshold // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
+				  || backward_maneuver_velocity_timer(velocity_y_avr < velocity_y_avr_zero && traction_avr < -traction_avr_zero, backward_maneuver_velocity_timer_duration)){ // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 					backward_maneuver_obstacle_timer.stop();
 					backward_maneuver.stop();
 					velocity_y_avr = traction_avr = 0;
@@ -196,7 +196,7 @@ void PointControlledObject::point_control()
 		}
 	else{ //  Forward moving
 
-		//  Проверка на препятствие 
+		//  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 		if(backward_maneuver_obstacle_timer(forwardObstacle(), backward_maneuver_obstacle_timer_duration) 
    		  || backward_maneuver_velocity_timer(velocity_y_avr < velocity_y_avr_zero && traction_avr > traction_avr_zero, backward_maneuver_velocity_timer_duration)){
 			backward_maneuver_obstacle_timer.stop();
@@ -208,7 +208,7 @@ void PointControlledObject::point_control()
 			return;
 			}
 
-		//  Проверка на очень крутые повороты
+		//  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //		CurvatureInterval curv0(T.x, T.y, allowed_width);
 //		if(fabs(curv0.min()) > max_curvature){
 //			backward_maneuver.start(1500);
@@ -217,7 +217,7 @@ void PointControlledObject::point_control()
 //			return;
 //			}
 
-		if(T.y > -40 && (fabs(T.x)/(fabs(T.y) + FLT_EPS) < front_moving_kmax || fabs(T.x) < allowed_width)){ // Передняя зона - оптимизация
+		if(T.y > -40 && (fabs(T.x)/(fabs(T.y) + FLT_EPS) < front_moving_kmax || fabs(T.x) < allowed_width)){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			CurvatureInterval curv;
 			int n = 0;
 			ControlPointList::iterator pi;
@@ -270,7 +270,7 @@ void PointControlledObject::point_control()
 
 //			setRudder(curv.avr()*curvature_factor);
 			}
-		else{ //  Задняя зона - максимальный руль
+		else{ //  пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 			setRudder(T.x <= 0 ? 1 : -1);
 			control_description = "Fwd max";
 			if(Vlocal().y > brake_lower_speed){
@@ -331,7 +331,7 @@ void PointControlledObject::control()
 	
 	float psi_curr = psi();
 	float dl = getDist(R_prev, R()).norm();
-	actual_curvature = dl > 1e-7 ? getDist(psi_prev, psi_curr, 2*M_PI)/dl : 0;
+	actual_curvature = dl > 1e-7 ? getDist_f(psi_prev, psi_curr, 2*M_PI)/dl : 0;
 	psi_prev = psi_curr;
 
 //	average( actual_curvature_, (Vglobal() % Wglobal() % Vglobal())/(pow(Vglobal().norm(), 3) + FLT_EPS), curvature_avr_tau);

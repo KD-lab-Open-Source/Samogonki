@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Body.h"
 #include "SimpleClip.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "Params.h"
 
 void Body::calc_archimedean_force()

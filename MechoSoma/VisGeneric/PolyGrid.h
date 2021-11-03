@@ -1,8 +1,8 @@
 #ifndef __POLYGRID_H__
 #define __POLYGRID_H__
 
-#include "camera.h"
-#include "material.h"
+#include "Camera.h"
+#include "Material.h"
 
 #define POLYGRID_NOT_USE								(0<<0)
 #define POLYGRID_USE									(1<<0)

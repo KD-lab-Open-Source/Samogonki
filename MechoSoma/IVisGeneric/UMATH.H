@@ -7,6 +7,7 @@
 #endif //__forceinline 
 #endif //_MSC_VER
 
+#include <math.h>
 #include "xmath.h"
 
 #define EQUAL_FLT(a,b)								(fabs((a)-(b))<.001f)

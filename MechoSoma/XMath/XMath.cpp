@@ -16,7 +16,7 @@
 #include <cctype>
 #include <iostream>
 
-#include "_xtool.h"
+#include "xtool.h"
 #include "xmath.h"
 
 #pragma warning(disable : 4073 )

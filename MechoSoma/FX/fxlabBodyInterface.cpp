@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "win32f.h"
+// #include "win32f.h"
 
-#include "handle.h"
+#include "Handle.h"
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "OwnerProtection.h"
@@ -13,14 +13,14 @@
 #include "TileMap.h"
 #include "TileWater.h"
 #include "IVisGeneric.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "race.h"
 #include "sound.h"
 
 #include "sur_scr.h"
 #include "SST_Reader.h"
 
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"
@@ -137,7 +137,8 @@ void fxlabSleepyMortar::quant()
 	BonusMeteorite::quant();
 
 	float t = sin(M_PI*(float)(color_time()) / 1000.0f);
-	xrealIVG -> SetObjectColor(geometry,NULL,&sColor4f(fabs(t),0,0,1.0f));
+	sColor4f color(fabs(t),0,0,1.0f);
+	xrealIVG -> SetObjectColor(geometry,NULL,&color);
 };
 
 //----------------------------

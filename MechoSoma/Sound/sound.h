@@ -135,7 +135,7 @@ struct mchSoundDispatcher
 	xtList<mchSoundTimer>* globalTimers;
 	xtList<mchSoundTimer>* localTimers;
 
-	typedef hash_multimap<int, mchSoundEFF*> SoundMap;
+	typedef std::unordered_multimap<int, mchSoundEFF*> SoundMap;
 	SoundMap map_globalEFF;
 	SoundMap map_localEFF;
 

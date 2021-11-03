@@ -1,11 +1,11 @@
 #ifndef __TILEMAP_H__
 #define __TILEMAP_H__
 
-#include "unknown.h"
+#include "Unknown.h"
 
-#include "object.h"
+#include "Object.h"
 #include "BaseClass.h"
-#include "object3d.h"
+#include "Object3d.h"
 #include "PolyGrid.h"
 
 #include "IncTerra.h"

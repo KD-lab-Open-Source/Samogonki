@@ -2,13 +2,13 @@
 #include "Body.h"
 #include "CustomFieldSources.h"
 #include "Params.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "ArcansPrm.h"
 #include "AnimalArcansPrm.h"
 #include "Mechos.h"
 
 //////////////////////////////////////////////////////////////////
-//	Общий Точечный Источник
+//	пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
 GeneralFieldSource::GeneralFieldSource(const Vect3f& r_, float radius_, float attraction_force_, float lift_force_, 
 	const Vect3f& vortical_force_, const Vect3f& torque_, int owner_ID_)
@@ -21,7 +21,7 @@ GeneralFieldSource::GeneralFieldSource(const Vect3f& r_, float radius_, float at
 }
 	
 //////////////////////////////////////////////////////////////////
-//	Вихрь
+//	пїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
 VortexFieldSource::VortexFieldSource(const Vect3f& r_, float radius_, int owner_ID_, float factor, int clock_wise)
 : GeneralFieldSource(r_, radius_, k_vortex_attraction, k_vortex_lift, 
@@ -65,7 +65,7 @@ void VortexFieldSource::affect(Body& b) const
 }
 
 //////////////////////////////////////////////////////////////////
-//	Магнитное поле
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
 MagneticFieldSource::MagneticFieldSource(const Vect3f& r_, float radius_, int owner_ID_)
 : GeneralFieldSource(r_, radius_, -magnetic_field_repulsion, 0, 
@@ -97,7 +97,7 @@ void MagneticFieldSource::affect(Body& b) const
 }
 
 //////////////////////////////////////////////////////////////////
-//	Притяжение
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
 AttractionFieldSource::AttractionFieldSource(const Vect3f& r_, float radius_, int owner_ID_)
 : GeneralFieldSource(r_, radius_, k_attraction_arcan, 0, 
@@ -129,7 +129,7 @@ void AttractionFieldSource::affect(Body& b) const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//	Притяжение, сфера
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ
 /////////////////////////////////////////////////////////////////////////////////////////
 BubbleFieldSource::BubbleFieldSource(const Vect3f& r_, float radius_, int owner_ID_)
 : GeneralFieldSource(r_, radius_, 6, 0, 

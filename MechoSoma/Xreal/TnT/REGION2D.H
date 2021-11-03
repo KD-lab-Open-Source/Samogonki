@@ -12,8 +12,8 @@
 #ifndef REGION2D_H
 #define REGION2D_H
 
-#include "index.h"
-#include <iostream.h>
+#include "INDEX.H"
+#include <iostream>
 #include <cassert>
 
 namespace TNT

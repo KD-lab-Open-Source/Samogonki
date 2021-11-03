@@ -2,7 +2,7 @@
 #define __BASEDEFINE_H__
 
 #include "assert.h"
-#include "malloc.h"
+#include "stdlib.h"
 #include "string.h"
 
 #include "BaseClass.h"
@@ -16,7 +16,7 @@ namespace KDWIN
 using namespace KDWIN;
 */
 
-#include "_xtool.h"
+#include "xtool.h"
 
 inline void ErrAbort(char *message)
 {

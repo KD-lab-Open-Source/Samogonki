@@ -7,10 +7,10 @@
 #include "TrackDispatcher.h"
 #include "I-World.h"
 
-#include "aci_ids.h"
-#include "aci_evnt.h"
-#include "aci_scr.h"
-#include "keys.h"
+#include "ACI_IDS.H"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
+#include "KEYS.H"
 
 #include "iText.h"
 
@@ -20,7 +20,20 @@
 
 #include "demo_dispatcher.h"
 
+#ifdef _WIN32
 #include "win32f.h"
+#else
+#define DBGCHECK
+char *_strtime(char *timestr)
+{
+	return nullptr;
+}
+
+char *_strdate(char *timestr)
+{
+	return nullptr;
+}
+#endif
 
 #include "mch_common.h" // For far target
 

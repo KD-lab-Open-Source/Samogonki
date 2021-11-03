@@ -1,4 +1,4 @@
-#include "SceneMesh.h"
+#include "scenemesh.h"
 
 int sAnimationMesh::Read(cMeshFile &f)
 {

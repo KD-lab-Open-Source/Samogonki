@@ -3,7 +3,11 @@
 
 extern int controlfp_flags;
 extern int controlfp_mask;
+#ifdef _WIN32
 #define CONTROL_FP()	_controlfp(controlfp_flags, controlfp_mask); 
+#else
+#define CONTROL_FP()
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //			Extern Symbols

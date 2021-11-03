@@ -19,7 +19,7 @@
 //---------------------------------------------------------------------
 //  Include current version
 //---------------------------------------------------------------------
-#include "version.h"
+#include "VERSION.H"
 
 //---------------------------------------------------------------------
 // Define the data type used for matrix and vector Subscripts.
@@ -31,7 +31,7 @@
 // See subscrpt.h for details.
 //---------------------------------------------------------------------
 
-#include "subscrpt.h"
+#include "SUBSCRPT.H"
 
 
 
@@ -69,7 +69,7 @@
 //
 //#define __NEED_ABS_MIN_MAX_
 
-#include "tntmath.h"
+#include "TNTMATH.H"
 
 
 #endif

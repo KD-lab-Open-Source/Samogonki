@@ -33,7 +33,7 @@
 
 
 #include <cmath>      //for sqrt() & fabs()
-#include "tntmath.h"  // for sign()
+#include "TNTMATH.H"  // for sign()
 
 // Classical QR factorization, based on Stewart[1973].
 //

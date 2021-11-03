@@ -9,6 +9,10 @@
 fstream fxx("graph.txt",ios::out);
 #endif //_TEST_DIRECT3D_
 
+#ifndef _WIN32
+#include "port.h"
+#endif
+
 int sVertexD3D::fmt	=	D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
 
 extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
@@ -164,7 +168,7 @@ int cGraph3dDirect3D::BeginScene()
 	{
 		SwitchRenderScene=0;
 		char str[256];
-		ultoa(err,str,10);
+		port_ultoa(err,str,10);
 		ErrAbort(str);
 	}
 	extern int gb_CurrentTexture;
@@ -182,9 +186,11 @@ int cGraph3dDirect3D::EndScene()
 }
 int cGraph3dDirect3D::NullClipRect()
 {
+#ifdef _WIN32
 	extern LPDIRECT3DDEVICE7    g_pd3dDevice;       // The D3D device
 	D3DVIEWPORT7 vp={xScrMin,yScrMin,xScrMax-xScrMin,yScrMax-yScrMin,0,1};
 	g_pd3dDevice->SetViewport(&vp);
+#endif
 	return 0;
 }
 int cGraph3dDirect3D::GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax)
@@ -411,7 +417,7 @@ int cGraph3dDirect3D::DrawPixel(int x1,int y1,int r,int g,int b,int a)
 int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 {
 	if(MaterialMode==material) return 0;
-	// восстановление материалов
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
 	{
 		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,FALSE);
@@ -426,7 +432,7 @@ int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
 		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
 	}
-	// установка материалов
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	MaterialMode=material;
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
 		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,TRUE);
@@ -557,7 +563,7 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 		d3dTexFmt.dwRBitShift,d3dTexFmt.dwGBitShift,d3dTexFmt.dwBBitShift,d3dTexFmt.dwAlphaBitShift);
 	return error!=MD3D_OK;
 }
-////////////////////////// начало прочие функции //////////////////////////
+////////////////////////// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ //////////////////////////
 int cGraph3dDirect3D::CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat,DWORD dwFlags,DWORD* lpdwHandle )
 {
 	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(unsigned long*)lpdwHandle);
@@ -713,6 +719,7 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 }
 int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 {
+#ifdef _WIN32
 	HDC hdc;
 	RECT rect = { x, y, xScr, yScr};
 	GetBackBufferDC(&hdc);
@@ -721,6 +728,7 @@ int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 	DrawText(hdc, string, strlen(string), &rect, DT_EXPANDTABS);
 	SelectObject(hdc, hold_font);
 	ReleaseBackBufferDC(hdc);
+#endif
 	return 1;
 }
 ////////////////////////// PRIVATE //////////////////////////
@@ -729,18 +737,18 @@ void cGraph3dDirect3D::InitRenderState()
 	d3dSetProjectionMatrixToIdentity();
 
 	d3dSetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // пїЅпїЅпїЅпїЅ D3DTSS_COLORARG1==D3DTA_TEXTURE, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	d3dSetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // пїЅпїЅпїЅпїЅ D3DTSS_COLORARG1==D3DTA_TEXTURE, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 
 	d3dSetTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // пїЅпїЅпїЅпїЅ D3DTSS_COLORARG1==D3DTA_TEXTURE, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	d3dSetTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
 	d3dSetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // пїЅпїЅпїЅпїЅ D3DTSS_COLORARG1==D3DTA_TEXTURE, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 

@@ -4,7 +4,7 @@
 #include "math.h"
 #include "assert.h"
 #include "limits.h"
-#include "base.h"
+#include "Base.h"
 
 #define XSIZE_CYCL_FLT				2048.f
 #define YSIZE_CYCL_FLT				2048.f

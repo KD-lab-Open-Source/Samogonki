@@ -22,7 +22,8 @@ char* getIniKey(char* fname,char* section,char* key);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-static int lv_primaryLangID[] = 
+/*
+static int lv_primaryLangID[]
 {
 	LANG_AFRIKAANS,		// 0
 	LANG_ALBANIAN,		// 1
@@ -132,6 +133,7 @@ int win32_GetKeybLayoutID(void)
 
 	return 2;
 }
+*/
 
 void lvInit(void)
 {

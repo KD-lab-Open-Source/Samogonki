@@ -3,11 +3,11 @@
 #include "CameraDispatcher.h"
 #include "CameraPrm.h"
 #include "DebugPrm.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "Body.h"
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #include "Statistics.h"
-#include "xJoystick.h"
+#include "XJoystick.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //		ZBuffer's declarations
@@ -47,7 +47,7 @@ public:
 	void reset(float z_max);
 	void draw_triangle(Vect3f vv[3]);
 	int find_nearest_point(Vect3f& v, int enable_slope);
-	int ZBuffer::test_point(int x, int y, int& dist);
+	int test_point(int x, int y, int& dist);
 	void draw();
 };
 
@@ -64,7 +64,7 @@ void Triangle::draw_to_z_buffer(ZBuffer& z_buffer, const MatXf& sXg, cCamera* ca
 	Vect3f vv[3];		
 	for(int i = 0; i < 3; i++){
 		vv[i] = getDist(verts[i], sXg.trans());
-		vv[i].z -= SHARE_FLOAT(round(sqr(vv[i].x) + sqr(vv[i].y)));
+		vv[i].z -= SHARE_FLOAT(int(round(sqr(vv[i].x) + sqr(vv[i].y))));
 		sXg.rot().xform(vv[i]);
 		}
 	z_buffer.draw_triangle(vv);
@@ -168,7 +168,7 @@ int CameraDispatcher::new_clip(CameraCoords& coords)
 	sAg.xform(offset);
 	if(z_buffer.find_nearest_point(offset, flags_ & EnableSlope )){
 		sAg.invXform(offset);
-		coords.angles.x = fabs(getDist(psi_prev, offset.psi(), 2*M_PI)) < M_PI/2 ? R2G(offset.theta() + atan(coords.CenteringDelta)) : R2G(-offset.theta() + atan(coords.CenteringDelta));
+		coords.angles.x = fabs(getDist_f(psi_prev, offset.psi(), 2*M_PI)) < M_PI/2 ? R2G(offset.theta() + atan(coords.CenteringDelta)) : R2G(-offset.theta() + atan(coords.CenteringDelta));
 		if(flags_ & EnableSlope && R2G(offset.theta()) > camera_min_slope_angle_to_change_psi) 
 			coords.angles.z = R2G(M_PI/2 - offset.psi());
 		coords.rot().xform(offset);
@@ -232,7 +232,10 @@ void CameraDispatcher::show()
 		for(int i = 0; i < 4; i++)
 			show_map_line(Vect3f(pX[i], pY[i], 0), Vect3f(pX[(i + 1)%4], pY[(i + 1)%4], 0), RED);
 
-		tri_map -> scan_poly(pX, pY, 4, TestOp());
+		{
+			TestOp op;
+			tri_map -> scan_poly(pX, pY, 4, op);
+		}
 
 		if(observer){
 			show_vector(observer -> R(), XCOL(GREEN));
@@ -328,6 +331,7 @@ void ZBuffer::reset(float z_max)
 
 void ZBuffer::draw()
 {
+#ifdef _WIN32
 	HDC hdc;
 	GetBackBufferDC(&hdc);
 	int y;
@@ -358,6 +362,7 @@ void ZBuffer::draw()
 	SetPixel(hdc, x1 + 402 + x_size, y1 + 299, GREEN);
 
 	ReleaseBackBufferDC(hdc);
+#endif
 }
 
 inline int ZBuffer::test_point(int x, int y, int& dist)
@@ -439,16 +444,16 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 		int out_cnt = 0;
 		float dd[3];
 		for(int i = 0; i < 3; i++)
-			if((dd[i] = p.dist(vv[i])) < eps){ // снаружи
+			if((dd[i] = p.dist(vv[i])) < eps){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				out_cnt++;
 				out = i;
 				}
 			else
 				in = i;
 		switch(out_cnt){
-			case 0: // весь внутри
+			case 0: // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				break;
-			case 1: { // 1 точка снаружи (out)
+			case 1: { // 1 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (out)
 				int i1 = (out + 1) % 3;
 				int i2 = (out + 2) % 3;
 				float d0 = -dd[out];
@@ -458,14 +463,14 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 				Vect3f v1 = v0 + (vv[i1] - v0)*(d0 + dd[i1] > FLT_EPS ? d0/(d0 + dd[i1]) : 0);
 				Vect3f v2 = v0 + (vv[i2] - v0)*(d0 + dd[i2] > FLT_EPS ? d0/(d0 + dd[i2]) : 0);
 				Vect3f vv2[3];
-				if(v1.distance2(vv[i2]) < v2.distance2(vv[i1])){ // разрезаем вдоль v1 - vv[i2]
+				if(v1.distance2(vv[i2]) < v2.distance2(vv[i1])){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ v1 - vv[i2]
 					vv2[0] = v1;
 					vv2[1] = vv[i2];
 					vv2[2] = v2;
 					clip_triangle(vv2, j + 1);
 					vv[out] = v1;
 					}
-				else{  // разрезаем вдоль v2 - vv[i1]
+				else{  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ v2 - vv[i1]
 					vv2[0] = v1;
 					vv2[1] = vv[i1];
 					vv2[2] = v2;
@@ -474,7 +479,7 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 					}
 				}
 				break;
-			case 2: { // 1 точка внутри (in)
+			case 2: { // 1 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (in)
 				int i1 = (in + 1) % 3;
 				int i2 = (in + 2) % 3;
 				float d0 = dd[in];
@@ -485,7 +490,7 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 				vv[i2] = v0 + (vv[i2] - v0)*(d0 - dd[i2] > FLT_EPS ? d0/(d0 - dd[i2]) : 0);
 				}
 				break;
-			case 3: // весь снаружи
+			case 3: // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				return;
 			}
 		}
@@ -503,7 +508,7 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 		assert(vv[i].xi() >= x_min && vv[i].xi() <= x_max && vv[i].yi() >= y_min && vv[i].yi() <= y_max);
 		}
 
-	// Поиск верхней вершины
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if(vv[0].y > vv[1].y){
 		Vect3f v = vv[0]; vv[0] = vv[1]; vv[1] = vv[2]; vv[2] = v;
 		if(vv[0].y > vv[1].y){
@@ -515,7 +520,7 @@ void ZBuffer::clip_triangle(Vect3f vv[3], int side)
 			Vect3f v = vv[0]; vv[0] = vv[2]; vv[2] = vv[1]; vv[1] = v;
 			}
 
-	// Двусторонний треугольник
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	int cross_z = (vv[1].x - vv[0].x)*(vv[2].y - vv[0].y) - (vv[1].y - vv[0].y)*(vv[2].x - vv[0].x);
 	if(fabs((float)cross_z) < 1e-5f)
 		return;

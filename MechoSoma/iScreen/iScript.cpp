@@ -1,12 +1,12 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "hfont.h"
+#include "HFONT.H"
 
-#include "aci_evnt.h"
-#include "aci_scr.h"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
 
-#include "SCRIPTS\scr_defs.h"
+#include "SCR_DEFS.H"
 #include "aci_parser.h"
 
 #include "mch_common.h" // For far target

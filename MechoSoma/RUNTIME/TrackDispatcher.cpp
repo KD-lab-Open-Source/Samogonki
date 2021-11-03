@@ -9,7 +9,7 @@
 #include "aci_parser.h"
 #include "mch_script.h"
 
-#include "terra.h"
+#include "TERRA.H"
 
 #include "mch_common.h" // For far target
 

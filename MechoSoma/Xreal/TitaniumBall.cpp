@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////
-//	Титановый шарик
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "TitaniumBall.h"
 #include "Params.h"
-#include "mesh3ds.h"
-#include "m3d_effects.h"
+#include "Mesh3ds.h"
+#include "M3d_effects.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
 

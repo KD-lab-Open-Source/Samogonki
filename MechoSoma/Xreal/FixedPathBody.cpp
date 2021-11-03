@@ -1,15 +1,20 @@
+#include <unordered_map>
+
 #include "StdAfx.h"
 #include "BodyDispatcher.h"
 #include "SimpleClip.h"
 #include "FixedPathBody.h"
 #include "Mesh3ds.h"
-#include "params.h"
+#include "Params.h"
 #include "sound.h"
 #include "CameraPrm.h"
 #include "QuatMath.h"
 
+#ifndef _WIN32
+#include "port.h"
+#endif
 
-class SoundTable : hash_map<string, int>
+class SoundTable : std::unordered_map<string, int>
 {
 public:
 	SoundTable()

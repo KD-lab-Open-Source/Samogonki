@@ -2,8 +2,8 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "hfont.h"
-#include "aci_scr.h"
+#include "HFONT.H"
+#include "ACI_SCR.H"
 
 #include "mch_common.h" // For far target
 

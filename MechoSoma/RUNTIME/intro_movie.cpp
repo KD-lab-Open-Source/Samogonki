@@ -8,15 +8,19 @@
 #include "sound.h"
 
 #include "PlayMpeg.h"
-#include "md3d.h"
+#include "Md3d.h"
 
 #include "iText.h"
-#include "hFont.h"
+#include "HFONT.H"
 
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
 
 #include "mch_common.h" // For far target
+
+#ifndef _WIN32
+#define MAX_PATH 1024
+#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */

@@ -8,7 +8,7 @@
 class cBaseLight : public cBaseObject, public cBaseVolumeObject
 {
 public:
-	int				id;	// номер источника света
+	int				id;	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	sColor4f		Ambient;
 	sColor4f		Diffuse;
 	sColor4f		Illumination;
@@ -26,4 +26,4 @@ public:
 
 extern void BaseObject_OmniLight(Vect3f &pos,sColor4f &diffuse,sColor4f &illumination);
 
-#endif __BASELIGHT_H__
+#endif // __BASELIGHT_H__

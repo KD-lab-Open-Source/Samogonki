@@ -1,4 +1,4 @@
-#include "SceneMesh.h"
+#include "scenemesh.h"
 
 int sSubTexmap::Read(cMeshFile &f)
 {

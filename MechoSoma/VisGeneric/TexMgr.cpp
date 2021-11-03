@@ -1,7 +1,7 @@
 #include "BaseDefine.h"
 #include "TgaServ.h"
 #include "TexMgr.h"
-#include "base.h"
+#include "Base.h"
 #include "PolyMgr.h"
 
 #ifdef _MECHOSOMA_

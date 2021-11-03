@@ -2,9 +2,9 @@
 #include "Body.h"
 #include "PointControlledObject.h"
 #include "SmartStone.h"
-#include "params.h"
+#include "Params.h"
 #include "AnimalsPrm.h"
-#include "Sound.h"
+#include "sound.h"
 #include "SimpleClip.h"
 
 void fxlabStoneDust(Vect3f& p,float r);
@@ -76,7 +76,10 @@ void SmartStoneRacer::quant()
 		switch(state){
 			case Rolling: 
 				state = Flying;
-				fxlabStoneDust(Vect3f(R()), radius());
+				{
+					Vect3f v1(R());
+					fxlabStoneDust(v1, radius());
+				}
 				break;
 			case Flying:
 				state = Rolling;

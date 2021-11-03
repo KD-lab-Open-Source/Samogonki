@@ -1,22 +1,22 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "hfont.h"
+#include "HFONT.H"
 #include "sound.h"
 
-#include "aci_evnt.h"
-#include "aci_scr.h"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
 
-#include "keys.h"
+#include "KEYS.H"
 
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
 
 #include "I-World.h"
 
-#include "xJoystick.h"
+#include "XJoystick.h"
 
-#include "xgr.h"
+#include "XGR.h"
 #include "IGraph3d.h"
 
 #include "LocalVersion.h"

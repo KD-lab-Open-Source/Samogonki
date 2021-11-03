@@ -56,14 +56,14 @@ public:
 	unsigned int		NumberID;
 	cM3D()													{ MeshList=new cList(); NumberID=0; Window=0; prev_global_time = 0; }
 	~cM3D()													{ Release(0); }
-	// загрузка
-	void LoadLib(char *fname);
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	void LoadLib(const char *fname);
 	void LoadMap(char *fname,int LoadNumberTrack=0xFFFFFFFF);
 	void SaveMap(char *fname,char Version='O');
-	// вывод
+	// пїЅпїЅпїЅпїЅпїЅ
 	void TestVisible(cUnknownClass *UCameraList);
 	void Draw(cUnknownClass *UCameraList);
-	// создание объектов и т.д.
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
 	cMesh* CreateObject(unsigned int *vType,int number);	// Constructor objects
 	cMesh* CreateObject(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
 	cMesh* CreateObject(unsigned int Type,float x,float y,float z,float ax,float ay,float az);
@@ -85,10 +85,10 @@ public:
 	cMesh* FindUnique(unsigned int unique);
 
 	cList* AttachEnd(cMesh *Mesh);
-	cList* Attach(cMesh *Mesh);	// присоединие объекта к списку
-	void   Detach(cMesh *Mesh);	// отсоединение объекта от списка
-	void   Delete(cMesh *Mesh); // удаление объекта в списке
-	void   Release(unsigned int Type=M3D_STATIC); // удаление объектов из списка по типу
+	cList* Attach(cMesh *Mesh);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	void   Detach(cMesh *Mesh);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	void   Delete(cMesh *Mesh); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	void   Release(unsigned int Type=M3D_STATIC); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 #ifdef _MECHOSOMA_
 	void  SetArcane(void (*FunctionSetArcane)(mchArcaneData*));
 #endif

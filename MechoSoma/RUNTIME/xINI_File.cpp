@@ -10,6 +10,11 @@
 
 #define _xINI_BINARY_ONLY_
 
+#ifndef _WIN32
+#define _MAX_PATH 1024
+#include "port.h"
+#endif
+
 void xINI_FileKey::putValue(const char* p)
 {
 	int i,sz = strlen(p) - 1;
@@ -189,6 +194,7 @@ void xINI_File::load_binary(void)
 
 void xINI_File::load_text(void)
 {
+#ifdef _WIN32
 	int sz;
 	char* buf,*vbuf,*p;
 
@@ -234,6 +240,7 @@ void xINI_File::load_text(void)
 
 	delete buf;
 	delete vbuf;
+#endif
 }
 
 void xINI_FileSection::save(XStream& fh,int binary)

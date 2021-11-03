@@ -1,4 +1,4 @@
-#include "base.h"
+#include "Base.h"
 
 #define M3D_EFFECT_LIFE_POD0	M3D_TOTAL_TYPE(1, M3D_EFFECT)
 #define M3D_ATTRACTION M3D_TOTAL_TYPE(15, M3D_EFFECT)

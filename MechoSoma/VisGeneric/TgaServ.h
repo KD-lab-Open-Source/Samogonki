@@ -1,4 +1,4 @@
-#include "_xtool.h"
+#include "xtool.h"
 
 struct TGA_Header
 {

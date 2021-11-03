@@ -5,27 +5,27 @@
 #include "WinVideo.h"
 
 #include "iText.h"
-#include "mch_rto.h"
-#include "keys.h"
+#include "mch_rto.H"
+#include "KEYS.H"
 #include "controls.h"
 #include "ctl_point.h"
 
-#include "terra.h"
-#include "tga.h"
+#include "TERRA.H"
+#include "TGA.H"
 
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "IGraph3d.h"
 #include "Xreal.h"
 
 #include "race.h"
 #include "intro.h"
 
-#include "_xsound.h"
+#include "xsound.h"
 #include "sound.h"
 #include "sound_api.h"
 
-#include "aci_ids.h"
-#include "aci_scr.h"
+#include "ACI_IDS.H"
+#include "ACI_SCR.H"
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
 #include "savegame.h"
@@ -40,15 +40,19 @@
 #include "TrackDispatcher.h"
 #include "TrackRecorder.h"
 
-#include "xJoystick.h"
+#include "XJoystick.h"
 
 #include "mechosoma.h"
+
+#ifdef _WIN32
 #include "win32f.h"
+#endif
+
 #include "ResourceDispatcher.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "TexMgr.h"
 #include "GameClient.h"
-#include "params.h"
+#include "Params.h"
 #include "Statistics.h"
 #include "AllocationTracking.h"
 
@@ -60,6 +64,20 @@
 #include "cdcheck.h"
 
 #include "mch_common.h" // For far target
+
+#ifndef _WIN32
+#define TRUE 1
+#define FALSE 0
+#define MAX_PATH 1024
+
+#define MK_LBUTTON 0x0001
+#define MK_RBUTTON 0x0002
+
+#define DBGCHECK
+
+#include "Md3d.h"
+
+#endif
 
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 
@@ -428,6 +446,7 @@ int xtInitApplication(void)
 		mchGraphicsSetup();
 	}
 
+#ifdef _WIN32
 	if(mchPBEM_Game)
 		wiInit();
 
@@ -435,6 +454,7 @@ int xtInitApplication(void)
 		win32_SetPriorityProcess(HIGH_PRIORITY_CLASS);
 	else
 		win32_SetPriorityProcess(NORMAL_PRIORITY_CLASS);
+#endif
 //	XCon < "MMX support ";
 //	if(xt_mmxUse) XCon < "detected";
 //	else XCon < "is absent";
@@ -528,11 +548,17 @@ int xtInitApplication(void)
 	gb_IVisGeneric=CreateIVisGeneric();
 	gb_URenderDevice=gb_IVisGeneric->CreateGraph(dwScrX,dwScrY,dwGraphMode,xgrFullscreenMode,xgrColorDepth);
 	gb_IGraph3d=gb_IVisGeneric->GetIGraph3d(gb_URenderDevice);
-	gb_IVisGeneric->SetGraphClipping(gb_URenderDevice,
-		&sRectangle4f(dwScrX*0.001f,dwScrX*0.001f,dwScrX*0.999f,dwScrY*0.999f));
+
+	{
+		sRectangle4f r1(dwScrX*0.001f,dwScrX*0.001f,dwScrX*0.999f,dwScrY*0.999f);
+		gb_IVisGeneric->SetGraphClipping(gb_URenderDevice,&r1);
+	}
+	
 
 #ifndef _DEBUG
+#ifdef _WIN32
 	FreeConsole();
+#endif
 #endif
 
 	allocation_tracking("xgrInit");
@@ -543,13 +569,28 @@ int xtInitApplication(void)
 	gb_IVisGeneric->SetScene(gb_UScene);			// установка активной сцены
 
 	iCamera=gb_IVisGeneric->CreateCamera();
-	gb_IVisGeneric->SetCameraPosition(iCamera,&Vect3f(0,0,512),&Vect3f(0,0,0),&Vect3f(0,0,512));
-	gb_IVisGeneric->SetCameraFrustum(iCamera,	// устанавливается пирамида видимости
-		&Vect2f(0.5f,0.5f),						// центр камеры
-		&sRectangle4f(-0.499f,-0.499f,0.499f,0.499f),		// видимая область камеры
-		&Vect2f(1.0f,1.0f),						// фокус камеры
-		&Vect2f(10.0f,3000.0f),					// ближайший и дальний z-плоскости отсечения
-		&Vect2f(0.2f,0.90f));						// zNear и zFar для мапирования в zBuffer
+
+	{
+		Vect3f v1(0,0,512);
+		Vect3f v2(0,0,0);
+		Vect3f v3(0,0,512);
+		gb_IVisGeneric->SetCameraPosition(iCamera,&v1,&v2,&v3);
+	}
+
+	{
+		Vect2f v1(0.5f,0.5f);
+		sRectangle4f r1(-0.499f,-0.499f,0.499f,0.499f);
+		Vect2f v2(1.0f,1.0f);
+		Vect2f v3(10.0f,3000.0f);
+		Vect2f v4(0.2f,0.90f);
+		gb_IVisGeneric->SetCameraFrustum(iCamera,	// устанавливается пирамида видимости
+			&v1, // центр камеры
+			&r1, // видимая область камеры
+			&v2, // фокус камеры
+			&v3, // ближайший и дальний z-плоскости отсечения
+			&v4); // zNear и zFar для мапирования в zBuffer
+	}
+	
 	gb_IVisGeneric->AttachCameraViewPort(iCamera,gb_URenderDevice);
 
 	gameWnd = new mchGameWindow;
@@ -638,11 +679,11 @@ void xtDoneApplication(void)
 	if(!mchMusicMute) sndMusicStop();
 	mchFinitSound();
 
+#ifdef _WIN32
 #ifdef _FINAL_VERSION_
 	if(mchFeedbackFlag)
 		win32_shell_execute(iGetText(iTXT_MAILTO));
 #endif
-
 	if(mchPBEM_Game){
 		wiFinit();
 
@@ -654,6 +695,7 @@ void xtDoneApplication(void)
 		if(strlen(iGetText(iTXT_ONLINE_URL)))
 			win32_shell_execute(iGetText(iTXT_ONLINE_URL));
 	}
+#endif
 }
 
 void GameQuantRTO::Init(int id)
@@ -1170,6 +1212,7 @@ void MainMenuRTO::Finit(void)
 
 void mchComline(void)
 {
+#ifdef _WIN32
 	int i,num = __argc;
 	char** p = __argv;
 
@@ -1380,6 +1423,7 @@ void mchComline(void)
 		mch_ShowImages = 0;
 		//mch_RealRnd = 0;
 		}
+#endif
 #endif
 }
 
@@ -2565,7 +2609,7 @@ void ShowImageRTO::Init(int id)
 	}
 	mchA_d3dLockBackBuffer();
 
-	XKey.init(mchShowImageKeyPress,NULL);
+	XKey.init((void *)&mchShowImageKeyPress,NULL);
 	XGR_MouseInit(XGR_MAXX/2,XGR_MAXY/2,0,0,1,NULL);
 	XGR_MouseHide();
 	XGR_MouseSetPressHandler(XGM_LEFT_BUTTON,mchShowImageMousePress);
@@ -2928,8 +2972,10 @@ void XrealEvolveQuant()
 		global_time.next_frame();
 		#ifndef _FINAL_VERSION_
 		if(xreal_log){
+#ifdef _WIN32
 			bout < "controlfp: " <= _controlfp( 0, 0 ) < "\n";
 			bout < "XrealEvolveQuant: " <= global_time() < "\n";
+#endif
 			}
 		#endif
 		Mdisp -> evolve_quant();
@@ -3423,6 +3469,7 @@ void LoadingRTO::Init(int id)
 	mchA_PrepareLoadingImage(mchCurrentWorld,mchCurrentTrack);
 	startTimer = clocki();
 
+#ifdef _WIN32
 	if(mchPBEM_DataFlag){
 		wi_D.connect(wiServerName,wiServerPort);
 
@@ -3446,6 +3493,7 @@ void LoadingRTO::Init(int id)
 			wi_D.open_request(WI_POST,wiGameURL,header,strlen(header),wi_D.output_buffer(),wi_D.output_size());
 		}
 	}
+#endif
 }
 
 int LoadingRTO::Quant(void)
@@ -3465,6 +3513,7 @@ int LoadingRTO::Quant(void)
 	if(d3dIsActive())
 		mchA_d3dFlushBackBuffer(0,0,XGR_MAXX,XGR_MAXY);
 
+#ifdef _WIN32
 	if(mchPBEM_DataFlag){
 		ogQuant();
 
@@ -3486,6 +3535,7 @@ int LoadingRTO::Quant(void)
 		if(v >= 255)
 			gb_IGraph3d->Flush();
 	}
+#endif
 
 	if(v < 255){
 		gb_IGraph3d->BeginScene();

@@ -1,14 +1,14 @@
 ////////////////////////////////////////////////////////////////////
-//	Кристалл
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "Body.h"
 #include "Crystal.h"
 #include "Contact.h"
-#include "params.h"
+#include "Params.h"
 
-#include "mesh3ds.h"
-#include "m3d_effects.h"
+#include "Mesh3ds.h"
+#include "M3d_effects.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
 

@@ -1,5 +1,5 @@
 #include "SurmapClient.h"
-#include "dispatcher.h"
+#include "Dispatcher.h"
 #include "IGraph3d.h"
 
 #ifdef _SURMAP_
@@ -41,19 +41,19 @@ void initM3D(int xScr,int yScr,int FullScr)
 	gb_UScene=gb_IVisGeneric->CreateScene();
 	gb_IVisGeneric->SetScene(gb_UScene);
 	gb_UCamera=gb_IVisGeneric->CreateCamera();
-	gb_IVisGeneric->AttachCamera(gb_UCamera);		// ÿ¨ø¸þõôøýõýøõ úðüõ¨v ú ðúªøòýþù ¸¡õýõ
-	gb_IVisGeneric->SetCameraAttribute(gb_UCamera,ATTRIBUTE_CAMERA_WORLD_CUTTING); // ¸¯õ¨ø¢ýþ¸ª¹ òvòþôð ø ÿõ¨¸ÿõúªøòð
+	gb_IVisGeneric->AttachCamera(gb_UCamera);		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½v ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+	gb_IVisGeneric->SetCameraAttribute(gb_UCamera,ATTRIBUTE_CAMERA_WORLD_CUTTING); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½vï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	gb_IVisGeneric->SetCameraPosition(gb_UCamera,&Vect3f(0,0,512),&Vect3f(0,0,0));
-	gb_IVisGeneric->SetCameraFrustum(gb_UCamera,	// º¸ªðýðòûøòðõª¸  ÿø¨ðüøôð òøôøüþ¸ªø
-		&Vect2f(0.5f,0.5f),						// ¡õýª¨ úðüõ¨v
-		&sRectangle4f(-0.49f,-0.49f,0.49f,0.49f),		// òøôøüð  þñûð¸ª¹ úðüõ¨v
-		&Vect2f(1.0f,1.0f),						// ¯þúº¸ úðüõ¨v
-		&Vect2f(10.0f,3000.0f),					// ñûøöðù°øù ø ôðû¹ýøù z-ÿûþ¸úþ¸ªø þª¸õ¢õýø 
-		&Vect2f(0.2f,0.90f));						// zNear ø zFar ôû  üðÿø¨þòðýø  ò zBuffer
+	gb_IVisGeneric->SetCameraFrustum(gb_UCamera,	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		&Vect2f(0.5f,0.5f),						// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½v
+		&sRectangle4f(-0.49f,-0.49f,0.49f,0.49f),		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ð¸ª¹ ï¿½ï¿½ï¿½ï¿½ï¿½v
+		&Vect2f(1.0f,1.0f),						// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½v
+		&Vect2f(10.0f,3000.0f),					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ z-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		&Vect2f(0.2f,0.90f));						// zNear ï¿½ zFar ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ zBuffer
 	gb_IVisGeneric->AttachCameraViewPort(gb_UCamera,gb_URenderDevice);
 	gb_IVisGeneric->SetRenderObjectSwitch(RENDER_TUNING_OBJECT_LIGHTING_CONST);
 	gb_UArrayCamera(0)=gb_UCamera;
-	//¦ðó¨º÷úð úº¨¸þ¨ð START POINTOW
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ START POINTOW
 	cM3D *M3D=(cM3D*)gb_IVisGeneric->GetM3D();
 	assert(M3D);
 	if(MeshPoint) delete MeshPoint; 
@@ -66,11 +66,11 @@ void doneM3D()
 {
 	gb_UArrayCamera(0)=0;
 	gb_UArrayCamera.Delete();
-	gb_IVisGeneric->ReleaseWorld(); // âûãðóçêà ìèðà
-	if(gb_UCamera)	gb_IVisGeneric->ReleaseCamera(gb_UCamera); // óäàëåíèå íåíóæíîé êàìåðû
-	if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // óäàëåíèå ñöåíû
-	gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // çàêðûòèå îêíà âûâîäà
-	gb_IVisGeneric->Release();	// çàêðûòèå áèáëèîòåêè
+	gb_IVisGeneric->ReleaseWorld(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	if(gb_UCamera)	gb_IVisGeneric->ReleaseCamera(gb_UCamera); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+	gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	gb_IVisGeneric->Release();	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	gb_UCamera=0; gb_UScene=0; gb_URenderDevice=0; gb_IGraph3d=0; gb_IVisGeneric=0;
 }
 void setCamera(float x,float y,float z,int xCenter,int yCenter,int xSize,int ySize,float ax,float ay,float az,int focus,char perspective)
@@ -226,7 +226,7 @@ int  loadM3D(char* name,char flCollision,float x,float y,float z,float ax,float 
 		Mesh->NumberTrack=MESH_GLOBAL_TRACK;
 		editM3D=Mesh->ID;
 		extern void RenderShadovM3D(int number,float y);
-		RenderShadovM3D(editM3D,Mesh->y()); 	//+ª¨ø¸þòúð ªõýø
+		RenderShadovM3D(editM3D,Mesh->y()); 	//+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if(flCollision) Mesh->Type=M3D_TOTAL_TYPE(M3D_KIND(Mesh->Type),M3D_STATIC_COLLIDING);
 		else Mesh->Type=M3D_TOTAL_TYPE(M3D_KIND(Mesh->Type),M3D_STATIC_NON_COLLIDING);
 		return Mesh->ID;

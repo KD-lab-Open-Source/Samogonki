@@ -3,7 +3,7 @@
 
 #include "BaseClass.h"
 #include "cString.h"
-#include "umath.h"
+#include "UMATH.H"
 
 #define KFRAME_COS				(1<<0)
 #define KFRAME_SLERP			(1<<1)

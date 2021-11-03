@@ -4,7 +4,7 @@
 //#include "global.h"
 #pragma hdrstop
 
-#include "keys.h"
+#include "KEYS.H"
 
 #include "mch_common.h" // For far target
 
@@ -19,7 +19,7 @@ void KBD_init(void)
 	if(!KeyBuf)
 		KeyBuf = new KeyBuffer;
 
-	XKey.init(key,unpress_key);
+	// XKey.init(key,unpress_key);
 }
 
 void key(int key)
@@ -96,3 +96,12 @@ void KeyBuffer::quant(void)
 		flag &= ~KBD_SHIFT_PRESSED;
 }
 
+void KeyBuffer::copy(KeyBuffer* p)
+{
+	p->size = size;
+	p->table = table;
+	p->state_table = state_table;
+	p->flag = flag;
+	p->first_index = first_index;
+	p->last_index = last_index;
+}

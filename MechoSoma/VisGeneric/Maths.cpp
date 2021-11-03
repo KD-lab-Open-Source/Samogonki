@@ -1,7 +1,7 @@
-#include "maths.h"
-#include "umath.h"
-#include "math.h"
-#include "stdlib.h"
+#include "Maths.h"
+#include "UMATH.H"
+#include "Math.h"
+#include <stdlib.h>
 
 #define	SIZE_SHARE_FLOAT			((74*74*2)<<3)
 
@@ -14,9 +14,9 @@ unsigned char	*OmniLightMap=0;
 
 void InitArray()
 {
-	if(CosNChar==0) // таблица cos в степени COS_DEGREE типа char для источника света cLight
+	if(CosNChar==0) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ cos пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ COS_DEGREE пїЅпїЅпїЅпїЅ char пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ cLight
 	{	
-		CosNChar=new unsigned char [128+3]; // 3 - это из-за неточности в расчетах
+		CosNChar=new unsigned char [128+3]; // 3 - пїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		int j;
 		for(j=0;j<(128+3);j++)
 		{
@@ -32,7 +32,7 @@ void InitArray()
 			CosFloat[j]=cosf(j*GRAD_RAD/GRAD_TO_DGRAD(1));
 		}
 	}
-	if(OmniLightMap==0) // ¤ўг¬Ґа­ п дг­ЄжЁп гЎлў ­Ёп Ё­вҐ­бЁў­®бвЁ в®зҐз­®Ј® Ёбв®з­ЁЄ  cOmni
+	if(OmniLightMap==0) // пїЅпїЅг¬Ґа­ пїЅ пїЅг­ЄпїЅпїЅ пїЅлў пїЅпїЅпїЅ пїЅпїЅвҐ­бЁўпїЅпїЅпїЅпїЅ пїЅпїЅз­®пїЅпїЅ пїЅпїЅпїЅз­ЁпїЅпїЅ cOmni
 	{
 		OmniLightMap=new unsigned char [1<<OMNI_MAP_SIZE<<OMNI_MAP_SIZE];
 		for(int j=0;j<1<<OMNI_MAP_SIZE;j++)

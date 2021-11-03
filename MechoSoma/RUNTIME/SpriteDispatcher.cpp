@@ -4,7 +4,7 @@
 #include "SpriteDispatcher.h"
 #include "arcane_menu_d3d.h"
 
-#include "scr_defs.h"
+#include "SCR_DEFS.H"
 #include "aci_parser.h"
 
 #pragma warning( disable : 4244 )

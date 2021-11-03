@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "BodyDispatcher.h"
 #include "XrealWorlds.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "SST_Reader.h"
 #include "PointControlledObject.h"
 #include "BonusMan.h"

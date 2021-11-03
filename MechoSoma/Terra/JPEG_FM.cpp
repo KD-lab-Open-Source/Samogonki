@@ -1,12 +1,12 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include <setjmp.h>
 #ifdef _MECHOSOMA_
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #endif
 
 #include <stdio.h>
-#include "_xtool.h"
+#include "xtool.h"
 #define XMD_H
 extern "C" {
 #include "jpeglib.h"

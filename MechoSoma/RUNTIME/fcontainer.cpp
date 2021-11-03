@@ -1,8 +1,10 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "fContainer.h"
+#include "fcontainer.h"
+
+#define MAX_PATH 1024
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */

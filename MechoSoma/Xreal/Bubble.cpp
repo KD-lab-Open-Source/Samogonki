@@ -5,10 +5,10 @@
 #include "CustomFieldSources.h"
 
 #include "Mesh3ds.h"
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
-#include "params.h"
+#include "Params.h"
 
 void fxlabBubbleBurst(Vect3f& v);
 
@@ -79,6 +79,7 @@ void Bubble::quant()
 
 void Bubble::kill()
 {
-	fxlabBubbleBurst(Vect3f(R()));
+	Vect3f v1(R());
+	fxlabBubbleBurst(v1);
 	Body::kill();
 }

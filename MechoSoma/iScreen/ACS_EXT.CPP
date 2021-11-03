@@ -3,16 +3,18 @@
 
 #include "hbm.h"
 
-#include "hfont.h"
+#include "HFONT.H"
 #include "mechosoma.h"
+#ifdef _WIN32
 #include "win32f.h"
+#endif
 
 #include "arcane_menu.h"
 
-#include "aci_ids.h"
-#include "aci_evnt.h"
-#include "aci_scr.h"
-#include "keys.h"
+#include "ACI_IDS.H"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
+#include "KEYS.H"
 #include "sound.h"
 #include "sound_api.h"
 
@@ -20,10 +22,10 @@
 
 #include "race.h"
 
-#include "_xsound.h"
+#include "xsound.h"
 
 #include "controls.h"
-#include "xJoystick.h"
+#include "XJoystick.h"
 
 #include "I-World.h"
 #include "GameClient.h"
@@ -32,6 +34,10 @@
 
 #include "mch_common.h" // For far target
 #include "IGraph3d.h" // For far target
+
+#ifndef _WIN32
+#define MK_LBUTTON 0x0001
+#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 
@@ -2821,7 +2827,7 @@ void acsSaveScreenState(XBuffer* xb,aciScreen* scr)
 	ev = (aciScreenEvent*)scr -> events -> fPtr;
 	while(ev){
 		if(ev -> flags & ACS_EVENT_ACTIVE){
-			*xb < (int)ev < ev -> flags < ev -> CurTimer;
+			*xb < (long)ev < ev -> flags < ev -> CurTimer;
 			cm = (aciScreenEventCommand*)ev -> commSeq -> fPtr;
 			while(cm){
 				*xb < cm -> flags;
@@ -2836,7 +2842,7 @@ void acsSaveScreenState(XBuffer* xb,aciScreen* scr)
 		ev = (aciScreenEvent*)obj -> events -> fPtr;
 		while(ev){
 			if(ev -> flags & ACS_EVENT_ACTIVE){
-				*xb < (int)ev < ev -> flags < ev -> CurTimer;
+				*xb < (long)ev < ev -> flags < ev -> CurTimer;
 				cm = (aciScreenEventCommand*)ev -> commSeq -> fPtr;
 				while(cm){
 					*xb < cm -> flags;

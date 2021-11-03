@@ -61,4 +61,4 @@ private:
 	DurationTimer turn_latency;
 };
 
-#endif __CONTROLLED_OBJECT_H__
+#endif // __CONTROLLED_OBJECT_H__

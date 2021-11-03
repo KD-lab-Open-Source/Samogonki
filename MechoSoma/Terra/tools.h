@@ -1,6 +1,6 @@
 #ifndef __TOOLS_H__
 #define __TOOLS_H__
-#include "terra.h"
+#include "TERRA.H"
 
 extern int MosaicTypes[8];
 

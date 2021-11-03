@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "Body.h"
 #include "Spider.h"
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 #include "sound.h"
-#include "params.h"
+#include "Params.h"
 #include "AnimalsPrm.h"
 #include "SimpleClip.h"
 

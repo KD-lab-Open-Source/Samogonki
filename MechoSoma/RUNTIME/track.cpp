@@ -2,14 +2,14 @@
 #include "StdAfx.h"
 
 #include "track.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "TrackRecorder.h"
 #include "mechosoma.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 #ifdef _FCONTAINER_LOAD_
-#include "fContainer.h"
+#include "fcontainer.h"
 #endif
 
 #include "mch_common.h" // For far target

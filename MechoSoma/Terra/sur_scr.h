@@ -2,7 +2,7 @@
 #define __SUR_SCR_H__
 
 #include <vector>
-#include "_xtool.h"
+#include "xtool.h"
 
 #ifdef _SURMAP_
 #include "color.h"

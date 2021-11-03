@@ -32,4 +32,4 @@ enum eConstVisible
 // старые определения для совместимости, в процессе переработки должны быть удалены
 #define CONST_VISIBLE									1
 
-#endif __VISGENERICDEFINE_H__
+#endif // __VISGENERICDEFINE_H__

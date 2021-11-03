@@ -1,8 +1,7 @@
-#include "stdlib.h"
-#include "windows.h"
+#include <stdlib.h>
 #include "File3ds.h"
-#include "math.h"
-#include "math3d.h"
+#include <math.h>
+#include "Math3d.h"
 #include "BaseDefine.h"
 
 #ifdef _MECHOSOMA_

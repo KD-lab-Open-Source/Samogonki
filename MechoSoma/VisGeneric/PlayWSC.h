@@ -1,10 +1,10 @@
 #ifndef __PLAYWSC_H__
 #define __PLAYWSC_H__
 
-#include "unknown.h"
+#include "Unknown.h"
 #include "cString.h"
 #include "BaseClass.h"
-#include "umath.h"
+#include "UMATH.H"
 
 enum eAttributeConnectWSC
 {

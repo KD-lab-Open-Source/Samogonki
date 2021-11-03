@@ -1,10 +1,14 @@
 #include <StdAfx.h>
-#include "terra.h"
-#include "mesh3ds.h"
+#include "TERRA.H"
+#include "Mesh3ds.h"
 
 #ifdef _SURMAP_
 #include "sqint.h"
 #include "sqexp.h"
+#endif
+
+#ifndef _WIN32
+#include "port.h"
 #endif
 
 //int editCh_point=-1;
@@ -102,7 +106,7 @@ void sCh_points::load(char* fname,int number_track)
 	XBuffer xb;
 	char tmpstr[10];
 	int i;
-	xb < fname < itoa(number_track,tmpstr,10);
+	xb < fname < port_itoa(number_track,tmpstr,10);
 	currient_track=number_track;
 	if(!Cmap.open(xb,XS_IN)) return;
 	long s = Cmap.size();
@@ -141,7 +145,7 @@ void sCh_points::save(char* fname,int number_track)
 	if(number_track==-1) number_track=currient_track;
 	XBuffer xb;
 	char tmpstr[10];
-	xb < fname < itoa(number_track,tmpstr,10);
+	xb < fname < port_itoa(number_track,tmpstr,10);
 	if(!Cmap.open(xb,XS_OUT)) return;
 	Cmap.write(&El,sizeof(El));
 	Cmap.write(&Link,sizeof(Link));
