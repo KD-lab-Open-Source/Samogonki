@@ -34,4 +34,20 @@ char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
 
 char *strlwr(char *str);
 
+uint32_t GetPrivateProfileString(
+	const char* lpAppName,
+	const char* lpKeyName,
+	const char* lpDefault,
+	char* lpReturnedString,
+	uint32_t nSize,
+	const char* lpFileName
+);
+
+bool WritePrivateProfileString(
+	const char* lpAppName,
+	const char* lpKeyName,
+	const char* lpString,
+	const char* lpFileName
+);
+
 #endif

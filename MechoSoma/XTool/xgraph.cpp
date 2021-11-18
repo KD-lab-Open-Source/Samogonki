@@ -113,26 +113,88 @@ XGR_Mouse::XGR_Mouse(void)
 	AlphaData = NULL;
 }
 
-void XGR_Mouse::Init(int x,int y,int sx,int sy,int num,void* p)
+void XGR_Mouse::Init(int x, int y, int sx, int sy, int num, void* p)
 {
-	// TODO
+	PosX = x;
+	PosY = y;
+	SizeX = sx;
+	SizeY = sy;
+	PosZ = LastPosZ = MovementZ = 0;
+
+	OffsX = XGR_MouseOffsX;
+	OffsY = XGR_MouseOffsY;
+
+	if (XGR_Obj.flags & XGR_HICOLOR)
+	{
+		flags |= XGM_HICOLOR;
+	}
+	else
+	{
+		flags &= ~XGM_HICOLOR;
+	}
+
+	if (!p)
+	{
+		SizeX = sx = XGR_MOUSE_DEFSIZE_X;
+		SizeY = sy = XGR_MOUSE_DEFSIZE_Y;
+		num = 1;
+		p = XGR_MouseDefFrame;
+		if (flags & XGM_HICOLOR)
+		{
+			p = XGR_MouseDefFrameHC;
+		}
+	}
+
+	if (flags & XGM_AUTOCLIP)
+	{
+		SetClipAuto();
+	}
+
+	SetPos(x, y);
+	SetCursor(sx, sy, num, p);
+
+	if (!XGR_SysMsgFlag)
+	{
+		// TODO xtRegisterSysMsgFnc(XGR_MouseFnc, 0);
+		XGR_SysMsgFlag = 1;
+	}
+
+	flags |= (XGM_VISIBLE | XGM_INIT);
+}
+
+void XGR_Mouse::InitPos(int x, int y)
+{
+	LastPosX = PosX;
+	LastPosY = PosY;
+
+	LastSizeX = SizeX;
+	LastSizeY = SizeY;
+
+	PosX = x;
+	PosY = y;
+
+	AdjustPos();
 }
 
 void XGR_Mouse::Hide(void)
 {
-	if(flags & XGM_VISIBLE){
+	if (flags & XGM_VISIBLE)
+	{
 		flags &= ~XGM_VISIBLE;
 		Redraw();
 	}
-	if(flags & XGM_PROMPT_ACTIVE){
+
+	if (flags & XGM_PROMPT_ACTIVE)
+	{
 		flags &= ~XGM_PROMPT_ACTIVE;
-		XGR_Flush(PromptX,PromptY,PromptSizeX,PromptSizeY);
+		XGR_Flush(PromptX, PromptY, PromptSizeX, PromptSizeY);
 	}
 }
 
 void XGR_Mouse::Show(void)
 {
-	if(!(flags & XGM_VISIBLE)){
+	if (!(flags & XGM_VISIBLE))
+	{
 		flags |= XGM_VISIBLE;
 		Redraw();
 	}
@@ -142,30 +204,203 @@ void XGR_Mouse::Redraw(void)
 {
 }
 
-void XGR_Mouse::SetCursor(int sx,int sy,int num,void* p)
+void XGR_Mouse::SetCursor(int sx, int sy, int num, void* p)
 {
 }
 
-void XGR_Mouse::SetPos(int x,int y)
+void XGR_Mouse::SetPos(int x, int y)
 {
+	// TODO
 }
 
 void XGR_Mouse::SetClipAuto(void)
 {
 	ClipCoords[XGR_LEFT] = ClipCoords[XGR_TOP] = 0;
-//	ClipCoords[XGR_RIGHT] = XGR_MAXX - 2;
-//	ClipCoords[XGR_BOTTOM] = XGR_MAXY - 2;
-
 	ClipCoords[XGR_RIGHT] = XGR_MAXX - SizeX + 1;
 	ClipCoords[XGR_BOTTOM] = XGR_MAXY - SizeY + 1;
 }
 
-void XGR_Mouse::SetPressHandler(int bt,XGR_MOUSE_HANDLER p)
+void XGR_Mouse::AdjustPos(void)
 {
+	if (PosX < ClipCoords[XGR_LEFT])
+	{
+		PosX = ClipCoords[XGR_LEFT];
+	}
+
+	if (PosX >= ClipCoords[XGR_RIGHT])
+	{
+		PosX = ClipCoords[XGR_RIGHT] - 1;
+	}
+
+	if (PosY < ClipCoords[XGR_TOP])
+	{
+		PosY = ClipCoords[XGR_TOP];
+	}
+
+	if (PosY >= ClipCoords[XGR_BOTTOM])
+	{
+		PosY = ClipCoords[XGR_BOTTOM] - 1;	
+	}
 }
 
-void XGR_Mouse::SetUnPressHandler(int bt,XGR_MOUSE_HANDLER p)
+void XGR_Mouse::SetPressHandler(int bt, XGR_MOUSE_HANDLER p)
 {
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			lBt.Press = p;
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			rBt.Press = p;
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			mBt.Press = p;
+			break;
+	}
+}
+
+void XGR_Mouse::SetUnPressHandler(int bt, XGR_MOUSE_HANDLER p)
+{
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			lBt.UnPress = p;
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			rBt.UnPress = p;
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			mBt.UnPress = p;
+			break;
+	}
+}
+
+void XGR_Mouse::SetDblHandler(int bt, XGR_MOUSE_HANDLER p)
+{
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			lBt.DblClick = p;
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			rBt.DblClick = p;
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			mBt.DblClick = p;
+			break;
+	}
+}
+
+void XGR_Mouse::Move(int fl, int x, int y)
+{
+	if (flags & XGM_PROMPT_ACTIVE)
+	{
+		flags &= ~XGM_PROMPT_ACTIVE;
+		XGR_Flush(PromptX, PromptY, PromptSizeX, PromptSizeY);
+	}
+
+	if (promptData)
+	{
+		promptData->Timer = 0;
+	}
+
+	if (MoveH)
+	{
+		(*MoveH)(fl, x + SpotX, y + SpotY);
+	}
+}
+
+void XGR_Mouse::Press(int bt, int fl, int x, int y)
+{
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			if (lBt.Press)
+			{
+				(*lBt.Press)(fl, x + SpotX, y + SpotY);
+			}
+			lBt.Pressed = 1;
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			if (rBt.Press)
+			{
+				(*rBt.Press)(fl, x + SpotX, y + SpotY);
+			}
+			rBt.Pressed = 1;
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			if (mBt.Press)
+			{
+				(*mBt.Press)(fl, x + SpotX, y + SpotY);
+			}
+			mBt.Pressed = 1;
+			break;
+	}
+}
+
+void XGR_Mouse::UnPress(int bt, int fl, int x, int y)
+{
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			if (lBt.UnPress)
+			{
+				(*lBt.UnPress)(fl, x + SpotX, y + SpotY);
+			}
+			lBt.Pressed = 0;
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			if (rBt.UnPress)
+			{
+				(*rBt.UnPress)(fl, x + SpotX, y + SpotY);
+			}
+			rBt.Pressed = 0;
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			if (mBt.UnPress)
+			{
+				(*mBt.UnPress)(fl, x + SpotX, y + SpotY);
+			}
+			mBt.Pressed = 0;
+			break;
+	}
+}
+
+void XGR_Mouse::DblClick(int bt, int fl, int x, int y)
+{
+	switch (bt)
+	{
+		case XGM_LEFT_BUTTON:
+			if (lBt.DblClick)
+			{
+				(*lBt.DblClick)(fl, x + SpotX, y + SpotY);
+			}
+			break;
+
+		case XGM_RIGHT_BUTTON:
+			if (rBt.DblClick)
+			{
+				(*rBt.DblClick)(fl, x + SpotX, y + SpotY);
+			}
+			break;
+
+		case XGM_MIDDLE_BUTTON:
+			if (mBt.DblClick)
+			{
+				(*mBt.DblClick)(fl, x + SpotX, y + SpotY);
+			}
+			break;
+	}
 }
 
 void XGR_Pal64K::prepare(void* p)
@@ -194,7 +429,13 @@ XGR_Screen::XGR_Screen(void)
 
 void XGR_Screen::set_pitch(int p)
 {
+	int i;
+	for (i = 0; i <= ScreenY; i++)
+	{
+		yOffsTable[i] = i * p;
+	}
 
+	yStrOffs = p;
 }
 
 void XGR_Screen::set_clip(int left,int top,int right,int bottom)
@@ -300,6 +541,16 @@ void XGR_Screen::erase16(int x,int y,int sx,int sy,int col)
 
 void XGR_Screen::fill16(int col)
 {
+	int i, j;
+	unsigned short* ptr = (unsigned short*)ScreenBuf;
+	for (i = 0; i < ScreenY; i++)
+	{
+		ptr = (unsigned short*)(ScreenBuf + yOffsTable[i]);
+		for (j = 0; j < ScreenX; j++)
+		{
+			ptr[j] = col;
+		}
+	}
 }
 
 void XGR_Screen::setpixel16(int x,int y,int col)
@@ -320,4 +571,9 @@ void XGR_Screen::rectangle16(int x,int y,int sx,int sy,int outcol,int incol,int 
 
 void XGR_OutText(int x,int y,int col,void* text,int font,int hspace,int vspace,int pr_flag)
 {
+}
+
+void XGR_MouseFnc(void* p)
+{
+	// TODO
 }

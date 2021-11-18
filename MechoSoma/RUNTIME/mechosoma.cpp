@@ -383,8 +383,8 @@ int mchDetectJoystick = 0;
 
 int mch_readonlyINI = 0;
 char* mch_mainINI = "game.ini";
-char* mch_hotseatINI = "RESOURCE\\hotseat.ini";
-char* mch_optionsINI = "RESOURCE\\options.ini";
+char* mch_hotseatINI = "RESOURCE/hotseat.ini";
+char* mch_optionsINI = "RESOURCE/options.ini";
 
 int mchDebugMode = 0;
 int mchDemoMode = 0;
@@ -505,7 +505,7 @@ int xtInitApplication(void)
 	mch_imageRTO -> SetNumFiles(2);
 	mch_imageRTO -> SetFlag(0,IMG_RTO_INTRO_IMAGE | IMG_RTO_NO_IMAGE);
 //	mch_imageRTO -> SetName("INTRO\\1c_logo.jpg",1);
-	mch_imageRTO -> SetName("INTRO\\splash.jpg",1);
+	mch_imageRTO -> SetName("INTRO/splash.jpg",1);
 	mch_imageRTO -> SetFlag(1,IMG_RTO_START_MUSIC);
 
 	quantRTO = gPtr;
@@ -542,8 +542,18 @@ int xtInitApplication(void)
 			dwScrX=1600,dwScrY=1200;
 			break;
 	}
-	if(xgrInitFlags&DIRECT3D_HICOLOR) { dwGraphMode=1; RenderMode = DIRECT3D_HICOLOR; XGR_Init(dwScrX,dwScrY,xgrInitFlags); }
-	else { dwGraphMode=0; RenderMode = XGRAPH_HICOLOR; XGR_Init(dwScrX,dwScrY,xgrInitFlags); }
+
+	if(xgrInitFlags&DIRECT3D_HICOLOR){
+		dwGraphMode = 1;
+		RenderMode = DIRECT3D_HICOLOR;
+		XGR_Init(dwScrX,dwScrY,xgrInitFlags);
+	}
+	else {
+		dwGraphMode = 0;
+		RenderMode = XGRAPH_HICOLOR;
+		XGR_Init(dwScrX,dwScrY,xgrInitFlags);
+	}
+
 	gb_IVisGeneric=CreateIVisGeneric();
 	gb_URenderDevice=gb_IVisGeneric->CreateGraph(dwScrX,dwScrY,dwGraphMode,xgrFullscreenMode,xgrColorDepth);
 	gb_IGraph3d=gb_IVisGeneric->GetIGraph3d(gb_URenderDevice);
@@ -617,15 +627,15 @@ int xtInitApplication(void)
 	CONTROL_FP();
 
 	if(mchOpenNewChar)
-		gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_n.scb");
+		gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_n.scb");
 	else
-		gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d.scb");
+		gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d.scb");
 
-	gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_eff.scb");
-	gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_Xreal.scb");
-	gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_font.scb");
-	gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_font_add.scb");
-	gb_IVisGeneric->LoadObjectLibrary("RESOURCE\\m3d_iscreen.scb");
+	gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_eff.scb");
+	gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_Xreal.scb");
+	gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_font.scb");
+	gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_font_add.scb");
+	gb_IVisGeneric->LoadObjectLibrary("RESOURCE/m3d_iscreen.scb");
 	allocation_tracking("LoadObjectLibrary");
 
 	camera_dispatcher = new CameraDispatcher(gb_URenderDevice);

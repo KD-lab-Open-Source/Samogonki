@@ -32,7 +32,7 @@ public:
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-char* mch_cameraINI = "RESOURCE\\ISCREEN\\camera.ini";
+char* mch_cameraINI = "RESOURCE/ISCREEN/camera.ini";
 
 char* mch_cameraModeID[CAM_MODE_MAX] = 
 {

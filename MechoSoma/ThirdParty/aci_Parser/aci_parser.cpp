@@ -23,6 +23,10 @@ scrDataBlock::scrDataBlock(int tp)
 
 	name = NULL;
 	owner = NULL;
+
+	list = NULL;
+	next = NULL;
+	prev = NULL;
 }
 
 scrDataBlock::scrDataBlock(void)
@@ -37,6 +41,10 @@ scrDataBlock::scrDataBlock(void)
 
 	owner = NULL;
 	nextLevel = NULL;
+
+	list = NULL;
+	next = NULL;
+	prev = NULL;
 }
 
 scrDataBlock::~scrDataBlock(void)
@@ -248,6 +256,11 @@ void scrDataBlock::freeData(void)
 
 void scrDataBlock::add(scrDataBlock* p)
 {
+	if(nextLevel == NULL)
+	{
+		allocList();
+	}
+
 	nextLevel->append(p);
 	p -> owner = this;
 }
@@ -272,9 +285,9 @@ void scrSetOutputFile(char* p)
 	scrOutputFILE = strdup(p);
 }
 
-scrDataBlock* loadScript(const char* fname)
+scrDataBlock* loadScript(const std::filesystem::path &path)
 {
-	XStream fh(fname,XS_IN);
+	XStream fh(path.c_str(),XS_IN);
 	return loadScript(fh);
 }
 

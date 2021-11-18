@@ -103,7 +103,7 @@ cMesh* cMeshLibrary::Get(char *fname,char *TexturePath,unsigned int Type,float S
 cMesh* cMeshLibrary::Find(char *fname)
 {
 	for(cList *start=MeshList->next; start; start=start->next)
-		if(start->Mesh->GetFileName()==fname) return start->Mesh;
+		if(start->Mesh->GetFileName()==static_cast<const char*>(fname)) return start->Mesh;
 	return 0;
 }
 cMesh* cMeshLibrary::Find(unsigned int Type)
@@ -129,7 +129,7 @@ inline sObjectMesh *GetObjectByName(sLodObject *LodObject,char *name)
 		{
 			case NODEOBJECT_MESH:
 				sObjectMesh *ObjectMesh=(sObjectMesh*)NodeObject;
-				if(ObjectMesh->name==name)
+				if(ObjectMesh->name==static_cast<const char*>(name))
 					return ObjectMesh;
 				break;
 		}
@@ -768,7 +768,7 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 int FindTile(cMesh *Mesh,char *name)
 {
 	for(int i=0;i<Mesh->GetNumberTile();i++)
-		if(Mesh->GetTile(i)->GetName()==name) return i;
+		if(Mesh->GetTile(i)->GetName()==static_cast<const char*>(name)) return i;
 	return -1;
 }
 cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,char **name3dsMorph,char *FilePath,char *TexturePath)
@@ -792,7 +792,7 @@ cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,cha
 		XBuffer buf; buf<FilePath<name3dsMorph[i];
 		cMesh *mesh=0;
 		for(cList *start=MeshList->next; start; start=start->next)
-			if((start->Mesh->Type==Morph[0]->Type)&&(start->Mesh->GetFileName()==buf.address()))
+			if((start->Mesh->Type==Morph[0]->Type)&&(start->Mesh->GetFileName()==static_cast<const char*>(buf.address())))
 				{ mesh=start->Mesh; break; }
 		if(mesh==0)
 		{
@@ -1121,7 +1121,7 @@ cMesh* cM3D::CreateObject(unsigned int Type,float x,float y,float z,float ax,flo
 	SetPosition(Mesh,x,y,z,ax,ay,az);
 	return Mesh;
 }
-void cM3D::LoadLib(const char *fname)
+void cM3D::LoadLib(const std::filesystem::path &path)
 {
 //	allocation_tracking("Begin Load Lib");
 	int kind, type, eff_id;
@@ -1133,7 +1133,7 @@ void cM3D::LoadLib(const char *fname)
 	cMesh* mesh;
 
 	scrDataBlock* p,*p1,*root,*ap;
-	root = loadScript(fname);
+	root = loadScript(path);
 
 	p3ds0 = NULL;
 	pbmp0 = NULL;

@@ -1,6 +1,8 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
+#include <filesystem>
+
 #include "UMATH.H"
 #include "UnkLibrary.h"
 
@@ -63,7 +65,7 @@ public:
 	void Attach(cMeshLibrary *pMeshLibrary)						{ MeshLibrary=pMeshLibrary; }
 	void Detach(cMeshLibrary *pMeshLibrary)						{ if(MeshLibrary) MeshLibrary=0; }
 	// �������������
-	void LoadWorld(char *fname,int number=0,int track=0);		// �������� ������� ������������ ������������� ����
+	void LoadWorld(const std::filesystem::path &path,int number=0,int track=0);		// �������� ������� ������������ ������������� ����
 	void ReleaseWorld();										// �������� ������� ������������ ������������� ����
 	void AddOmniLight(const Vect3f &pos,float radius,const sColor4f &ambient,const sColor4f &diffuse,const sColor4f &illumination);// ��������� �������� ��������
 private:

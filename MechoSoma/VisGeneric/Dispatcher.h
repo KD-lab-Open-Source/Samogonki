@@ -1,6 +1,8 @@
 #ifndef __DISPATCHER_H__
 #define __DISPATCHER_H__
 
+#include <filesystem>
+
 #include "Math3d.h"
 #include "Object.h"
 #include "Object3d.h"
@@ -57,7 +59,7 @@ public:
 	cM3D()													{ MeshList=new cList(); NumberID=0; Window=0; prev_global_time = 0; }
 	~cM3D()													{ Release(0); }
 	// ��������
-	void LoadLib(const char *fname);
+	void LoadLib(const std::filesystem::path &path);
 	void LoadMap(char *fname,int LoadNumberTrack=0xFFFFFFFF);
 	void SaveMap(char *fname,char Version='O');
 	// �����

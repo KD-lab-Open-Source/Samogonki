@@ -323,11 +323,11 @@ void cWorldScriptPlay::Free()
 	fxlabMovieDestroy();
 	MusicTrack=0;
 }
-int cWorldScriptPlay::OpenWorldScript(char *fname)
+int cWorldScriptPlay::OpenWorldScript(const std::filesystem::path &path)
 {
 	if(IVisGeneric==0) return 1;
 	if(root) delete root;
-	root=loadScript(fname);
+	root=loadScript(path);
 	// ������������� ��������� ������
 	scrDataBlock *p,*p1;
 	p=root->find(WORLDSCRIPT_DEFOBJECT3D_PATH);

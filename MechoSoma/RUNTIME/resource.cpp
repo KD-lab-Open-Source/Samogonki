@@ -21,9 +21,9 @@ XZIP_Resource* mch_vmapRes = NULL;
 #endif
 
 int mchUseContainer = 0;
-char* acsResourceDir = "RESOURCE\\ISCREEN\\";
-char* acsResourceDirL = "RESOURCE\\ISCREEN\\RES_LOW\\";
-char* acsResourceDirH = "RESOURCE\\ISCREEN\\RES_HIGH\\";
+char* acsResourceDir = "RESOURCE/ISCREEN/";
+char* acsResourceDirL = "RESOURCE/ISCREEN/RES_LOW/";
+char* acsResourceDirH = "RESOURCE/ISCREEN/RES_HIGH/";
 XBuffer mch_ResXBuf;
 
 int acsOpenResource(char* fname,XStream& fh,int res_flag)
@@ -71,7 +71,7 @@ void mchXResourceInit(void)
 {
 #ifdef _XRESOURCE_
 	if(mchUseContainer){
-		mchRes = new XZIP_Resource("RESOURCE\\resource.pak",XZIP_ENABLE_ZIP_HEADERS);
+		mchRes = new XZIP_Resource("RESOURCE/resource.pak",XZIP_ENABLE_ZIP_HEADERS);
 	}
 #endif	
 }

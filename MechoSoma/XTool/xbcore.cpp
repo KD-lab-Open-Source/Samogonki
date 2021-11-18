@@ -15,6 +15,7 @@ void XBuffer::alloc(unsigned int sz)
 
 XBuffer::XBuffer(unsigned int sz, int automatic_realloc_)
 {
+	alloc(sz);
 }
 
 XBuffer::XBuffer(void* p,int sz)

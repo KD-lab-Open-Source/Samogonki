@@ -26,6 +26,7 @@
 #else
 #define _MAX_PATH 1024
 #define MAX_PATH 1024
+#include "filesystem.h"
 #include "port.h"
 #endif
 
@@ -198,14 +199,13 @@ char* getIniKey(char* fname,char* section,char* key)
 	char* p = NULL;
 
 	static char buf[256];
-	static char path[_MAX_PATH];
 
 	if(!xINI_InitFlag) xINI_Init();
 
-	if(_fullpath(path,fname,_MAX_PATH) == NULL) ErrH.Abort("Invalid path...");  
+	const auto path = file::normalize_path(fname);
 
 	if(xINI_Enable){
-		p = xINI_GetKey(path,section,key);
+		p = xINI_GetKey(path.c_str(),section,key);
 		if(p)
 			strcpy(buf,p);
 		else

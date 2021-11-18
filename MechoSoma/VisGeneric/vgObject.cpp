@@ -2,10 +2,10 @@
 #include "Dispatcher.h"
 #include "Frame.h"
 
-int cVisGeneric::LoadObjectLibrary(const char *fname)
+int cVisGeneric::LoadObjectLibrary(const std::filesystem::path &path)
 {
 	assert(Scene);
-	Scene->GetM3D()->LoadLib(fname);
+	Scene->GetM3D()->LoadLib(path);
 	return 0;
 }
 int cVisGeneric::FreeObjectLibrary(int kind,int type)

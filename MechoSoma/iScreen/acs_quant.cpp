@@ -291,8 +291,8 @@ int acsDistRnd;
 acsScreenMatrix acsScr0;
 acsScreenMatrix acsScr1;
 
-char* mchIscreenINI = "RESOURCE\\ISCREEN\\iscreen.ini";
-char* mchLocalINI = "RESOURCE\\ISCREEN\\local.ini";
+char* mchIscreenINI = "RESOURCE/ISCREEN/iscreen.ini";
+char* mchLocalINI = "RESOURCE/ISCREEN/local.ini";
 
 acsTextureMosaic* acsTM = NULL;
 acsEssenceData** acsBody = NULL;

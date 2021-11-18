@@ -478,7 +478,7 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 						if(!CurrentLightMap->GetStatus(STATUS_TEXTURE_CREATE))
 							SetCreateTexture(Graph3d,CurrentLightMap,1<<CurrentLightMap->_x,1<<CurrentLightMap->_y,TEXFMT_ARGB4444);
 						SetLockTexture(Graph3d,CurrentLightMap,(void**)&MemTextureTile);
-						memfill((unsigned long*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0xFFFFFFFF);
+						memfill((uint32_t*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0xFFFFFFFF);
 //						memfill((unsigned long*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0x00000000);
 						CurrentLightMap->texture=MemTextureTile;
 						CurrentLightMap->SetStatus(STATUS_TEXTURE_RESET);

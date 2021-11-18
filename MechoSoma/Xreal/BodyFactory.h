@@ -15,14 +15,10 @@ public:
 };
 
 
-struct eqstr
-{																	       
-	bool operator()(const char* s1, const char* s2) const { return strcmp(s1, s2) == 0; }
-};
 
-class BodyFactory : std::unordered_map<const char*, PtrHandle<GeneralBodyCreator>, hash<const char*>, eqstr>
+class BodyFactory : std::unordered_map<std::string, PtrHandle<GeneralBodyCreator>>
 {
-	typedef std::unordered_map<const char*, PtrHandle<GeneralBodyCreator>, hash<const char*>, eqstr> HashMap;
+	typedef std::unordered_map<std::string, PtrHandle<GeneralBodyCreator>> HashMap;
 public:
 	BodyFactory();
 	void add(const char* type_name, GeneralBodyCreator* creator);

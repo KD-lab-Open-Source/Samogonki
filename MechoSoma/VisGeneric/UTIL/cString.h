@@ -71,17 +71,17 @@ public:
 		if(buf) free(buf);
 	}
 
-	inline int operator == (char *string)
+	inline int operator == (const char *string)
 	{
 		if((string)&&(buf)) return !stricmp(string,buf); 
 		return string==buf;
 	}
 
-	inline int operator != (char *string)
+	inline int operator != (const char *string)
 	{
 		if((string)&&(buf)) return stricmp(string,buf);
 		return string!=buf;
-	}
+	}	
 
 	inline char& operator [](int l)
 	{
@@ -127,7 +127,7 @@ public:
 		return *this; 
 	}
 
-	inline cString& operator << (char *string)
+	inline cString& operator << (const char *string)
 	{
 		if(string)
 		{
@@ -165,7 +165,7 @@ public:
 		return *this;
 	}
 
-	inline cString& operator = (char *string)
+	inline cString& operator = (const char *string)
 	{
 		if(buf) free(buf);
 		if(string) buf=strdup(string);
@@ -174,7 +174,7 @@ public:
 		return *this;
 	}
 
-	inline void New(char *string)
+	inline void New(const char *string)
 	{
 		if(buf) free(buf);
 		if(string) buf=strdup(string);
@@ -217,7 +217,7 @@ public:
 		}
 	}
 
-	inline void Set(char *string,int pos=0);				
+	inline void Set(const char *string,int pos=0);				
 
 private:
 #ifdef _STRING_DEBUG_
@@ -246,7 +246,7 @@ private:
 #endif //_STRING_DEBUG_
 };
 
-inline void cString::Set(char *string,int pos)	
+inline void cString::Set(const char *string,int pos)	
 { 
 	if(string) 
 	{ 

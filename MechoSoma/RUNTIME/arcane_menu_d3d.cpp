@@ -563,10 +563,10 @@ void mchA_d3dSetClip(int x,int y,int sx,int sy)
 //	gb_IGraph3d->EndScene();
 
 	RECT r = {
-		long(round((float)x * mchA_d3dResX)),
-		long(round((float)y * mchA_d3dResY)),
-		long(round(float(x + sx) * mchA_d3dResX)),
-		long(round(float(y + sy) * mchA_d3dResY))
+		LONG(round((float)x * mchA_d3dResX)),
+		LONG(round((float)y * mchA_d3dResY)),
+		LONG(round(float(x + sx) * mchA_d3dResX)),
+		LONG(round(float(y + sy) * mchA_d3dResY))
 	};
 	if(!sx || !sy) return;
 

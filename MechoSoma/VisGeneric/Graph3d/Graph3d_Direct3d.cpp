@@ -1,4 +1,4 @@
-#include "md3d.h"
+#include "Md3d.h"
 #include "math.h"
 #include "BaseDefine.h"
 #include "assert.h"
@@ -269,7 +269,7 @@ int cGraph3dDirect3D::SetTexture(int hTexture)
 int cGraph3dDirect3D::LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)
 {
 	assert(hTexture);
-	return d3dLockTexture((int)hTexture,TextureBuffer,(unsigned long*)BytePerLine)!=MD3D_OK;
+	return d3dLockTexture((DWORD)hTexture,TextureBuffer,(DWORD *)BytePerLine)!=MD3D_OK;
 }
 int cGraph3dDirect3D::UnlockTexture(int hTexture)
 {
@@ -278,7 +278,7 @@ int cGraph3dDirect3D::UnlockTexture(int hTexture)
 }
 int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 {
-	unsigned long hTexture;
+	DWORD hTexture;
 	int TexFormat3d;
 	switch(TextureFormat)
 	{
@@ -566,12 +566,12 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 ////////////////////////// ������ ������ ������� //////////////////////////
 int cGraph3dDirect3D::CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat,DWORD dwFlags,DWORD* lpdwHandle )
 {
-	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(unsigned long*)lpdwHandle);
+	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(DWORD*)lpdwHandle);
 }
 int cGraph3dDirect3D::CreateChildSprite(DWORD dwParentHandle,DWORD dwLeft,DWORD dwTop, 
 							    DWORD dwWidth,DWORD dwHeight,DWORD* lpdwHandle)
 {
-	return d3dCreateChildSprite(dwParentHandle,dwLeft,dwTop,dwWidth,dwHeight,(unsigned long*)lpdwHandle);
+	return d3dCreateChildSprite(dwParentHandle,dwLeft,dwTop,dwWidth,dwHeight,(DWORD*)lpdwHandle);
 }
 int cGraph3dDirect3D::DeleteSprite(DWORD dwHandle)
 {
@@ -579,7 +579,7 @@ int cGraph3dDirect3D::DeleteSprite(DWORD dwHandle)
 }
 int cGraph3dDirect3D::LockSprite(DWORD dwHandle,void **lplpSprite,DWORD *lplpPitch)
 {
-	return d3dLockSprite(dwHandle,lplpSprite,(unsigned long*)lplpPitch);
+	return d3dLockSprite(dwHandle,lplpSprite,(DWORD*)lplpPitch);
 }
 int cGraph3dDirect3D::UnlockSprite(DWORD dwHandle)
 {

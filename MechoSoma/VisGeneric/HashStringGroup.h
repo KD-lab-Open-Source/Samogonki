@@ -9,13 +9,8 @@
 #include <unordered_map>
 #include <ctype.h>
 
-struct eqstr
-{																	       
-bool operator()(const char* s1, const char* s2)const{ return !strcmp(s1, s2); }
-};
-
 template <class T>
-struct HashStringGroup :  std::unordered_map<char*, T, std::hash<const char*>, eqstr>
+struct HashStringGroup :  std::unordered_map<std::string, T>
 {
 	void add(char* str, const T& data) 
 	{ (*this)[str] = data; }

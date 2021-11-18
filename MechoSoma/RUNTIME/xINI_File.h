@@ -59,6 +59,7 @@ public:
 class xINI_File 
 {
 	char* name;
+	bool isBinary;
 	xtList<xINI_FileSection> sectionList;
 
 	void load_text(void);
@@ -73,7 +74,7 @@ public:
 	char* getName(void) const { return name; }
 
 	void load(void);
-	void save(void){ save_binary(name); pack(); }
+	void save(void);
 
 	void save_text(char* fname);
 	void save_binary(char* fname);

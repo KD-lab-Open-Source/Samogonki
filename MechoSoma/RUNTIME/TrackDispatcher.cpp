@@ -144,7 +144,7 @@ mchTrackDispatcher::mchTrackDispatcher(void)
 {
 	mchTrackInfo* tr;
 	scrDataBlock* root,*p;
-	root = loadScript("RESOURCE\\mch_tracks.scb");
+	root = loadScript("RESOURCE/mch_tracks.scb");
 
 	p = root -> nextLevel -> first();
 	while(p){

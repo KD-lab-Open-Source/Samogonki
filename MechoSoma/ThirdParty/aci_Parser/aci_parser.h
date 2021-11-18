@@ -2,6 +2,8 @@
 #ifndef __ACI_PARSER_H__
 #define __ACI_PARSER_H__
 
+#include <filesystem>
+
 #include "xtool.h"
 
 // scrDataBlock flags...
@@ -72,7 +74,7 @@ void scrSetInputDir(char* p);
 void scrSetOutputDir(char* p);
 void scrSetOutputFile(char* p);
 
-scrDataBlock* loadScript(const char* fname);
+scrDataBlock* loadScript(const std::filesystem::path &path);
 scrDataBlock* loadScript(XStream& fh);
 scrDataBlock* parseScript(char* fname,char *set_name);
 void saveScript(char* fname,scrDataBlock* p);

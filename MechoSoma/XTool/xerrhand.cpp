@@ -39,6 +39,7 @@ void XErrorHandler::SetRestore(void (*rf)(void))
 
 void XErrorHandler::Abort(const char* message, int code, int addval, const char* subj)
 {
+	abort();
 }
 
 void XErrorHandler::Exit(void)

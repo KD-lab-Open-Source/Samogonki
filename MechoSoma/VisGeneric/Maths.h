@@ -36,9 +36,9 @@
 inline int round(int i)	{ return i; }
 inline int CosAngle(int x1,int y1,int z1,int x2,int y2,int z2)
 {	return (x1*x2+y1*y2+z1*z2)>>MAX_SIZE_NORMAL_BIT;	}
-inline void memfill(unsigned long *buf,int size,unsigned int fill)
+inline void memfill(uint32_t *buf,int size,uint32_t fill)
 {
-	unsigned long *start=buf, *end=buf+size;
+	uint32_t *start=buf, *end=buf+size;
 	while(start<end) (*(start++))=fill;
 }
 inline float Cycl(float a,float border)

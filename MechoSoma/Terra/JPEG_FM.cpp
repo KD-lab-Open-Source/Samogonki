@@ -9,7 +9,7 @@
 #include "xtool.h"
 #define XMD_H
 extern "C" {
-#include "jpeglib.h"
+#include <jpeglib.h>
 }
 
 

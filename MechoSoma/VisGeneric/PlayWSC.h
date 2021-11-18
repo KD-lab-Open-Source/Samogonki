@@ -1,6 +1,8 @@
 #ifndef __PLAYWSC_H__
 #define __PLAYWSC_H__
 
+#include <filesystem>
+
 #include "Unknown.h"
 #include "cString.h"
 #include "BaseClass.h"
@@ -32,7 +34,7 @@ public:
 	cWorldScriptPlay();
 	~cWorldScriptPlay();
 	void Free();
-	int OpenWorldScript(char *fname);
+	int OpenWorldScript(const std::filesystem::path &path);
 	int LoadNextWorldScript();
 	void CloseWorldScript();
 	void Animate();

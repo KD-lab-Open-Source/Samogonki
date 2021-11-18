@@ -134,11 +134,11 @@ void cScene::ReleaseWorld()
 	if(BaseObjectMgr) BaseObjectMgr->Release();
 	GetLibTex()->Release(1); 
 }
-void cScene::LoadWorld(char *fname,int number,int track)
+void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
 {
 	ReleaseWorld();
-	UNKNOWN_ASSERT((fname)&&strlen(fname));
-	scrDataBlock *p,*root=loadScript(fname);
+	UNKNOWN_ASSERT(!path.empty());
+	scrDataBlock *p,*root=loadScript(path);
 
 	// ������������� ��������� ������
 	RadiusPlanet()=1000;

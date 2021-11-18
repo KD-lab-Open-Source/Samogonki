@@ -634,49 +634,49 @@ void mchArcaneScreenElement::InitCoords(char* name)
 
 	XBuf.init();
 	XBuf < name < "_x";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) R.x = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_y";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) R.y = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_sx";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeX = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_sy";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeY = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_show_dir";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 
 	if(strlen(p)){
 		showDir = atoi(p);
 
 		XBuf.init();
 		XBuf < name < "_show_idx";
-		showIndex = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+		showIndex = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 
 		if(showDir == 4){
 			XBuf.init();
 			XBuf < name < "_x0";
-			R0.x = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+			R0.x = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 
 			XBuf.init();
 			XBuf < name < "_y0";
-			R0.y = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+			R0.y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 		}
 	}
 
 	XBuf.init();
 	XBuf < name < "_align_x";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)){
 		align = atoi(p);
 		if(align == 0)
@@ -1960,18 +1960,18 @@ void mchInitArcaneScreen(void)
 
 	mchA_Names = new xtList<mchArcaneName>;
 
-	mchA_Alpha = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha"));
+	mchA_Alpha = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha"));
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha_hide_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha_hide_speed"));
 	mchA_AlphaHideSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha_show_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha_show_speed"));
 	mchA_AlphaShowSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","menu_alpha_hide_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","menu_alpha_hide_speed"));
 	mchA_MenuAlphaHideSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","menu_alpha_show_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","menu_alpha_show_speed"));
 	mchA_MenuAlphaShowSpeed = (256 - mchA_Alpha) / v;
 
 	mchA_MouseCrossBMP = new mchArcaneBMP("ARCANE\\ms_cross.bmp");
@@ -3937,8 +3937,8 @@ mchArcaneStatsDispatcher::mchArcaneStatsDispatcher(void)
 {
 	int i;
 
-	X = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","arc_stats_x"));
-	Y = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","arc_stats_y"));
+	X = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","arc_stats_x"));
+	Y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","arc_stats_y"));
 
 	memset(statusFlags,0,5 * sizeof(int));
 	memset(racerIDs,0,5 * sizeof(int));

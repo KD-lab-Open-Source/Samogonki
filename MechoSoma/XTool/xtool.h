@@ -609,6 +609,7 @@ extern XRecorder XRec;
  * Virtual Keys, Standard Set
  */
 
+#define VK_UNKNOWN        0x00
 #define VK_LBUTTON        0x01
 #define VK_RBUTTON        0x02
 #define VK_CANCEL         0x03
@@ -647,7 +648,44 @@ extern XRecorder XRec;
 #define VK_HELP           0x2F
 
 /* VK_0 thru VK_9 are the same as ASCII '0' thru '9' (0x30 - 0x39) */
+#define VK_0              0x30
+#define VK_1              0x31
+#define VK_2              0x32
+#define VK_3              0x33
+#define VK_4              0x34
+#define VK_5              0x35
+#define VK_6              0x36
+#define VK_7              0x37
+#define VK_8              0x38
+#define VK_9              0x39
+
 /* VK_A thru VK_Z are the same as ASCII 'A' thru 'Z' (0x41 - 0x5A) */
+#define VK_A              0x41
+#define VK_B              0x42
+#define VK_C              0x43
+#define VK_D              0x44
+#define VK_E              0x45
+#define VK_F              0x46
+#define VK_G              0x47
+#define VK_H              0x48
+#define VK_I              0x49
+#define VK_J              0x4A
+#define VK_K              0x4B
+#define VK_L              0x4C
+#define VK_M              0x4D
+#define VK_N              0x4E
+#define VK_O              0x4F
+#define VK_P              0x50
+#define VK_Q              0x51
+#define VK_R              0x52
+#define VK_S              0x53
+#define VK_T              0x54
+#define VK_U              0x55
+#define VK_V              0x56
+#define VK_W              0x57
+#define VK_X              0x58
+#define VK_Y              0x59
+#define VK_Z              0x5A
 
 #define VK_LWIN           0x5B
 #define VK_RWIN           0x5C
@@ -709,6 +747,10 @@ extern XRecorder XRec;
 #define VK_LMENU          0xA4
 #define VK_RMENU          0xA5
 
+#define VK_VOLUME_MUTE    0xAD
+#define VK_VOLUME_DOWN    0xAE
+#define VK_VOLUME_UP      0xAF
+
 #define VK_ATTN           0xF6
 #define VK_CRSEL          0xF7
 #define VK_EXSEL          0xF8
@@ -721,25 +763,36 @@ extern XRecorder XRec;
 
 
 // Some additional virtual keycodes...
-#define VK_OEM_COMMA	0xBC
-#define VK_OEM_PERIOD	0xBE
-#define VK_OEM_SCROLL	0x91
-#define VK_OEM_MINUS	0xBD
-#define VK_OEM_5_		0x0C
-#define VK_OEM_PLUS		0xBB
-#define VK_OEM_ALT		0x12
+#define VK_OEM_1          0xBA
+#define VK_OEM_PLUS       0xBB
+#define VK_OEM_COMMA      0xBC
+#define VK_OEM_MINUS      0xBD
+#define VK_OEM_PERIOD     0xBE
+#define VK_OEM_2          0xBF
+#define VK_OEM_3          0xC0
+#define VK_OEM_4          0xDB
+#define VK_OEM_5          0xDC
+#define VK_OEM_6          0xDD
+#define VK_OEM_7          0xDE
 
-#define VK_SLASH	0xBF
-#define VK_BKSLASH	0x5C
-#define VK_TILDE	0xC0
-#define VK_LBR		0x5B
-#define VK_RBR		0x5D
+#define VK_OEM_SCROLL     0x91
+
+#define VK_OEM_ALT        0x12
+
+#define VK_SLASH          0xBF
+#define VK_BKSLASH        0x5C
+#define VK_TILDE          0xC0
+#define VK_LBR            0x5B
+#define VK_RBR            0x5D
 
 
 struct XKeyStruct
 {
-	void* keyPressFnc[XKEY_MAXCODE];
-	void* keyUnpressFnc[XKEY_MAXCODE];
+	typedef void (*PFN)(int);
+	typedef void (*PFK)();
+
+	PFK keyPressFnc[XKEY_MAXCODE];
+	PFK keyUnpressFnc[XKEY_MAXCODE];
 
 	void* pressHandler;
 	void* unpressHandler;
@@ -751,13 +804,13 @@ struct XKeyStruct
 	XKeyStruct();
 	~XKeyStruct();
 
-	void init(void* pH,void* upH);
+	void init(void* pH, void* upH);
 	void finit(void);
 	void setPress(int key,void (*keyFunction)(void),int repeat);
 	void setUnpress(int key,void (*keyFunction)(void));
 
-	void PressFnc(int vkey,int key);
-	void UnPressFnc(int vkey,int key);
+	void PressFnc(int vkey, int key);
+	void UnPressFnc(int vkey, int key);
 
 	void clear(void);
 
@@ -1148,7 +1201,7 @@ class XZIP_Resource
 	xtList<XZIP_FileHeader> fileList;
 	XStream file;
 
-	XZIP_FileHeader* find(char* fname);
+	XZIP_FileHeader* find(const char* fname);
 public:
 	int open(char* fname,XStream& fh,int mode = 0);
 

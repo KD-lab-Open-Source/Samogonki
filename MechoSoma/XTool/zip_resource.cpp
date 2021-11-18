@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef _WIN32
+#include <string>
+#endif
+
 #include "xtool.h"
 #include "zip_headers.h"
 
@@ -226,7 +230,7 @@ void XZIP_Resource::SaveIndex(void)
 	fh.close();
 }
 
-XZIP_FileHeader* XZIP_Resource::find(char* fname)
+XZIP_FileHeader* XZIP_Resource::find(const char* fname)
 {
 	XZIP_FileHeader* p = fileList.first();
 
@@ -244,7 +248,17 @@ XZIP_FileHeader* XZIP_Resource::find(char* fname)
 
 int XZIP_Resource::open(char* fname,XStream& fh,int mode)
 {
+#ifndef _WIN32
+	std::string t(fname);
+	for(auto &c : t){
+		if(c == '/'){
+			c = '\\';
+		}
+	}
+	XZIP_FileHeader* p = find(t.c_str());
+#else
 	XZIP_FileHeader* p = find(fname);
+#endif
 	if(p){
 		 fh.open(&file,p -> offset(),p -> size());
 //		 fh.open(new XStream(fileName,XS_IN),p -> offset(),p -> size());

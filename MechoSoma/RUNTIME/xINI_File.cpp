@@ -8,10 +8,14 @@
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
+#ifdef _WIN32
 #define _xINI_BINARY_ONLY_
+#endif
 
 #ifndef _WIN32
 #define _MAX_PATH 1024
+#include "filesystem.h"
+#include "iniparser.h"
 #include "port.h"
 #endif
 
@@ -86,11 +90,9 @@ void xINI_FileSection::putKey(const char* key_name,const char* key_value)
 
 xINI_File::xINI_File(const char* nm)
 {
-	char path[_MAX_PATH];
+	const auto path = file::normalize_path(nm);
 
-	if(_fullpath(path,nm,_MAX_PATH) == NULL) ErrH.Abort("Invalid INI path...");
-
-	name = strdup(path);
+	name = strdup(path.c_str());
 
 	list = NULL;
 }
@@ -156,12 +158,23 @@ void xINI_File::save_text(char* fname)
 
 void xINI_File::load(void)
 {
-	if(is_binary())
+	isBinary = is_binary();
+	if(isBinary)
 		load_binary();
 #ifndef _xINI_BINARY_ONLY_
 	else
 		load_text();
 #endif
+}
+
+void xINI_File::save(void)
+{
+	if(isBinary){
+		save_binary(name);
+		pack();
+	} else {
+		save_text(name);
+	}
 }
 
 void xINI_File::load_binary(void)
@@ -240,6 +253,30 @@ void xINI_File::load_text(void)
 
 	delete buf;
 	delete vbuf;
+#else
+	xINI_FileSection* sp;
+
+	const auto fileObject = iniparser_load(name);
+	const auto sectionsNumber = iniparser_getnsec(fileObject);
+
+	for(int i = 0; i < sectionsNumber; i++){
+		const auto sectionName = iniparser_getsecname(fileObject, i);
+		sp = new xINI_FileSection(sectionName);
+
+		const auto keysNumber = iniparser_getsecnkeys(fileObject, sectionName);
+		std::vector<const char *> keys(keysNumber);
+		iniparser_getseckeys(fileObject, sectionName, &keys[0]);
+
+		for(const auto key : keys){
+			const auto p = strstr(key, ":");
+			if(p == nullptr){
+				continue;
+			}
+			sp -> putKey(p + 1, iniparser_getstring(fileObject, key, ""));
+		}
+
+		sectionList.append(sp);
+	}
 #endif
 }
 

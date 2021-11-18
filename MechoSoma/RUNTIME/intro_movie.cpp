@@ -405,7 +405,7 @@ void mchIntroMovieDispatcher::init(void)
 	mchIntroMovieImage* img;
 	mchIntroMovieAction* acn;
 
-	root = loadScript("RESOURCE\\intro_movie.scb");
+	root = loadScript("RESOURCE/intro_movie.scb");
 	p = root -> nextLevel -> first();
 	while(p){
 		switch(p -> ID){

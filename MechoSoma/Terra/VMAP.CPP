@@ -238,18 +238,13 @@ static unsigned char* mappingPtr;
 
 char* GetINIstringV(const char* iniFile,const char* section,const char* key)
 {
-#ifdef _WIN32
 	static char buffer[255+1];
 	if (GetPrivateProfileString(section,key,"",buffer,255,iniFile))	return buffer;
 	else return NULL;
-#endif
-	return NULL;	
 }
 void SaveINIstringV(const char* iniFile,const char* section,const char* key,char* var)
 {
-#ifdef _WIN32
 	WritePrivateProfileString(section,key,var,iniFile);
-#endif
 }
 
 void vrtMap::loadRenderVariable(void)

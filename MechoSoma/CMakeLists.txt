@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(MOONSHINE_RUNNERS VERSION 1.0.0 LANGUAGES CXX)
 
-set(SOURCES
+set(GAME_SOURCES
 	# FX
 	FX/Hermit.h
 	FX/XTList.h
@@ -119,10 +119,6 @@ set(SOURCES
 	Terra/VMAP.H
 	Terra/ch_points.cpp
 	Terra/ch_points.h
-	Terra/jconfig.h
-	Terra/jerror.h
-	Terra/jmorecfg.h
-	Terra/jpeglib.h
 	Terra/land.h
 	Terra/non_rotate_scan_min_full.cpp
 	Terra/sur_scr.cpp
@@ -218,14 +214,10 @@ set(SOURCES
 	# Graph3d
 	VisGeneric/Graph3d/Graph3d_Direct3d.cpp
 	VisGeneric/Graph3d/Graph3d_Direct3d.h
-	# VisGeneric/Graph3d/Graph3d_Software.cpp
 	VisGeneric/Graph3d/IGraph3d.cpp
 	VisGeneric/Graph3d/IGraph3d.h
 	# Md3d
-	VisGeneric/md3d/Md3d_port.cpp
-	VisGeneric/md3d/Md3d.h
-	# UTIL
-	VisGeneric/UTIL/cString.h
+	VisGeneric/md3d/d3dSprites.cpp
 	# PluginMAX
 	VisGeneric/PluginMAX/src/AnimationMaterial.cpp
 	VisGeneric/PluginMAX/src/AnimationMesh.cpp
@@ -245,8 +237,10 @@ set(SOURCES
 	XMath/XMath.cpp
 	XMath/xmath.h
 	# XTool
-	XTool/port.h
+	XTool/filesystem.cpp
+	XTool/filesystem.h
 	XTool/port.cpp
+	XTool/port.h
 	XTool/xtool.h
 	XTool/inzip.cpp
 	XTool/outzip.cpp
@@ -463,7 +457,7 @@ set(SOURCES
 	# ThirdParty
 	ThirdParty/aci_Parser/aci_parser.cpp
 )
-set(APPLICATION_NAME moonshine-runners)
+set(LIBRARY_NAME game)
 
 include_directories(FX)
 include_directories(IVisGeneric)
@@ -488,20 +482,70 @@ include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
 add_subdirectory(ThirdParty/3dsftk3)
+add_subdirectory(ThirdParty/iniparser)
 
 include_directories(ThirdParty/libjpeg-turbo/include)
 link_directories(ThirdParty/libjpeg-turbo/lib)
 
 add_definitions(-D_MECHOSOMA_ -D_USE_TILEMAP_ -D_USE_TERRA_ -DNASSERT -D_FINAL_VERSION_ -D_MPPLUS_SOUNDTRACK_)
 
-add_executable(${APPLICATION_NAME} ${SOURCES})
-
-target_link_libraries(${APPLICATION_NAME} PUBLIC 3dsftk3 jpeg)
+add_library(${LIBRARY_NAME} ${GAME_SOURCES})
+target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
 
 set_target_properties(
-    ${APPLICATION_NAME}
-      PROPERTIES 
-        CXX_STANDARD 17 
-        CXX_STANDARD_REQUIRED YES 
-        CXX_EXTENSIONS NO
+		${LIBRARY_NAME}
+			PROPERTIES 
+				CXX_STANDARD 17 
+				CXX_STANDARD_REQUIRED YES 
+				CXX_EXTENSIONS NO
 )
+
+if(APPLE)
+set(APPLICATION_SOURCES
+	macOS/GameViewController.mm
+	macOS/GameViewController.h
+	macOS/KeyboardCodeConversion.mm
+	macOS/KeyboardCodeConversion.h
+	macOS/Matrix.cpp
+	macOS/Matrix.h
+	macOS/Md3d.cpp
+	macOS/Ref.h
+	macOS/Renderer.mm
+	macOS/Renderer.h
+	macOS/RendererInterface.h
+	macOS/RenderState.h
+	macOS/ShaderCommon.h
+	macOS/TextureManager.mm
+	macOS/TextureManager.h
+	macOS/TextureManagerInterface.h
+	macOS/VertexType.h
+	macOS/main.mm
+)
+set(APPLICATION_NAME moonshine-runners)
+
+set(METAL_LIBRARY_AIR ${CMAKE_BINARY_DIR}/default.air)
+set(METAL_LIBRARY ${CMAKE_BINARY_DIR}/default.metallib)
+
+add_custom_command(OUTPUT ${METAL_LIBRARY_AIR}
+	COMMAND xcrun -sdk macosx metal -c ${CMAKE_SOURCE_DIR}/macOS/Library.metal -o ${METAL_LIBRARY_AIR}
+)
+
+add_custom_command(OUTPUT ${METAL_LIBRARY}
+	COMMAND xcrun -sdk macosx metallib ${METAL_LIBRARY_AIR} -o ${METAL_LIBRARY}
+	DEPENDS ${METAL_LIBRARY_AIR}
+)
+
+add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${METAL_LIBRARY} ${APPLICATION_SOURCES})
+target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++ "-framework CoreFoundation" "-framework Cocoa" "-framework Metal" "-framework MetalKit" "-framework Accelerate" objc ${LIBRARY_NAME})
+
+# target_sources(${APPLICATION_NAME} PRIVATE ${METAL_LIBRARY})
+set_source_files_properties(${METAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+set_target_properties(
+		${APPLICATION_NAME}
+			PROPERTIES 
+				CXX_STANDARD 17 
+				CXX_STANDARD_REQUIRED YES 
+				CXX_EXTENSIONS NO
+)
+endif(APPLE)

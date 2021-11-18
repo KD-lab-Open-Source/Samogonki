@@ -248,7 +248,7 @@ public:
 	__forceinline sTile* GetTileByName(char *name)
 	{
 		for(int i=0;i<GetNumberTile();i++)
-			if(GetTile(i)->GetName()==name)
+			if(GetTile(i)->GetName()==static_cast<const char*>(name))
 				return GetTile(i);
 		return 0;
 	}

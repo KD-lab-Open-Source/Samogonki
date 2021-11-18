@@ -45,7 +45,7 @@ public:
 	virtual int ReleaseGraph(cUnknownClass *URenderDevice=0);
 	virtual cInterfaceGraph3d* GetIGraph3d(cUnknownClass *URenderDevice=0);
 	// ������� ��� ������ � ���������
-	virtual int LoadObjectLibrary(const char *fname="RESOURCE\\m3d.scb");
+	virtual int LoadObjectLibrary(const std::filesystem::path &path);
 	virtual int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF);
 	virtual int ReleaseObject(int kind,int type);
 	virtual cUnknownClass* CreateObject(char *fname,char *TexturePath,int Kind=0,int Type=0);
@@ -127,7 +127,7 @@ public:
 	virtual cUnknownClass* CreateTangentTrail(const Vect3f *pos,const sColor4f *c1,const Vect3f *dpos,const sColor4f *c2,float Time=10000.f,float dAnimTime=1.e30f,float Width=2.f);
 	virtual int ReleaseTangentTrail(cUnknownClass* UTangentTrail);
 	// �������� ����, �� ���������� � ������� fname, number - ����� ����
-	virtual cUnknownClass* CreateWorld(char *fname,int number=0,int track=0,int LoadTerra=0);
+	virtual cUnknownClass* CreateWorld(const std::filesystem::path &path,int number=0,int track=0,int LoadTerra=0);
 	virtual int ReleaseWorld(cUnknownClass *UWorld);
 	virtual int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3);
 	virtual cUnknownClass* FindObject(char *name); // ����� ������� �� ���� �� ����� �������

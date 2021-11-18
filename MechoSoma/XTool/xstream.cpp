@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "filesystem.h"
 #include "port.h"
 
 static const char *openMSG = "CREATE/OPEN FAILURE";
@@ -63,6 +64,14 @@ XStream::XStream(int err)
 
 XStream::XStream(const char* name, unsigned flags,int err)
 {
+	ErrHUsed = err;
+	handler  = NULL; // (XSHANDLE)-1;
+	eofFlag  = 1;
+	radix	 = XS_DEFRADIX;
+	digits	 = XS_DEFDIGITS;
+	extSize  = -1;
+	extPos	 = 0;
+	open(name,flags);
 }
 
 XStream::~XStream()
@@ -76,7 +85,9 @@ int XStream::open(const char* name, unsigned f)
 	std::cerr << "DBG: XStream::open(\"" << name << "\", 0x" << std::hex << f << ")" << std::endl;
 #endif
 
-	std::fstream *file = open_file(name, f);
+	const auto file_path = file::normalize_path(name);
+
+	std::fstream *file = open_file(file_path.c_str(), f);
 	handler = file;
 	if (file->is_open()) {
 		fname = name;
@@ -127,11 +138,14 @@ void XStream::close(void)
 	//if(extSize == -1 && !CloseHandle(handler) && ErrHUsed)
 	//	ErrH.Abort(closeMSG,XERR_USER,GetLastError(),fname);
 
-	auto internal_handler = reinterpret_cast<std::fstream*>(handler);
+	if(extSize == -1){
+		auto internal_handler = reinterpret_cast<std::fstream*>(handler);
 
-	if (internal_handler->is_open())
-		internal_handler->close();
-	delete internal_handler;
+		if (internal_handler->is_open())
+			internal_handler->close();
+		delete internal_handler;
+	}
+
 	handler = NULL;
 	//fname = "";
 	pos = 0L;
@@ -231,21 +245,17 @@ long XStream::seek(long offset, int dir)
 			case XS_BEG:
 				//ret = SetFilePointer(handler,extPos + offset,0,dir) - extPos;
 				if (internal_handler->flags() & std::ios::out) {
-					ret = ((std::fstream *)handler)->tellp() - (std::streamoff)extPos;
 					internal_handler->seekp(extPos + offset, std::ios_base::beg);
 				}
 				else {
-					ret = internal_handler->tellg() - (std::streamoff)extPos;
 					internal_handler->seekg(extPos + offset, std::ios_base::beg);
 				}
 				break;
 			case XS_END:
 				//ret = SetFilePointer(handler,extPos + extSize - offset - 1,0,XS_BEG) - extPos;
 				if (internal_handler->flags() & std::ios::out) {
-					ret = internal_handler->tellp() - (std::streamoff)extPos;
 					internal_handler->seekp(extPos + extSize - offset - 1, std::ios_base::beg);
 				} else {
-					ret = internal_handler->tellg() - (std::streamoff)extPos;
 					internal_handler->seekg(extPos + extSize - offset - 1, std::ios_base::beg);
 				}
 				break;
@@ -253,14 +263,17 @@ long XStream::seek(long offset, int dir)
 				//ret = SetFilePointer(handler,extPos + pos + offset,0,XS_BEG) - extPos;
 				//((std::fstream *)handler)->clear();
 				if (internal_handler->flags() & std::ios::out) {
-					ret = internal_handler->tellp() - (std::streamoff)extPos;
 					internal_handler->seekp(extPos + pos + offset, std::ios_base::beg);
 				} else {
-					ret = internal_handler->tellg() - (std::streamoff)extPos;
 					internal_handler->seekg(extPos + pos + offset, std::ios_base::beg);
 				}
 				break;
 		}
+
+		if (internal_handler->flags() & std::ios::out)
+			ret = internal_handler->tellp() - (std::streamoff)extPos;
+		else
+			ret = internal_handler->tellg() - (std::streamoff)extPos;
 	}
 	else
 	{
@@ -368,13 +381,13 @@ XStream& XStream::operator< (unsigned char v)
 
 XStream& XStream::operator< (short v)
 {
-	write(&v,(unsigned)sizeof(short));
+	write(&v,(unsigned)sizeof(int16_t));
 	return *this;
 }
 
 XStream& XStream::operator< (unsigned short v)
 {
-	write(&v,(unsigned)sizeof(unsigned short));
+	write(&v,(unsigned)sizeof(uint16_t));
 	return *this;
 }
 
@@ -392,13 +405,13 @@ XStream& XStream::operator< (unsigned v)
 
 XStream& XStream::operator< (long v)
 {
-	write(&v,(unsigned)sizeof(long));
+	write(&v,(unsigned)sizeof(int32_t));
 	return *this;
 }
 
 XStream& XStream::operator< (unsigned long v)
 {
-	write(&v,(unsigned)sizeof(unsigned long));
+	write(&v,(unsigned)sizeof(uint32_t));
 	return *this;
 }
 
@@ -440,13 +453,13 @@ XStream& XStream::operator> (unsigned char& v)
 
 XStream& XStream::operator> (short& v)
 {
-	read(&v,(unsigned)sizeof(short));
+	read(&v,(unsigned)sizeof(int16_t));
 	return *this;
 }
 
 XStream& XStream::operator> (unsigned short& v)
 {
-	read(&v,(unsigned)sizeof(unsigned short));
+	read(&v,(unsigned)sizeof(uint16_t));
 	return *this;
 }
 
@@ -464,13 +477,13 @@ XStream& XStream::operator> (unsigned& v)
 
 XStream& XStream::operator> (long& v)
 {
-	read(&v,(unsigned)sizeof(long));
+	read(&v,(unsigned)sizeof(int32_t));
 	return *this;
 }
 
 XStream& XStream::operator> (unsigned long& v)
 {
-	read(&v,(unsigned)sizeof(unsigned long));
+	read(&v,(unsigned)sizeof(uint32_t));
 	return *this;
 }
 
