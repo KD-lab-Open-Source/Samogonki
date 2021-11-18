@@ -36,13 +36,7 @@
 
 #include "savegame.h"
 
-#ifdef _WIN32
-#include "md3d.h"
-#else
-typedef unsigned long DWORD;
-typedef DWORD D3DCOLOR;
-#define RGB_MAKE(r, g, b)       ((D3DCOLOR) (((r) << 16) | ((g) << 8) | (b)))
-#endif
+#include "Md3d.h"
 
 #include "arcane_menu_d3d.h"
 #include "parts_pool.h"

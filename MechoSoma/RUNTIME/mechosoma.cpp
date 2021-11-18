@@ -446,10 +446,9 @@ int xtInitApplication(void)
 		mchGraphicsSetup();
 	}
 
-#ifdef _WIN32
 	if(mchPBEM_Game)
 		wiInit();
-
+#ifdef _WIN32
 	if(inHighPriority)
 		win32_SetPriorityProcess(HIGH_PRIORITY_CLASS);
 	else

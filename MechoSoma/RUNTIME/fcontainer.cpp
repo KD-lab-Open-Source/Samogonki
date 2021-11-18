@@ -4,7 +4,9 @@
 
 #include "fcontainer.h"
 
+#ifndef _WIN32
 #define MAX_PATH 1024
+#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */

@@ -1,7 +1,9 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-// #include "win32f.h"
+#ifdef _WIN32
+#include "win32f.h"
+#endif
 
 #include "Handle.h"
 #include "BodyDispatcher.h"
@@ -49,7 +51,7 @@
 #include "PersonageDifferetiationPrm.h"
 #include "Params.h"
 
-#ifdef __APPLE__
+#ifndef _WIN32
 #define DBGCHECK
 #endif
 
