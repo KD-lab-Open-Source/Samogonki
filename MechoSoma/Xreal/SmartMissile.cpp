@@ -4,7 +4,7 @@
 #include "FlyingObject.h"
 #include "SmartMissile.h"
 #include "BodyDispatcher.h"
-#include "M3d_Effects.h"
+#include "M3d_effects.h"
 #include "sound.h"
 
 ////////////////////////////////////////////////////////

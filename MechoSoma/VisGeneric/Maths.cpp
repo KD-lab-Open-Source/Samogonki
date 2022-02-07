@@ -1,6 +1,5 @@
 #include "Maths.h"
 #include "UMATH.H"
-#include "Math.h"
 #include <stdlib.h>
 
 #define	SIZE_SHARE_FLOAT			((74*74*2)<<3)

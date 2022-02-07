@@ -13,3 +13,9 @@ MechoSoma/Debug
 /MechoSoma/gameDbg.exe
 /MechoSoma/game.exe
 /MechoSoma/mechosoma.map
+
+build
+.vscode
+.idea
+cmake-build-debug
+cmake-build-release

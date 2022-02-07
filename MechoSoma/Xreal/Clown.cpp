@@ -6,7 +6,7 @@
 #include "Ball.h"
 #include "AnimalArcansPrm.h"
 #include "SimpleClip.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 void fxlabClownProcess(Vect3f& v);
 void fxlabBubbleSource(Vect3f& pos,DurationTimer& timer);
