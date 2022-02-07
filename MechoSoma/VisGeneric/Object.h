@@ -8,9 +8,9 @@ class cLight
 {
 	Vect3f		Pos;
 	Vect3f		Angle;			
-	Vect3f		Tangent;		// вектор направления источника освещения
-	sColor4f	Ambient;		// фоновая составляющая
-	sColor4f	Diffuse;		// диффузная составляющая
+	Vect3f		Tangent;		// РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ РёСЃС‚РѕС‡РЅРёРєР° РѕСЃРІРµС‰РµРЅРёСЏ
+	sColor4f	Ambient;		// С„РѕРЅРѕРІР°СЏ СЃРѕСЃС‚Р°РІР»СЏСЋС‰Р°СЏ
+	sColor4f	Diffuse;		// РґРёС„С„СѓР·РЅР°СЏ СЃРѕСЃС‚Р°РІР»СЏСЋС‰Р°СЏ
 	cMatrix		Matrix;
 public:
 	cLight();	
@@ -45,7 +45,7 @@ public:
 	__forceinline int CalcColorDM(int xNormal,int yNormal,int zNormal,
 						 int xvLight,int yvLight,int zvLight,
 						 int xvView, int yvView, int zvView,int cosLightView);
-	// расчет яркости источника диффузной
+	// СЂР°СЃС‡РµС‚ СЏСЂРєРѕСЃС‚Рё РёСЃС‚РѕС‡РЅРёРєР° РґРёС„С„СѓР·РЅРѕР№
 	__forceinline int CalcToneDiffuse(Vect3f &vNormal,Vect3f &vLight);
 	__forceinline int CalcToneMetal(Vect3f &vNormal,Vect3f &vLight,Vect3f &vView,float cosLightView);
 	__forceinline int CalcToneDiffuse(sVect3c &vNormal,Vect3f &vLight);
@@ -132,7 +132,7 @@ class cOmni
 	sColor4f		Color;
 	float			Radius;
 	int				Visible;
-	char			TotalVisibleCamera[NUMBER_CAMERA_MAX];	// видимость из камеры 
+	char			TotalVisibleCamera[NUMBER_CAMERA_MAX];	// РІРёРґРёРјРѕСЃС‚СЊ РёР· РєР°РјРµСЂС‹ 
 public:
 	unsigned int	ID;
 

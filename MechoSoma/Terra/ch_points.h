@@ -1,6 +1,6 @@
 #define CH_POINTS_MAX 200
 #define ST_POINTS_MAX 20
-#define CHECK_POINT_H_DEFAULT (-1)//Дефаултное значение высоты
+#define CHECK_POINT_H_DEFAULT (-1)//Р”РµС„Р°СѓР»С‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІС‹СЃРѕС‚С‹
 //#define LAB_POINTS_MAX 200
 
 struct sCh_point{

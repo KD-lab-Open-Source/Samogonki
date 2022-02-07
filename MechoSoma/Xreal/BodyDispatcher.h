@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////
-//	Диспетчер 
-//	динамических объектов
+//	Р”РёСЃРїРµС‚С‡РµСЂ 
+//	РґРёРЅР°РјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 //////////////////////////////////////////////////////////////////
 #ifndef __BODY_DISPATCHER__
 #define __BODY_DISPATCHER__
@@ -22,33 +22,33 @@ public:
 	BodyDispatcher();
 	virtual ~BodyDispatcher();
 
-	// Базовые обекты, получающие ресурс
+	// Р‘Р°Р·РѕРІС‹Рµ РѕР±РµРєС‚С‹, РїРѕР»СѓС‡Р°СЋС‰РёРµ СЂРµСЃСѓСЂСЃ
 	void attachBaseObject(BaseObject* obj);
 	void deleteBaseObject(BaseObject* obj);
 
-	// Создание и удаление тел
+	// РЎРѕР·РґР°РЅРёРµ Рё СѓРґР°Р»РµРЅРёРµ С‚РµР»
 	void attachBody(Body* body);
 	void deleteBody(Body* body);
 	Body* createBody(const char* type_name, const Vect3f& pose, int angle_degree = -1000);
 
-	// Поиск тел
+	// РџРѕРёСЃРє С‚РµР»
 	Body* searchBody(int ID);
 	Body* searchBody(const Vect3f& R, int body_type, const Body* ignored_body = 0);
 	Body* searchBody(GetDistanceFunction metric, int body_type);
 	Part* searchPart(const Mechos& mechos, int m3dType, int m3dKind = 0); // default - any Kind
 	void test_mechos_wheels_to_bodies_collisions(Body& mechos);
 
-	// Работа с источниками поля
+	// Р Р°Р±РѕС‚Р° СЃ РёСЃС‚РѕС‡РЅРёРєР°РјРё РїРѕР»СЏ
 	void attachFieldSource(FieldSource* source); 
 	void moveFieldSource(FieldSource* source, const Vect3f& pos); 
 	void changeFieldSource(FieldSource* source, float radius); 
 	void changeFieldSource(FieldSource* source, const Vect3f& pos, float radius); 
-	void deleteFieldSource(FieldSource* source); // удаление, в том числе самого источника
+	void deleteFieldSource(FieldSource* source); // СѓРґР°Р»РµРЅРёРµ, РІ С‚РѕРј С‡РёСЃР»Рµ СЃР°РјРѕРіРѕ РёСЃС‚РѕС‡РЅРёРєР°
 	void clearOwner(int ID);
 
-	// Кванты
-	virtual void pre_quant(); // Управления, 15 Гц
-	void evolve_quant(); // Эволюции, 75 Гц
+	// РљРІР°РЅС‚С‹
+	virtual void pre_quant(); // РЈРїСЂР°РІР»РµРЅРёСЏ, 15 Р“С†
+	void evolve_quant(); // Р­РІРѕР»СЋС†РёРё, 75 Р“С†
 
 	// Active Body
 	void setActiveBody(Body* b);

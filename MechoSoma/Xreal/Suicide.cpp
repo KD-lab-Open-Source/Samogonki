@@ -67,7 +67,7 @@ void Suicide::ground_hit_reaction(const Contact& c)
 void Suicide::calc_forces_and_drags()
 {
 	if(control_mode == NO_TARGET){
-		//if(!num_control_points())  // все семена закончились
+		//if(!num_control_points())  // РІСЃРµ СЃРµРјРµРЅР° Р·Р°РєРѕРЅС‡РёР»РёСЃСЊ
 		//	kill();
 		add_points();
 		PointControlledObject::control();

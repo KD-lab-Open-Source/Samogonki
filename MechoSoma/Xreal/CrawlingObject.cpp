@@ -15,14 +15,14 @@ void CrawlingObject::non_dynamic_evolve(float dt)
 {
 	control();
 
-	// œÓ‚ÓÓÚ (‚ ÏËÓ‚ÓÈ ÒËÒÚÂÏÂ)
+	// –ü–æ–≤–æ—Ä–æ—Ç (–≤ –º–∏—Ä–æ–≤–æ–π —Å–∏—Å—Ç–µ–º–µ)
 	setRot(Mat3f(rudder*k_rudder*dt, Z_AXIS)*Alg());
 
-	// “ˇ„‡
+	// –¢—è–≥–∞
 	setLocalVelocity(Vect3f(0, traction*k_traction, 0));
 	setTrans(R() + Vglobal()*dt);
 
-	// ¬˚‡‚ÌË‚‡ÌËÂ ÔÓ ÂÎ¸ÂÙÛ
+	// –í—ã—Ä–∞–≤–Ω–∏–≤–∞–Ω–∏–µ –ø–æ —Ä–µ–ª—å–µ—Ñ—É
 	if(!current_tri || !search_closest_triangle_counter--){
 		current_tri = tri_map -> closest_triangle(R(), radius());
 		if(!current_tri){
@@ -35,7 +35,7 @@ void CrawlingObject::non_dynamic_evolve(float dt)
 	const Triangle& tri = *current_tri;
 	Vect3f normal(tri.normal());
 	setTrans(R() + -tri.dist(R())*normal);
-	//if(R().z > 300 && Yglobal().z > 0) // ·‡„ Ò ‰ÂÂ‚¸ˇÏË
+	//if(R().z > 300 && Yglobal().z > 0) // –±–∞–≥ —Å –¥–µ—Ä–µ–≤—å—è–º–∏
 	//	Alg().premult(Mat3f(M_PI, Z_AXIS));
 	Vect3f rot = turn_cross(Zglobal(), normal);
 	setRot(Mat3f(rot, 0.02*rot.norm())*Alg());

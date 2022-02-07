@@ -21,15 +21,15 @@ void cManagerTexture::Delete(cUnknownClass *Texture)
 	this->DeleteTexture(Texture);
 }
 cUnknownClass* cManagerTexture::Get(char *NameTexture,char *NameOpacity)
-{	// çàãðóçêà àíèìèðîâàííîé òåêñòóðû cTextureAnimation
+{	// Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð°Ð½Ð¸Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ð¹ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ cTextureAnimation
 	return this->GetTextureAnimation(NameTexture,NameOpacity);
 }
 void cManagerTexture::Free()
-{	// îñâîáîæäåíèå ïàìÿòè îò íåèñïîëüçóåìûõ òåêñòóð
+{	// Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ Ð¿Ð°Ð¼ÑÑ‚Ð¸ Ð¾Ñ‚ Ð½ÐµÐ¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼Ñ‹Ñ… Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 	for(cUnknownClassList *tmp=TextureLibrary.BaseList,*start=TextureLibrary.BaseList;tmp;tmp=start)
 	{
 		start=start->next;
-		if(tmp->Base->GetRef()==1) // íà äàííûé îáúåêò èìååòñÿ åäèíñòâåííàÿ ññûëêà tmp->Base
+		if(tmp->Base->GetRef()==1) // Ð½Ð° Ð´Ð°Ð½Ð½Ñ‹Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¸Ð¼ÐµÐµÑ‚ÑÑ ÐµÐ´Ð¸Ð½ÑÑ‚Ð²ÐµÐ½Ð½Ð°Ñ ÑÑÑ‹Ð»ÐºÐ° tmp->Base
 		{
 			DeleteTexture(tmp->Base);
 			tmp->Base=0;
@@ -50,7 +50,7 @@ void cManagerTexture::DeleteTexture(cUnknownClass *Texture)
 	}
 }
 cUnknownClass* cManagerTexture::GetTextureAnimation(char *NameTexture,char *NameOpacity)
-{	// ôóíêöèÿ äëÿ ðàáîòû òîëüêî ñ àíèìèðîâàííûìè òåêñòóðàìè sAnimationTexture
+{	// Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñ Ð°Ð½Ð¸Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð°Ð¼Ð¸ sAnimationTexture
 	assert(NameTexture&&strlen(NameTexture));
 	for(cUnknownClassList *List=TextureLibrary.BaseList;List;List=List->next)
 		if(List->Base->GetKind(KIND_TEX_ANIMATION))
@@ -58,11 +58,11 @@ cUnknownClass* cManagerTexture::GetTextureAnimation(char *NameTexture,char *Name
 			cTextureAnimation *TexAnim=(cTextureAnimation*)List->Base;
 			if((TexAnim->NameTexture==NameTexture)&&(TexAnim->NameOpacity==NameOpacity))
 			{ 
-				TexAnim->IncRef(); // óâåëè÷èòü ñ÷åò÷èê äëÿ òîãî, êòî çàïðîñèë
+				TexAnim->IncRef(); // ÑƒÐ²ÐµÐ»Ð¸Ñ‡Ð¸Ñ‚ÑŒ ÑÑ‡ÐµÑ‚Ñ‡Ð¸Ðº Ð´Ð»Ñ Ñ‚Ð¾Ð³Ð¾, ÐºÑ‚Ð¾ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ¸Ð»
 				return TexAnim; 
 			}
 		}
-	// èñêîìàÿ òåêñòóðà â áèáëèîòåêå íå íàéäåíà, çàãðóæàåì åå
+	// Ð¸ÑÐºÐ¾Ð¼Ð°Ñ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð² Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐµ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°, Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ ÐµÐµ
 	cTextureAnimation *TexAnim=new cTextureAnimation;
 	TextureLibrary.Attach(TexAnim);
 	TexAnim->NameTexture=NameTexture;

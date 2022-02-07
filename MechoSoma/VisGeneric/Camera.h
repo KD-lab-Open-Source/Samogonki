@@ -18,26 +18,26 @@ class cRenderDevice;
 
 class cCamera : public cUnknownClass
 {
-private: // первичные значения
+private: // РїРµСЂРІРёС‡РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 	cMatrix				Matrix;
-	Vect3f				Pos;						// местоположение камеры
-	Vect3f				PosOfs;						// смещение центра при наклоне
-	Vect3f				Angle;						// углы Эйлера определяющие матрицу, в градусах
+	Vect3f				Pos;						// РјРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёРµ РєР°РјРµСЂС‹
+	Vect3f				PosOfs;						// СЃРјРµС‰РµРЅРёРµ С†РµРЅС‚СЂР° РїСЂРё РЅР°РєР»РѕРЅРµ
+	Vect3f				Angle;						// СѓРіР»С‹ Р­Р№Р»РµСЂР° РѕРїСЂРµРґРµР»СЏСЋС‰РёРµ РјР°С‚СЂРёС†Сѓ, РІ РіСЂР°РґСѓСЃР°С…
 	eAttributeCamera	Attribute;
-	sRectangle4f		Clip;						// Clip.left,Clip.right,Clip.top,Clip.bottom - 0..1 - размеры видимой области
-	Vect2f				Center;						// Center.x,Center.y - 0..1 - центр, 
-	Vect2f				Focus;						// Focus.z - фокус, порядка единицы
-	Vect2f				zPlane;						// расстояние до ближайшей и дальней плоскостей обрезания, используется для zBuffer'а
-	Vect2f				zBufferScale;				// zBufferScale.x=zNear,zBufferScale.y=zFar - 0..1 коэффициенты масштабирования zBuffer'а
-	cRenderDevice		*RenderDevice;				// устройство вывода
-	cBaseArray <sPlane4f>PlaneClip3d;				// плоскости отсечения
+	sRectangle4f		Clip;						// Clip.left,Clip.right,Clip.top,Clip.bottom - 0..1 - СЂР°Р·РјРµСЂС‹ РІРёРґРёРјРѕР№ РѕР±Р»Р°СЃС‚Рё
+	Vect2f				Center;						// Center.x,Center.y - 0..1 - С†РµРЅС‚СЂ, 
+	Vect2f				Focus;						// Focus.z - С„РѕРєСѓСЃ, РїРѕСЂСЏРґРєР° РµРґРёРЅРёС†С‹
+	Vect2f				zPlane;						// СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р±Р»РёР¶Р°Р№С€РµР№ Рё РґР°Р»СЊРЅРµР№ РїР»РѕСЃРєРѕСЃС‚РµР№ РѕР±СЂРµР·Р°РЅРёСЏ, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ zBuffer'Р°
+	Vect2f				zBufferScale;				// zBufferScale.x=zNear,zBufferScale.y=zFar - 0..1 РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ zBuffer'Р°
+	cRenderDevice		*RenderDevice;				// СѓСЃС‚СЂРѕР№СЃС‚РІРѕ РІС‹РІРѕРґР°
+	cBaseArray <sPlane4f>PlaneClip3d;				// РїР»РѕСЃРєРѕСЃС‚Рё РѕС‚СЃРµС‡РµРЅРёСЏ
 public:
 	cCamera();
 	~cCamera();
 	inline void SetAttribute(int attribute)								{ Attribute=eAttributeCamera(Attribute|attribute); }
 	inline int GetAttribute(int attribute)								{ return Attribute&attribute; }
 	inline void ClearAttribute(int attribute)							{ Attribute=eAttributeCamera(Attribute&(~attribute)); }
-	// функции позиционирования камеры и для изменения ее матрицы
+	// С„СѓРЅРєС†РёРё РїРѕР·РёС†РёРѕРЅРёСЂРѕРІР°РЅРёСЏ РєР°РјРµСЂС‹ Рё РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ РµРµ РјР°С‚СЂРёС†С‹
 	inline void Translate(const Vect3f &dPos)							{ Pos+=dPos; CalcMatrix(); }
 	inline void Rotate(const Vect3f &dAngle)							{ Angle+=dAngle; CalcMatrix(); }
 	inline void dSetPosition(const Vect3f &dPos,const Vect3f &dAngle)	{ Pos+=dPos; Angle+=dAngle; CalcMatrix(); }
@@ -52,11 +52,11 @@ public:
 	inline Vect3f& GetOfs()											{ return PosOfs; }
 	inline Vect3f& GetPos()											{ return Pos; }
 	void SetPos(const Vect3f &pos);
-	// функции для работы с видимой областью
+	// С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РІРёРґРёРјРѕР№ РѕР±Р»Р°СЃС‚СЊСЋ
 	void AttachViewPort(const cUnknownClass *URenderDevice);
 	void DetachViewPort(const cUnknownClass *URenderDevice=0);
 	cRenderDevice* GetViewPort()										{ return RenderDevice; }
-	// функции для работы с пирамидой видимости
+	// С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРёСЂР°РјРёРґРѕР№ РІРёРґРёРјРѕСЃС‚Рё
 	inline void SetFrustum(const sRectangle4f &clip,const Vect2f &center,const Vect2f &focus,const Vect2f &zplane,const Vect2f &zscale) { Clip=clip; Center=center; Focus=focus; zPlane=zplane; zBufferScale=zscale; CalcPlaneClip3d(); }
 	inline void GetFrustum(sRectangle4f &clip,Vect2f &center,Vect2f &focus,Vect2f &zplane,Vect2f &zscale)	{ clip=Clip; center=Center; focus=Focus; zscale=zBufferScale; zplane=zPlane;}
 	inline sRectangle4f& GetClipping()									{ return Clip; }
@@ -66,17 +66,17 @@ public:
 	inline Vect2f& GetFocus()											{ return Focus; }
 	inline sPlane4f& GetPlaneClip3d(int number)							{ return PlaneClip3d[number]; }
 	inline int GetNumberPlaneClip3d()									{ return PlaneClip3d.length(); }
-	// функции конвертации, матрица и координаты должны быть зациклены и натянуты на шар
-	inline void BuildMatrix(MatXf &matrix,const Vect3f &pos);		// создает матрицу matrix, на основе cCamera::Matrix && pos, зацикливает и натягивает на шар
-	inline void LoadMatrix(Vect3f &pos);	// устанавливается pos - зацикливается и натягивается на шар
+	// С„СѓРЅРєС†РёРё РєРѕРЅРІРµСЂС‚Р°С†РёРё, РјР°С‚СЂРёС†Р° Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ Р·Р°С†РёРєР»РµРЅС‹ Рё РЅР°С‚СЏРЅСѓС‚С‹ РЅР° С€Р°СЂ
+	inline void BuildMatrix(MatXf &matrix,const Vect3f &pos);		// СЃРѕР·РґР°РµС‚ РјР°С‚СЂРёС†Сѓ matrix, РЅР° РѕСЃРЅРѕРІРµ cCamera::Matrix && pos, Р·Р°С†РёРєР»РёРІР°РµС‚ Рё РЅР°С‚СЏРіРёРІР°РµС‚ РЅР° С€Р°СЂ
+	inline void LoadMatrix(Vect3f &pos);	// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ pos - Р·Р°С†РёРєР»РёРІР°РµС‚СЃСЏ Рё РЅР°С‚СЏРіРёРІР°РµС‚СЃСЏ РЅР° С€Р°СЂ
 	inline void LoadMatrix(MatXf &matrix);
 	inline void ConvertPoint(const MatXf &matrix,const Vect3f &pw,Vect3f &pv,Vect3f &pe);
-	inline void ConvertPoint(const Vect3f &pos,const Vect3f &pw,Vect3f &pv,Vect3f &pe);		// pos - смещение конвертируемой точки от центра камеры, 
-	// функции теста видимости, координаты должны быть зациклены и натянуты на шар (полная матрица визуализации)
-	eConstVisible TestVisible(const MatXf &matrix,const Vect3f &min,const Vect3f &max);	// для BoundBox с границами min && max
-	eConstVisible TestVisible(const MatXf &matrix,const Vect3f &size);		// для параллелепипеда размера size, левый нижний угол лежит в matrix
-	eConstVisible TestVisible(const MatXf &matrix,float radius);			// для плоского круга параллельного экрану
-	eConstVisible TestVisible(const Vect3f &pos);							// видимость точки относительно камеры
+	inline void ConvertPoint(const Vect3f &pos,const Vect3f &pw,Vect3f &pv,Vect3f &pe);		// pos - СЃРјРµС‰РµРЅРёРµ РєРѕРЅРІРµСЂС‚РёСЂСѓРµРјРѕР№ С‚РѕС‡РєРё РѕС‚ С†РµРЅС‚СЂР° РєР°РјРµСЂС‹, 
+	// С„СѓРЅРєС†РёРё С‚РµСЃС‚Р° РІРёРґРёРјРѕСЃС‚Рё, РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ Р·Р°С†РёРєР»РµРЅС‹ Рё РЅР°С‚СЏРЅСѓС‚С‹ РЅР° С€Р°СЂ (РїРѕР»РЅР°СЏ РјР°С‚СЂРёС†Р° РІРёР·СѓР°Р»РёР·Р°С†РёРё)
+	eConstVisible TestVisible(const MatXf &matrix,const Vect3f &min,const Vect3f &max);	// РґР»СЏ BoundBox СЃ РіСЂР°РЅРёС†Р°РјРё min && max
+	eConstVisible TestVisible(const MatXf &matrix,const Vect3f &size);		// РґР»СЏ РїР°СЂР°Р»Р»РµР»РµРїРёРїРµРґР° СЂР°Р·РјРµСЂР° size, Р»РµРІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР» Р»РµР¶РёС‚ РІ matrix
+	eConstVisible TestVisible(const MatXf &matrix,float radius);			// РґР»СЏ РїР»РѕСЃРєРѕРіРѕ РєСЂСѓРіР° РїР°СЂР°Р»Р»РµР»СЊРЅРѕРіРѕ СЌРєСЂР°РЅСѓ
+	eConstVisible TestVisible(const Vect3f &pos);							// РІРёРґРёРјРѕСЃС‚СЊ С‚РѕС‡РєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєР°РјРµСЂС‹
 	__forceinline eConstVisible TestVisibleTile(const MatXf &matrix,const Vect3f &pos,const Vect3f &size,float WorldRadiusShare);
 	Vect3f Screen2World(int x, int y);
 	void CalcPlaneClip3d();
@@ -159,7 +159,7 @@ inline void cCamera::LoadMatrix(Vect3f &pos)
 		MATRIX_SIGN_Z(GetMatrix().rot()[2][0]*pos.x+GetMatrix().rot()[2][1]*pos.y+GetMatrix().rot()[2][2]*pos.z+GetMatrix().trans().z));
 }
 inline void cCamera::LoadMatrix(MatXf &matrix)
-{ // функция не реализована
+{ // С„СѓРЅРєС†РёСЏ РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР°
 	assert(0);
 }
 inline void cCamera::ConvertPoint(const MatXf &matrix,const Vect3f &pw,Vect3f &pv,Vect3f &pe)
@@ -188,8 +188,8 @@ inline void cCamera::ConvertPoint(const Vect3f &pos,const Vect3f &pw,Vect3f &pv,
 	pe.y=pv.y*pe.z;
 }
 ////////////////////////////////// inline World function //////////////////////////////////
-extern Vect2f GlobalWorldSize;		// GlobalWorldSize.x,GlobalWorldSize.y - размер мира = 2048.f
-extern Vect2f GlobalWorldScale;	// GlobalWorldScale.x,GlobalWorldScale.y - масштабный коэффициент для зацикливания = 1.f
+extern Vect2f GlobalWorldSize;		// GlobalWorldSize.x,GlobalWorldSize.y - СЂР°Р·РјРµСЂ РјРёСЂР° = 2048.f
+extern Vect2f GlobalWorldScale;	// GlobalWorldScale.x,GlobalWorldScale.y - РјР°СЃС€С‚Р°Р±РЅС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ РґР»СЏ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ = 1.f
 extern float GlobalWorldRadius;
 
 inline void WorldToCameraCutting(Vect3f &pos,cCamera *Camera)

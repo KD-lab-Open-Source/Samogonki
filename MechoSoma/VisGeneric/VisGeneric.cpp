@@ -5,7 +5,7 @@
 #include "TexMgr.h"
 #include "Maths.h"
 
-// глобальные переменные
+// РіР»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 cMeshLibrary	*MeshLibrary=0;
 cTextureBuffer	*TextureBuffer=0;
 cVisGeneric		*gb_VisGeneric=0;
@@ -15,7 +15,7 @@ cVisGeneric::cVisGeneric() : SceneArray(KIND_ARRAYSCENE)
 {
 	CurrentTime=PreviousTime=0;
 	Scene=0;
-	// инициализация глобальных переменых
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіР»РѕР±Р°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅС‹С…
 	InitArray();
 	if(P3D) delete P3D; P3D=new cPolyDispatcher; 
 	if(TextureBuffer) delete TextureBuffer; TextureBuffer=new cTextureBuffer();
@@ -72,7 +72,7 @@ int cVisGeneric::PreDraw(int mask)
 {
 	assert(Scene);
 	int CameraCount=0;
-	if(mask&(1<<0)) Scene->Animate(CurrentTime,PreviousTime); // включение анимации
+	if(mask&(1<<0)) Scene->Animate(CurrentTime,PreviousTime); // РІРєР»СЋС‡РµРЅРёРµ Р°РЅРёРјР°С†РёРё
 	if(mask&(1<<30)) Scene->PreDraw(mask);
 	if(mask&(1<<31)) P3D->BeginScene(Scene->GetCameraList());
 	return 0;

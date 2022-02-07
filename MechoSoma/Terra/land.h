@@ -21,10 +21,10 @@ struct s_renderV {
 	short COSnG[TERRAIN_MAX][512];
 
 	unsigned char self_luminescence[TERRAIN_MAX];
-	unsigned char ref_n[TERRAIN_MAX]; //степень отражающей кривой
-	unsigned char ref_k[TERRAIN_MAX]; //коэффициент отражения (*100)
+	unsigned char ref_n[TERRAIN_MAX]; //СЃС‚РµРїРµРЅСЊ РѕС‚СЂР°Р¶Р°СЋС‰РµР№ РєСЂРёРІРѕР№
+	unsigned char ref_k[TERRAIN_MAX]; //РєРѕСЌС„С„РёС†РёРµРЅС‚ РѕС‚СЂР°Р¶РµРЅРёСЏ (*100)
 	float tableLightOnDistance[MAX_DISTANCE];
-	float dif_k[TERRAIN_MAX]; //коэффициент диффузного отражения данной поверхности
+	float dif_k[TERRAIN_MAX]; //РєРѕСЌС„С„РёС†РёРµРЅС‚ РґРёС„С„СѓР·РЅРѕРіРѕ РѕС‚СЂР°Р¶РµРЅРёСЏ РґР°РЅРЅРѕР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 
 	unsigned char gaussBuf[(MAX_GAUSS_RADIUS+1)*(MAX_GAUSS_RADIUS+1)];
 	int diametr_gb;

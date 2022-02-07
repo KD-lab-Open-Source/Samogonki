@@ -67,7 +67,7 @@ struct sTileMap : public sAttribute
 	cBaseDynArray <char>		AttrPolygonReflection;
 	int							zReflectionSurface;
 	int							xPos,yPos,zwMin,zwMax;
-	char						TotalVisibleCamera[NUMBER_CAMERA_MAX];	// âèäèìîñòü èç êàìåðû 
+	char						TotalVisibleCamera[NUMBER_CAMERA_MAX];	// Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚ÑŒ Ð¸Ð· ÐºÐ°Ð¼ÐµÑ€Ñ‹ 
 	MatXf						DrawMatrix[NUMBER_CAMERA_MAX];
 	Vect3f						ShareOfs[NUMBER_CAMERA_MAX];
 
@@ -91,21 +91,21 @@ struct sTileMap : public sAttribute
 class cTileMap : public cUnknownClass, public sAttribute
 {
 	sTileMap	*Tile;
-	int			xTile,yTile;							// ÷èñëî òàéëîâ ïî îñÿì
-	int			_xTile,_yTile;							// áèòîâûé ðàçìåð òàéëà
+	int			xTile,yTile;							// Ñ‡Ð¸ÑÐ»Ð¾ Ñ‚Ð°Ð¹Ð»Ð¾Ð² Ð¿Ð¾ Ð¾ÑÑÐ¼
+	int			_xTile,_yTile;							// Ð±Ð¸Ñ‚Ð¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚Ð°Ð¹Ð»Ð°
 	int			zReflectionSurface;
-	// äëÿ èòåððàöèè ïî ïîëèãîíàì êàðòû
+	// Ð´Ð»Ñ Ð¸Ñ‚ÐµÑ€Ñ€Ð°Ñ†Ð¸Ð¸ Ð¿Ð¾ Ð¿Ð¾Ð»Ð¸Ð³Ð¾Ð½Ð°Ð¼ ÐºÐ°Ñ€Ñ‚Ñ‹
 	int			nTile,nPolygon;
 public:
 	cTileMap();
 	~cTileMap();
 	void Release();
-	// âûâîä
+	// Ð²Ñ‹Ð²Ð¾Ð´
 	void TestVisible(cUnknownClass *UCameraList);
 	void UnlockTexture(cUnknownClass *UCameraList);
 	void Draw(cUnknownClass *UCameraList);
 	void DrawReflection(cUnknownClass *UCameraList);
-	// çàãðóçêà è ò.ä.
+	// Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¸ Ñ‚.Ð´.
 	void Load(char *fname);
 	inline int GetVisible(int x,int y)					{ int i=x>>_xTile, j=y>>_yTile; UNKNOWN_ASSERT(i>=0&&i<xTile&&j>=0&&j<yTile); return Tile[i+j*xTile].GetVisible(); }
 	inline int NumberTileX()							{ return xTile; }
@@ -120,9 +120,9 @@ private:
 	int Load3ds(char *fname);
 };
 
-// ïåðåìåííûå äëÿ ðàáîòû c cPolyMgr
-extern int PosBufTileMap;						// ìåñòî â êàðòå öâåòîâ
-extern unsigned short *GlobalColorBufferMap;	// ãëîáàëüíàÿ ïåðåìåííàÿ õðàíèò óêàçàòåëü íà òåêóùóþ êàðòó öâåòîâ ìèðà vMap->ClBuf
+// Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ c cPolyMgr
+extern int PosBufTileMap;						// Ð¼ÐµÑÑ‚Ð¾ Ð² ÐºÐ°Ñ€Ñ‚Ðµ Ñ†Ð²ÐµÑ‚Ð¾Ð²
+extern unsigned short *GlobalColorBufferMap;	// Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ð°Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ ÐºÐ°Ñ€Ñ‚Ñƒ Ñ†Ð²ÐµÑ‚Ð¾Ð² Ð¼Ð¸Ñ€Ð° vMap->ClBuf
 
 extern int GlobalRenderTuning;
 extern float GlobalDistFlexureProjectionWorld,GlobalPointViewReflection;

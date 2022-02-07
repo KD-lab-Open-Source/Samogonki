@@ -1,7 +1,7 @@
 #pragma once
 /*
-	Файл распаковывается всегда в 
-	формат 44 KHz 16 bit Stereo
+	Р¤Р°Р№Р» СЂР°СЃРїР°РєРѕРІС‹РІР°РµС‚СЃСЏ РІСЃРµРіРґР° РІ 
+	С„РѕСЂРјР°С‚ 44 KHz 16 bit Stereo
 */
 
 bool MpegOpen(const char* file);

@@ -25,7 +25,7 @@ int cVisGeneric::ReleaseWorld(cUnknownClass *UWorld)
 	return 0;
 }
 cUnknownClass* cVisGeneric::FindObject(char *name)
-{ // ïîèñê îáúåêòà íà ìèðó ïî èìåíè îáúåêòà
+{ // Ð¿Ð¾Ð¸ÑÐº Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð½Ð° Ð¼Ð¸Ñ€Ñƒ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 	assert(GetActiveScene());
 	return (cUnknownClass*) GetActiveScene()->GetM3D()->FindObject(name);
 }

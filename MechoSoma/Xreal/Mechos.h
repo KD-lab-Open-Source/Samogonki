@@ -18,31 +18,31 @@ class Mechos : virtual public PointControlledObject, private PersonageDifferetia
 {
 public:
 	enum State {	
-		NORMAL_MECHOS, 	      // Нормальный, полнособранный, ездящий мехос
-		STAYING_PERSONAGE,	// Стоящий после разрушения мехоса персонаж
-		MOVING_PERSONAGE,	// Персонаж, двигающийся к котролпойнту
-		WAITING_FOR_TELEPORTATION,  // Ожидающий телепортацию
-		STARTING_TELEPORTATION,  // Начинающий телепортацию
-		FINISHING_TELEPORTATION,  // Заканчивающий телепортацию
-		ASSEMBLING_MECHOS,  // Собирающийся мехос 
-		FORMIC_TRANSPORTED_MECHOS  //  Муравейник
+		NORMAL_MECHOS, 	      // РќРѕСЂРјР°Р»СЊРЅС‹Р№, РїРѕР»РЅРѕСЃРѕР±СЂР°РЅРЅС‹Р№, РµР·РґСЏС‰РёР№ РјРµС…РѕСЃ
+		STAYING_PERSONAGE,	// РЎС‚РѕСЏС‰РёР№ РїРѕСЃР»Рµ СЂР°Р·СЂСѓС€РµРЅРёСЏ РјРµС…РѕСЃР° РїРµСЂСЃРѕРЅР°Р¶
+		MOVING_PERSONAGE,	// РџРµСЂСЃРѕРЅР°Р¶, РґРІРёРіР°СЋС‰РёР№СЃСЏ Рє РєРѕС‚СЂРѕР»РїРѕР№РЅС‚Сѓ
+		WAITING_FOR_TELEPORTATION,  // РћР¶РёРґР°СЋС‰РёР№ С‚РµР»РµРїРѕСЂС‚Р°С†РёСЋ
+		STARTING_TELEPORTATION,  // РќР°С‡РёРЅР°СЋС‰РёР№ С‚РµР»РµРїРѕСЂС‚Р°С†РёСЋ
+		FINISHING_TELEPORTATION,  // Р—Р°РєР°РЅС‡РёРІР°СЋС‰РёР№ С‚РµР»РµРїРѕСЂС‚Р°С†РёСЋ
+		ASSEMBLING_MECHOS,  // РЎРѕР±РёСЂР°СЋС‰РёР№СЃСЏ РјРµС…РѕСЃ 
+		FORMIC_TRANSPORTED_MECHOS  //  РњСѓСЂР°РІРµР№РЅРёРє
 		};
 
 	enum Feature {
 		NO_FEATURES = 0,
 
-		NON_DESTRUCTING = 1,	// Неразрушаемый мехос
+		NON_DESTRUCTING = 1,	// РќРµСЂР°Р·СЂСѓС€Р°РµРјС‹Р№ РјРµС…РѕСЃ
 		MAGNETIC_CUSHION = 2,	
-		NON_CONSTRUCTING = 4,	// Несобирающийся мехос
-		NULIFICATOR = 8, // Нулификация - просачивание через 3D-объекты
+		NON_CONSTRUCTING = 4,	// РќРµСЃРѕР±РёСЂР°СЋС‰РёР№СЃСЏ РјРµС…РѕСЃ
+		NULIFICATOR = 8, // РќСѓР»РёС„РёРєР°С†РёСЏ - РїСЂРѕСЃР°С‡РёРІР°РЅРёРµ С‡РµСЂРµР· 3D-РѕР±СЉРµРєС‚С‹
 		PROTECT_FROM_DAMAGE = 16, 
 
-		IRON_HIP = 32,	// Железный бок
-		ELASTIC_HIP = 64, // Упругий бок
+		IRON_HIP = 32,	// Р–РµР»РµР·РЅС‹Р№ Р±РѕРє
+		ELASTIC_HIP = 64, // РЈРїСЂСѓРіРёР№ Р±РѕРє
 
 		FIRE_PROTECTION = 128,
 		LIGHTNING_PROTECTION = 256,
-		STATIC_NULIFICATOR = 512, // Нулификация + остановка
+		STATIC_NULIFICATOR = 512, // РќСѓР»РёС„РёРєР°С†РёСЏ + РѕСЃС‚Р°РЅРѕРІРєР°
 
 		BUTTERFLY = 1 << 10,
 		DIRIGIBLE = 1 << 11,
@@ -50,37 +50,37 @@ public:
 		DRAGON_POWER = 1 << 13,
 		HELICOPTER = 1 << 14,
 
-		RED_TRACK_FEATURE = 1 << 15,  // Алые следы
+		RED_TRACK_FEATURE = 1 << 15,  // РђР»С‹Рµ СЃР»РµРґС‹
 
-		FLYING_BY_JUMP_PAD = 1 << 16, // Выставляется автоматически
-		ACCELERATED_BY_SPOT = 1 << 17, // Выставляется автоматически
+		FLYING_BY_JUMP_PAD = 1 << 16, // Р’С‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё
+		ACCELERATED_BY_SPOT = 1 << 17, // Р’С‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё
 
-		ROTATING = 1 << 18, // вращается
-		FROZEN = 1 << 19,  // заморожен снежком
-		TELEPORTATING = 1 << 20, // телепортирующийся
+		ROTATING = 1 << 18, // РІСЂР°С‰Р°РµС‚СЃСЏ
+		FROZEN = 1 << 19,  // Р·Р°РјРѕСЂРѕР¶РµРЅ СЃРЅРµР¶РєРѕРј
+		TELEPORTATING = 1 << 20, // С‚РµР»РµРїРѕСЂС‚РёСЂСѓСЋС‰РёР№СЃСЏ
 
-		HUMBLE = 1 << 21 // уменьшенный
+		HUMBLE = 1 << 21 // СѓРјРµРЅСЊС€РµРЅРЅС‹Р№
 		};
 
 
 	enum Effect {
 		NoEffect,
-		HugeAccelerationEffect, // Сильное ускорение после наезда на специальные споты: одноразовая анимация.
-		LandingEffect, // Приземление после долгого полета: одноразовая анимация.
-		SpringBoardFlyEffect, // Свободный продолжительный полет после трамплина: зацикленная анимация.
-		RestingDisturbEffect, // Cпокойное состоянии: периодически возникающая анимация.
-		OutstripTheNeighbourEffect, // Обгон соперника (суматоху на старте не учитывать): одноразовая анимация.
-		OutstrippedByNeighbourEffect, // Обгон соперником (суматоху на старте не учитывать): одноразовая анимация.
-		CollisionEffect, // Столкновение с соперником: одноразовая анимация.
-		InfluenceOfArcaneEffect, // Действие чужого Аркана: несколько видов одноразовой анимации.
-		ExultEffect, // Ликование от попадания в соперника Арканом, успешное финиширование: одноразовая анимация.
-		ObstacleAnnoyingEffect, // Раздражение от столкновения с препятствием-Арканом: одноразовая анимация.
-		CheckPointOmissionEffect, // Пропуск чекпойнта: одноразовая анимация (оборачивается и кричит в камеру).
-		FlyingByArcaneEffect, // Управляемый полет с помощью Аркана: зацикленная анимация (например, машет ручками).
-		SwimmingEffect, // Плавание по воде: зацикленная анимация (например, переворачивается  как поплавок).
-		StoneHitEffect, // Падает камень на голову
+		HugeAccelerationEffect, // РЎРёР»СЊРЅРѕРµ СѓСЃРєРѕСЂРµРЅРёРµ РїРѕСЃР»Рµ РЅР°РµР·РґР° РЅР° СЃРїРµС†РёР°Р»СЊРЅС‹Рµ СЃРїРѕС‚С‹: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		LandingEffect, // РџСЂРёР·РµРјР»РµРЅРёРµ РїРѕСЃР»Рµ РґРѕР»РіРѕРіРѕ РїРѕР»РµС‚Р°: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		SpringBoardFlyEffect, // РЎРІРѕР±РѕРґРЅС‹Р№ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅС‹Р№ РїРѕР»РµС‚ РїРѕСЃР»Рµ С‚СЂР°РјРїР»РёРЅР°: Р·Р°С†РёРєР»РµРЅРЅР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		RestingDisturbEffect, // CРїРѕРєРѕР№РЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРё: РїРµСЂРёРѕРґРёС‡РµСЃРєРё РІРѕР·РЅРёРєР°СЋС‰Р°СЏ Р°РЅРёРјР°С†РёСЏ.
+		OutstripTheNeighbourEffect, // РћР±РіРѕРЅ СЃРѕРїРµСЂРЅРёРєР° (СЃСѓРјР°С‚РѕС…Сѓ РЅР° СЃС‚Р°СЂС‚Рµ РЅРµ СѓС‡РёС‚С‹РІР°С‚СЊ): РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		OutstrippedByNeighbourEffect, // РћР±РіРѕРЅ СЃРѕРїРµСЂРЅРёРєРѕРј (СЃСѓРјР°С‚РѕС…Сѓ РЅР° СЃС‚Р°СЂС‚Рµ РЅРµ СѓС‡РёС‚С‹РІР°С‚СЊ): РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		CollisionEffect, // РЎС‚РѕР»РєРЅРѕРІРµРЅРёРµ СЃ СЃРѕРїРµСЂРЅРёРєРѕРј: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		InfluenceOfArcaneEffect, // Р”РµР№СЃС‚РІРёРµ С‡СѓР¶РѕРіРѕ РђСЂРєР°РЅР°: РЅРµСЃРєРѕР»СЊРєРѕ РІРёРґРѕРІ РѕРґРЅРѕСЂР°Р·РѕРІРѕР№ Р°РЅРёРјР°С†РёРё.
+		ExultEffect, // Р›РёРєРѕРІР°РЅРёРµ РѕС‚ РїРѕРїР°РґР°РЅРёСЏ РІ СЃРѕРїРµСЂРЅРёРєР° РђСЂРєР°РЅРѕРј, СѓСЃРїРµС€РЅРѕРµ С„РёРЅРёС€РёСЂРѕРІР°РЅРёРµ: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		ObstacleAnnoyingEffect, // Р Р°Р·РґСЂР°Р¶РµРЅРёРµ РѕС‚ СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ СЃ РїСЂРµРїСЏС‚СЃС‚РІРёРµРј-РђСЂРєР°РЅРѕРј: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ.
+		CheckPointOmissionEffect, // РџСЂРѕРїСѓСЃРє С‡РµРєРїРѕР№РЅС‚Р°: РѕРґРЅРѕСЂР°Р·РѕРІР°СЏ Р°РЅРёРјР°С†РёСЏ (РѕР±РѕСЂР°С‡РёРІР°РµС‚СЃСЏ Рё РєСЂРёС‡РёС‚ РІ РєР°РјРµСЂСѓ).
+		FlyingByArcaneEffect, // РЈРїСЂР°РІР»СЏРµРјС‹Р№ РїРѕР»РµС‚ СЃ РїРѕРјРѕС‰СЊСЋ РђСЂРєР°РЅР°: Р·Р°С†РёРєР»РµРЅРЅР°СЏ Р°РЅРёРјР°С†РёСЏ (РЅР°РїСЂРёРјРµСЂ, РјР°С€РµС‚ СЂСѓС‡РєР°РјРё).
+		SwimmingEffect, // РџР»Р°РІР°РЅРёРµ РїРѕ РІРѕРґРµ: Р·Р°С†РёРєР»РµРЅРЅР°СЏ Р°РЅРёРјР°С†РёСЏ (РЅР°РїСЂРёРјРµСЂ, РїРµСЂРµРІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ  РєР°Рє РїРѕРїР»Р°РІРѕРє).
+		StoneHitEffect, // РџР°РґР°РµС‚ РєР°РјРµРЅСЊ РЅР° РіРѕР»РѕРІСѓ
 		RunToSeedEffect, 
-		BonusExultEffect, // Ликование от взятия бонуса
+		BonusExultEffect, // Р›РёРєРѕРІР°РЅРёРµ РѕС‚ РІР·СЏС‚РёСЏ Р±РѕРЅСѓСЃР°
 		EffectsMax
 		};
 
@@ -99,8 +99,8 @@ public:
 
 		FURY_OF_SLIME_KIND = 6,
 
-		MORPH_KIND = 64, // добавляется для получения kind морфинга
-		ACTIVATED_KIND = 128 // добавляется для получения kind аркана
+		MORPH_KIND = 64, // РґРѕР±Р°РІР»СЏРµС‚СЃСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ kind РјРѕСЂС„РёРЅРіР°
+		ACTIVATED_KIND = 128 // РґРѕР±Р°РІР»СЏРµС‚СЃСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ kind Р°СЂРєР°РЅР°
 		};
 
 	enum WheelMode {
@@ -134,39 +134,39 @@ public:
 	void set_control_config(int config) { control_config = config; }
 	int get_control_config() const { return control_config; }
 
-	// Состояние мехоса /////////////
+	// РЎРѕСЃС‚РѕСЏРЅРёРµ РјРµС…РѕСЃР° /////////////
 	const State& state() const { return state_; }
 
 	// Angles [rad] /////////
 	float yaw() const { return psi(); }
-	float roll() const { return atan2(Zlocal().x, Zlocal().z); } // наклон вправо - положительное направление
-	float pitch() const { return atan2(Zlocal().y, Zlocal().z); } // задирается нос - положительное направление
+	float roll() const { return atan2(Zlocal().x, Zlocal().z); } // РЅР°РєР»РѕРЅ РІРїСЂР°РІРѕ - РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+	float pitch() const { return atan2(Zlocal().y, Zlocal().z); } // Р·Р°РґРёСЂР°РµС‚СЃСЏ РЅРѕСЃ - РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 
-	// Управляемый полет с помощью аркана
+	// РЈРїСЂР°РІР»СЏРµРјС‹Р№ РїРѕР»РµС‚ СЃ РїРѕРјРѕС‰СЊСЋ Р°СЂРєР°РЅР°
 	int isFlyingByArcane() const;
 
 	int is_wheels_colliding() const { return wheels_colliding; }
 	
-	// Запускает (кладет в очередь)  ////
+	// Р—Р°РїСѓСЃРєР°РµС‚ (РєР»Р°РґРµС‚ РІ РѕС‡РµСЂРµРґСЊ)  ////
 	void startEffect(Effect effect);
 
-	// Смена детали
+	// РЎРјРµРЅР° РґРµС‚Р°Р»Рё
 	void changePart(int part_index, int part_number);
 
-	// Особенности в поведении /////
+	// РћСЃРѕР±РµРЅРЅРѕСЃС‚Рё РІ РїРѕРІРµРґРµРЅРёРё /////
 	int features() const { return features_; }
 	void set_feature(Feature feature);
 	void reset_feature(Feature feature);
 
-	// Номер персонажа 0..9
+	// РќРѕРјРµСЂ РїРµСЂСЃРѕРЅР°Р¶Р° 0..9
 	int personage() const { return personage_index; }
 	const PersonageDifferetiationData& diff_data() const { return *this; }
 
-	// Обращение к детали по типу
+	// РћР±СЂР°С‰РµРЅРёРµ Рє РґРµС‚Р°Р»Рё РїРѕ С‚РёРїСѓ
 	cMesh* part_by_type(int partType) const;
-	// Обращение к детали по индексу: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
+	// РћР±СЂР°С‰РµРЅРёРµ Рє РґРµС‚Р°Р»Рё РїРѕ РёРЅРґРµРєСЃСѓ: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
 	cMesh* part_by_index(int index) const;
-	// Координаты детали
+	// РљРѕРѕСЂРґРёРЅР°С‚С‹ РґРµС‚Р°Р»Рё
 	Vect3f part_coords(int partType) const;
 
 	// Colors & Alpha
@@ -174,16 +174,16 @@ public:
 	void setColor(int index, const struct sColor4f* diffuse, const sColor4f* specular);
 	void getColor(int index, sColor4f* diffuse, sColor4f* specular);
 
-	// Функции управления энергией /////////
+	// Р¤СѓРЅРєС†РёРё СѓРїСЂР°РІР»РµРЅРёСЏ СЌРЅРµСЂРіРёРµР№ /////////
 	void damage(float dE, int damage_style = 0);  // -= dE
 	void charge(float dE);  // += dE
-	void discharge() { energy = 0; }  // Вместо disorganize
+	void discharge() { energy = 0; }  // Р’РјРµСЃС‚Рѕ disorganize
 	float energy_max();
 
-	// Арканы /////////////////
+	// РђСЂРєР°РЅС‹ /////////////////
 	void throwTitaniumBall(int damage);
-	void cannon_ball_flight(); // полет на ядре
-	void kinetic_impulse(const Vect3f& epicenter); // кинетический удар
+	void cannon_ball_flight(); // РїРѕР»РµС‚ РЅР° СЏРґСЂРµ
+	void kinetic_impulse(const Vect3f& epicenter); // РєРёРЅРµС‚РёС‡РµСЃРєРёР№ СѓРґР°СЂ
 	void formicTransport(const Vect3f& target, const Vect3f& next_point_for_direction);
 	void animal_obstacle();
 	void slime_obstacle();
@@ -349,13 +349,13 @@ protected:
 	
 	void show() const;
 
-	// Система обратной связи для PointControl
+	// РЎРёСЃС‚РµРјР° РѕР±СЂР°С‚РЅРѕР№ СЃРІСЏР·Рё РґР»СЏ PointControl
 	void target_achieved();
 	int forwardObstacle();
 	int backwardObstacle();
 	void resetObstacle();
 
-	// Арканы, private part
+	// РђСЂРєР°РЅС‹, private part
 	int iron_hip_quant();
 
 	// Wheels tool

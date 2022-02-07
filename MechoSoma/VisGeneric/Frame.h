@@ -19,8 +19,8 @@ enum eAttributeAnimTri
 {
 	ANIMCHAIN_NULL					=	0,
 	ANIMCHAIN_CTILE					=	1<<0,	// key=cTile
-	ANIMCHAIN_COPY					=	1<<1,	// данные анимационной цепочки являются копиями
-	ANIMCHAIN_CYCL					=	1<<2,	// анимационная цепочка зацикленная
+	ANIMCHAIN_COPY					=	1<<1,	// РґР°РЅРЅС‹Рµ Р°РЅРёРјР°С†РёРѕРЅРЅРѕР№ С†РµРїРѕС‡РєРё СЏРІР»СЏСЋС‚СЃСЏ РєРѕРїРёСЏРјРё
+	ANIMCHAIN_CYCL					=	1<<2,	// Р°РЅРёРјР°С†РёРѕРЅРЅР°СЏ С†РµРїРѕС‡РєР° Р·Р°С†РёРєР»РµРЅРЅР°СЏ
 };
 
 class cTile;
@@ -28,9 +28,9 @@ class cMesh;
 struct sAnimMaterial;
 
 struct sKeyTri
-{ //один анимационный ключ для конкретного времени
-	cTile						*Key;			// анимационное положение
-	float						Time;			// соответствующее время в миллисекундах
+{ //РѕРґРёРЅ Р°РЅРёРјР°С†РёРѕРЅРЅС‹Р№ РєР»СЋС‡ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РІСЂРµРјРµРЅРё
+	cTile						*Key;			// Р°РЅРёРјР°С†РёРѕРЅРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ
+	float						Time;			// СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ РІСЂРµРјСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 
 	sKeyTri()														{ Key=0; Time=0; }
 	~sKeyTri();														
@@ -38,26 +38,26 @@ struct sKeyTri
 	inline sKeyTri& operator = (sKeyTri &AnimKey)					{ Key=AnimKey.Key; Time=AnimKey.Time; AnimKey.set(0,0);	return *this; }
 };
 struct sKeyMaterial
-{ //один анимационный ключ для конкретного времени
-	sAnimMaterial				*Key;			// анимационное положение
-	float						Time;			// соответствующее время в миллисекундах
+{ //РѕРґРёРЅ Р°РЅРёРјР°С†РёРѕРЅРЅС‹Р№ РєР»СЋС‡ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РІСЂРµРјРµРЅРё
+	sAnimMaterial				*Key;			// Р°РЅРёРјР°С†РёРѕРЅРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ
+	float						Time;			// СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ РІСЂРµРјСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 
 	sKeyMaterial()													{ Key=0; Time=0; }
 	~sKeyMaterial();														
 	inline void set(sAnimMaterial *key,float time)					{ Key=key; Time=time; }
 	inline sKeyMaterial& operator = (sKeyMaterial &AnimKey)			{ Key=AnimKey.Key; Time=AnimKey.Time; AnimKey.set(0,0);	return *this; }
 };
-class cAnimChain : public sAttribute // атрибут описывающий анимационную цепочку
-{ //одна анимационная цепочка
+class cAnimChain : public sAttribute // Р°С‚СЂРёР±СѓС‚ РѕРїРёСЃС‹РІР°СЋС‰РёР№ Р°РЅРёРјР°С†РёРѕРЅРЅСѓСЋ С†РµРїРѕС‡РєСѓ
+{ //РѕРґРЅР° Р°РЅРёРјР°С†РёРѕРЅРЅР°СЏ С†РµРїРѕС‡РєР°
 	cBaseDynArray<sKeyTri>		KeyTri;
 	cBaseDynArray<sKeyMaterial>	KeyMaterial;
-	float						TimeChain;		// продолжительность анимационной цепочки в миллисекундах
-	cString						name;			// имя анимационной цепочки
+	float						TimeChain;		// РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ Р°РЅРёРјР°С†РёРѕРЅРЅРѕР№ С†РµРїРѕС‡РєРё РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
+	cString						name;			// РёРјСЏ Р°РЅРёРјР°С†РёРѕРЅРЅРѕР№ С†РµРїРѕС‡РєРё
 public:
 	cAnimChain();
 	cAnimChain(cAnimChain *AnimChain);
 	~cAnimChain();
-	void GetTile(cTile *Tile,float phase);	// возвращает NewKey в соответсвтии с phase
+	void GetTile(cTile *Tile,float phase);	// РІРѕР·РІСЂР°С‰Р°РµС‚ NewKey РІ СЃРѕРѕС‚РІРµС‚СЃРІС‚РёРё СЃ phase
 	inline int GetNumberTri()									{ return KeyTri.length(); }
 	inline sKeyTri* GetTri(int number)							{ assert(0<=number&&number<GetNumberTri()); return &KeyTri[number]; }
 	inline sKeyTri* AddTri()									{ KeyTri.Resize(GetNumberTri()+1); return GetTri(GetNumberTri()-1); }
@@ -108,8 +108,8 @@ struct sKFrame
 };
 struct sPKFrame : public sKFrame
 {
-	float *xk,*yk,*zk;						// коэффициенты квадратичной аппроксимации
-	float *x,*y,*z;							// простарнственные ключи
+	float *xk,*yk,*zk;						// РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РєРІР°РґСЂР°С‚РёС‡РЅРѕР№ Р°РїРїСЂРѕРєСЃРёРјР°С†РёРё
+	float *x,*y,*z;							// РїСЂРѕСЃС‚Р°СЂРЅСЃС‚РІРµРЅРЅС‹Рµ РєР»СЋС‡Рё
 	sPKFrame(sPKFrame *kf=0);
 	~sPKFrame()								{ if(x) delete x; if(y) delete y; if(z) delete z; if(xk) delete xk; if(yk) delete yk; if(zk) delete zk; }
 	void Set(void *PosKXYZ,int nPos);
@@ -118,7 +118,7 @@ struct sPKFrame : public sKFrame
 };
 struct sRKFrame : public sKFrame
 {
-	float *x,*y,*z,*w;						// угловые ключи
+	float *x,*y,*z,*w;						// СѓРіР»РѕРІС‹Рµ РєР»СЋС‡Рё
 	sRKFrame(sRKFrame *kf=0);
 	~sRKFrame()								{ if(x) delete x; if(y) delete y; if(z) delete z; if(w) delete w; }
 	void Set(void *RotKWXYZ,int nRot);
@@ -126,7 +126,7 @@ struct sRKFrame : public sKFrame
 };
 struct sSKFrame : public sKFrame
 {
-	float *sx,*sy,*sz;						// ключи масштабирования
+	float *sx,*sy,*sz;						// РєР»СЋС‡Рё РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	sSKFrame(sSKFrame *kf=0);
 	~sSKFrame()								{ if(sx) delete sx; if(sy) delete sy; if(sz) delete sz; }
 	void Set(void *ScaleKXYZ,int nScale);
@@ -134,7 +134,7 @@ struct sSKFrame : public sKFrame
 };
 struct sMKFrame : public sKFrame
 {
-	cMesh **key;							// ключи морфирования
+	cMesh **key;							// РєР»СЋС‡Рё РјРѕСЂС„РёСЂРѕРІР°РЅРёСЏ
 	sMKFrame(sMKFrame *kf=0);
 	~sMKFrame()								{ if(key) delete key; }
 	void Set(cMesh **Morph,float *time,int nMorph);
@@ -149,7 +149,7 @@ public:
 			float xofs,float yofs,float zofs);
 	~cFrame();
 	
-	int IsPhasePassed(float phase);  // фаза пройдена за предыдущий шаг
+	int IsPhasePassed(float phase);  // С„Р°Р·Р° РїСЂРѕР№РґРµРЅР° Р·Р° РїСЂРµРґС‹РґСѓС‰РёР№ С€Р°Рі
 	void Set(float animation_period = 0, float start_phase = -1, float finish_phase = -1);
 	void SetPhase(float phase);
 	void AddPhase(float dt);
@@ -166,13 +166,13 @@ public:
 
 	inline int IsAnimated()										{ return dcount != 0 || count != prev_count; }
 
-	// установить анимационную цепочку, возвращает <0 в случае ошибки
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РЅРёРјР°С†РёРѕРЅРЅСѓСЋ С†РµРїРѕС‡РєСѓ, РІРѕР·РІСЂР°С‰Р°РµС‚ <0 РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё
 	int SetCurrentChain(char *NameChain); 
 	inline cAnimChain*& GetAnimChain(int number)				{ assert(0<=number&&number<GetNumberAnimChain()); return AnimChain[number]; }
 	inline int SetCurrentChain(int number)						{ if(number<0||number>=GetNumberAnimChain()) return -1; return ChainNumber=number; }
 	inline int GetCurrentChain()								{ return ChainNumber; }
 
-	// реализация для класса cMesh и cMeshLibrary
+	// СЂРµР°Р»РёР·Р°С†РёСЏ РґР»СЏ РєР»Р°СЃСЃР° cMesh Рё cMeshLibrary
 	void Scale(const Vect3f &scale);
 	void Translate(const Vect3f &dPos);
 	inline int GetPosition(Vect3f &dPos)						{ if(pkf) { pkf->Get(&dPos.x,&dPos.y,&dPos.z); return 1; } dPos.set(0,0,0); return 0; }
@@ -182,14 +182,14 @@ public:
 	inline void GetAnimKey(cTile *Tile)							{ if(GetNumberAnimChain()==0) return; GetAnimChain(ChainNumber)->GetTile(Tile,GetPhase()); }
 	inline cAnimChain* AddAnimChain()							{ if(ChainNumber<0) ChainNumber=0; AnimChain.Resize(GetNumberAnimChain()+1); return AnimChain[GetNumberAnimChain()-1]=new cAnimChain; }
 	inline int GetNumberAnimChain()								{ return AnimChain.length(); }
-	int SetCurrentChain(char *NameChainMask,int number);	// устанавливает канал по имени содержащем маску и номеру
-	int GetChain(char *NameChainMask);						// возвращает число цепочек имеющих в имени строку NameChainMask
+	int SetCurrentChain(char *NameChainMask,int number);	// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РєР°РЅР°Р» РїРѕ РёРјРµРЅРё СЃРѕРґРµСЂР¶Р°С‰РµРј РјР°СЃРєСѓ Рё РЅРѕРјРµСЂСѓ
+	int GetChain(char *NameChainMask);						// РІРѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ С†РµРїРѕС‡РµРє РёРјРµСЋС‰РёС… РІ РёРјРµРЅРё СЃС‚СЂРѕРєСѓ NameChainMask
 private:
-	float count;							// счетчик
-	float prev_count;						// предыдущее значение для PassPhase
-	float finish;							// конечная фаза
-	float dcount;							// приращение в секунду
-	unsigned int looped : 1;				// зацикленная 
+	float count;							// СЃС‡РµС‚С‡РёРє
+	float prev_count;						// РїСЂРµРґС‹РґСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ PassPhase
+	float finish;							// РєРѕРЅРµС‡РЅР°СЏ С„Р°Р·Р°
+	float dcount;							// РїСЂРёСЂР°С‰РµРЅРёРµ РІ СЃРµРєСѓРЅРґСѓ
+	unsigned int looped : 1;				// Р·Р°С†РёРєР»РµРЅРЅР°СЏ 
 #ifdef _SURMAP_
 	float StartCount;
 #endif //_SURMAP_
@@ -202,13 +202,13 @@ private:
 	sSKFrame	*skf;
 	sMKFrame	*mkf;
 	float xCenter,yCenter,zCenter;			
-	float xPivot,yPivot,zPivot;				// координаты центра вращения относительно родителя
-	float xOfs,yOfs,zOfs;					// координаты центра вращения относительно глобальной системы координат
-	char Name[22];							// имя фрейма
-	char Parent[22];						// имя объета-родителя
-	// реализация анимационных каналов
-	int			ChainNumber;				// номер текущей анимационной цепочки
-	cBaseDynArrayPointer<cAnimChain> AnimChain; // анимационные цепочки
+	float xPivot,yPivot,zPivot;				// РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РІСЂР°С‰РµРЅРёСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂРѕРґРёС‚РµР»СЏ
+	float xOfs,yOfs,zOfs;					// РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РІСЂР°С‰РµРЅРёСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіР»РѕР±Р°Р»СЊРЅРѕР№ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚
+	char Name[22];							// РёРјСЏ С„СЂРµР№РјР°
+	char Parent[22];						// РёРјСЏ РѕР±СЉРµС‚Р°-СЂРѕРґРёС‚РµР»СЏ
+	// СЂРµР°Р»РёР·Р°С†РёСЏ Р°РЅРёРјР°С†РёРѕРЅРЅС‹С… РєР°РЅР°Р»РѕРІ
+	int			ChainNumber;				// РЅРѕРјРµСЂ С‚РµРєСѓС‰РµР№ Р°РЅРёРјР°С†РёРѕРЅРЅРѕР№ С†РµРїРѕС‡РєРё
+	cBaseDynArrayPointer<cAnimChain> AnimChain; // Р°РЅРёРјР°С†РёРѕРЅРЅС‹Рµ С†РµРїРѕС‡РєРё
 
 	friend class cMesh;
 	friend class cMeshLibrary;

@@ -11,15 +11,15 @@ class cUnknownClass;
 
 class cLevin
 {
-	float		pStop;										// вероятность обрыва ствола
-	float		pNascency;									// вероятность порождения
-	Vect3f		pAberration;								// вероятность отклонения
-	Vect3f		pLevel;										// степень отклонения поржденного ствола
-	Vect3f		Pos;										// точка рождения
-	Vect3f		Direction;									// направление
+	float		pStop;										// РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕР±СЂС‹РІР° СЃС‚РІРѕР»Р°
+	float		pNascency;									// РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РїРѕСЂРѕР¶РґРµРЅРёСЏ
+	Vect3f		pAberration;								// РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕС‚РєР»РѕРЅРµРЅРёСЏ
+	Vect3f		pLevel;										// СЃС‚РµРїРµРЅСЊ РѕС‚РєР»РѕРЅРµРЅРёСЏ РїРѕСЂР¶РґРµРЅРЅРѕРіРѕ СЃС‚РІРѕР»Р°
+	Vect3f		Pos;										// С‚РѕС‡РєР° СЂРѕР¶РґРµРЅРёСЏ
+	Vect3f		Direction;									// РЅР°РїСЂР°РІР»РµРЅРёРµ
 	sColor4f	Color;
 public:
-	int	  size;											// минимальная длина ствола для var=4
+	int	  size;											// РјРёРЅРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° СЃС‚РІРѕР»Р° РґР»СЏ var=4
 
 	cLevin( float p_Stop=1.0,float p_Nascency=0,
 			float pX=0,float pY=0,float pZ=0,float pXLevel=0,float pYLevel=0,float pZLevel=0)		{ SetLevin(p_Stop,p_Nascency,pX,pY,pZ,pXLevel,pYLevel,pZLevel); size=0; }

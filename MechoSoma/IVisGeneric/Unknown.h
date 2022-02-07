@@ -11,47 +11,47 @@ extern unsigned int GlobalUniqueCounter;
 enum eKindUnknownClass
 {	// unsigned short
 	KIND_NULL				=		0,
-//	1	..	7	- интерфейсы классов
-	KIND_UI_VISGENERIC		=		1,				// базовая библиотека визуализации
-	KIND_UI_TEXTURE			=		2,				// интерфейс для работы с текстурами
-	KIND_UI_OBJECT			=		3,				// интерфейс для работы с объектами
-//	8	..	15	- классы для работы с текстурами
-	KIND_TEX_BITMAP			=		8,				// базовый класс текстуры cTextureBitMap 
-	KIND_TEX_MIPMAP			=		9,				// класс текстуры cUnknownLOD - поддержка мипмапинга
-	KIND_TEX_ANIMATION		=		10,				// класс текстуры cTextureAnimation со счетчиком
-//	16	..	23	- классы для работы с объектами
-	KIND_OBJ_LOD			=		16,				// cObjectLOD - поддержка уровней детализации
-	KIND_OBJ_MATERIAL		=		17,				// cObjectMaterial - класс материала объекта
-	KIND_OBJ_NODE			=		18,				// cObjectNode - абстрактный класс-дерево для всех объектов
-	KIND_OBJ_ANIMATION		=		19,				// cNodeAnimation - класс единицы канала анимации
-//	24	..	31	- специализированные классы объектов Mesh - геометрическое тело 
-	KIND_MESH_NODE			=		24,				// cMeshNode - конкретная реализацию полигонального объекта Mesh'а
-	KIND_MESH_MAPPING		=		25,				// cMeshMapping - класс едичного канала материала 
-//	KIND_MESH_TILE			=		26,				// cMeshTile - класс эелемент объекта
-//	32	..	63	- прочие классы 
-	KIND_SCENE				=		32,				// cScene - класс сцены 
-	KIND_CAMERA				=		33,				// cCamera - класс камера
-	KIND_MESH				=		34,				// cMesh - класс объектов
-	KIND_WORLD_TILEMAP		=		35,				// cTileMap	- класс тайловой полигональной карты
-	KIND_WORLD_TILEWATER	=		36,				// cTileWater - класс тайловой полигональной карты
-	KIND_RENDERDEVICE		=		37,				// cRenderDevice - надстройка над cInterfaceGraph3d
-	KIND_ARRAYCAMERA		=		38,				// cUnkClassDynArrayPointer - класс накопитель cCamera
-	KIND_ARRAYSCENE			=		39,				// cUnkClassDynArrayPointer - класс накопитель cScene
-	KIND_ARRAYSUN			=		40,				// cUnkClassDynArrayPointer - класс накопитель cSun
-//	64	..	128	- классы библиотеки
+//	1	..	7	- РёРЅС‚РµСЂС„РµР№СЃС‹ РєР»Р°СЃСЃРѕРІ
+	KIND_UI_VISGENERIC		=		1,				// Р±Р°Р·РѕРІР°СЏ Р±РёР±Р»РёРѕС‚РµРєР° РІРёР·СѓР°Р»РёР·Р°С†РёРё
+	KIND_UI_TEXTURE			=		2,				// РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С‚РµРєСЃС‚СѓСЂР°РјРё
+	KIND_UI_OBJECT			=		3,				// РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РѕР±СЉРµРєС‚Р°РјРё
+//	8	..	15	- РєР»Р°СЃСЃС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С‚РµРєСЃС‚СѓСЂР°РјРё
+	KIND_TEX_BITMAP			=		8,				// Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ С‚РµРєСЃС‚СѓСЂС‹ cTextureBitMap 
+	KIND_TEX_MIPMAP			=		9,				// РєР»Р°СЃСЃ С‚РµРєСЃС‚СѓСЂС‹ cUnknownLOD - РїРѕРґРґРµСЂР¶РєР° РјРёРїРјР°РїРёРЅРіР°
+	KIND_TEX_ANIMATION		=		10,				// РєР»Р°СЃСЃ С‚РµРєСЃС‚СѓСЂС‹ cTextureAnimation СЃРѕ СЃС‡РµС‚С‡РёРєРѕРј
+//	16	..	23	- РєР»Р°СЃСЃС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РѕР±СЉРµРєС‚Р°РјРё
+	KIND_OBJ_LOD			=		16,				// cObjectLOD - РїРѕРґРґРµСЂР¶РєР° СѓСЂРѕРІРЅРµР№ РґРµС‚Р°Р»РёР·Р°С†РёРё
+	KIND_OBJ_MATERIAL		=		17,				// cObjectMaterial - РєР»Р°СЃСЃ РјР°С‚РµСЂРёР°Р»Р° РѕР±СЉРµРєС‚Р°
+	KIND_OBJ_NODE			=		18,				// cObjectNode - Р°Р±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ-РґРµСЂРµРІРѕ РґР»СЏ РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ
+	KIND_OBJ_ANIMATION		=		19,				// cNodeAnimation - РєР»Р°СЃСЃ РµРґРёРЅРёС†С‹ РєР°РЅР°Р»Р° Р°РЅРёРјР°С†РёРё
+//	24	..	31	- СЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ РєР»Р°СЃСЃС‹ РѕР±СЉРµРєС‚РѕРІ Mesh - РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРѕРµ С‚РµР»Рѕ 
+	KIND_MESH_NODE			=		24,				// cMeshNode - РєРѕРЅРєСЂРµС‚РЅР°СЏ СЂРµР°Р»РёР·Р°С†РёСЋ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° Mesh'Р°
+	KIND_MESH_MAPPING		=		25,				// cMeshMapping - РєР»Р°СЃСЃ РµРґРёС‡РЅРѕРіРѕ РєР°РЅР°Р»Р° РјР°С‚РµСЂРёР°Р»Р° 
+//	KIND_MESH_TILE			=		26,				// cMeshTile - РєР»Р°СЃСЃ СЌРµР»РµРјРµРЅС‚ РѕР±СЉРµРєС‚Р°
+//	32	..	63	- РїСЂРѕС‡РёРµ РєР»Р°СЃСЃС‹ 
+	KIND_SCENE				=		32,				// cScene - РєР»Р°СЃСЃ СЃС†РµРЅС‹ 
+	KIND_CAMERA				=		33,				// cCamera - РєР»Р°СЃСЃ РєР°РјРµСЂР°
+	KIND_MESH				=		34,				// cMesh - РєР»Р°СЃСЃ РѕР±СЉРµРєС‚РѕРІ
+	KIND_WORLD_TILEMAP		=		35,				// cTileMap	- РєР»Р°СЃСЃ С‚Р°Р№Р»РѕРІРѕР№ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ РєР°СЂС‚С‹
+	KIND_WORLD_TILEWATER	=		36,				// cTileWater - РєР»Р°СЃСЃ С‚Р°Р№Р»РѕРІРѕР№ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ РєР°СЂС‚С‹
+	KIND_RENDERDEVICE		=		37,				// cRenderDevice - РЅР°РґСЃС‚СЂРѕР№РєР° РЅР°Рґ cInterfaceGraph3d
+	KIND_ARRAYCAMERA		=		38,				// cUnkClassDynArrayPointer - РєР»Р°СЃСЃ РЅР°РєРѕРїРёС‚РµР»СЊ cCamera
+	KIND_ARRAYSCENE			=		39,				// cUnkClassDynArrayPointer - РєР»Р°СЃСЃ РЅР°РєРѕРїРёС‚РµР»СЊ cScene
+	KIND_ARRAYSUN			=		40,				// cUnkClassDynArrayPointer - РєР»Р°СЃСЃ РЅР°РєРѕРїРёС‚РµР»СЊ cSun
+//	64	..	128	- РєР»Р°СЃСЃС‹ Р±РёР±Р»РёРѕС‚РµРєРё
 	KIND_LIB_TEXTURE		=		64,				// cTextureLibrary 
 	KIND_LIB_OBJECT			=		65,				// cObjectLibrary
 };
 enum eTypeUnknownClass
 {	// unsigned short
 	TYPE_NULL				=		0,
-// bit 1 - bit 31 флаги классов
-	TYPE_POINTER			=		1<<0,			// класс используется как счетчик указателей
-	TYPE_DELETE				=		1<<31			// признак того, что класс удален
+// bit 1 - bit 31 С„Р»Р°РіРё РєР»Р°СЃСЃРѕРІ
+	TYPE_POINTER			=		1<<0,			// РєР»Р°СЃСЃ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєР°Рє СЃС‡РµС‚С‡РёРє СѓРєР°Р·Р°С‚РµР»РµР№
+	TYPE_DELETE				=		1<<31			// РїСЂРёР·РЅР°Рє С‚РѕРіРѕ, С‡С‚Рѕ РєР»Р°СЃСЃ СѓРґР°Р»РµРЅ
 };
 
-// базовый класс для всех
-// любой класс наследованный как TYPE_CLASS_POINTER, должен уметь удаляться по обращению к Release()
+// Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РІСЃРµС…
+// Р»СЋР±РѕР№ РєР»Р°СЃСЃ РЅР°СЃР»РµРґРѕРІР°РЅРЅС‹Р№ РєР°Рє TYPE_CLASS_POINTER, РґРѕР»Р¶РµРЅ СѓРјРµС‚СЊ СѓРґР°Р»СЏС‚СЊСЃСЏ РїРѕ РѕР±СЂР°С‰РµРЅРёСЋ Рє Release()
 class cUnknownClass
 {	
 	int					m_cRef;

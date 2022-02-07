@@ -78,7 +78,7 @@ void ParseParam::ReadName(char* buf)
 	*p=0;
 
 	if(*buf==0)
-		throw "Невозможно прочитать имя объекта";
+		throw "РќРµРІРѕР·РјРѕР¶РЅРѕ РїСЂРѕС‡РёС‚Р°С‚СЊ РёРјСЏ РѕР±СЉРµРєС‚Р°";
 }
 
 bool ParseParam::IsInt()
@@ -152,20 +152,20 @@ int ParseParam::ReadConstant(LPCSTR name)
 	OneParam* op=pGetIntByConst->Find((char*)name);
 	if(op==NULL)
 	{
-		sprintf(error,"Для %s нет сопоставленных констант\n",name);
+		sprintf(error,"Р”Р»СЏ %s РЅРµС‚ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹С… РєРѕРЅСЃС‚Р°РЅС‚\n",name);
 		throw error;
 	}
 
 	ParamBlock* pb=op->GetBlock();
 	if(pb==NULL)
-		throw "Внутренняя ошибка программы - неправильный блок констант";
+		throw "Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° РїСЂРѕРіСЂР°РјРјС‹ - РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ Р±Р»РѕРє РєРѕРЅСЃС‚Р°РЅС‚";
 
 	op=pb->Find(val);
 	if(op==NULL)
 	{
 
-		int n=sprintf(error,"Для %s=%s нет сопоставленных констант\n"
-			"Известные константы:\n",name,val);
+		int n=sprintf(error,"Р”Р»СЏ %s=%s РЅРµС‚ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹С… РєРѕРЅСЃС‚Р°РЅС‚\n"
+			"РР·РІРµСЃС‚РЅС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹:\n",name,val);
 
 		for(int i=0;i<pb->GetSize();i++)
 		{
@@ -178,7 +178,7 @@ int ParseParam::ReadConstant(LPCSTR name)
 	}
 
 	if(op->type!=OneParam::P_INT)
-		throw "Внутренняя ошибка программы - неправильный блок констант";
+		throw "Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° РїСЂРѕРіСЂР°РјРјС‹ - РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ Р±Р»РѕРє РєРѕРЅСЃС‚Р°РЅС‚";
 
 	return op->GetInt();
 }
@@ -226,7 +226,7 @@ float ParseParam::ReadFloat()
 void ParseParam::ReadString(char* buf)
 {
 	if(*cur!='"')
-		throw "Требуется \"";
+		throw "РўСЂРµР±СѓРµС‚СЃСЏ \"";
 	cur++;
 
 	for(;*cur && *cur!='"';cur++)
@@ -234,7 +234,7 @@ void ParseParam::ReadString(char* buf)
 			*buf++=*cur;
 
 	if(*cur!='"')
-		throw "Требуется \"";
+		throw "РўСЂРµР±СѓРµС‚СЃСЏ \"";
 	cur++;
 	*buf=0;
 }
@@ -278,10 +278,10 @@ P_FArray* ParseParam::ReadFArray()
 			return p;
 		}
 
-		throw "Требуется , или )";
+		throw "РўСЂРµР±СѓРµС‚СЃСЏ , РёР»Рё )";
 	}
 	
-	throw "Требуется float";
+	throw "РўСЂРµР±СѓРµС‚СЃСЏ float";
 	return NULL;
 }
 
@@ -356,7 +356,7 @@ void OneBlock::Read()
 			type=OneParam::P_INT;
 			ivalue=pp.ReadConstant(name);
 		}else
-			throw "Непонятное значение";
+			throw "РќРµРїРѕРЅСЏС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ";
 	
 		pp.SkipSpace();
 
@@ -365,10 +365,10 @@ void OneBlock::Read()
 	{
 		type=OneParam::P_NULL;
 	}else
-		throw "Требуется = или {";
+		throw "РўСЂРµР±СѓРµС‚СЃСЏ = РёР»Рё {";
 
 	if(*pp.cur!=';')
-		throw "Здесь необходима ;";
+		throw "Р—РґРµСЃСЊ РЅРµРѕР±С…РѕРґРёРјР° ;";
 	*pp.cur++;
 }
 
@@ -392,7 +392,7 @@ void OneBlock::ReadBlock()
 	}
 	
 	if(parent!=NULL)
-		throw "Здесь необходима }";
+		throw "Р—РґРµСЃСЊ РЅРµРѕР±С…РѕРґРёРјР° }";
 }
 
 #define WR(x) m.add(&x,sizeof(x));
@@ -429,7 +429,7 @@ void OneBlock::Save(MemBlock& m)
 		int offset=m.tell();
 		for(int i=0;i<n;i++)
 		{
-			WR(n);//Скипуем offset
+			WR(n);//РЎРєРёРїСѓРµРј offset
 		}
 
 		for(i=0;i<n;i++)
