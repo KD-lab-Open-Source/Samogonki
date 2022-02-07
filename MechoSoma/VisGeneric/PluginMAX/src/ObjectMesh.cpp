@@ -1,4 +1,4 @@
-#include "SceneMesh.h"
+#include "scenemesh.h"
 
 int sObjectMesh::Read(cMeshFile &f)
 {

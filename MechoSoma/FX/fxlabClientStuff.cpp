@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "win32f.h"
+// #include "win32f.h"
 
-#include "handle.h"
+#include "Handle.h"
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "OwnerProtection.h"
@@ -15,10 +15,10 @@
 #include "PolyGrid.h"
 #include "TileWater.h"
 #include "IVisGeneric.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "race.h"
 #include "sound.h"
-#include "polymgr.h"
+#include "PolyMgr.h"
 
 #include "CameraDispatcher.h"
 
@@ -26,7 +26,7 @@
 #include "sur_scr.h"
 #include "SST_Reader.h"
 
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"
@@ -236,11 +236,17 @@ void fxlabCheckPoint::ModelUpdate(void)
 
 	phase = KeyData[FXLAB_CHECK_POINT_DATA_MOVE_PHASE] + KeyData[FXLAB_CHECK_POINT_DATA_PHASE_DELTA] * sinf(AddPhase);
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
-	IVisGeneric->SetObjectPosition((cUnknownClass*)ModelPoint[ModelIndex],
-		&Vect3f(Position.x + Velocity.x * phase,Position.y + Velocity.y * phase,Position.z + Velocity.z * phase),&AnglePosition);
+
+	Vect3f v1(Position.x + Velocity.x * phase,Position.y + Velocity.y * phase,Position.z + Velocity.z * phase);
+	IVisGeneric->SetObjectPosition((cUnknownClass*)ModelPoint[ModelIndex],&v1,&AnglePosition);
+
 	scale = KeyData[FXLAB_CHECK_POINT_DATA_RADIUS] * Scale / ModelRadius;
-	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint[ModelIndex],&Vect3f(scale,scale,scale));
-	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint[ModelIndex],&sColor4f(KeyData[FXLAB_CHECK_POINT_DATA_RED],KeyData[FXLAB_CHECK_POINT_DATA_GREEN],KeyData[FXLAB_CHECK_POINT_DATA_BLUE],KeyData[FXLAB_CHECK_POINT_DATA_ALPHA]));
+	Vect3f v2(scale,scale,scale);
+	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint[ModelIndex],&v2);
+
+	sColor4f c1(KeyData[FXLAB_CHECK_POINT_DATA_RED],KeyData[FXLAB_CHECK_POINT_DATA_GREEN],KeyData[FXLAB_CHECK_POINT_DATA_BLUE],KeyData[FXLAB_CHECK_POINT_DATA_ALPHA]);
+	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint[ModelIndex],&c1);
+
 	IVisGeneric->Release();
 };
 
@@ -255,7 +261,7 @@ void fxlabCheckPoint::SetMode(int mode)
 	Mode = mode;
 };
 
-void fxlabCheckPoint::SetVelocity(Vect3f& velocity)
+void fxlabCheckPoint::SetVelocity(const Vect3f& velocity)
 {
 	Velocity = velocity;
 };
@@ -323,9 +329,14 @@ void fxlabCheckPoint::SetCheckPointRacer(int mode,struct mchRacer* p,int init_fl
 			t->SetKeyID(FXLAB_ID_KEY_POLAR_STAR);
 
 			scale = KeyData[FXLAB_CHECK_POINT_DATA_RADIUS] * Scale / ModelRadius;
-			t->SetScaleVector(Vect3f(scale,scale,scale));
+			Vect3f v1(scale,scale,scale);
+			t->SetScaleVector(v1);
+
 			t->SetAngleVector(AnglePosition);
-			t->SetColorVector(Vect3f(KeyData[FXLAB_CHECK_POINT_DATA_RED],KeyData[FXLAB_CHECK_POINT_DATA_GREEN],KeyData[FXLAB_CHECK_POINT_DATA_BLUE]));
+
+			Vect3f v2(KeyData[FXLAB_CHECK_POINT_DATA_RED],KeyData[FXLAB_CHECK_POINT_DATA_GREEN],KeyData[FXLAB_CHECK_POINT_DATA_BLUE]);
+			t->SetColorVector(v2);
+
 			t->SetTransparency(KeyData[FXLAB_CHECK_POINT_DATA_ALPHA]);
 			t->SetModel(ModelID[0]);
 			t->SetRacerPoint(p);
@@ -371,8 +382,13 @@ void fxlabPolarModel::Start(void)
 	ModelPoint=(cMesh*)IVisGeneric->CreateObject(M3D_KIND(ModelID),M3D_TYPE(ModelID));
 	IVisGeneric->SetObjectPosition((cUnknownClass*)ModelPoint,&Position,&ModelAngle);
 	IVisGeneric->SetObjectAttribute((cUnknownClass*)ModelPoint,CalcAttribute());
-	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint,&(ModelScale * KeyData[FXLAB_POLAR_MODEL_DATA_SCALE]));
-	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint,&sColor4f(Color.x,Color.y,Color.z,Alpha*KeyData[FXLAB_POLAR_MODEL_DATA_ALPHA]));
+
+	Vect3f v1(ModelScale * KeyData[FXLAB_POLAR_MODEL_DATA_SCALE]);
+	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint,&v1);
+
+	sColor4f c1(Color.x,Color.y,Color.z,Alpha*KeyData[FXLAB_POLAR_MODEL_DATA_ALPHA]);
+	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint,&c1);
+
 	IVisGeneric->Release();
 };
 
@@ -385,21 +401,26 @@ void fxlabPolarModel::Quant(void)
 		v.setSpherical(KeyData[FXLAB_POLAR_MODEL_DATA_PSI] + OffsetAngle,KeyData[FXLAB_POLAR_MODEL_DATA_THETTA],KeyData[FXLAB_POLAR_MODEL_DATA_RADIUS]);
 		v += Center->R();
 		v.z += Center->radius() * 2.0f;
-		v.x = XCYCL(round(v.x));
-		v.y = YCYCL(round(v.y));
+		v.x = XCYCL(int(round(v.x)));
+		v.y = YCYCL(int(round(v.y)));
 
 		d.x = getDistX(v.x,StartPosition.x);
 		d.y = getDistY(v.y,StartPosition.y);
 		d.z = v.z - StartPosition.z;
 		Position = StartPosition + d * KeyData[FXLAB_POLAR_MODEL_DATA_PHASE];
-		Position.x = XCYCL(round(Position.x));
-		Position.y = YCYCL(round(Position.y));
+		Position.x = XCYCL(int(round(Position.x)));
+		Position.y = YCYCL(int(round(Position.y)));
 	};
 
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
 	IVisGeneric->SetObjectPosition((cUnknownClass*)ModelPoint,&Position,&ModelAngle);
-	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint,&sColor4f(Color.x,Color.y,Color.z,Alpha*KeyData[FXLAB_POLAR_MODEL_DATA_ALPHA]));
-	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint,&(ModelScale * KeyData[FXLAB_POLAR_MODEL_DATA_SCALE]));
+
+	sColor4f c1(Color.x,Color.y,Color.z,Alpha*KeyData[FXLAB_POLAR_MODEL_DATA_ALPHA]);
+	IVisGeneric->SetObjectColor((cUnknownClass*)ModelPoint,&c1);
+
+	Vect3f v1(ModelScale * KeyData[FXLAB_POLAR_MODEL_DATA_SCALE]);
+	IVisGeneric->SetObjectScale((cUnknownClass*)ModelPoint,&v1);
+
 	IVisGeneric->Release();
 };
 
@@ -409,17 +430,17 @@ void fxlabPolarModel::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxPolarModel");
 };
 
-void fxlabPolarModel::SetScaleVector(Vect3f& v)
+void fxlabPolarModel::SetScaleVector(const Vect3f& v)
 {
 	ModelScale = v;
 };
 
-void fxlabPolarModel::SetAngleVector(Vect3f& v)
+void fxlabPolarModel::SetAngleVector(const Vect3f& v)
 {
 	ModelAngle = v;
 };
 
-void fxlabPolarModel::SetColorVector(Vect3f& v)
+void fxlabPolarModel::SetColorVector(const Vect3f& v)
 {
 	Color = v;
 };
@@ -877,15 +898,27 @@ void fxlabClientWildClaw::CalcCenter(void)
 	Point[2] *= ScaleFactor;
 	Point[3] *= ScaleFactor;
 
-	z = (float)(fxlabGetLevel(XCYCL(round(Position.x + Point[1].x)),YCYCL(round(Position.y + Point[1].y)),Position.z));
+	z = (float)(fxlabGetLevel(
+		XCYCL(int(round(Position.x + Point[1].x))),
+		YCYCL(int(round(Position.y + Point[1].y))),
+		Position.z
+	));
 	if(z > (Point[1].z + Position.z))
 		Point[1].z = z - Position.z;
 
-	z = (float)(fxlabGetLevel(XCYCL(round(Position.x + Point[2].x)),YCYCL(round(Position.y + Point[2].y)),Position.z));
+	z = (float)(fxlabGetLevel(
+		XCYCL(int(round(Position.x + Point[2].x))),
+		YCYCL(int(round(Position.y + Point[2].y))),
+		Position.z
+	));
 	if(z > (Point[2].z + Position.z))
 		Point[2].z = z - Position.z;
 
-	z = (float)(fxlabGetLevel(XCYCL(round(Position.x + Point[3].x)),YCYCL(round(Position.y + Point[3].y)),Position.z));
+	z = (float)(fxlabGetLevel(
+		XCYCL(int(round(Position.x + Point[3].x))),
+		YCYCL(int(round(Position.y + Point[3].y))),
+		Position.z
+	));
 	if(z > (Point[3].z + Position.z))
 		Point[3].z = z - Position.z;
 
@@ -1499,13 +1532,18 @@ void fxlabClientRevoltSpaceLink::Quant(void)
 							if(!TailPoint.Process){
 								t = fxlabClientD->CreateObject(TailType);
 								t->SetStartTime(fxlabClientD->GetTime());
-								t->SetMatrix(MatXf(Core->Alg(),Core->R()));
+
+								MatXf m1(Core->Alg(),Core->R());
+								t->SetMatrix(m1);
+
 								t->SetVelocity(Velocity);
 								t->SetKeyID(TailID);
 								t->SetProcessInterface(&TailPoint);
 								t->Start();
 							}else{
-								TailPoint.Process->SetMatrix(MatXf(Core->Alg(),Core->R()));
+								MatXf m1(Core->Alg(),Core->R());
+								TailPoint.Process->SetMatrix(m1);
+
 								TailPoint.Process->SetVelocity(Velocity);
 							};
 						};
@@ -1561,7 +1599,7 @@ void fxlabClientMassShifter::KeyCheck(void)
 		ErrH.Abort("Bad Key in fxlabClientMassShifter");
 };
 
-void fxlabClientMassShifter::Generate(Mat3f& m,Vect3f& v)
+void fxlabClientMassShifter::Generate(const Mat3f& m,const Vect3f& v)
 {
 	fxlabGeneralObjectType* t;
 
@@ -1569,11 +1607,14 @@ void fxlabClientMassShifter::Generate(Mat3f& m,Vect3f& v)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_MASS_SHIFTER_MODEL);
 	t->SetPosition(v);
-	t->SetMatrix(MatXf(m,v));
+
+	MatXf m1(m,v);
+	t->SetMatrix(m1);
+
 	t->Start();
 };
 
-void fxlabClientMassShifterNitro::Generate(Mat3f& m,Vect3f& v)
+void fxlabClientMassShifterNitro::Generate(const Mat3f& m,const Vect3f& v)
 {
 	fxlabGeneralObjectType* t;
 
@@ -1581,11 +1622,14 @@ void fxlabClientMassShifterNitro::Generate(Mat3f& m,Vect3f& v)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_MASS_SHIFTER_MODEL_NITRO);
 	t->SetPosition(v);
-	t->SetMatrix(MatXf(m,v));
+
+	MatXf m1(m,v);
+	t->SetMatrix(m1);
+
 	t->Start();
 };
 
-void fxlabClientMassShifterCharacter::Generate(Mat3f& m,Vect3f& v)
+void fxlabClientMassShifterCharacter::Generate(const Mat3f& m,const Vect3f& v)
 {
 	fxlabGeneralObjectType* t;
 
@@ -1593,11 +1637,14 @@ void fxlabClientMassShifterCharacter::Generate(Mat3f& m,Vect3f& v)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_MASS_SHIFTER_MODEL_CHARACTER);
 	t->SetPosition(v);
-	t->SetMatrix(MatXf(m,v));
+
+	MatXf m1(m,v);
+	t->SetMatrix(m1);
+
 	t->Start();
 };
 
-void fxlabClientMassShifterMovie::Generate(Mat3f& m,Vect3f& v)
+void fxlabClientMassShifterMovie::Generate(const Mat3f& m,const Vect3f& v)
 {
 	fxlabGeneralObjectType* t;
 
@@ -1605,7 +1652,10 @@ void fxlabClientMassShifterMovie::Generate(Mat3f& m,Vect3f& v)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_MASS_SHIFTER_MODEL_MOVIE);
 	t->SetPosition(v);
-	t->SetMatrix(MatXf(m,v));
+
+	MatXf m1(m,v);
+	t->SetMatrix(m1);
+
 	t->Start();
 };
 
@@ -1843,7 +1893,10 @@ void fxlabClientMechosController::Quant(void)
 					t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SPARK_GENERATOR);
 					t->SetStartTime(fxlabClientD->GetTime());
 					t->SetKeyID(FXLAB_ID_KEY_MECHOS_BUBBLE);
-					t->SetPosition(Vect3f(Owner->R()));
+
+					Vect3f v1(Owner->R());
+					t->SetPosition(v1);
+
 					t->Start();
 				};
 				
@@ -1852,14 +1905,19 @@ void fxlabClientMechosController::Quant(void)
 					v -= Owner->Yglobal() * Owner->radius();
 					CYCLE(v);
 
-					tx = XCYCL(round(v.x));
-					ty = YCYCL(round(v.y));
+					tx = XCYCL(int(round(v.x)));
+					ty = YCYCL(int(round(v.y)));
 					if(GetAt(tx,ty) & At_WATER){
 						t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_WATER_WAVE_MODEL);
 						t->SetStartTime(fxlabClientD->GetTime());
 						t->SetKeyID(FXLAB_ID_KEY_MECHOS_WAVE_MODEL);
-						t->SetPosition(Vect3f(v.x,v.y,vMap->LevelH2O + 3.0f));
-						t->SetColorVector(Vect3f(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue()));
+
+						Vect3f v1(v.x,v.y,vMap->LevelH2O + 3.0f);
+						t->SetPosition(v1);
+
+						Vect3f v2(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue());
+						t->SetColorVector(v2);
+
 						t->SetTransparency(fxlabGetTrackWaveAlpha());
 						t->Start();
 					};
@@ -1867,15 +1925,19 @@ void fxlabClientMechosController::Quant(void)
 					v = Owner->part_coords(M3D_LB_WHEEL);
 					v -= Owner->Yglobal() * Owner->radius();
 					CYCLE(v);
-					tx = XCYCL(round(v.x));
-					ty = YCYCL(round(v.y));
+					tx = XCYCL(int(round(v.x)));
+					ty = YCYCL(int(round(v.y)));
 
 					if(GetAt(tx,ty) & At_WATER){
 						t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_WATER_WAVE_MODEL);
 						t->SetStartTime(fxlabClientD->GetTime());
 						t->SetKeyID(FXLAB_ID_KEY_MECHOS_WAVE_MODEL);
-						t->SetPosition(Vect3f(v.x,v.y,vMap->LevelH2O + 3.0f));
-						t->SetColorVector(Vect3f(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue()));
+
+						Vect3f v1(v.x,v.y,vMap->LevelH2O + 3.0f);
+						t->SetPosition(v1);
+
+						Vect3f v2(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue());
+						t->SetColorVector(v2);
 						t->SetTransparency(fxlabGetTrackWaveAlpha());
 						t->Start();
 					};
@@ -1894,7 +1956,10 @@ void fxlabClientMechosController::Quant(void)
 			t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_MECHOS_LINK);
 			t->SetStartTime(fxlabClientD->GetTime());
 			t->SetKeyID(FXLAB_ID_KEY_DAMAGE_WARNING_LINK);
-			t->SetPosition(Vect3f(Owner->R()));
+
+			Vect3f v1(Owner->R());
+			t->SetPosition(v1);
+
 			t->SetBody(Owner);
 			t->SetProcessInterface(&DamageWarningPoint);
 			t->Start();
@@ -1917,7 +1982,10 @@ void fxlabClientMechosController::Quant(void)
 				t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SOUND_SPACE_IMPULSE);
 				t->SetStartTime(fxlabClientD->GetTime());
 				t->SetSoundID(EFF_BONUS_ENERGY);
-				t->SetPosition(Vect3f(Owner->R()));
+
+				Vect3f v1(Owner->R());
+				t->SetPosition(v1);
+
 				t->Start();
 			};
 		};
@@ -1939,7 +2007,10 @@ void fxlabClientMechosController::Quant(void)
 				t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SOUND_SPACE_IMPULSE);
 				t->SetStartTime(fxlabClientD->GetTime());
 				t->SetSoundID(EFF_BONUS_SPELL);
-				t->SetPosition(Vect3f(Owner->R()));
+
+				Vect3f v1(Owner->R());
+				t->SetPosition(v1);
+
 				t->Start();
 			};
 		};
@@ -1973,7 +2044,9 @@ void fxlabClientMechosController::Quant(void)
 					};
 					IVisGeneric->SetObjectColor((cUnknownClass*)(mp),&sColor4f(cp->Color0.r,cp->Color0.g,cp->Color0.b,a),&sColor4f(r,g,b,cp->Color1.a),mesh_id[i]);
 					Owner->setColor(i,&sColor4f(cp->Color0.r,cp->Color0.g,cp->Color0.b,a),&sColor4f(r,g,b,cp->Color1.a));*/
-					Owner->setColor(i,&sColor4f(1.0f,1.0f,1.0f,a),&sColor4f(r,g,b,1.0f));
+					sColor4f c1(1.0f,1.0f,1.0f,a);
+					sColor4f c2(r,g,b,1.0f);
+					Owner->setColor(i,&c1,&c2);
 
 					cp->ColorEnable = 1;
 					cp->Red = 0;
@@ -1991,7 +2064,9 @@ void fxlabClientMechosController::Quant(void)
 						cp->Alpha = 0;
 //						IVisGeneric->SetObjectColor((cUnknownClass*)(mp),&(cp->Color0),&(cp->Color1),mesh_id[i]);
 //						Owner->setColor(i,&(cp->Color0),&(cp->Color1));
-						Owner->setColor(i,&sColor4f(1.0f,1.0f,1.0f,1.0f),&sColor4f(0,0,0,1.0f));
+						sColor4f c1(1.0f,1.0f,1.0f,1.0f);
+						sColor4f c2(0,0,0,1.0f);
+						Owner->setColor(i,&c1,&c2);
 					};
 				};
 			};
@@ -2249,9 +2324,9 @@ void fxlabClientDragonHeadFireSwitcher::CreateObject(void)
 
 //--------------------------------------------
 
-#include "Visgeneric.h"
-#include "camera.h"
-#include "scene.h"
+#include "VisGeneric.h"
+#include "Camera.h"
+#include "Scene.h"
 
 void fxlabClientWorldIrradiate::Open(void)
 {
@@ -2347,7 +2422,14 @@ void fxlabClientWorldIrradiate::Show(void)
 	assert(scene);
 	for(i = 0;i < scene->GetNumberCamera();i++){
 		camera = scene->GetCamera(i);
-		P3D->SetViewColor(camera,sColor4f(KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_RED],KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_GREEN],KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_BLUE],KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_ALPHA]),sColor4f(0,0,0,0),1);
+		sColor4f c1(
+			KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_RED],
+			KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_GREEN],
+			KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_BLUE],
+			KeyData[FXLAB_CLIENT_WORLD_IRRADIATE_DATA_ALPHA]
+		);
+		sColor4f c2(0,0,0,0);
+		P3D->SetViewColor(camera,c1,c2,1);
 	};
 	IVisGeneric->Release();
 };
@@ -2412,13 +2494,15 @@ void fxlabClientSetFaceFire::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabClientSetFaceFire");	
 };
 
-void fxlabClientSetFaceFire::SetVelocity(Vect3f& v)
+void fxlabClientSetFaceFire::SetVelocity(const Vect3f& v)
 {
 	if(KeyPoint){
 		Velocity = v;
 		Velocity.normalize(KeyData[FXLAB_CLIENT_SET_FACE_FIRE_SPEED]);
-	}else
-		Velocity = v.normalize();
+	}else {
+		Velocity = v;
+		Velocity.normalize();
+	}
 };
 
 //--------------------------------------------------------
@@ -2451,7 +2535,7 @@ void fxlabClientMovieBowRepeater::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabClientMovieBowRepeater");
 };
 
-void fxlabClientMovieBowRepeater::SetVelocity(Vect3f& v)
+void fxlabClientMovieBowRepeater::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };
@@ -2478,7 +2562,10 @@ void fxlabClientMovieBowRepeater::CreateBow(void)
 	t->SetKeyID(FXLAB_ID_KEY_MOVIE_SPARK);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v1(0,0,0);
+	t->SetVelocity(v1);
+
 	t->Start();
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SOUND_SPACE_IMPULSE);
@@ -2500,7 +2587,10 @@ void fxlabClientMovieWaveRepeater::Start(void)
 	t->SetKeyID(FXLAB_ID_KEY_MOVIE_SPRAY_STREAM);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,15.0f));
+
+	Vect3f v1(0,0,15.0f);
+	t->SetVelocity(v1);
+
 	t->Start();
 	Cnt = 0;
 
@@ -2529,7 +2619,10 @@ void fxlabClientMovieWaveRepeater::CreateBow(void)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_MECHOS_WAVE_MODEL);
 	t->SetPosition(Position);
-	t->SetColorVector(Vect3f(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue()));
+
+	Vect3f v1(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue());
+	t->SetColorVector(v1);
+
 	t->SetTransparency(fxlabGetTrackWaveAlpha());
 	t->Start();
 
@@ -2558,7 +2651,10 @@ void fxlabClientMovieQuandLight::Start(void)
 	t->SetKeyID(FXLAB_ID_KEY_QUAD_SPARK);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v1(0,0,0);
+	t->SetVelocity(v1);
+
 	t->SetProcessInterface(&SparkPoint);
 	t->Start();
 
@@ -2573,7 +2669,10 @@ void fxlabClientMovieQuandLight::Start(void)
 	t->SetKeyID(FXLAB_ID_KEY_QUAD_BOW);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v2(0,0,0);
+	t->SetVelocity(v2);
+
 	t->SetProcessInterface(&BowPoint);
 	t->Start();
 };
@@ -2715,10 +2814,10 @@ void fxlabClientMovieTeleport::Start(void)
 	fxlabClientSpaceType::Start();
 
 	v = Position;
-	if(fxlabGetWorldReflectionEnable() && GetW(XCYCL(round(v.x)),YCYCL(round(v.y))))
+	if(fxlabGetWorldReflectionEnable() && GetW(XCYCL(int(round(v.x))),YCYCL(int(round(v.y)))))
 		v.z = vMap->LevelH2O + 2.5f;
 	else
-		v.z = ZV(XCYCL(round(v.x)),YCYCL(round(v.y))) + 2.5f;
+		v.z = ZV(XCYCL(int(round(v.x))),YCYCL(int(round(v.y)))) + 2.5f;
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SPARK_GENERATOR);
 	t->SetStartTime(fxlabClientD->GetTime());
@@ -2747,15 +2846,18 @@ void fxlabClientMovieSpot::Start(void)
 	fxlabClientSpaceType::Start();
 
 	v = Position;
-	if(fxlabGetWorldReflectionEnable() && GetW(XCYCL(round(v.x)),YCYCL(round(v.y))))
+	if(fxlabGetWorldReflectionEnable() && GetW(XCYCL(int(round(v.x))),YCYCL(int(round(v.y)))))
 		v.z = vMap->LevelH2O + 2.5f;
 	else
-		v.z = ZV(XCYCL(round(v.x)),YCYCL(round(v.y))) + 2.5f;
+		v.z = ZV(XCYCL(int(round(v.x))),YCYCL(int(round(v.y)))) + 2.5f;
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_CONTROL_MODEL);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_TELEPORT_MOVIE_MODEL);
-	t->SetMatrix(getPlacementGroundPose(Vect3f(Position.x,Position.y,0)));
+
+	auto m1 = getPlacementGroundPose(Vect3f(Position.x,Position.y,0));
+	t->SetMatrix(m1);
+
 	t->SetPosition(v);
 	t->SetProcessInterface(&SpotPoint);
 	t->Start();
@@ -2781,7 +2883,10 @@ void fxlabClientFireTreeMovie::Start(void)
 	t->SetKeyID(FXLAB_ID_KEY_MOVIE_TREE_FIRE);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v1(0,0,0);
+	t->SetVelocity(v1);
+
 	t->SetProcessInterface(&FirePoint);
 	t->Start();
 };
@@ -2948,7 +3053,10 @@ void fxlabClientCharacterWaveGenerator::CoreGenerate(void)
 			t->SetStartTime(fxlabClientD->GetTime());
 			t->SetKeyID(FXLAB_ID_KEY_CHARACTER_WAVE_MODEL);
 			t->SetPosition(v);
-			t->SetColorVector(Vect3f(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue()));
+
+			Vect3f v1(fxlabGetTrackWaveRed(),fxlabGetTrackWaveGreen(),fxlabGetTrackWaveBlue());
+			t->SetColorVector(v1);
+
 			t->SetTransparency(fxlabGetTrackWaveAlpha());
 			t->Start();
 		};
@@ -3004,7 +3112,10 @@ void fxlabClientBossWorldBurst::Start(void)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_CHARACTER_WORLD_BURST);
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v1(0,0,0);
+	t->SetVelocity(v1);
+
 	t->SetProcessInterface(&BurstPoint);
 	t->Start();
 };
@@ -3032,7 +3143,10 @@ void fxlabClientBossWorldExplosion::Start(void)
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_CHARACTER_WORLD_EXPLOSION);
 	t->SetPosition(Position);
-	t->SetVelocity(Vect3f(0,0,0));
+
+	Vect3f v1(0,0,0);
+	t->SetVelocity(v1);
+
 	t->SetProcessInterface(&ExplosionPoint);
 	t->Start();
 };
@@ -3099,7 +3213,7 @@ void fxlabClientMovieDragonFire::Quant(void)
 		SoundPoint.Process->SetPosition(Position);
 };
 
-void fxlabClientMovieDragonFire::SetVelocity(Vect3f& v)
+void fxlabClientMovieDragonFire::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 	Velocity.normalize(20.0f);
@@ -3201,7 +3315,7 @@ void fxlabClientBossRocketFire::Quant(void)
 		SoundPoint.Process->SetPosition(Position);
 };
 
-void fxlabClientBossRocketFire::SetVelocity(Vect3f& v)
+void fxlabClientBossRocketFire::SetVelocity(const Vect3f& v)
 {
 	Normal = v;
 	Normal.normalize();

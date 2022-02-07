@@ -12,6 +12,8 @@
 #include "PersonageDifferetiationPrm.h"
 
 
+class BodyDispatcher;
+
 class Mechos : virtual public PointControlledObject, private PersonageDifferetiationData
 {
 public:

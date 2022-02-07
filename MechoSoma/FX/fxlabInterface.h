@@ -1,10 +1,11 @@
 #ifndef __FXLAB_INTERFACE__
 #define __FXLAB_INTERFACE__
 
-#include "base.h"
+#include <unordered_map>
+
+#include "Base.h"
 #include "ArcaneDefine.h"
 #include "ArcaneStatistics.h"
-#include "hash_map.h"
 
 void fxlabOpen(void);
 void fxlabClose(void);
@@ -53,7 +54,7 @@ void fxlabArcaneStop(const class ArcaneStatisticsInfo* p);
 void fxlabArcaneAction(const class ArcaneStatisticsInfo* p,int id);
 void fxlabArcaneStatisticInit(void);
 
-int fxlabLine2SphereDist(class Vect3f& r1,class Vect3f& c,float rad);
+int fxlabLine2SphereDist(const class Vect3f& r1,const class Vect3f& c,float rad);
 
 int fxlabGetWorldReflectionEnable(void);
 int fxlabGetWaterRed(void);
@@ -90,11 +91,11 @@ struct fxlabFirePointInterface
 
 	void Open(int id);
 	void Close(void);
-	void Update(class Vect3f& pos,class Vect3f& vel);
-	void Update(class Vect3f& pos,class Mat3f& vel);
+	void Update(const class Vect3f& pos,const class Vect3f& vel);
+	void Update(const class Vect3f& pos,const class Mat3f& vel);
 };
 
-#include "umath.h"
+#include "UMATH.H"
 
 const int FXLAB_MECHOS_IMFORMATION_MANA_DELAY = 500;
 const int FXLAB_MECHOS_IMFORMATION_ENERGY_DELAY = 500;
@@ -282,7 +283,7 @@ struct fxlabTeleportInterface
 	void SetStatus(int status);
 };
 
-typedef hash_map<int,hash_map<int,fxlabTeleportInterface> > fxlabTeleportListType;
+typedef std::unordered_map<int,std::unordered_map<int,fxlabTeleportInterface> > fxlabTeleportListType;
 
 struct fxlabTeleportDispatcher
 {
@@ -322,18 +323,18 @@ struct fxlabMovieEqStr
 
 struct fxlabMovieDispacther
 {
-	hash_map<const char*,fxlabMovieDataType,hash<const char*>,fxlabMovieEqStr> MovieList;
+	std::unordered_map<std::string,fxlabMovieDataType> MovieList;
 
 	void Open(void);
 	void Close(void);
 	void Clear(void);
 	void RegisterName(const char* name,int type,int key_id);
-	void UpdateProcess(const char* name,Vect3f& position,Vect3f& velocity,int status);
+	void UpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status);
 };
 
 extern fxlabMovieDispacther* fxlabMovieD;
 
-void fxlabMovieUpdateProcess(const char* name,Vect3f& position,Vect3f& velocity,int status);
+void fxlabMovieUpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status);
 void fxlabMovieDestroy(void);
 
 enum fxlabBigBossWorldType

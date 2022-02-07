@@ -1,9 +1,11 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
+#ifdef _WIN32
 #include "win32f.h"
+#endif
 
-#include "handle.h"
+#include "Handle.h"
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "OwnerProtection.h"
@@ -13,16 +15,16 @@
 #include "TileMap.h"
 #include "TileWater.h"
 #include "IVisGeneric.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "race.h"
 #include "sound.h"
 
-#include "Igraph3d.h"
+#include "IGraph3d.h"
 
 #include "sur_scr.h"
 #include "SST_Reader.h"
 
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"
@@ -44,10 +46,14 @@
 #include "fxlabServerStuff.h"
 #include "fxlabServerArcane.h"
 #include "fxlabBodyInterface.h"
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #include "Statistics.h"
 #include "PersonageDifferetiationPrm.h"
-#include "params.h"
+#include "Params.h"
+
+#ifndef _WIN32
+#define DBGCHECK
+#endif
 
 fxlabClientObjectDispatcher* fxlabClientD = NULL;
 fxlabServerObjectDispatcher* fxlabServerD = NULL;
@@ -375,7 +381,7 @@ void fxlabCreateMasterCheckPoint(fxlabProcessInterface* master,int x,int y,int z
 };
 
 
-int fxlabLine2SphereDist(Vect3f& r1,Vect3f& c,float rad)
+int fxlabLine2SphereDist(const Vect3f& r1,const Vect3f& c,float rad)
 {
 	Vect3f m,m2,p;
 	float t,d;
@@ -583,7 +589,7 @@ void fxlabFirePointInterface::Close(void)
 		ServerPoint.Process->SetAlive(0);
 };
 
-void fxlabFirePointInterface::Update(Vect3f& pos,Vect3f& vel)
+void fxlabFirePointInterface::Update(const Vect3f& pos,const Vect3f& vel)
 {
 	fxlabGeneralObjectType* t;
 
@@ -675,7 +681,7 @@ void fxlabFirePointInterface::Update(Vect3f& pos,Vect3f& vel)
 	};
 };
 
-void fxlabFirePointInterface::Update(class Vect3f& pos,class Mat3f& vel)
+void fxlabFirePointInterface::Update(const class Vect3f& pos,const class Mat3f& vel)
 {
 	fxlabGeneralObjectType* t;
 
@@ -3072,7 +3078,9 @@ void fxlabMechosGlowDestruction(Mechos* p)
 			p->fxlabMechosInfo.ColorData[i].Alpha = 0;
 //			IVisGeneric->SetObjectColor((cUnknownClass*)(mp),&(p->fxlabMechosInfo.ColorData[i].Color0),&(p->fxlabMechosInfo.ColorData[i].Color1),mesh_id[i]);
 //			p->setColor(i,&(p->fxlabMechosInfo.ColorData[i].Color0),&(p->fxlabMechosInfo.ColorData[i].Color1));
-			p->setColor(i,&sColor4f(1.0f,1.0f,1.0f,1.0f),&sColor4f(0,0,0,1.0f));
+			sColor4f c1(1.0f,1.0f,1.0f,1.0f);
+			sColor4f c2(0,0,0,1.0f);
+			p->setColor(i,&c1,&c2);
 		};
 	};
 	IVisGeneric->Release();
@@ -3471,7 +3479,7 @@ void fxlabTeleportInterface::SetStatus(int status)
 
 void fxlabTeleportDispatcher::Init(void)
 {
-	fxlabTeleportList.resize(100);
+	fxlabTeleportList.reserve(100);
 };
 
 void fxlabTeleportDispatcher::Finit(void)
@@ -3487,7 +3495,7 @@ void fxlabTeleportDispatcher::Finit(void)
 void fxlabTeleportDispatcher::Open(void)
 {
 	fxlabTeleportListType::iterator p;
-	hash_map<int,fxlabTeleportInterface>::iterator pp;
+	std::unordered_map<int,fxlabTeleportInterface>::iterator pp;
 
 	if(mchCurrentWorld == 7){
 		FOR_EACH(fxlabTeleportList,p){
@@ -3501,7 +3509,7 @@ void fxlabTeleportDispatcher::Open(void)
 void fxlabTeleportDispatcher::Close(void)
 {
 	fxlabTeleportListType::iterator p;
-	hash_map<int,fxlabTeleportInterface>::iterator pp;
+	std::unordered_map<int,fxlabTeleportInterface>::iterator pp;
 
 	FOR_EACH(fxlabTeleportList,p){
 		FOR_EACH(((*p).second),pp){
@@ -4168,7 +4176,7 @@ void fxlabSnowBallAction(class Body* p)
 
 //-----------------------------------------
 
-void fxlabMovieUpdateProcess(const char* name,Vect3f& position,Vect3f& velocity,int status)
+void fxlabMovieUpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status)
 {	
 	fxlabMovieD->UpdateProcess(name,position,velocity,status);
 };
@@ -4180,7 +4188,7 @@ void fxlabMovieDestroy(void)
 
 void fxlabMovieDispacther::Open(void)
 {
-	MovieList.resize(300);
+	MovieList.reserve(300);
 	RegisterName("Kron_fire_first",FXLAB_CLIENT_PROCESS_SET_FACE_FIRE,FXLAB_ID_KEY_MOVIE_HEAD_SET);
 	RegisterName("kron_flash",FXLAB_CLIENT_PROCESS_MOVIE_BOW_REPEATER,FXLAB_ID_KEY_MOVIE_STORM_CONTROL);
 	RegisterName("Kron_Water1",FXLAB_CLIENT_PROCESS_MOVIE_WAVE_REPEATER,FXLAB_ID_KEY_MOVIE_WAVE_CONTROL);
@@ -4266,7 +4274,7 @@ void fxlabMovieDispacther::Close(void)
 
 void fxlabMovieDispacther::Clear(void)
 {
-	hash_map<const char*,fxlabMovieDataType,hash<const char*>,fxlabMovieEqStr>::iterator i_movie;
+	std::unordered_map<std::string,fxlabMovieDataType>::iterator i_movie;
 
 	FOR_EACH(MovieList,i_movie){
 		if(i_movie->second.ProcessPoint.Process)
@@ -4280,9 +4288,9 @@ void fxlabMovieDispacther::RegisterName(const char* name,int type,int key_id)
 	MovieList[name].ProcessKeyID = key_id;
 };
 
-void fxlabMovieDispacther::UpdateProcess(const char* name,Vect3f& position,Vect3f& velocity,int status)
+void fxlabMovieDispacther::UpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status)
 {
-	hash_map<const char*,fxlabMovieDataType,hash<const char*>,fxlabMovieEqStr>::iterator i_movie;
+	std::unordered_map<std::string,fxlabMovieDataType>::iterator i_movie;
 	fxlabGeneralObjectType* t;
 	fxlabProcessInterface* p;
 

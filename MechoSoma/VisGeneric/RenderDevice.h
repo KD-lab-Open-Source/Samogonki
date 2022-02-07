@@ -4,7 +4,7 @@
 #include "IGraph3d.h"
 #include "Unknown.h"
 #include "UnkLibrary.h"
-#include "umath.h"
+#include "UMATH.H"
 
 const int NUMBER_TEXTURE_MAX=1000;
 
@@ -13,8 +13,8 @@ struct sTexture;
 
 struct sTextureDevice
 {
-	int							hTexture;		// номер текстуры
-	int							Status;			// статус текстуры
+	int							hTexture;		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	int							Status;			// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	sTexture					*Texture;		
 
 	inline int& GetStatus()								{ return Status; }
@@ -40,7 +40,7 @@ public:
 	void Release();
 
 	void Attach(cInterfaceGraph3d *iGraph3d);
-	// функции для работы со списком камер для данного устройства
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	void Attach(cCamera *Camera);
 	void Detach(cCamera *Camera);
 	inline cCamera* GetCamera(int number)					{ return (cCamera*)CameraList[number]; }

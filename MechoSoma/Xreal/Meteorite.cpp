@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////
-//	Метеорит
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "Mechos.h"
 #include "Meteorite.h"
 #include "Params.h"
 #include "SimpleClip.h"
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
 
@@ -36,7 +36,7 @@ void Meteorite::scaleRadius(float factor)
 void Meteorite::calc_forces_and_drags()
 {
 	Body::calc_forces_and_drags();
-	if(R().z < 0 || colliding()){ //  столкновение с поверхностью
+	if(R().z < 0 || colliding()){ //  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		setTrans(R_prev);
 		kill();
 		return;

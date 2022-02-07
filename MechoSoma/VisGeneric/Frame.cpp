@@ -90,7 +90,7 @@ void cAnimChain::GetTile(cTile *Tile,float phase)
 		if(a->GetNumberPoint()!=tmp->GetNumberPoint())
 			ErrAbort("Error:cAnimChain::GetTri()");
 		if((b)&&(ia!=ib))
-		{ // морфинг
+		{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			float aTime=GetTri(ia)->Time,bTime=GetTri(ib)->Time;
 			assert(aTime!=bTime);
 			if(a->GetNumberPoint()!=b->GetNumberPoint())
@@ -122,7 +122,7 @@ void cAnimChain::GetTile(cTile *Tile,float phase)
 				}
 			}
 		}
-		else // нет морфирования
+		else // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		{
 			tmp->MulCol=a->MulCol;
 			tmp->AddCol=a->AddCol;
@@ -148,7 +148,7 @@ inline float QuadraticInterpolate(float x1,float x2,float y1,float y2,float ky1,
 	return y1+((y2-y1)/dx-(3*ky1+ky2)*0.125*dx)*dt+(ky1*dt*dt+(ky2-ky1)*ts)*0.5f;
 }
 inline void SlerpInterpolate(float w1,float x1,float y1,float z1,float w2,float x2,float y2,float z2,float *w,float *x,float *y,float *z,float t)
-{ // Slerp(q1,q2,t) = (sin((1-t)*ї)/sin(ї))*q1+(sin(t*ї)/sin(ї))*q2 
+{ // Slerp(q1,q2,t) = (sin((1-t)*пїЅ)/sin(пїЅ))*q1+(sin(t*пїЅ)/sin(пїЅ))*q2 
 	float scale0,scale1,cosom=x1*x2+y1*y2+z1*z2+w1*w2; 
 	if((1+cosom)>0.0001)
 	{
@@ -579,12 +579,12 @@ int cFrame::SetCurrentChain(char *NameChain)
 {
 	assert(NameChain);
 	for(int i=0;i<GetNumberAnimChain();i++)
-		if(GetAnimChain(i)->GetName()==NameChain)
+		if(GetAnimChain(i)->GetName()==static_cast<const char*>(NameChain))
 			return SetCurrentChain(i);
 	return -1;
 }
 int cFrame::SetCurrentChain(char *NameChainMask,int number)
-{ // возвращает число цепочек имеющих в имени строку NameChainMask
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NameChainMask
 	if(GetNumberAnimChain()<=0) return -1;
 	if(NameChainMask==0) return GetNumberAnimChain();
 	int count=0;
@@ -594,7 +594,7 @@ int cFrame::SetCurrentChain(char *NameChainMask,int number)
 	return -1;
 }
 int cFrame::GetChain(char *NameChainMask)
-{ // возвращает число цепочек имеющих в имени строку NameChainMask
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NameChainMask
 	if(NameChainMask==0) return GetNumberAnimChain();
 	int count=0;
 	for(int i=0;i<GetNumberAnimChain();i++)

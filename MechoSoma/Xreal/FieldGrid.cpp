@@ -63,7 +63,8 @@ public:
 
 void FieldGrid::affect(Body& body) const
 {
-	scan(body.getBound(), BodyAffectOp(body));
+	BodyAffectOp op(body);
+	scan(body.getBound(), op);
 }
 	
 

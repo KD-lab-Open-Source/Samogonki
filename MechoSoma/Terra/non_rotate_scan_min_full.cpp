@@ -8,7 +8,7 @@ z_buffer_type zBuffer[MAXX*MAXY];
 
 #else 
 
-#include "terra.h"
+#include "TERRA.H"
 //#include "common.h"
 //#include "vmap.h"
 //#include "world.h"

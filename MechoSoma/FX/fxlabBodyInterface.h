@@ -1,7 +1,7 @@
 #include "Meteorite.h"
 
 template<class ObjectType>
-void fxlabCreateBolide(int model,int noise,Vect3f& pos,Vect3f& vel,float damage,int client_key_type,ArcaneStatisticsInfo* stat,fxlabProtectionType* protect,ObjectType* stuff)
+void fxlabCreateBolide(int model,int noise,const Vect3f& pos,const Vect3f& vel,float damage,int client_key_type,ArcaneStatisticsInfo* stat,fxlabProtectionType* protect,ObjectType* stuff)
 {
 	Body* p;
 	OwnerProtection* op;

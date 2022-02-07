@@ -14,11 +14,11 @@
 #ifndef VEC_H
 #define VEC_H
 
-#include "subscrpt.h"
+#include "SUBSCRPT.H"
 #include <cstdlib> 
 #include <cassert>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <strstream>
 
 namespace TNT
 {

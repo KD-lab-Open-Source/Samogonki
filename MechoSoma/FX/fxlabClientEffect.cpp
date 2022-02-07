@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "aci_parser.h"
 #include "IVisGeneric.h"
-#include "m3d_effects.h"
-#include "polymgr.h"
-#include "terra.h"
+#include "M3d_effects.h"
+#include "PolyMgr.h"
+#include "TERRA.H"
 #include "sound.h"
 #include "race.h"
 
@@ -28,7 +28,7 @@ void fxlabSwarmDomain::Load(fxlabResourceObject* key,float time)
 
 	key->GetKey(buffer,time);
 
-	switch(round(buffer[FXLAB_SWARM_DOMAIN_TYPE])){
+	switch(int(round(buffer[FXLAB_SWARM_DOMAIN_TYPE]))){
 		case FXLAB_SWARM_DOMAIN_POINT:
 			Point(buffer[FXLAB_SWARM_DOMAIN_DATA_X],buffer[FXLAB_SWARM_DOMAIN_DATA_Y],buffer[FXLAB_SWARM_DOMAIN_DATA_Z]);
 			break;
@@ -283,9 +283,9 @@ void fxlabParticleFear::KeyUpdate(void)
 	ImageNoise = round(KeyData[FXLAB_FEAR_DATA_IMAGE_NOISE]);
 };
 
-#include "Visgeneric.h"
-#include "camera.h"
-#include "scene.h"
+#include "VisGeneric.h"
+#include "Camera.h"
+#include "Scene.h"
 
 void fxlabParticleFear::Show(void)
 {
@@ -535,8 +535,8 @@ void fxlabCrazyTwister::ConvertPosition(void)
 	else
 		VsS = Vect3f(ProcessMinX,ProcessMinX,ProcessMaxZ - ProcessMinZ);
 
-	VsL.x = XCYCL(round(Position.x - VsS.x));
-	VsL.y = YCYCL(round(Position.y - VsS.y));
+	VsL.x = XCYCL(int(round(Position.x - VsS.x)));
+	VsL.y = YCYCL(int(round(Position.y - VsS.y)));
 	VsL.z = Position.z - VsS.z;
 
 	VsS *= 2.0f;
@@ -1034,7 +1034,7 @@ void fxlabFearStream::CoreProcess(void)
 			DeleteParticle(p);
 		}else{
 			v = p->Velocity;
-			if((round(p->Position.z) + z) <= ZV(XCYCL(round(p->Position.x) + x),YCYCL(round(p->Position.y) + y))){
+			if((round(p->Position.z) + z) <= ZV(XCYCL(int(round(p->Position.x)) + x),YCYCL(int(round(p->Position.y)) + y))){
 				if(v.z > 0)
 					v.z *= ReflectionImpulse;
 				else

@@ -1,10 +1,10 @@
 #include "VisGeneric.h"
 #include "PolyMgr.h"
 #include "RenderDevice.h"
-#include "xgr.h"
-#include "md3d.h"
+#include "XGR.h"
+#include "Md3d.h"
 
-// функции для работы с окном вывода
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 cUnknownClass* cVisGeneric::CreateGraph(int xScr,int yScr,int GraphMode,int FullScr,int ColorBit)
 {
 	assert(P3D);

@@ -1,24 +1,26 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
+#ifdef _WIN32
 #include "win32f.h"
+#endif
 
-#include "handle.h"
+#include "Handle.h"
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "OwnerProtection.h"
 #include "Meteorite.h"
 
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "Levin.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "race.h"
 #include "sound.h"
 
 #include "sur_scr.h"
 #include "SST_Reader.h"
 
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"

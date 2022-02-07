@@ -44,7 +44,7 @@ struct fxlabCheckPoint : fxlabClientSpaceType
 
 	void SetScale(float scale);
 	void SetMode(int mode);
-	void SetVelocity(Vect3f& velocity);
+	void SetVelocity(const Vect3f& velocity);
 	void SetCheckPointModels(int id0,int id1);
 	void SetCheckPointRacer(int mode,struct mchRacer* p,int init_flag);
 	void SetAngle(float angle);
@@ -89,9 +89,9 @@ struct fxlabPolarModel : fxlabClientKeyObjectType
 
 	void KeyCheck(void);
 
-	void SetScaleVector(Vect3f& v);
-	void SetAngleVector(Vect3f& v);
-	void SetColorVector(Vect3f& v);
+	void SetScaleVector(const Vect3f& v);
+	void SetAngleVector(const Vect3f& v);
+	void SetColorVector(const Vect3f& v);
 	void SetTransparency(float a);
 	void SetModel(int id);
 	void SetRacerPoint(struct mchRacer* p);
@@ -212,7 +212,7 @@ struct fxlabClientWildClaw : fxlabClientRemoteAim
 
 	void CalcCenter(void);
 
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void SetVelocity(const Vect3f& v){ Velocity = v; };
 	void SetRemoteID(int id);
 	int GetAlive(void);
 
@@ -388,23 +388,23 @@ struct fxlabClientMassShifter : fxlabClientKeyObjectType
 {
 	void Quant(void);
 	void KeyCheck(void);
-	virtual void Generate(Mat3f& m,Vect3f& v);
+	virtual void Generate(const Mat3f& m,const Vect3f& v);
 };
 
 
 struct fxlabClientMassShifterNitro : fxlabClientMassShifter
 {
-	void Generate(Mat3f& m,Vect3f& v);
+	void Generate(const Mat3f& m,const Vect3f& v);
 };
 
 struct fxlabClientMassShifterCharacter : fxlabClientMassShifter
 {
-	void Generate(Mat3f& m,Vect3f& v);
+	void Generate(const Mat3f& m,const Vect3f& v);
 };
 
 struct fxlabClientMassShifterMovie : fxlabClientMassShifter
 {
-	void Generate(Mat3f& m,Vect3f& v);
+	void Generate(const Mat3f& m,const Vect3f& v);
 };
 
 //-------------------------------------
@@ -625,7 +625,7 @@ struct fxlabClientSetFaceFire : fxlabClientKeyObjectType
 	void Close(void);
 	void Quant(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v);
 };
 
 enum fxlabClientMovieBowRepeaterDataField
@@ -643,7 +643,7 @@ struct fxlabClientMovieBowRepeater : fxlabClientKeyObjectType
 	void Start(void);
 	void Quant(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v);
 	virtual void CreateBow(void);
 };
 
@@ -744,7 +744,7 @@ struct fxlabClientMovieDragonFire : fxlabClientSpaceType
 	void Start(void);
 	void Close(void);
 	void Quant(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v);
 };
 
 //-----------------------------------
@@ -812,6 +812,6 @@ struct fxlabClientBossRocketFire : fxlabClientSpaceType
 	void Start(void);
 	void Close(void);
 	void Quant(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v);
 
 };

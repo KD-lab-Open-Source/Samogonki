@@ -6,7 +6,7 @@
 #include "IVisGeneric.h"
 #include "sound.h"
 
-#include "terra.h"
+#include "TERRA.H"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"
@@ -169,7 +169,13 @@ void fxlabControlOmni::Start(void)
 {
 	fxlabClientKeyObjectType::Start();
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
-	OmniPoint=(cOmni*)IVisGeneric->CreateOmni(&Vect3f(Position.x,Position.y,Position.z),KeyData[FXLAB_CONTROL_OMNI_DATA_RADIUS],&sColor4f(KeyData[FXLAB_CONTROL_OMNI_DATA_RED],KeyData[FXLAB_CONTROL_OMNI_DATA_GREEN],KeyData[FXLAB_CONTROL_OMNI_DATA_BLUE]));
+	Vect3f v1(Position.x,Position.y,Position.z);
+	sColor4f c1(
+		KeyData[FXLAB_CONTROL_OMNI_DATA_RED],
+		KeyData[FXLAB_CONTROL_OMNI_DATA_GREEN],
+		KeyData[FXLAB_CONTROL_OMNI_DATA_BLUE]
+	);
+	OmniPoint=(cOmni*)IVisGeneric->CreateOmni(&v1,KeyData[FXLAB_CONTROL_OMNI_DATA_RADIUS],&c1);
 	IVisGeneric->Release();
 };
 
@@ -185,9 +191,15 @@ void fxlabControlOmni::Quant(void)
 {
 	fxlabClientKeyObjectType::Quant();
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
-	IVisGeneric->SetOmniPosition((cUnknownClass*)OmniPoint,&Vect3f(Position.x,Position.y,Position.z));
+	Vect3f v1(Position.x,Position.y,Position.z);
+	IVisGeneric->SetOmniPosition((cUnknownClass*)OmniPoint,&v1);
 	IVisGeneric->SetOmniSize((cUnknownClass*)OmniPoint,KeyData[FXLAB_CONTROL_OMNI_DATA_RADIUS]);
-	IVisGeneric->SetOmniColor((cUnknownClass*)OmniPoint,&sColor4f(KeyData[FXLAB_CONTROL_OMNI_DATA_RED],KeyData[FXLAB_CONTROL_OMNI_DATA_GREEN],KeyData[FXLAB_CONTROL_OMNI_DATA_BLUE]));
+	sColor4f c1(
+		KeyData[FXLAB_CONTROL_OMNI_DATA_RED],
+		KeyData[FXLAB_CONTROL_OMNI_DATA_GREEN],
+		KeyData[FXLAB_CONTROL_OMNI_DATA_BLUE]
+	);
+	IVisGeneric->SetOmniColor((cUnknownClass*)OmniPoint,&c1);
 	IVisGeneric->Release();
 };
 
@@ -307,7 +319,7 @@ void fxlabLashModel::Quant(void)
 {
 	fxlabAnimationModel::Quant();
 	
-	if((!fxlabGetWorldReflectionEnable()) && Position.z < vMap->LevelH2O && (GetAt(XCYCL(round(Position.x)),YCYCL(round(Position.y))) & At_WATER)){
+	if((!fxlabGetWorldReflectionEnable()) && Position.z < vMap->LevelH2O && (GetAt(XCYCL(int(round(Position.x))),YCYCL(int(round(Position.y)))) & At_WATER)){
 		DeltaPhase = 0.95f;
 		SetAlive(0);
 	};
@@ -597,8 +609,13 @@ void fxlabPetardModel::Start(void)
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_TAIL);
 	t->SetStartTime(fxlabClientD->GetTime());
-	t->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
-	t->SetVelocity(-NormVelocity);
+
+	Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+	t->SetPosition(CYCLE(v1));
+
+	Vect3f v2 = -NormVelocity;
+	t->SetVelocity(v2);
+
 	t->SetKeyID(FXLAB_ID_KEY_PETARD_TAIL);
 	t->SetProcessInterface(&TailPoint);
 	t->Start();
@@ -615,7 +632,10 @@ void fxlabPetardModel::Quant(void)
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
-		TailPoint.Process->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
+	{
+		Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+		TailPoint.Process->SetPosition(CYCLE(v1));
+	}
 };
 
 //--------------------------------
@@ -628,8 +648,13 @@ void fxlabSnowBulletModel::Start(void)
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_TAIL);
 	t->SetStartTime(fxlabClientD->GetTime());
-	t->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
-	t->SetVelocity(-NormVelocity);
+
+	Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+	t->SetPosition(CYCLE(v1));
+
+	Vect3f v2 = -NormVelocity;
+	t->SetVelocity(v2);
+
 	t->SetKeyID(FXLAB_ID_KEY_SNOW_BULLET);
 	t->SetProcessInterface(&TailPoint);
 	t->Start();
@@ -646,7 +671,10 @@ void fxlabSnowBulletModel::Quant(void)
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
-		TailPoint.Process->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
+	{
+		Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+		TailPoint.Process->SetPosition(CYCLE(v1));
+	}
 };
 
 //--------------------------------
@@ -659,8 +687,13 @@ void fxlabFireBulletModel::Start(void)
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_TAIL);
 	t->SetStartTime(fxlabClientD->GetTime());
-	t->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
-	t->SetVelocity(-NormVelocity);
+
+	Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+	t->SetPosition(CYCLE(v1));
+
+	Vect3f v2 = -NormVelocity;
+	t->SetVelocity(v2);
+
 	t->SetKeyID(FXLAB_ID_KEY_FIRE_BULLET);
 	t->SetProcessInterface(&TailPoint);
 	t->Start();
@@ -677,7 +710,10 @@ void fxlabFireBulletModel::Quant(void)
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
-		TailPoint.Process->SetPosition(CYCLE(Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]));
+	{
+		Vect3f v1 = Position - NormVelocity * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
+		TailPoint.Process->SetPosition(CYCLE(v1));
+	}
 };
 
 //-------------------------------------------------------

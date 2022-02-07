@@ -8,8 +8,8 @@
 #include "RenderDevice.h"
 
 #include "CameraDispatcher.h"
-#include "mesh3ds.h"
-#include "params.h"
+#include "Mesh3ds.h"
+#include "Params.h"
 #include "SimpleClip.h"
 #include "CameraPrm.h"
 #include "Statistics.h"
@@ -32,7 +32,7 @@ public:
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-char* mch_cameraINI = "RESOURCE\\ISCREEN\\camera.ini";
+char* mch_cameraINI = "RESOURCE/ISCREEN/camera.ini";
 
 char* mch_cameraModeID[CAM_MODE_MAX] = 
 {
@@ -135,15 +135,26 @@ CameraDispatcher::CameraDispatcher(cUnknownClass* ivsRenderDevice_)
 {
 	ivsRenderDevice = ivsRenderDevice_;
 	ivsCamera = (cCamera*)gb_IVisGeneric->CreateCamera();
-	gb_IVisGeneric->AttachCamera(ivsCamera);		// присоединение камеры к активной сцене
-	gb_IVisGeneric->SetCameraAttribute(ivsCamera,ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE_CUTTING); // сферичность вывода и перспектива
-	gb_IVisGeneric->SetCameraPosition(ivsCamera,&Vect3f(0,0,512),&Vect3f(0,0,0));
-	gb_IVisGeneric->SetCameraFrustum(ivsCamera,	// устанавливается пирамида видимости
-		&Vect2f(0.5f,0.5f),						// центр камеры
-		&sRectangle4f(-0.499f,-0.499f,0.499f,0.499f),		// видимая область камеры
-		&Vect2f(1.0f,1.0f),						// фокус камеры
-		&Vect2f(10.0f,3000.0f),					// ближайший и дальний z-плоскости отсечения
-		&Vect2f(0.2f,0.90f));						// zNear и zFar для мапирования в zBuffer
+	gb_IVisGeneric->AttachCamera(ivsCamera);		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	gb_IVisGeneric->SetCameraAttribute(ivsCamera,ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE_CUTTING); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{
+		Vect3f v1(0,0,512);
+		Vect3f v2(0,0,0);
+		gb_IVisGeneric->SetCameraPosition(ivsCamera,&v1,&v2);
+	}
+	{
+		Vect2f v1(0.5f,0.5f);
+		sRectangle4f r1(-0.499f,-0.499f,0.499f,0.499f);
+		Vect2f v2(1.0f,1.0f);
+		Vect2f v3(10.0f,3000.0f);
+		Vect2f v4(0.2f,0.90f);
+		gb_IVisGeneric->SetCameraFrustum(ivsCamera,	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			&v1, // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			&r1, // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			&v2, // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			&v3, // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ z-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			&v4); // zNear пїЅ zFar пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ zBuffer
+	}
 	gb_IVisGeneric->AttachCameraViewPort(ivsCamera, ivsRenderDevice);
 
 	centeringDeltaFactor = 1;
@@ -169,7 +180,8 @@ void CameraDispatcher::setWindow(const mchGameWindow* gWnd)
 {
 	Vect2f Center(((float)gWnd -> CenterX)/XGR_MAXX,((float)gWnd->CenterY)/XGR_MAXY);
 	Vect2f Size((float)gWnd->SizeX2/XGR_MAXX,(float)gWnd->SizeY2/XGR_MAXX);
-	gb_IVisGeneric->SetCameraFrustum(ivsCamera, &Center, &sRectangle4f(-Size.x,-Size.y,+Size.x,+Size.y), 0, 0, 0);
+	sRectangle4f r1(-Size.x,-Size.y,+Size.x,+Size.y);
+	gb_IVisGeneric->SetCameraFrustum(ivsCamera, &Center, &r1, 0, 0, 0);
 	centeringDeltaFactor = (float)gWnd->SizeY/XGR_MAXY;
 }
 
@@ -177,7 +189,7 @@ CameraDispatcher::~CameraDispatcher()
 {
 	if(free_fly_body)
 		delete free_fly_body;
-	gb_IVisGeneric->ReleaseCamera(ivsCamera); // удаление ненужной камеры
+	gb_IVisGeneric->ReleaseCamera(ivsCamera); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 void CameraDispatcher::clear(void)
@@ -314,7 +326,7 @@ public:
 	float metric(float ps, float th, float rad)
 	{
 //		return (fabs(getDist(ps, psi, 2*M_PI)) + fabs(th - theta))*z_distance + fabs(rad - z_distance);
-		return (camera_theta_dominance*sqr(getDist(ps, psi, 2*M_PI)) + sqr(th - theta))*sqr(z_distance) + sqr(rad - z_distance);
+		return (camera_theta_dominance*sqr(getDist_f(ps, psi, 2*M_PI)) + sqr(th - theta))*sqr(z_distance) + sqr(rad - z_distance);
 	}
 
 	int cast(float ps, float th)
@@ -477,7 +489,7 @@ CameraCoords CameraCoords::operator * (float t) const
 
 float CameraCoords::distance(const CameraCoords& c) const 
 {
-	return ::sqrt(getDist(position, c.position).norm2() + (sqr(G2R(angles.x - c.angles.x)) + sqr(G2R(angles.y - c.angles.y)) + sqr(G2R(getDist(angles.z, c.angles.z, 360))))*cameraDistance*c.cameraDistance + sqr(cameraDistance - c.cameraDistance));
+	return ::sqrt(getDist(position, c.position).norm2() + (sqr(G2R(angles.x - c.angles.x)) + sqr(G2R(angles.y - c.angles.y)) + sqr(G2R(getDist_f(angles.z, c.angles.z, 360))))*cameraDistance*c.cameraDistance + sqr(cameraDistance - c.cameraDistance));
 }
 
 CameraCoords& CameraCoords::cycle()
@@ -523,7 +535,7 @@ CameraCoords getDist(const CameraCoords& c1, const CameraCoords& c0)
 	coords.position = getDist(c1.position, c0.position);
 	coords.angles.x = c1.angles.x - c0.angles.x;
 	coords.angles.y = c1.angles.y - c0.angles.y;
-	coords.angles.z = getDist(c1.angles.z, c0.angles.z, 360.f);
+	coords.angles.z = getDist_f(c1.angles.z, c0.angles.z, 360.f);
 	coords.cameraDistance = c1.cameraDistance - c0.cameraDistance;
 	coords.CenteringDelta = c1.CenteringDelta - c0.CenteringDelta;
 	coords.time = c1.time - c0.time;
@@ -622,7 +634,7 @@ CameraCoords CameraDispatcher::bodyInput()
 	if(!is_interpolating_timer){
 		targetCoords().position = position;
 		if(input_mode == BodyInput){
-			if(interpolate_position_timer() && !fly_around_angle_incr){ // отставание на споте
+			if(interpolate_position_timer() && !fly_around_angle_incr){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				float t = spot_acc_time - interpolate_position_timer(); // 0 - spot_acc_time
 				t = t < spot_acc_front ? t/spot_acc_front : 1.f - (t - spot_acc_front)/(spot_acc_time - spot_acc_front); // 0 - 1 - 0
 				targetCoords().position += getDist(currentCoords.position, targetCoords().position)*t;
@@ -656,7 +668,7 @@ CameraCoords CameraDispatcher::bodyInput()
 				coords.angles.x = fly_slope;
 			}
 
-		// Прозрачность при приближении
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if(currentCoords.cameraDistance < camera_transparensy_distance){
 			const_cast<Mechos*>(advanced_observer) -> setPermanentAlpha(pow(currentCoords.cameraDistance/camera_transparensy_distance, camera_transparensy_power));
 			observer_transparent = 1;
@@ -974,7 +986,7 @@ void CameraDispatcher::integration(CameraCoords& current, const CameraCoords& in
 		else{
 			if(fabs(cliped_input.angles.x - current.angles.x) + 0.01f < fabs(cliped_input.angles.x - input.angles.x) + fabs(current.angles.x - input.angles.x))
 				mass_inv.angles.x = cliped_input.angles.x > input.angles.x ? camera_slope_mass_inv_cliped_up : camera_slope_mass_inv_cliped_down;
-			if(fabs(getDist(cliped_input.angles.z, current.angles.z, 360)) + 0.01f < fabs(getDist(cliped_input.angles.z, input.angles.z, 360)) + fabs(getDist(current.angles.z, input.angles.z, 360)))
+			if(fabs(getDist_f(cliped_input.angles.z, current.angles.z, 360)) + 0.01f < fabs(getDist_f(cliped_input.angles.z, input.angles.z, 360)) + fabs(getDist_f(current.angles.z, input.angles.z, 360)))
 				mass_inv.angles.z = camera_turn_mass_inv_cliped;
 			}
 			
@@ -1083,7 +1095,7 @@ void CameraDispatcher::setCoords(const Vect3f& vCamera_, const Vect3f& vTarget_)
 	currentCoords.position = vTarget;
 	currentCoords.CenteringDelta = 0;
 
-	Vect3f z_axis = vCamera - vTarget; // Смотрим наоборот, т.к. Mat3f::ID смотрит вниз
+	Vect3f z_axis = vCamera - vTarget; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ.пїЅ. Mat3f::ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	currentCoords.cameraDistance = z_axis.norm();
 	z_axis /= currentCoords.cameraDistance;
 	Vect3f x_axis = z_axis % Vect3f::K;
@@ -1107,7 +1119,7 @@ void CameraDispatcher::setCoords(const Vect3f& vCamera_, const Vect3f& vTarget_)
 
 void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 {
-	Vect3f vg = coords.position; // Точка, которая будет находиться на экране [0, CenteringDelta*SizeY/2, H]
+	Vect3f vg = coords.position; // пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ [0, CenteringDelta*SizeY/2, H]
 
 	Mat3f R = coords.rot();
 
@@ -1128,7 +1140,7 @@ void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 		gb_IVisGeneric->ClearCameraAttribute(ivsCamera, ATTRIBUTE_CAMERA_WORLD_SHARE);
 #endif
 
-	// Только для чтения
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	mchCameraAX = coords.angles.x;
 	mchCameraAY = coords.angles.y;
 	mchCameraAZ = coords.angles.z;
@@ -1389,8 +1401,10 @@ CameraCoords CameraDispatcher::stopTimeInput()
 		}
 	else{
 		Vect3f pv, pe, pe0(XGR_MouseObj.PosX, XGR_MouseObj.PosY, 0);
-		
+
+#ifdef _WIN32		
 		_controlfp(_PC_53, _MCW_PC); 
+#endif
 		if(hCamera > stop_time_hCamera){
 			Vect2f ScrSize = ((cRenderDevice*)ivsRenderDevice) -> GetSize();
 			Vect2f Center = ivsCamera -> GetCenter()*ScrSize;	

@@ -9,7 +9,7 @@
 #define delCLSAll delO3DAll
 
 #include "IVisGeneric.h"
-#include "math3d.h"
+#include "Math3d.h"
 
 extern void initM3D(int xScr,int yScr,int FullScr);
 extern void doneM3D();

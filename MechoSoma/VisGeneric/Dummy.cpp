@@ -1,18 +1,21 @@
-#include "_xtool.h"
+#include "xtool.h"
 #include "Base.h"
 #include "Dummy.h"
 #include "HashStringGroup.h"
-#include "my_STL.h"
+
+#ifndef _WIN32
+#include "port.h"
+#endif
 
 //////////////////////////////////////////////////////////////////////////
-// Hash-table для определения типов дамми
+// Hash-table пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////////////
 struct DummyNameMap :  HashStringGroup<int>
 {
 	DummyNameMap()
 	{
 		add("engine", M3D_ENGINE);
-		add("back", M3D_ENGINE); // чтобы не переименовывать задние колеса
+		add("back", M3D_ENGINE); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		add("front", M3D_FRONT);
 		
 		add("lf_wheel", M3D_LF_WHEEL);

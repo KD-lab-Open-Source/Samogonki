@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "fxlabID.h"
 #include "fxlabGeneral.h"
@@ -10,7 +10,7 @@
 #include "fxlabApplication.h"
 #include "XTList.h"
 #include "fxlabClientGeneral.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 void fxlabClientEvolutionType::Start(void)
 {
@@ -240,8 +240,8 @@ int fxlabParticleCore::GetAlive(void)
 void fxlabParticleCore::ConvertPosition(void)
 {
 	VsS = Vect3f(ProcessMaxX - ProcessMinX,ProcessMaxY - ProcessMinY,ProcessMaxZ - ProcessMinZ);
-	VsL.x = XCYCL(round(Position.x + ProcessMinX));
-	VsL.y = YCYCL(round(Position.y + ProcessMinY));
+	VsL.x = XCYCL(int(round(Position.x + ProcessMinX)));
+	VsL.y = YCYCL(int(round(Position.y + ProcessMinY)));
 	VsL.z = Position.z + ProcessMinZ;
 };
 	
@@ -257,9 +257,9 @@ void fxlabParticleCore::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabParticleCore");
 };
 
-#include "Visgeneric.h"
-#include "camera.h"
-#include "scene.h"
+#include "VisGeneric.h"
+#include "Camera.h"
+#include "Scene.h"
 
 void fxlabParticleCore::CheckVisibility(void)
 {

@@ -4,6 +4,11 @@
 #include <vector>
 #include "xmath.h"
 
+#ifndef FOR_EACH
+#define FOR_EACH(list, iterator) \
+  for((iterator) = (list).begin(); (iterator) != (list).end(); ++(iterator))
+#endif
+
 using namespace std;
 
 unsigned int CalcType(char* NameMesh);

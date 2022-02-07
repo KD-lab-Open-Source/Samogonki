@@ -5,7 +5,7 @@
 #include "arcane.h"
 
 #include "aci_parser.h"
-#include "m3dsetup.h"
+#include "M3DSETUP.H"
 
 #include "mch_common.h" // For far target
 

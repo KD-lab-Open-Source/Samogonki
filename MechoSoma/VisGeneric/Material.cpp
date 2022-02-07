@@ -1,6 +1,6 @@
-#include "material.h"
-#include "maths.h"
-#include "malloc.h"
+#include "Material.h"
+#include "Maths.h"
+#include <stdlib.h>
 #include "PolyMgr.h"
 
 sTexture::~sTexture()

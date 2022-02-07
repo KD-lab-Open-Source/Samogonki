@@ -2,7 +2,7 @@
 #include "Dispatcher.h"
 #include "Object3d.h"
 #include "TileMap.h"
-#include "file3ds.h"
+#include "File3ds.h"
 #include "Object.h"
 #include "BaseObject.h"
 #include "BaseDefine.h"

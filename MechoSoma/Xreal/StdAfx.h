@@ -10,10 +10,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifdef _WIN32
+
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #define DIRECTINPUT_VERSION 0x0700
 #include <dinput.h>
+
+#endif
 
 // Standart includes
 #include <string.h>
@@ -24,7 +28,7 @@
 
 #include <iomanip>
 #include <fstream>
-#include <typeinfo.h>
+#include <typeinfo>
 #include <float.h>
 
 
@@ -32,18 +36,16 @@
 #include <vector> 
 #include <list>
 //#include "slist.h"
-#include "hash_map.h"
+#include <unordered_map>
 //#include <map.h>
 #include <string>
 
-#include "my_STL.h"
-
 // XTool
 #include "Handle.h"
-#include "_xtool.h"
-#include "xgr.h"
+#include "xtool.h"
+#include "XGR.h"
 #include "xmath.h"
-#include "cycledMath.h"
+#include "CycledMath.h"
 #include "Timers.h"
 #include "Mesh3ds.h"
 

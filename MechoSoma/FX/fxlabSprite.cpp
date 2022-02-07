@@ -2,7 +2,7 @@
 
 #include "aci_parser.h"
 
-#include "polymgr.h"
+#include "PolyMgr.h"
 
 #include "fxlabID.h"
 #include "fxlabResource.h"
@@ -43,7 +43,7 @@ void fxlabSpriteType::Close(void)
 
 sSpriteFX* fxlabSpriteType::GetSpriteData(float phase)
 {
-	return SpriteData + round(phase * Scale);
+	return SpriteData + int(round(phase * Scale));
 };
 
 void fxlabSpriteType::Link(void)

@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "math3d.h"
+#include "Math3d.h"
 #include "PolyMgr.h"
 
 #ifdef _MECHOSOMA_
@@ -10,7 +10,11 @@
 
 cLight::cLight()
 { 
-	SetPosition(Vect3f(0,0,0),Vect3f(0,0,0)); 
+	{
+		Vect3f v1(0,0,0);
+		Vect3f v2(0,0,0);
+		SetPosition(v1,v2);
+	}
 	SetAmbient(sColor4f(0,0,0,1)); 
 	SetDiffuse(sColor4f(0,0,0,1)); 
 }
@@ -19,9 +23,9 @@ cLight::~cLight()
 }
 
 #include "Object.h"
-#include "math.h"
+#include "Math.h"
 #include "Maths.h"
-#include "base.h"
+#include "Base.h"
 
 #define PREC_OMNI									10
 

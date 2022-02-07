@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "sound.h"
 
 #include "fxlabID.h"

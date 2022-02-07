@@ -3,7 +3,9 @@
 #include "PolyMgr.h"
 
 #include "Math3d.h"
+#ifdef _WIN32
 #include "SoftWare16.h"
+#endif
 #include "Dispatcher.h"
 #include "TileMap.h"
 #include "DrawPolygonShade.h"
@@ -13,8 +15,13 @@
 #include "TexMgr.h"
 #include "GameClient.h"
 #include "GameClient.h"
+#ifdef _WIN32
 #include "Win32f.h"
 #include "my_STL.h"
+#else
+#include "TERRA.H"
+#define DBGCHECK
+#endif
 
 #ifdef _MECHOSOMA_
 #include "mch_common.h" // For far target
@@ -126,7 +133,7 @@ cMesh* cList::FindMesh(char *Name)
 	cList *start=this;
 	cMesh *tmp;
 	do{
-		if(start->Mesh->GetName()==Name) return start->Mesh;
+		if(start->Mesh->GetName()==static_cast<const char*>(Name)) return start->Mesh;
 		if((start->Mesh->Child)&&((tmp=start->Mesh->Child->FindMesh(Name))!=0)) 
 			return tmp;
 		start=start->next;
@@ -539,7 +546,7 @@ cMesh* cMesh::FindMesh(char *Name)
 {
 	AssertValid();
 	if(Name[0]==0) return 0;
-	if(GetName()==Name) return this;
+	if(GetName()==static_cast<const char*>(Name)) return this;
 	if(Child) return Child->FindMesh(Name);
 	return 0;
 }
@@ -891,7 +898,7 @@ void cMesh::BuildShadeDynamic(short **shade,int *xShade,int *yShade,Vect3f &PosS
 #endif
 		(*shade)=new short [(*xShade)*(*yShade)+1];
 	assert(shade);
-	memfill((unsigned long*)(*shade),((*xShade)*(*yShade)+1)>>1,0x80008000);
+	memfill((uint32_t*)(*shade),((*xShade)*(*yShade)+1)>>1,0x80008000);
 	int nPointFix=0;
 	DrawShadeDynamic((*shade),*xShade,*yShade,nPointFix);
 	PosShade.set(Box.xmin()+*xShade,Box.ymin(),Box.zmax());
@@ -986,7 +993,7 @@ void cMesh::BuildShadeStatic(short **shade,int *xShade,int *yShade,Vect3f &PosSh
 #endif
 		(*shade)=new short [(*xShade)*(*yShade)+1];
 	assert(shade);
-	memfill((unsigned long*)(*shade),((*xShade)*(*yShade)+1)>>1,0x80008000);
+	memfill((uint32_t*)(*shade),((*xShade)*(*yShade)+1)>>1,0x80008000);
 	int nPointFix=0;
 	DrawShadeStatic((*shade),*xShade,*yShade,nPointFix);
 /*	if(strstr(fname,"ngine")!=0)
@@ -1309,7 +1316,7 @@ void cMesh::SetArcane(void (*FunctionSetArcane)(mchArcaneData*))
 inline sTile* GetTileByName(cTile *Tile,char *name)
 {
 	for(int  nTile=0;nTile<Tile->GetNumberTile();nTile++)
-		if(Tile->GetTile(nTile)->GetName()==name)
+		if(Tile->GetTile(nTile)->GetName()==static_cast<const char*>(name))
 			return Tile->GetTile(nTile);
 	return 0;
 }
@@ -1347,14 +1354,14 @@ void DrawLine1(char *buf,int xs,int ys,float x1,float y1,float x2,float y2)
 		float d=dy/dx_;
 		if(x1>x2) { x=x1; x1=x2; x2=x; y=y2; d=-d; } else y=y1;
 		for(int x=round(x1);x<round(x2);x++)
-		{ if((x>=0)&&(x<xs)&&(y>=0)&&(y<ys))buf[x+round(y)*xs]=1; y+=d; }
+		{ if((x>=0)&&(x<xs)&&(y>=0)&&(y<ys))buf[int(x+round(y)*xs)]=1; y+=d; }
 	}
 	else
 	{
 		float d=dx/dy_;
 		if(y1>y2) { x=y1; y1=y2; y2=x; y=x2; d=-d; } else  y=x1;
 		for(int x=round(y1);x<round(y2);x++)
-		{ if((x>=0)&&(x<ys)&&(y>=0)&&(y<xs))buf[x*xs+round(y)]=1; y+=d; }
+		{ if((x>=0)&&(x<ys)&&(y>=0)&&(y<xs))buf[int(x*xs+round(y))]=1; y+=d; }
 	}
 }
 void cMesh::SetWireSize(const Vect3f &size)
@@ -1387,7 +1394,7 @@ void cMesh::WireScale(const Vect3f &scale)
 			{
 				char FindCopy=0;
 				for(int j=0;j<i;j++)
-					if(Frame->mkf->key[i]->GetFileName()==Frame->mkf->key[j]->GetFileName()) 
+					if(Frame->mkf->key[i]->GetFileName()==static_cast<const char*>(Frame->mkf->key[j]->GetFileName()))
 						FindCopy=1;
 				if(!FindCopy) 
 					Frame->mkf->key[i]->WireScale(scale);

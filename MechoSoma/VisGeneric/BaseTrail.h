@@ -10,16 +10,16 @@ class cTileMap;
 class cBaseTrail : public cBaseObject, public cBaseDrawObject
 {
 public:
-	Vect3f			Point[4];			// 4-точки текстуры 
-	Vect3f			Pos;				// место положение центра
-	sColor4f		Diffuse1;			// освещенность объекта в начале
-	sColor4f		Diffuse2;			// освещенность объекта в конце
+	Vect3f			Point[4];			// 4-пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	Vect3f			Pos;				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	sColor4f		Diffuse1;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	sColor4f		Diffuse2;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	MeasurementTimer Timer;
 	float			   Duration;		   
-//	float			CurrentTime;		// текущее время, CurrentTime+StartTime==GlobalTime
-//	float			StartTime;			// время начала жизни 
-//	float			FinishTime;			// время жизни 
-	float			AnimTime;			// время анимации
+//	float			CurrentTime;		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, CurrentTime+StartTime==GlobalTime
+//	float			StartTime;			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 
+//	float			FinishTime;			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 
+	float			AnimTime;			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	cBaseTrail(unsigned int type,unsigned int kind) : cBaseObject(type,kind)			{ /*StartTime=0;*/ }
 };
@@ -54,4 +54,4 @@ enum TrailType {
 	TrailTypeMax
 };
 
-#endif __BASETRAIL_H__
+#endif // __BASETRAIL_H__

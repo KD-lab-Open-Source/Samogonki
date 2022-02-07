@@ -3,8 +3,8 @@
 #include "Mechos.h"
 #include "Dragon.h"
 #include "M3d_effects.h"
-#include "mesh3ds.h"
-#include "params.h"
+#include "Mesh3ds.h"
+#include "Params.h"
 #include "AnimalsPrm.h"
 #include "M3d_effects.h"
 

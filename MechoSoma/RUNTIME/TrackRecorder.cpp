@@ -5,7 +5,7 @@
 #include "TrackRecorder.h"
 
 #include "race.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"

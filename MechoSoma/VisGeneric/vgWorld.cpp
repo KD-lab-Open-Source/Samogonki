@@ -5,7 +5,7 @@
 #include "TileMap.h"
 #include "BaseLight.h"
 
-cUnknownClass* cVisGeneric::CreateWorld(char *fname,int number,int track,int LoadTerra)
+cUnknownClass* cVisGeneric::CreateWorld(const std::filesystem::path &path,int number,int track,int LoadTerra)
 {
 	if(LoadTerra)
 	{
@@ -14,7 +14,7 @@ cUnknownClass* cVisGeneric::CreateWorld(char *fname,int number,int track,int Loa
 		vMap_load3Buf(0,0,track);
 	}
 	assert(GetActiveScene());
-	Scene->LoadWorld(fname,number,track);
+	Scene->LoadWorld(path,number,track);
 	return GetActiveScene();
 }
 int cVisGeneric::ReleaseWorld(cUnknownClass *UWorld)

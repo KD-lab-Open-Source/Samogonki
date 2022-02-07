@@ -2,7 +2,7 @@
 #define __BOUNDING_BOX_H__
 
 #include <assert.h>
-#include "umath.h"
+#include "UMATH.H"
 
 class cBoundingBox
 {

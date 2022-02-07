@@ -5,7 +5,7 @@
 #include "CrawlingObject.h"
 #include "Worm.h"
 #include "Mesh3ds.h"
-#include "Sound.h"
+#include "sound.h"
 
 void fxlabGreenSlime(const Vect3f& v, const MatXf& mat);
 void fxlabYellowSlime1(const Vect3f& v, const MatXf& mat);

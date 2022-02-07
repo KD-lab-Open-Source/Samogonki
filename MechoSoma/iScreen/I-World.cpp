@@ -4,26 +4,26 @@
 
 #include "SST_Reader.h"
 
-#include "mch_rto.h"
+#include "mch_rto.H"
 
 #include "mechosoma.h"
 #include "race.h"
-#include "mesh3ds.h"
-#include "xreal.h"
-#include "terra.h"
+#include "Mesh3ds.h"
+#include "Xreal.h"
+#include "TERRA.H"
 #include "arcane.h"
 #include "SpriteDispatcher.h"
 #include "arcane_menu.h"
 #include "sound.h"
 
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 #include "iText.h"
-#include "aci_ids.h"
-#include "aci_evnt.h"
-#include "aci_scr.h"
-#include "hfont.h"
-#include "keys.h"
+#include "ACI_IDS.H"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
+#include "HFONT.H"
+#include "KEYS.H"
 
 #include "LocalVersion.h"
 
@@ -41,7 +41,7 @@
 #include "parts_pool.h"
 
 #include "aci_parser.h"
-#include "scr_defs.h"
+#include "SCR_DEFS.H"
 
 #include "PlayWSC.h"
 
@@ -255,7 +255,8 @@ void iWorldDispatcher::CreateTeleports(void)
 
 		tpLst.append(tp);
 
-		fxlabCreateTeleport(it -> World,it -> Track,Vect3f(it -> PosX,it -> PosY,0),1);
+		Vect3f v1(it -> PosX,it -> PosY,0);
+		fxlabCreateTeleport(it -> World,it -> Track,v1,1);
 	}
 }
 
@@ -602,9 +603,10 @@ void iWorldDispatcher::Quant(void)
 		iwArrowPos -> Quant(dt);
 
 		R = iwAssembly_R;
-		R.z = iwAssembly_Z0 + 30.0f + 20.0f * iwArrowPos -> Value(); 
+		R.z = iwAssembly_Z0 + 30.0f + 20.0f * iwArrowPos -> Value();
 
-		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)iwAssembly_Arrow,&R,&Vect3f(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f));
+		Vect3f v1(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f);
+		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)iwAssembly_Arrow,&R,&v1);
 
 		if(iwHideArrows || mode == IW_ASSEMBLY || (mchSplitScreenGame && iworld_D2 -> AssemblyMode()))
 			iwAssembly_Arrow -> SetVisible(0);
@@ -613,9 +615,10 @@ void iWorldDispatcher::Quant(void)
 
 
 		R = iwElect_R;
-		R.z = iwElect_Z0 + 30.0f + 20.0f * iwArrowPos -> Value(); 
+		R.z = iwElect_Z0 + 30.0f + 20.0f * iwArrowPos -> Value();
 
-		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)iwElectionary_Arrow,&R,&Vect3f(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f));
+		Vect3f v2(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f);
+		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)iwElectionary_Arrow,&R,&v2);
 
 		if(iwHideArrows || mode == IW_ELECTIONARY || (mchSplitScreenGame && iworld_D2 -> ElectionaryMode()))
 			iwElectionary_Arrow -> SetVisible(0);
@@ -627,7 +630,8 @@ void iWorldDispatcher::Quant(void)
 			if(tp -> arrow){
 				d = ZV(XCYCL(tp -> PosX),YCYCL(tp -> PosY)) + 50.0f + 20.0f * iwArrowPos -> Value();
 				R = Vect3f(tp -> PosX,tp -> PosY,d);
-				gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)tp -> arrow,&R,&Vect3f(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f));
+				Vect3f v3(90.0f,iwArrowRot -> Phase()*180.0f/M_PI,0.0f);
+				gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)tp -> arrow,&R,&v3);
 
 				if(iwHideArrows || (mode == IW_TELEPORT && nextWorld == tp -> World && nextTrack == tp -> Track) || (mchSplitScreenGame && iworld_D2 -> TeleportMode() && iworld_D2 -> NextWorld() == tp -> World && iworld_D2 -> NextTrack() == tp -> Track))
 					tp -> arrow -> SetVisible(0);
@@ -1832,7 +1836,9 @@ void iWorldDispatcher::AssemblyQuant(void)
 	iwAssembly_CurPartAngle += da;
 	if(iwAssembly_CurPartAngle > 360.0f) iwAssembly_CurPartAngle -= 360.0f;
 
-	gb_IVisGeneric -> dSetObjectPosition((cUnknownClass*)parts[curPartType][curPart],&Vect3f(0,0,0),&Vect3f(0,0,iwAssembly_CurPartAngle));
+	Vect3f v1(0,0,0);
+	Vect3f v2(0,0,iwAssembly_CurPartAngle);
+	gb_IVisGeneric -> dSetObjectPosition((cUnknownClass*)parts[curPartType][curPart],&v1,&v2);
 
 	aciScreenObject* p;
 	p = curScreen -> GetObject(10);
@@ -2326,7 +2332,9 @@ void iwInitWorld(void)
 
 		z += (obj -> Real.Max[2] - obj -> Real.Min[2]) / 2.0f;
 
-		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)obj,&Vect3f(x,y,z),&Vect3f(0,0,al * 180.0f / M_PI + 90.0f));
+		Vect3f v1(x,y,z);
+		Vect3f v2(0,0,al * 180.0f / M_PI + 90.0f);
+		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)obj,&v1,&v2);
 		iwFigures[i] = obj;
 	}
 
@@ -2563,7 +2571,9 @@ void iWorldDispatcher::InitFigures(void)
 
 			z += (figures[i] -> Real.Max[2] - figures[i] -> Real.Min[2]) / 2.0f;
 
-			gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)figures[i],&Vect3f(x,y,z),&Vect3f(0,0,al * 180.0f / M_PI + 90.0f));
+			Vect3f v1(x,y,z);
+			Vect3f v2(0,0,al * 180.0f / M_PI + 90.0f);
+			gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)figures[i],&v1,&v2);
 			n ++;
 
 			SetFigureAnimation(i,0);
@@ -3080,7 +3090,9 @@ void iWorldDispatcher::AssemblyCoordsQuant(void)
 			y = iwAssembly_R.y + r1 * sin(al);
 			z = iwPartsB[i][j].X();
 
-			gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m,&Vect3f(x,y,z),&Vect3f(0,0,al * 180.0f / M_PI - 90.0f));
+			Vect3f v1(x,y,z);
+			Vect3f v2(0,0,al * 180.0f / M_PI - 90.0f);
+			gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m,&v1,&v2);
 
 			if(i == curPartType && fabs(iwPartsB[i][j].X() - iwAssembly_Z0) < 10.0f)
 				fxlabPartWave(x,y);

@@ -1,9 +1,13 @@
 #ifndef __IGRAPH3D_H__
 #define __IGRAPH3D_H__
 
+#ifdef _WIN32
 #include <windows.h>
 #include <ddraw.h>
-#include <md3d.h>
+#else
+#define NULL 0
+#endif
+#include <Md3d.h>
 
 #define GET_INT_RGBA(r,g,b,a)		(((a)<<24)|((r)<<16)|((g)<<8)|(b))
 
@@ -17,15 +21,15 @@ enum eInterfaceGraph3d
 enum eModeGraph3d
 {
 	GRAPH3D_MODE_NULL	=	0<<0,	
-	GRAPH3D_MODE_DEBUG	=	1<<1,	// отладочный запуск
-	GRAPH3D_MODE_WINDOW	=	1<<2,	// вывод в окно
+	GRAPH3D_MODE_DEBUG	=	1<<1,	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_WINDOW	=	1<<2,	// пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 	
-	GRAPH3D_MODE_RGB16	=	1<<10,	// 16 битный цвет
-	GRAPH3D_MODE_RGB32	=	1<<11,	// 32 битный цвет
-	GRAPH3D_MODE_Z16	=	1<<12,	// 16 битный z-буффер
-	GRAPH3D_MODE_Z32	=	1<<13,	// 32 битный z-буффер
-	GRAPH3D_MODE_T16	=	1<<14,	// 16 битные текстуры
-	GRAPH3D_MODE_T32	=	1<<15	// 32 битные текстуры
+	GRAPH3D_MODE_RGB16	=	1<<10,	// 16 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_RGB32	=	1<<11,	// 32 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_Z16	=	1<<12,	// 16 пїЅпїЅпїЅпїЅпїЅпїЅ z-пїЅпїЅпїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_Z32	=	1<<13,	// 32 пїЅпїЅпїЅпїЅпїЅпїЅ z-пїЅпїЅпїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_T16	=	1<<14,	// 16 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	GRAPH3D_MODE_T32	=	1<<15	// 32 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 };
 
 enum eTextureFormat
@@ -70,18 +74,18 @@ enum eMaterialMode
 	MAT_ALPHA_MOD_TEXTURE1						=	1<<6,						// alpha*=Texture1
 	MAT_ALPHA_MASK_TEXTURE1						=	1<<7,						// alpha*=Texture1
 	MAT_COLOR_ADD_DIFFUSE						=	1<<8,
-	// смешанные материалы Diffuse & Texture1 & Specular
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Diffuse & Texture1 & Specular
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1,	// color=Texture1*Diffuse
 	MAT_COLOR_MOD_DIFFUSE_ADD_SPECULAR			=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_ADD_SPECULAR,	// color=Diffuse+Specular
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ADD_SPECULAR	=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_COLOR_ADD_SPECULAR,	// color=Texture1*Diffuse+Specular
-	// смешанные материалы Diffuse & Texture1 & Alpha
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Diffuse & Texture1 & Alpha
 	MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE							=	MAT_COLOR_MOD_DIFFUSE	|	MAT_ALPHA_MOD_DIFFUSE,		// color=Diffuse, a=aDiffuse,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ALPHA_MOD_DIFFUSE				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_ALPHA_MOD_DIFFUSE,	// color=Texture1*Diffuse, a=aDiffuse,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ALPHA_MOD_TEXTURE1				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_ALPHA_MOD_TEXTURE1,	// color=Texture1*Diffuse, a=aTexture1,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ALPHA_MOD_DIFFUSE_TEXTURE1		=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_ALPHA_MOD_DIFFUSE	|	MAT_ALPHA_MOD_TEXTURE1,	// color=Texture*Diffuse, a=aTexture*aDiffuse,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ALPHA_MASK_TEXTURE1				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_ALPHA_MASK_TEXTURE1,	// color=Texture1*Diffuse, a=aTexture1,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ALPHA_MOD_DIFFUSE_MASK_TEXTURE1	=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_ALPHA_MOD_DIFFUSE	|	MAT_ALPHA_MASK_TEXTURE1,	// color=Texture*Diffuse, a=aTexture*aDiffuse,
-	// смешанные материалы Diffuse & Texture1 & Specular & Alpha
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Diffuse & Texture1 & Specular & Alpha
 	MAT_COLOR_MOD_DIFFUSE_ADD_SPECULAR_ALPHA_MOD_DIFFUSE						=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_ADD_SPECULAR	|	MAT_COLOR_ADD_SPECULAR	|	MAT_ALPHA_MOD_DIFFUSE,	// color=Diffuse+Specular, a=aDiffuse,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ADD_SPECULAR_ALPHA_MOD_DIFFUSE				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_COLOR_ADD_SPECULAR	|	MAT_ALPHA_MOD_DIFFUSE,	// color=Texture1*Diffuse+Specular, a=aDiffuse,
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1_ADD_SPECULAR_ALPHA_MOD_TEXTURE1				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1	|	MAT_COLOR_ADD_SPECULAR	|	MAT_ALPHA_MOD_TEXTURE1,	// color=Texture1*Diffuse+Specular, a=aTexture1,
@@ -113,7 +117,7 @@ enum eRenderStateOption
 	RENDERSTATE_TEXTUREADDRESS			=	18,
 	RENDERSTATE_TEXTUREPOINT			=	19,
 	RENDERSTATE_TEXTURELINEAR			=	20,
-// временно не используются
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	RENDERSTATE_MIPMAP,
 };
 
@@ -152,7 +156,7 @@ enum eBlendMode
 };
 
 struct sVertexFix
-{ // диффузный цвет - drgba, спекулярный цвет - srgba, 3 пары текстурных координат - uv[3][2]
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - drgba, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - srgba, 3 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - uv[3][2]
 	float			xe,ye,z,w;
 	unsigned char	drgba[4];
 	unsigned char	srgba[4];
@@ -178,7 +182,7 @@ struct sVertexFix
 class Vect2f;
 class Vect3f;
 struct sVertexD3D
-{ // диффузный цвет - drgba, спекулярный цвет - srgba, 3 пары текстурных координат - uv[3][2]
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - drgba, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ - srgba, 3 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - uv[3][2]
 	float			x,y,z;
 	unsigned char	drgba[4];
 	unsigned char	srgba[4];
@@ -249,8 +253,8 @@ public:
 	virtual int CreateTexture(int x,int y,eTextureFormat TextureFormat)=0;
 	virtual int DeleteTexture(int hTexture)=0;
 
-	// начало прочие функции
-	// спрайты
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	virtual int CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat, 
 							  DWORD dwFlags,DWORD* lpdwHandle )=0;
 	virtual int CreateChildSprite(DWORD dwParentHandle,DWORD dwLeft,DWORD dwTop, 
@@ -286,9 +290,9 @@ public:
 	virtual int SetViewColor(int r,int g,int b,int alfa)=0;
 	virtual int GetWindowHandle( HWND *hWnd )=0;
 	virtual int ScreenShot(VOID *lpBuffer,DWORD dwSize)=0;
-	// конец прочие функции
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-	// вспомогательные функции, могут быть не реализоаваны
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	virtual int	GetSizeX()														{ return 0; }
 	virtual int	GetSizeY()														{ return 0; }
 	virtual void* GetZBuffer()													{ return 0; }

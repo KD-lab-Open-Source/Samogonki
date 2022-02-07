@@ -1,7 +1,7 @@
 #ifndef __GAMECLIENT_H__
 #define __GAMECLIENT_H__
 
-#include "umath.h"
+#include "UMATH.H"
 
 class cUnknownClass;
 class cSurfaceReflectionMultiMaterial;

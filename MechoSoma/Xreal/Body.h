@@ -6,7 +6,7 @@
 #define __BODY_H__
 
 #include "BaseObject.h"
-#include "Grid2d.h"
+#include "Grid2D.h"
 #include "SimpleClip.h"
 
 extern class cInterfaceVisGeneric* xrealIVG;
@@ -156,6 +156,8 @@ protected:
      	unsigned int body_colliding : 1;
 	unsigned int in_contact : 1;
 };
+
+class FieldSource;
 
 class Body :  public DynamicBody, public BaseObject, public Grid2DElement
 {

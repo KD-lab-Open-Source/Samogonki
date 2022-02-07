@@ -4,8 +4,10 @@
 //////////////////////////////////////////////
 //	Control defines
 //////////////////////////////////////////////
+#ifdef _WIN32
 #define TNT_MEM_HEAP  200000
 #define TNT_NO_BOUNDS_CHECK
+#endif
 //#define _LCPSolverListing_
 //#define _LCPSolverTest_
 
@@ -39,9 +41,9 @@ extern MemoryHeap tnt_mem_heap;
 #endif
 #endif
 
-#include "tnt.h"
-#include "vec.h"
-#include "fmat.h"
+#include "TNT.H"
+#include "VEC.H"
+#include "FMAT.H"
 
 
 using namespace TNT;
@@ -69,11 +71,11 @@ class LCP_Solver
 {
 protected:
 	enum ContactProperty {	
-			_CLEAN_ = 0, // Чистый контакт
-			_C_ = 1,	   // "Clamped" - зафиксированный контакт: f > 0, (a == 0)	
-			_NC_ = 2,	 // "NonClamped" - разравающийся контакт: f == 0, (a > 0)
+			_CLEAN_ = 0, // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			_C_ = 1,	   // "Clamped" - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: f > 0, (a == 0)	
+			_NC_ = 2,	 // "NonClamped" - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: f == 0, (a > 0)
 
-			_CLEAN_F_ = 4, // Чистый контакт, трение
+			_CLEAN_F_ = 4, // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ
 			
 			_CF_ = 8,	 // "ClampedFriction" 
 			_NCF_ = 16,	 // "NonClampedFriction" 
@@ -81,8 +83,8 @@ protected:
 			_M_ = 2,	// "-"
 
 			_NCP_ = _NCF_ | _P_,	 // "NonClamped +": f == k*fn, a.< 0
-			_CP_ = _CF_ | _P_,	   // "Clamped +" - зафиксированный для трения: 0 < f < k*fn, (a == 0)	
-			_CM_ = _CF_ | _M_,	   // "Clamped -" - зафиксированный для трения: -k*fn < f < 0, (a == 0)	
+			_CP_ = _CF_ | _P_,	   // "Clamped +" - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: 0 < f < k*fn, (a == 0)	
+			_CM_ = _CF_ | _M_,	   // "Clamped -" - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: -k*fn < f < 0, (a == 0)	
 			_NCM_ = _NCF_ | _M_	 // "NonClamped -": f == -k*fn, a.> 0
 		};
 

@@ -1,7 +1,7 @@
 #include "DrawPolygonShade.h"
 #include "Maths.h"
 #include "IncTerra.h"
-#include "object3d.h"
+#include "Object3d.h"
 #include "PolyMgr.h"
 #include <fstream>
 
@@ -9,9 +9,9 @@
 
 #define SET_COORD_SHADE(p1,p2,p3)														\
 	{																					\
-		xe1=round(p1.xe); ye1=round(p1.ye); w1=round(p1.z)<<PREC_DRAW;				\
-		xe2=round(p2.xe); ye2=round(p2.ye); w2=round(p2.z)<<PREC_DRAW;				\
-		xe3=round(p3.xe); ye3=round(p3.ye); w3=round(p3.z)<<PREC_DRAW;				\
+		xe1=round(p1.xe); ye1=round(p1.ye); w1=int(round(p1.z))<<PREC_DRAW;				\
+		xe2=round(p2.xe); ye2=round(p2.ye); w2=int(round(p2.z))<<PREC_DRAW;				\
+		xe3=round(p3.xe); ye3=round(p3.ye); w3=int(round(p3.z))<<PREC_DRAW;				\
 	}
 #define SET_COORD_SHADE_MASK(p1,p2,p3)													\
 	{																					\

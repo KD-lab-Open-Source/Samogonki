@@ -5,6 +5,8 @@
 #ifndef __BodyFeatureHT_H__
 #define __BodyFeatureHT_H__
 
+#include <unordered_map>
+
 struct BodyPair
 {
 	int first;
@@ -23,10 +25,10 @@ struct BodyPairHasher : unary_function<BodyPair, size_t>
 	}
 };
 
-class BodyFeatureHT : public hash_map<BodyPair, FeaturesList , BodyPairHasher> 
+class BodyFeatureHT : public std::unordered_map<BodyPair, FeaturesList , BodyPairHasher> 
 {
 public:
-	BodyFeatureHT(int size) : hash_map<BodyPair, FeaturesList , BodyPairHasher>(size) {}
+	BodyFeatureHT(int size) : std::unordered_map<BodyPair, FeaturesList , BodyPairHasher>(size) {}
 	FeaturesList& operator()(const Body& b1, const Body& b2);
 	void check_to_clear();
 };

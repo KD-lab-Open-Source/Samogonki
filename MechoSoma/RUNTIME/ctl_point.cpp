@@ -3,7 +3,7 @@
 
 #include "mechosoma.h"
 #include "ctl_point.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 #include "arcane.h"
 #include "arcane_menu.h"
@@ -13,7 +13,7 @@
 #include "race.h"
 #include "sound.h"
 
-#include "terra.h"
+#include "TERRA.H"
 
 #include "mch_common.h" // For far target
 
@@ -85,7 +85,9 @@ mchMouse3D::mchMouse3D(void)
 	Visible = 0;
 	position.set(0.f);
 	m3dPtr = (cMesh*)gb_IVisGeneric -> CreateObject(M3D_KIND(M3D_MOUSE3D),M3D_TYPE(M3D_MOUSE3D));
-	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m3dPtr,&Vect3f(0,0,0),&Vect3f(0,0,0));
+	Vect3f v1(0,0,0);
+	Vect3f v2(0,0,0);
+	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m3dPtr,&v1,&v2);
 }
 
 mchMouse3D::~mchMouse3D(void)
@@ -96,7 +98,8 @@ void mchMouse3D::set(const Vect3f& pos)
 {
 	position = pos;
 
-	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m3dPtr, &position, &Vect3f(90,0,0));
+	Vect3f v1(90,0,0);
+	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)m3dPtr, &position, &v1);
 	gb_IVisGeneric -> SetObjectVisible((cUnknownClass*)m3dPtr,0);
 
 	if(mchTurnBasedGame && mchTimeMode == MCH_TIME_STOPPED && !camera_dispatcher -> isStartScenarioRunning() && !(mchGameFlags & MCH_START_TIME_FLAG))
@@ -200,8 +203,10 @@ void mchControlPoint::createObj(void)
 //	if(mchDebugMode || mchTurnBasedGame){
 	if(mchDebugMode){
 		mPtr = (cMesh*)gb_IVisGeneric -> CreateObject(M3D_KIND(M3D_CONTROL_POINT),M3D_TYPE(M3D_CONTROL_POINT));
+		Vect3f v1((float)PosX,(float)PosY,(float)PosZ);
+		Vect3f v2(0,0,0);
 		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)mPtr,
-			&Vect3f((float)PosX,(float)PosY,(float)PosZ),&Vect3f(0,0,0));
+			&v1,&v2);
 		mPtr -> SetAttribute(MESH_NOT_SHADE | MESH_LIGHTING_MAX);
 	}
 }

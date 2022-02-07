@@ -33,6 +33,7 @@ public:
 	int eof();					
 	int read(void *buf,int size);
 	int write(void *buf,int size);
+	int write(const char *buf,int size);
 	int length();
 	int tell();
 	void seek(int pos);
@@ -52,7 +53,7 @@ public:
 	cStream& operator << (float a);
 	cStream& operator << (double a);
 	cStream& operator << (long double a);
-	cStream& operator << (char *a);
+	cStream& operator << (const char *a);
 
 	cStream& operator >> (char &a);
 	cStream& operator >> (unsigned char &a);

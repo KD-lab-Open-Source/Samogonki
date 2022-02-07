@@ -8,6 +8,8 @@
 #include <math.h>
 #include "StreamBuffer.h"
 
+#include "port.h"
+
 #define STREAM_BUFFER_RESIZE					1024
 
 inline double StringToFloat(char *buf)
@@ -18,16 +20,16 @@ inline double StringToFloat(char *buf)
 	int i;
 	for(i=0;buf[i]!='+'&&buf[i]!='-'&&buf[i]<'0'&&buf[i]>'9';i++)
 		if(buf[i]) return a;
-	// вычислене целой части
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if(buf[i]=='-') { f_sign=-1; i++; } else { if(buf[i]=='+') i++; f_sign=1; }
 	for(;buf[i]&&'0'<=buf[i]&&buf[i]<='9';i++)
 		f_int=(f_int*10)+(buf[i]-'0');
 	if(buf[i]==0) 
 	{
-		assert(_finite(a));
+		assert(isfinite(a));
 		return a=f_sign*f_int;
 	}
-	// вычислене дробной части
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if(buf[i]=='.'||buf[i]==',')
 	{ 
 		i++;
@@ -36,17 +38,17 @@ inline double StringToFloat(char *buf)
 	}
 	if(buf[i]==0) 
 	{
-		assert(_finite(a));
+		assert(isfinite(a));
 		return a=f_sign*(f_int+f_fract);
 	}
-	// вычисление степени числа
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if(buf[i]=='e')
 	{
 		i++;
 		double f_sign_power;
 		if(buf[i]==0) 
 		{
-			assert(_finite(a));
+			assert(isfinite(a));
 			return a=f_sign*(f_int+f_fract);
 		}
 		if(buf[i]=='-') { f_sign_power=-1; i++; } else { if(buf[i]=='+') i++; f_sign_power=1; }
@@ -54,7 +56,7 @@ inline double StringToFloat(char *buf)
 			f_power=(f_power*10)+(buf[i]-'0');
 		f_power=pow(10,f_power*f_sign_power);
 	}
-	assert(_finite(a));
+	assert(isfinite(a));
 	return a=f_sign*(f_int+f_fract)*f_power;
 }
 
@@ -162,6 +164,11 @@ int cStream::write(void *buf,int size)
 	}
 	return size;
 }
+int cStream::write(const char *buf,int size)
+{
+	// TODO rough casting
+	return write((void *)buf, size);
+}
 int cStream::read(void *buf,int size)
 {
 	int d=size-(CurrentSize-CurrentPos);
@@ -205,7 +212,7 @@ cStream& cStream::operator << (char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ltoa(a,buf,10);
+	char *ch=port_ltoa(a,buf,10);
 	write(&ch,strlen(ch));
 	return *this; 
 }
@@ -213,7 +220,7 @@ cStream& cStream::operator << (unsigned char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ultoa(a,buf,10);
+	char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -221,7 +228,7 @@ cStream& cStream::operator << (short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ltoa(a,buf,10);
+	char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -229,7 +236,7 @@ cStream& cStream::operator << (unsigned short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ultoa(a,buf,10);
+	char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -237,7 +244,7 @@ cStream& cStream::operator << (int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ltoa(a,buf,10);
+	char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -245,7 +252,7 @@ cStream& cStream::operator << (unsigned int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ultoa(a,buf,10);
+	char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -253,7 +260,7 @@ cStream& cStream::operator << (long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ltoa(a,buf,10);
+	char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -261,7 +268,7 @@ cStream& cStream::operator << (unsigned long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=ultoa(a,buf,10);
+	char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -289,7 +296,7 @@ cStream& cStream::operator << (long double a)
 	write(buf,strlen(buf));
 	return *this; 
 }
-cStream& cStream::operator << (char *a)
+cStream& cStream::operator << (const char *a)
 { 
 	assert(lpBuffer); 
 	write(a,strlen(a));

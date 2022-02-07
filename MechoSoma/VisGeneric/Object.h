@@ -1,8 +1,8 @@
 #ifndef __LIGHT_H__ 
 #define __LIGHT_H__ 
 
-#include "unknown.h"
-#include "camera.h"
+#include "Unknown.h"
+#include "Camera.h"
 
 class cLight
 {
@@ -24,7 +24,8 @@ public:
 		Angle=angle; 
 		Matrix.NewMatrix(); 
 		Matrix.Rotate(Angle.x,Angle.y,Angle.z); 
-		Tangent=Matrix.xformVect(Vect3f(0,0,1)); 
+		Vect3f t(0,0,1);
+		Tangent=Matrix.xformVect(t); 
 	}
 	sColor4f& GetAmbient()								{ return Ambient; }
 	sColor4f& GetDiffuse()								{ return Diffuse; }
@@ -75,7 +76,7 @@ __forceinline int cLight::CalcToneMetal(Vect3f &vNormal,Vect3f &vLight,Vect3f &v
 	float cosNormalView =dot(vNormal,vView);
 	float cosReflectView=2*(cosNormalLight*cosNormalView)-cosLightView;
 	if(cosReflectView<0) return 0;
-	int ToneSpecular=COSN_CHAR(round(127*cosReflectView));
+	int ToneSpecular=COSN_CHAR(int(round(127*cosReflectView)));
 	return ToneSpecular;
 }
 __forceinline int cLight::CalcToneDiffuse(sVect3c &vNormal,Vect3f &vLight)
@@ -89,7 +90,7 @@ __forceinline int cLight::CalcToneMetal(sVect3c &vNormal,Vect3f &vLight,Vect3f &
 	float cosNormalView =vNormal.x*vView.x+vNormal.y*vView.y+vNormal.z*vView.z;
 	float cosReflectView=2*(cosNormalLight*cosNormalView)/(127.f*127.f)-cosLightView;
 	if(cosReflectView<0) return 0;
-	int ToneSpecular=COSN_CHAR(round(cosReflectView*127));
+	int ToneSpecular=COSN_CHAR(int(round(cosReflectView*127)));
 	return ToneSpecular;
 }
 

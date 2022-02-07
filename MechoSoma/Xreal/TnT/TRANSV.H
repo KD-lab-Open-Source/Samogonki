@@ -13,9 +13,9 @@
 #ifndef TRANSV_H
 #define TRANSV_H
 
-#include <iostream.h>
+#include <iostream>
 #include <cassert>
-#include "vec.h"
+#include "VEC.H"
 
 namespace TNT
 {

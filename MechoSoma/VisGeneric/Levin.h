@@ -1,7 +1,7 @@
 #ifndef __LEVIN_H__
 #define __LEVIN_H__
 
-#include "umath.h"
+#include "UMATH.H"
 #include "BaseClass.h"
 
 #define BIAS_LEVEL_COLOR								0.2

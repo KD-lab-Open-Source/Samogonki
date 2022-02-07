@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "BodyDispatcher.h"
 #include "Mechos.h"
@@ -670,8 +670,8 @@ void fxlabClientSuicideLink::CalcVelocity(void)
 	Velocity = Core->Yglobal();
 	Velocity = -Velocity;
 	d = 30.0f;
-	Position.x = XCYCL(round(Position.x + Velocity.x * d));
-	Position.y = YCYCL(round(Position.y + Velocity.y * d));
+	Position.x = XCYCL(int(round(Position.x + Velocity.x * d)));
+	Position.y = YCYCL(int(round(Position.y + Velocity.y * d)));
 	Position.z = Position.z + Velocity.z * d;
 	Velocity *= FXLAB_CLIENT_SUICIDE_SPEED;
 };
@@ -1159,7 +1159,7 @@ void fxlabClientVoodooMasterLink::Update(void)
 
 		a = -MechosOwner->yaw() + M_PI * 1.5f;
 		cycle(a,M_PI * 2.0f);
-		PsiVelocity += getDist(a,LastPosition.z,M_PI * 2.0f) * FXLAB_CLIENT_VOODOO_MASTER_PSI_MASS;
+		PsiVelocity += getDist_f(a,LastPosition.z,M_PI * 2.0f) * FXLAB_CLIENT_VOODOO_MASTER_PSI_MASS;
 		LastPosition.z += PsiVelocity * DeltaTime;
 		cycle(LastPosition.z,M_PI * 2.0f);
 		PsiVelocity *= FXLAB_CLIENT_VOODOO_MASTER_PSI_DAMP;

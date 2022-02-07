@@ -1,7 +1,7 @@
 #ifndef __DRAWPOLYGONSHADE_H__
 #define __DRAWPOLYGONSHADE_H__
 
-#include "umath.h"
+#include "UMATH.H"
 #include "Material.h"
 #include "IGraph3d.h"
 

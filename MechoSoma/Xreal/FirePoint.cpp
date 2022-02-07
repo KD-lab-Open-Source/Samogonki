@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 #include "FirePoint.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "HashStringGroup.h"
 
 //////////////////////////////////////////////////////////////////////////
-// Конструктора
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////////////
 typedef FirePoint* (*FirePointConstructor)(const Vect3f& dummyA, const Vect3f& dummyB);
 
@@ -39,7 +39,7 @@ FirePoint* FountainConstructor(const Vect3f& dummyA, const Vect3f& dummyB)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Hash-table типов
+// Hash-table пїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////////////
 struct FirePointType
 {

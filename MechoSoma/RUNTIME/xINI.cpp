@@ -32,11 +32,8 @@ void xINI_Init(void)
 	xINI_File* p;
 
 	xINI_List = new xtList<xINI_File>;
-/*
+#ifndef _WIN32
 	p = new xINI_File("game.ini");
-	xINI_List -> append(p);
-
-	p = new xINI_File("RESOURCE\\bots.ini");
 	xINI_List -> append(p);
 
 	p = new xINI_File("RESOURCE\\options.ini");
@@ -47,7 +44,7 @@ void xINI_Init(void)
 
 	p = new xINI_File("RESOURCE\\ISCREEN\\iscreen.ini");
 	xINI_List -> append(p);
-*/
+#endif
 	p = new xINI_File("RESOURCE\\ISCREEN\\local.ini");
 	xINI_List -> append(p);
 

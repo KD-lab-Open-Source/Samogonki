@@ -13,3 +13,14 @@ MechoSoma/Debug
 /MechoSoma/gameDbg.exe
 /MechoSoma/game.exe
 /MechoSoma/mechosoma.map
+
+# IDE
+.idea
+
+# Cmake
+cmake-build-debug
+
+# Third party
+MechoSoma/ThirdParty/3dsftk3
+MechoSoma/ThirdParty/libjpeg-turbo
+

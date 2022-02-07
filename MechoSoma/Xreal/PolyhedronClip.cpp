@@ -69,7 +69,7 @@ public:
 		if(put_contacts == 1){
 			body1 -> contacts.push_back( Contact() );
 			body1 -> contacts.back().set(distance, cp1, cp2, normal, &sphere, 0, body1, body2);
-			body2 -> contacts2.push_back( ContactRef(&body1 -> contacts.back() - body1 -> contacts.begin(), body1 -> contacts) );
+			body2 -> contacts2.push_back( ContactRef(body1 -> contacts.size() - 1, body1 -> contacts) );
 			}
 		else
 			if(distance < 0){
@@ -98,7 +98,7 @@ public:
 		if(put_contacts == 1){
 			body1 -> contacts.push_back( Contact() );
 			body1 -> contacts.back().set(dist_abs, cp1, cp2, normal, &sphere, 0, body1, body2);
-			body2 -> contacts2.push_back( ContactRef(&body1 -> contacts.back() - body1 -> contacts.begin(), body1 -> contacts) );
+			body2 -> contacts2.push_back( ContactRef(body1 -> contacts.size() - 1, body1 -> contacts) );
 			}
 		else
 			if(dist_abs < 0){

@@ -3,13 +3,13 @@
 
 #include "IVisGeneric.h"
 #include "Dispatcher.h"
-#include "file3ds.h"
+#include "File3ds.h"
 #include "Object3d.h"
 #include "Frame.h"
 #ifdef _MECHOSOMA_
 #include "TileMap.h"
 #endif
-#include "base.h"
+#include "Base.h"
 #include "BaseReflection.h"
 #include "SurmapClient.h"
 

@@ -3,10 +3,10 @@
 #include "Body.h"
 #include "SimpleClip.h"
 #include "MultibodyContact.h"
-#include "params.h"
-#include "xreal_utl.h"
+#include "Params.h"
+#include "Xreal_utl.h"
 #include "LCP_ContactSolver.h"
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #include "Statistics.h"
 #include "QuatMath.h"
 

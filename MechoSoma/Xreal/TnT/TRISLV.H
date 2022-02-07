@@ -14,7 +14,7 @@
 #define TRISLV_H
 
 
-#include "triang.h"
+#include "TRIANG.H"
 
 namespace TNT
 {

@@ -2,8 +2,8 @@
 #define __TERRA_H__
 
 //Global Define
-#define XCYCL(x)	((x) & clip_mask_x)
-#define YCYCL(y)	((y) & clip_mask_y)
+#define XCYCL(x)	(int(x) & clip_mask_x)
+#define YCYCL(y)	(int(y) & clip_mask_y)
 
 const unsigned int H_SIZE_POWER= 11;
 const unsigned int H_SIZE = 1 << H_SIZE_POWER;
@@ -92,8 +92,8 @@ const int BIZARRE_ALT_MAP	= 0;
 const int NOISELEVEL	       = 256;
 const unsigned char DELTA_MASK = 1 | (1 << 1);
 
-#include "vmap.h"
-#include "render.h"
+#include "VMAP.H"
+#include "RENDER.H"
 #include "ch_points.h"
 #include "sur_scr.h"
 #include "tools.h"

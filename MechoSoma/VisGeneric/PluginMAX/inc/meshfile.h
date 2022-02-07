@@ -30,7 +30,7 @@ public:
 	void	*f;
 	char	type;
 	int		error;
-	int		ofs;						// смещение в текстовом формате
+	int		ofs;						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	cMeshFile();
 	~cMeshFile();
@@ -80,8 +80,8 @@ class cBaseFileMeshArray: public cBaseDynArray <cBase>
 {
 public:
 	cBaseFileMeshArray()					{ }
-	~cBaseFileMeshArray()					{ Release(); }
-	void Release()							{ Delete(); }
+	~cBaseFileMeshArray()					{ this->Release(); }
+	void Release()							{ this->Delete(); }
 	void New(int NewSize)					{ cBaseDynArray<cBase>::New(NewSize); }
 	int Read(cMeshFile &f)					
 	{
@@ -94,8 +94,8 @@ public:
 					New(NewSize);
 					break;
 				case MF_TYPE_BASEMESH:
-					assert(CurrentSize<length());
-					f.ReadField(&Base[CurrentSize++]);
+					assert(CurrentSize<this->length());
+					f.ReadField(&this->Base[CurrentSize++]);
 					break;
 				case MF_TYPE_BLOCK:
 					switch(f.ReadBlock())
@@ -109,10 +109,10 @@ public:
 	}
 	int Write(cMeshFile &f)
 	{ 
-		if(length()<=0) return MESHFILE_OK;
+		if(this->length()<=0) return MESHFILE_OK;
 		f.BeginWriteBlock(MF_ID_BLOCK_BASEMESH);
-		f.WriteField(&length(),MF_TYPE_NUMBER);
-		for(cBase *b=Base,*e=&Base[length()];b<e;b++)
+		f.WriteField(&this->length(),MF_TYPE_NUMBER);
+		for(cBase *b=this->Base,*e=&this->Base[this->length()];b<e;b++)
 			f.WriteField(b,MF_TYPE_BASEMESH);
 		f.EndWriteBlock(MF_ID_BLOCK_BASEMESH);
 		return MESHFILE_OK;
@@ -124,29 +124,29 @@ class cBaseMeshPointerLibrary: public cBaseDynArrayPointer <cBaseMesh>
 {
 public:
 	cBaseMeshPointerLibrary()								{ }
-	~cBaseMeshPointerLibrary()								{ Release(); }
-	void Release()											{ Delete(); }
+	~cBaseMeshPointerLibrary()								{ this->Release(); }
+	void Release()											{ this->Delete(); }
 	cBaseMesh* New(cBaseMesh *BaseMesh)
 	{
 		if(BaseMesh==0) BaseMesh=new cBaseMesh;
-		else for(int i=0;i<length();i++) if(BaseMesh==Base[i]) { BaseMesh->Release(); return BaseMesh; }
-		Resize(length()+1);
-		Base[length()-1]=BaseMesh;
-		BaseMesh->ID=length()-1;
+		else for(int i=0;i<this->length();i++) if(BaseMesh==this->Base[i]) { BaseMesh->Release(); return BaseMesh; }
+		this->Resize(this->length()+1);
+		this->Base[this->length()-1]=BaseMesh;
+		BaseMesh->ID=this->length()-1;
 		return BaseMesh;
 	}
 	cBaseMesh* Get(unsigned int ID)
 	{
-		for(int i=0;i<length();i++)
-			if(Base[i]->ID==ID)
-				return Base[i];
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]->ID==ID)
+				return this->Base[i];
 		return 0;
 	}
 	cBaseMesh* Get(void *Key)
 	{
-		for(int i=0;i<length();i++)
-			if(Base[i]->cmp(Key)==0)
-				return Base[i];
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]->cmp(Key)==0)
+				return this->Base[i];
 		return 0;
 	}
 	inline cBaseMesh* Append()								
@@ -155,8 +155,8 @@ public:
 	}
 	int Write(cMeshFile &f)
 	{
-		for(int i=0;i<length();i++)
-			if(Base[i]->Write(f)!=MESHFILE_OK) return MESHFILE_ERROR;
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]->Write(f)!=MESHFILE_OK) return MESHFILE_ERROR;
 		return MESHFILE_OK;
 	}
 	inline cBaseMeshPointerLibrary& operator = (const cBaseMeshPointerLibrary &Array)

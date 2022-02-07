@@ -2,16 +2,18 @@
 #ifndef __FIELD_GRID__
 #define __FIELD_GRID__
 
+#include <list>
+
 #include "Body.h"
 #include "Grid2D.h"
 #include "FieldSource.h"
 
 class FieldGridBase : public Grid2D<FieldSource, 5> {};
 
-class FieldGrid : public slist<ShareHandle<FieldSource> >, public FieldGridBase
+class FieldGrid : public std::list<ShareHandle<FieldSource> >, public FieldGridBase
 {
 public:
-	typedef slist<ShareHandle<FieldSource> > List;
+	typedef std::list<ShareHandle<FieldSource> > List;
 	typedef FieldGridBase Grid;
 
 	void add(FieldSource* source);

@@ -4,10 +4,10 @@
 #include "mechosoma.h"
 #include "race.h"
 #include "CameraDispatcher.h"
-#include "terra.h"
+#include "TERRA.H"
 
-#include "aci_ids.h"
-#include "aci_scr.h"
+#include "ACI_IDS.H"
+#include "ACI_SCR.H"
 
 #include "TrackDispatcher.h"
 #include "demo_dispatcher.h"

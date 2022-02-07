@@ -1,13 +1,19 @@
 //////////////////////////////////////////////////////////////////
-//	Обращение к частям мехоса
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
-#include "base.h"
+#include "Base.h"
 
-// Индекс для обращения к массиву деталей (0-engine, front, back, rfw, rbw, lfw, lbw)
+#ifndef _WIN32
+#include "port.h"
+#endif
+
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (0-engine, front, back, rfw, rbw, lfw, lbw)
 inline int PART_INDEX(int type)	{ return BitSR(M3D_TYPE(type)); }
 
+class Mechos;
+
 //////////////////////////////////////////////////////////////////
-//	Часть мехоса
+//	пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////
 class Part : public Body {
 	friend class Mechos;
@@ -20,7 +26,7 @@ class Part : public Body {
 	int character; 
 	float distance_to_mechos;
 	int do_merge_to_mechos;
-	cMesh* formic;  // Муравей
+	cMesh* formic;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	DurationTimer colliding_timer;
 	AverageConditionTimer stopping_detection_timer;
 

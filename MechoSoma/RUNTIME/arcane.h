@@ -2,7 +2,7 @@
 #ifndef __ARCANE_H__
 #define __ARCANE_H__
 
-#include "..\FX\fxlabInterface.h"
+#include "fxlabInterface.h"
 
 enum mchArcaneID {
 	ARC_STOP_TIME = 0,

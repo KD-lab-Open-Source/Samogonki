@@ -2,9 +2,9 @@
 #include "Body.h"
 #include "Meteorite.h"
 #include "Cannon.h"
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 #include "Mesh3ds.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include <xmath.h>
 #pragma hdrstop
 
@@ -28,7 +28,9 @@ Cannon::Cannon(cMesh* model_)
 	model->SetFrame();
 }
 
-void fxCannonFire(Vect3f pos,Vect3f vel,float pow);
+void fxCannonFire(Vect3f pos,Vect3f vel,float pow)
+{
+}
 
 void Cannon::fire()
 {

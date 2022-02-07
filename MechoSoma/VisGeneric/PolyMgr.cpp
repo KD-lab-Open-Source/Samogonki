@@ -1,6 +1,8 @@
 #include "PolyMgr.h"
+#ifdef _WIN32
 #include "Software16.h"
-#include "object3d.h"
+#endif
+#include "Object3d.h"
 #include "RenderDevice.h"
 
 //#define SIGN(a)						((a)<0? -1: 1)

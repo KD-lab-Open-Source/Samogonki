@@ -10,21 +10,45 @@ struct sBaseColor4c
 	unsigned char r,g,b,a;
 	inline void Set(int rc,int gc,int bc)							{ r=rc; g=gc; b=bc; }
 	inline void Set(int rc,int gc,int bc,int ac)					{ r=rc; g=gc; b=bc; a=ac; }
-	inline sBaseColor4c operator + (sBaseColor4c &p)				{ sBaseColor4c tmp={r+p.r,g+p.g,b+p.b,a+p.a}; return tmp; }
+	inline sBaseColor4c operator + (sBaseColor4c &p)
+	{
+		sBaseColor4c tmp{
+			static_cast<unsigned char>(r+p.r),
+			static_cast<unsigned char>(g+p.g),
+			static_cast<unsigned char>(b+p.b),
+			static_cast<unsigned char>(a+p.a)
+		};
+		return tmp;
+	}
 	inline sBaseColor4c& operator += (sBaseColor4c &p)				{ r+=p.r; g+=p.g; b+=p.b; a+=p.a; return *this; }
 };
 struct sBasePoint3c
 {
 	char x,y,z;
 	inline void Set(int xw,int yw,int zw)							{ x=xw; y=yw; z=zw; }
-	inline sBasePoint3c operator + (sBasePoint3c &p)				{ sBasePoint3c tmp={x+p.x,y+p.y,z+p.z}; return tmp; }
+	inline sBasePoint3c operator + (sBasePoint3c &p)
+	{
+		sBasePoint3c tmp{
+			static_cast<char>(x+p.x),
+			static_cast<char>(y+p.y),
+			static_cast<char>(z+p.z)
+		};
+		return tmp;
+	}
 	inline sBasePoint3c& operator += (sBasePoint3c &p)				{ x+=p.x; y+=p.y; z+=p.z; return *this; }
 };
 struct sBasePoint2c
 {
 	char x,y;
 	inline void Set(int xw,int yw)									{ x=xw; y=yw; }
-	inline sBasePoint2c operator + (sBasePoint2c &p)				{ sBasePoint2c tmp={x+p.x,y+p.y}; return tmp; }
+	inline sBasePoint2c operator + (sBasePoint2c &p)
+	{
+		sBasePoint2c tmp{
+			static_cast<char>(x+p.x),
+			static_cast<char>(y+p.y)
+		};
+		return tmp;
+	}
 	inline sBasePoint2c& operator += (sBasePoint2c &p)				{ x+=p.x; y+=p.y; return *this; }
 };
 // структуры описывающие возмущение
@@ -124,4 +148,4 @@ public:
 
 extern void* BaseObject_BaseWaveProcess_Create(float x,float y,float z,float TimeLife=1.f,float dPhase=0.3f);
 
-#endif __BASEPOLYGRID_H__
+#endif // __BASEPOLYGRID_H__

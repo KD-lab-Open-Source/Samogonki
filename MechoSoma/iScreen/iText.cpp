@@ -2,7 +2,7 @@
 #include "StdAfx.h"
 
 #include "iText.h"
-#include "scr_defs.h"
+#include "SCR_DEFS.H"
 #include "aci_parser.h"
 
 #include "mch_common.h" // For far target

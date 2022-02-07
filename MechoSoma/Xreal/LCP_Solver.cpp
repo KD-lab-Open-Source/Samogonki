@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "LCP_Solver.h"
-#include "qr.h"
-#include "lu.h"
+#include "QR.H"
+#include "LU.H"
 #include "svd.h"
-#include "cholesky.h"
-#include "trislv.h"
-#include "transv.h"         /* transpose views */
+#include "CHOLESKY.H"
+#include "TRISLV.H"
+#include "TRANSV.H"         /* transpose views */
 //#include "PrmEdit.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "Params.h"
 #include "DebugPrm.h"
 
@@ -99,7 +99,11 @@ void LCP_Solver::save_problem(ofstream& out)
 
 	out << "init_counter: " << init_counter << endl;
 	out << "det(M): " << det(M) << endl;
-	out << (!Cholesky_upper_factorization(fullMatrix(), Mat(size + size_frictional, size + size_frictional)) ? "PSD" : "nonPSD!!!") << endl;
+	{
+		auto m1 = fullMatrix();
+		Mat m2(size + size_frictional, size + size_frictional);
+		out << (!Cholesky_upper_factorization(m1, m2) ? "PSD" : "nonPSD!!!") << endl;
+	}
 	out << "prp: " << prp;
 	out << "f: " << f;
 	out << "a: " << a;
@@ -455,7 +459,10 @@ void LCP_Solver::solveCholesky(Mat& A, Vect& B)
 	if(Cholesky_upper_factorization(A, L) !=0)
 		abort("LCP_Solver: Cholesky_upper_factorization fails");
 	Vect y = Lower_triangular_solve(L, B);
-	B = Upper_triangular_solve(Transpose_view(L), y);
+	{
+		auto m1 = Transpose_view(L);
+		B = Upper_triangular_solve(m1, y);
+	}
 }
 
 void LCP_Solver::solveSVD(Mat& A, Vect& B)

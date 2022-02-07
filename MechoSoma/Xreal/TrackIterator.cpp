@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TrackIterator.h"
-#include "Track.h"
-#include "Race.h"
+#include "track.h"
+#include "race.h"
 #include "SimpleClip.h"
 
 #undef assert
@@ -64,7 +64,7 @@ TrackIterator& TrackIterator::operator ++ ()
 			cp = mch_raceD -> cpLst -> first();
 		assert(cp);
 		br = cp -> getTrack();
-		xassert("Плохой трэк!!!" && br);
+		xassert("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ!!!" && br);
 		el = br -> pointLst -> first();
 		}
 	element = el;
@@ -86,7 +86,7 @@ TrackIterator& TrackIterator::operator -- ()
 		cp = cp -> prev;
 		assert(cp);
 		br = cp -> getTrack();
-		xassert("Плохой трэк!!!" && br);
+		xassert("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ!!!" && br);
 		el = br -> pointLst -> last();
 		}
 	element = el;

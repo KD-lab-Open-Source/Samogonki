@@ -605,9 +605,9 @@ float dValue, dValueCur;
 float period;
 
 acsTimer(float st,float pr,float d);
-void acsTimer::Quant(float dt);
-float acsTimer::Value(void);
-float acsTimer::Phase(void);
+void Quant(float dt);
+float Value(void);
+float Phase(void);
 void acsShowSlotInfo(void);
 };
 

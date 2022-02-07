@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "CustomFieldSources.h"
-#include "keys.h"
+#include "KEYS.H"
 #include "ctl_point.h"
 #include "race.h"
 #include "arcane_menu.h"
@@ -21,10 +21,10 @@
 #include "fxlabServerGeneral.h"
 #include "fxlabServerStuff.h"
 #include "fxlabServerArcane.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
-#include "m3d_id.h"
-#include "m3d_effects.h"
+#include "M3d_id.h"
+#include "M3d_effects.h"
 #include "fxlabBodyInterface.h"
 
 #include "TrackIterator.h"
@@ -34,7 +34,7 @@
 const float FXLAB_REALOBJECT_OFFSET_Z = 20.0f;
 
 MatXf getPlacementPose(const Vect3f& center);
-void fxlabGetArcanePosition(Mechos* owner,Vect3f& offset,Vect3f& pos);
+void fxlabGetArcanePosition(Mechos* owner,const Vect3f& offset,Vect3f& pos);
 
 extern int mchCurrentWorld;
 
@@ -2322,7 +2322,7 @@ void fxlabArcaneRedTrack::Close(void)
 };
 
 
-void fxlabGetArcanePosition(Mechos* owner,Vect3f& offset,Vect3f& pos)
+void fxlabGetArcanePosition(Mechos* owner,const Vect3f& offset,Vect3f& pos)
 {
 	Vect3f AxisX,AxisY,AxisZ;
 

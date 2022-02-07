@@ -2,7 +2,7 @@
 #include "StdAfx.h"
 
 #include "iText.h"
-#include "mch_rto.h"
+#include "mch_rto.H"
 
 #include "mechosoma.h"
 #include "arcane.h"
@@ -19,33 +19,34 @@
 
 #include "LocalVersion.h"
 
-#include "terra.h"
-#include "mesh3ds.h"
+#include "TERRA.H"
+#include "Mesh3ds.h"
 #include "IGraph3d.h"
 
-#include "hfont.h"
-#include "tga.h"
+#include "HFONT.H"
+#include "TGA.H"
 
-#include "scr_defs.h"
-#include "aci_ids.h"
+#include "SCR_DEFS.H"
+#include "ACI_IDS.H"
 #include "aci_parser.h"
-#include "aci_scr.h"
+#include "ACI_SCR.H"
 #include "controls.h"
 
 #include "fxlabInterface.h"
 
 #include "savegame.h"
 
-#include "md3d.h"
+#include "Md3d.h"
+
 #include "arcane_menu_d3d.h"
 #include "parts_pool.h"
 
 #include "demo_dispatcher.h"
 
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 
-#include "keys.h"
-#include "chtree.h"
+#include "KEYS.H"
+#include "Chtree.h"
 
 #include "I-World.h"
 #include "TrackDispatcher.h"
@@ -53,7 +54,9 @@
 
 #include "online_game.h"
 
+#ifdef _WIN32
 #include "win32f.h"
+#endif
 
 #pragma warning( disable : 4244 )
 #pragma warning( disable : 4305 )
@@ -631,49 +634,49 @@ void mchArcaneScreenElement::InitCoords(char* name)
 
 	XBuf.init();
 	XBuf < name < "_x";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) R.x = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_y";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) R.y = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_sx";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeX = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_sy";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeY = atoi(p);
 
 	XBuf.init();
 	XBuf < name < "_show_dir";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 
 	if(strlen(p)){
 		showDir = atoi(p);
 
 		XBuf.init();
 		XBuf < name < "_show_idx";
-		showIndex = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+		showIndex = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 
 		if(showDir == 4){
 			XBuf.init();
 			XBuf < name < "_x0";
-			R0.x = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+			R0.x = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 
 			XBuf.init();
 			XBuf < name < "_y0";
-			R0.y = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address()));
+			R0.y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
 		}
 	}
 
 	XBuf.init();
 	XBuf < name < "_align_x";
-	p = getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface",XBuf.address());
+	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)){
 		align = atoi(p);
 		if(align == 0)
@@ -1957,18 +1960,18 @@ void mchInitArcaneScreen(void)
 
 	mchA_Names = new xtList<mchArcaneName>;
 
-	mchA_Alpha = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha"));
+	mchA_Alpha = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha"));
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha_hide_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha_hide_speed"));
 	mchA_AlphaHideSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","alpha_show_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","alpha_show_speed"));
 	mchA_AlphaShowSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","menu_alpha_hide_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","menu_alpha_hide_speed"));
 	mchA_MenuAlphaHideSpeed = (256 - mchA_Alpha) / v;
 
-	v = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","menu_alpha_show_speed"));
+	v = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","menu_alpha_show_speed"));
 	mchA_MenuAlphaShowSpeed = (256 - mchA_Alpha) / v;
 
 	mchA_MouseCrossBMP = new mchArcaneBMP("ARCANE\\ms_cross.bmp");
@@ -2073,7 +2076,8 @@ void mchInitArcaneScreen(void)
 	p = new mchArcaneScreenElement;
 	p -> type = AE_SEED_COUNTER;
 	p -> InitCoords("seed_counter");
-	p -> SetString(MCH_AM_SEED_COUNT_FNT,1,"999");
+	char *t = "999";
+	p -> SetString(MCH_AM_SEED_COUNT_FNT,1,t);
 	p -> color = 7;
 	p -> SetState(0);
 	mch_arcScrD -> objList -> append(p);
@@ -3895,8 +3899,8 @@ void mchA_ShowWorldMap(mchArcaneScreenElement* m)
 	rp = mch_raceD -> racerLst -> first();
 	while(rp){
 		if(rp != mch_raceD -> activeRacer){
-			x = (round(rp -> R().x) >> 4) / scale_delta - p -> SizeX/2;
-			y = (round(rp -> R().y) >> 4) / scale_delta - p -> SizeY/2;
+			x = (int(round(rp -> R().x)) >> 4) / scale_delta - p -> SizeX/2;
+			y = (int(round(rp -> R().y)) >> 4) / scale_delta - p -> SizeY/2;
 			mchA_d3dOutSprite(m -> R.xi() + x + delta,m -> R.yi() + y + delta,1.0f,1.0f,AE_D3DSPR_MAP_POINTER,mchA_ColorF[4],256 - m -> Alpha);
 		}
 		rp = rp -> next;
@@ -3905,15 +3909,15 @@ void mchA_ShowWorldMap(mchArcaneScreenElement* m)
 	if(mchTimeMode == MCH_TIME_STOPPED){
 		v = camera_dispatcher -> observationPoint();
 		p = mchA_MapPointer[0];
-		x = (round(v.x) >> 4) / scale_delta;
-		y = (round(v.y) >> 4) / scale_delta;
+		x = (int(round(v.x)) >> 4) / scale_delta;
+		y = (int(round(v.y)) >> 4) / scale_delta;
 		mchA_d3dOutSprite(m -> R.xi() + x + delta,m -> R.yi() + y + delta,2.0f/16.0f,8.0f/16.0f,AE_D3DSPR_DUMMY,mchA_ColorF[7],256 - m -> Alpha,0,1);
 		mchA_d3dOutSprite(m -> R.xi() + x + delta,m -> R.yi() + y + delta,2.0f/16.0f,8.0f/16.0f,AE_D3DSPR_DUMMY,mchA_ColorF[7],256 - m -> Alpha,M_PI/2.0f,1);
 	}
 
 	p = mchA_MapPointer[0];
-	x = (round(rp0 -> R().x) >> 4) / scale_delta;
-	y = (round(rp0 -> R().y) >> 4) / scale_delta;
+	x = (int(round(rp0 -> R().x)) >> 4) / scale_delta;
+	y = (int(round(rp0 -> R().y)) >> 4) / scale_delta;
 	mchA_d3dOutSprite(m -> R.xi() + x + delta,m -> R.yi() + y + delta,1.5f,1.5f,AE_D3DSPR_MAP_POINTER,mchA_ColorF[9],256 - m -> Alpha,0,1);
 
 	mchA_d3dRectangleSq(m -> R.xi() + delta - 2,m -> R.yi() + delta - 2,132/scale_delta,132/scale_delta,1,256 - m -> Alpha);
@@ -3933,8 +3937,8 @@ mchArcaneStatsDispatcher::mchArcaneStatsDispatcher(void)
 {
 	int i;
 
-	X = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","arc_stats_x"));
-	Y = atoi(getIniKey("RESOURCE\\ISCREEN\\iscreen.ini","world_interface","arc_stats_y"));
+	X = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","arc_stats_x"));
+	Y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface","arc_stats_y"));
 
 	memset(statusFlags,0,5 * sizeof(int));
 	memset(racerIDs,0,5 * sizeof(int));
@@ -4437,9 +4441,12 @@ void mchA_DrawArrow(int x_,int y_,int sx,mchArcaneRacerSet* p)
 	if(mchA_ArrowMesh){
 		mchA_ArrowMesh -> SetColor(1,1,1,1.0f);
 		mchA_ArrowMesh -> SetScale(Vect3f(mchA_d3dResX * sc));
+
+		Vect3f v1(float(x_) * mchA_d3dResX,float(y_) * mchA_d3dResY,0.0f);
+		Vect3f v2(mchCameraAX + 40.0f,0,p -> arrowAngle * 180.0f / M_PI);
 		gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)mchA_ArrowMesh,
-			&Vect3f(float(x_) * mchA_d3dResX,float(y_) * mchA_d3dResY,0.0f),
-			&Vect3f(mchCameraAX + 40.0f,0,p -> arrowAngle * 180.0f / M_PI));
+			&v1,
+			&v2);
 		mchA_DrawM3D(mchA_ArrowMesh);
 		mchA_ArrowMesh -> SetScale(Vect3f(1,1,1));
 		mchA_ArrowMesh -> SetColor(1,1,1,1.0f);
@@ -5331,9 +5338,12 @@ void mchA_DrawStar(int x,int y,float sz,float alpha)
 
 	sz *= mchA_d3dResX;
 	mchA_StarMesh -> SetScale(Vect3f(sz,sz,sz));
+
+	Vect3f v1((float)x * mchA_d3dResX,(float)y * mchA_d3dResY,0);
+	Vect3f v2(90,0,180.0f * mchA_Part_Angle / M_PI);
 	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)mchA_StarMesh,
-		&Vect3f((float)x * mchA_d3dResX,(float)y * mchA_d3dResY,0),
-		&Vect3f(90,0,180.0f * mchA_Part_Angle / M_PI));
+		&v1,
+		&v2);
 
 	mchA_DrawM3D(mchA_StarMesh);
 	mchA_StarMesh -> SetScale(Vect3f(1,1,1));
@@ -5346,9 +5356,12 @@ void mchA_DrawSpeedStar(int x,int y,float sz)
 
 	sz *= mchA_d3dResX;
 	mchA_SpeedStarMesh -> SetScale(Vect3f(sz,sz,sz));
+
+	Vect3f v1((float)x * mchA_d3dResX,(float)y * mchA_d3dResY,0);
+	Vect3f v2(0,180.0f * mchA_Part_Angle / M_PI,0);
 	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)mchA_SpeedStarMesh,
-		&Vect3f((float)x * mchA_d3dResX,(float)y * mchA_d3dResY,0),
-		&Vect3f(0,180.0f * mchA_Part_Angle / M_PI,0));
+		&v1,
+		&v2);
 
 	mchA_DrawM3D(mchA_SpeedStarMesh);
 	mchA_SpeedStarMesh -> SetScale(Vect3f(1,1,1));
@@ -6323,7 +6336,8 @@ mchArcaneRacerSet::mchArcaneRacerSet(void)
 	starsEl -> align_x = AE_LEFT;
 	starsEl -> align_y = AE_TOP;
 	starsEl -> type = AE_STAR_COUNTER;
-	starsEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,"99x99");
+	char* t2 = "99x99";
+	starsEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,t2);
 	starsEl -> color = 3;
 
 	arrowEl = new mchArcaneScreenElement;
@@ -6335,7 +6349,8 @@ mchArcaneRacerSet::mchArcaneRacerSet(void)
 	speedEl -> type = AE_SPEED_COUNTER;
 	speedEl -> align_x = AE_RIGHT;
 	speedEl -> align_y = AE_TOP;
-	speedEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,"99x99");
+	char* t3 = "99x99";
+	speedEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,t3);
 	speedEl -> color = 4;
 
 	nameEl = new mchArcaneScreenElement;

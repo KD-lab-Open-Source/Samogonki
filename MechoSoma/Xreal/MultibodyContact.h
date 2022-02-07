@@ -1,7 +1,7 @@
 #ifndef _MULTIBODY_CONTACT_
 #define _MULTIBODY_CONTACT_
 
-class ContactingBodies : public vector<class Body*> 
+class ContactingBodies : public std::vector<class Body*> 
 {
 	TotalContactList total_contacts;
 
@@ -11,9 +11,9 @@ public:
 	void evolve(float dt);
 };
 
-class ContactingBodiesList : public vector<ContactingBodies> 
+class ContactingBodiesList : public std::vector<ContactingBodies> 
 {
-	ContactingBodies& search_group(Body* body);
+	std::vector<ContactingBodies>::iterator search_group(Body* body);
 
 public:
 	ContactingBodiesList(){}

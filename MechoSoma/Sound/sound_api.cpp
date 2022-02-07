@@ -2,12 +2,12 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include <StdAfx.h>
 
-#include "mch_rto.h"
+#include "mch_rto.H"
 
 #include "mechosoma.h"
 #include "race.h"
-#include "mesh3ds.h"
-#include "terra.h"
+#include "Mesh3ds.h"
+#include "TERRA.H"
 #include "arcane.h"
 
 #include "CameraDispatcher.h"
@@ -15,14 +15,14 @@
 
 #include "arcane_menu.h"
 
-#include "_xsound.h"
+#include "xsound.h"
 #include "aci_parser.h"
 #include "sound.h"
 #include "sound_api.h"
 #include "snd_def.h"
 
-#include "aci_ids.h"
-#include "aci_scr.h"
+#include "ACI_IDS.H"
+#include "ACI_SCR.H"
 
 #include "PlayWSC.h"
 
@@ -70,7 +70,9 @@ int sndCameraVolumeZ1 = 1000;
 int sndCameraVolumeV0 = 0;
 int sndCameraVolumeV1 = -3000;
 
+#ifdef _MPPLUS_SOUNDTRACK_
 MpegSound* mpeg_player = 0;
+#endif
 
 int sndMinVolume = 4000;
 

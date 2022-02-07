@@ -432,10 +432,10 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 	int aShift4444=RenderDevice->GetTexFmt4444().aBitShift;
-	int dwShade=(round(1.f*((1<<RenderDevice->GetTexFmt4444().aBitCount)-1))<<RenderDevice->GetTexFmt4444().aBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().rBitCount)-1))<<RenderDevice->GetTexFmt4444().rBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().gBitCount)-1))<<RenderDevice->GetTexFmt4444().gBitShift)|
-		(round(0.5f*((1<<RenderDevice->GetTexFmt4444().bBitCount)-1))<<RenderDevice->GetTexFmt4444().bBitShift);
+	int dwShade=(int(round(1.f*((1<<RenderDevice->GetTexFmt4444().aBitCount)-1)))<<RenderDevice->GetTexFmt4444().aBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().rBitCount)-1)))<<RenderDevice->GetTexFmt4444().rBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().gBitCount)-1)))<<RenderDevice->GetTexFmt4444().gBitShift)|
+		(int(round(0.5f*((1<<RenderDevice->GetTexFmt4444().bBitCount)-1)))<<RenderDevice->GetTexFmt4444().bBitShift);
 
 	int xSh=TERRA_XCYCL(round(PosShade.x)),ySh=TERRA_YCYCL(round(PosShade.y)),zSh=round(PosShade.z);
 	short *shadeBuf=shade;
@@ -478,7 +478,7 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 						if(!CurrentLightMap->GetStatus(STATUS_TEXTURE_CREATE))
 							SetCreateTexture(Graph3d,CurrentLightMap,1<<CurrentLightMap->_x,1<<CurrentLightMap->_y,TEXFMT_ARGB4444);
 						SetLockTexture(Graph3d,CurrentLightMap,(void**)&MemTextureTile);
-						memfill((unsigned long*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0xFFFFFFFF);
+						memfill((uint32_t*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0xFFFFFFFF);
 //						memfill((unsigned long*)MemTextureTile,CurrentLightMap->bpl<<(CurrentLightMap->_y-2),0x00000000);
 						CurrentLightMap->texture=MemTextureTile;
 						CurrentLightMap->SetStatus(STATUS_TEXTURE_RESET);

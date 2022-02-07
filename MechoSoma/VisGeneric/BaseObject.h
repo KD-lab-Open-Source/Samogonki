@@ -2,8 +2,8 @@
 #define __BASEOBJECT_H__
 
 #include "BaseClass.h"
-#include "material.h"
-#include "object.h"
+#include "Material.h"
+#include "Object.h"
 
 #ifndef msqrt
 #define msqrt(a)												sqrt(a)
@@ -201,4 +201,4 @@ inline int cBaseVolumeObject::isVolume(const Vect3f &pos,float &f)
 	return 0;
 }
 
-#endif __BASEOBJECT_H__
+#endif // __BASEOBJECT_H__

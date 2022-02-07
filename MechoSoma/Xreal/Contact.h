@@ -75,7 +75,7 @@ class ContactRef
 	int index;
 public:
 	ContactRef(int index_, ContactList& contacts_) : index(index_), contacts(&contacts_) {}
-	Contact* operator->() { return contacts -> begin() + index; }
+	Contact* operator->() { return contacts -> data() + index; }
 };
 
 typedef vector<ContactRef> ContactList2;

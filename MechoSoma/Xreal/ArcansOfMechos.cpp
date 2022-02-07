@@ -3,12 +3,12 @@
 #include "Mechos.h"
 #include "FieldSource.h"
 #include "Params.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "IVisGeneric.h"
 #include "sound.h"
 #include "MechosPrm.h"
 #include "ArcansPrm.h"
-#include "terra.h"
+#include "TERRA.H"
 
 const int morph_time = 500;
 
@@ -21,12 +21,12 @@ Mechos::WheelMode Mechos::forward_wheels_mode()
 		WHEEL, //		
 		WHEEL, // 1
 		WHEEL, // 2
-		FOOT, // 3 - мотылек
+		FOOT, // 3 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		WHEEL, // 4
 		WHEEL, // 5
-		FOOT, // 6 - жабасома
-		WHEEL, // 7 - вертолет
-		FOOT, // 8 - сила дракона
+		FOOT, // 6 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		WHEEL, // 7 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		FOOT, // 8 - пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		WHEEL // 9
 	};
 	return forward_wheels_modes[forward_wheels_kind()];
@@ -40,9 +40,9 @@ Mechos::WheelMode Mechos::backward_wheels_mode()
 		WHEEL, // 3
 		WHEEL, // 4
 		WHEEL, // 5
-		FOOT, // 6 - ярость слизи
+		FOOT, // 6 - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		WHEEL, // 7
-		WHEEL, // 8 - бешеная плесень
+		WHEEL, // 8 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		WHEEL, // 9
 		WHEEL, // 10
 		WHEEL, // 11
@@ -264,7 +264,7 @@ int Mechos::jump_pad_quant()
 	Vect3f n = getDist(jump_pad_target, R());
 	n.z = 0;
 	float dist = n.norm();
-	features_ &= ~FLYING_BY_JUMP_PAD; // ты сам аркан
+	features_ &= ~FLYING_BY_JUMP_PAD; // пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if(dist < jump_pad_finish_radius || (isFlyingByArcane() && !(features() & JABASOMA)) || features() & STATIC_NULIFICATOR){
 		setGlobalVelocity(0, X_AXIS);
 		setGlobalVelocity(0, Y_AXIS);
@@ -298,13 +298,13 @@ void Mechos::jump()
 	if(jump_timer())
 		return;
 	jump_timer.start(400);
-	setLocalVelocity(jump_velocity_y, Y_AXIS); // скорость вперед, игнорируем предыдущую скорость
-	setGlobalVelocity(jump_velocity_z, Z_AXIS); // скорость вверх
+	setLocalVelocity(jump_velocity_y, Y_AXIS); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	setGlobalVelocity(jump_velocity_z, Z_AXIS); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	forces.push_back((QuantFunction)&Mechos::jump_quant);
 }
 int Mechos::jump_quant()
 {
-	setLocalVelocity(jump_velocity_y, Y_AXIS); // скорость вперед, игнорируем предыдущую скорость
+	setLocalVelocity(jump_velocity_y, Y_AXIS); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	applyLocalTurnTorque(Zlocal(), Vect3f::K);
 	dragW += Vect3f(3, 3, 3);
 	return jump_timer();

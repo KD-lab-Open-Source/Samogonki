@@ -6,7 +6,7 @@
 #include <setjmp.h>
 
 #ifdef _MECHOSOMA_
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #endif
 
 #define XMD_H
@@ -14,8 +14,8 @@ extern "C" {
 #include "jpeglib.h"
 }
 
-#include "mesh3ds.h"
-#include "terra.h"
+#include "Mesh3ds.h"
+#include "TERRA.H"
 #include "tgai.h"
 
 #ifdef _SURMAP_
@@ -35,6 +35,10 @@ extern int 	ShowFog;
 
 #ifdef _SURMAP_
 #define SESSION
+#endif
+
+#ifndef _WIN32
+#include "port.h"
 #endif
 
 /* ----------------------------- EXTERN SECTION ---------------------------- */
@@ -346,13 +350,15 @@ void vrtMap::saveTrPal(void)
 {
 	// Set Color water;
 	char buf [16];
-	SaveINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","Color H2O",itoa(H2OC,buf,10));
-	SaveINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","Alpha H2O",itoa(H2OA,buf,10));
+	SaveINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","Color H2O",port_itoa(H2OC,buf,10));
+	SaveINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","Alpha H2O",port_itoa(H2OA,buf,10));
 
 	vMap->pmap.open(GetTargetName(vMap->paletteName),XS_OUT);
 	vMap->pmap.write(&(vMap->TrPal[0][0]),TERRAIN_MAX*256*2);
 	vMap->pmap.close();
 }
+
+#ifdef _WIN32
 int getTick(void)
 #define CPUID __asm _emit 0xf __asm _emit 0xa2
 #define RDTSC __asm _emit 0xf __asm _emit 0x31
@@ -374,6 +380,7 @@ int getTick(void)
 	}
 	return time;
 }
+#endif
 void vrtMap::calcH2Ocolor(int terr)
 {
 #ifdef _USE_NOT_XGRAPH_
@@ -1161,13 +1168,13 @@ void vrtMap::fileLoad(void)
 #endif
 
 #ifdef _MECHOSOMA_
-	mch_vmapResourceInit(); //Подготовка контейнера мира(в мехосоме)
+	mch_vmapResourceInit(); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 #endif
 }
 
 void vrtMap::open(char* name,int nWorld)
 {
-	//Копирование только имени каталога в dirWorldPrm 
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ dirWorldPrm 
 	char* dir,*dirtemp;
 	char *dirend=dirtemp=dir=strdup(name);
 	while(*dirtemp) {
@@ -1178,11 +1185,11 @@ void vrtMap::open(char* name,int nWorld)
 	dirWorldPrm = strdup(dir);
 	free(dir);
 	//
-	// ЗАГРУЗКА таблицы миров из PRM
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ PRM
 	pFile -> init(name);
 	maxWorld = atoi(pFile -> getAtom());
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
-	register int i;
+	int i;
 	char* atom;
 	wTable = new vrtWorld[maxWorld];
 	for(i = 0;i < maxWorld;i++){
@@ -1204,7 +1211,7 @@ void vrtMap::open(char* name,int nWorld)
 }
 void vrtMap::load(char* name,int nWorld,int nTrack)
 {
-	//Копирование только имени каталога в dirWorldPrm 
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ dirWorldPrm 
 	char* dir,*dirtemp;
 	char *dirend=dirtemp=dir=strdup(name);
 	while(*dirtemp) {
@@ -1218,7 +1225,7 @@ void vrtMap::load(char* name,int nWorld,int nTrack)
 	pFile -> init(name);
 	maxWorld = atoi(pFile -> getAtom());
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
-	register int i;
+	int i;
 	char* atom;
 	wTable = new vrtWorld[maxWorld];
 	char str_dir[256];
@@ -1229,10 +1236,10 @@ void vrtMap::load(char* name,int nWorld,int nTrack)
 		atom = pFile -> getAtom();
 		if(!atom) ErrH.Abort("Null world path");
 		//wTable[i].fname = strdup(atom);
-		//Отсечение world.ini от пути к каталогу мира
-		strcpy(str_dir,dirWorldPrm);//копирование в строку пути до каталога с worlds.prm
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ world.ini пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+		strcpy(str_dir,dirWorldPrm);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ worlds.prm
 		if(*dirWorldPrm) strcat(str_dir,"\\");		
-		strcat(str_dir,atom);		//добавление в строку пути до каталога с миром
+		strcat(str_dir,atom);		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 		int k,L=strlen(str_dir);
 		if(L) for(k=L-1; k>=0; k--){
 			if(str_dir[k]=='\\') {
@@ -1251,7 +1258,7 @@ void vrtMap::load(char* name,int nWorld,int nTrack)
 	if(nWorld >= maxWorld || nWorld < 0) nWorld = 0;
 #ifdef _SURMAP_
 	cWorld = nWorld;
-#else //если Мехосоиа
+#else //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	cWorld=0;
 	for(i=0; i< maxWorld; i++){
 		if ( (wTable[i].numberMechosomWorld==nWorld) && (wTable[i].numberMechosomTrack==nTrack) ){
@@ -1349,12 +1356,12 @@ void vrtMap::reload(int nWorld, int nTrack)
 {
 	if(nWorld >= maxWorld || nWorld < 0) ErrH.Abort("World Index out of range");
 #ifdef _SURMAP_
-//	if(cWorld == nWorld) return;//Отключено из за загрузки мира идущей за reload
+//	if(cWorld == nWorld) return;//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ reload
 #endif
 
 #ifdef _SURMAP_
 	cWorld = nWorld;
-#else //если Мехосоиа
+#else //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	cWorld=0;
 	int i;
 	for(i=0; i< maxWorld; i++){
@@ -1498,7 +1505,7 @@ void vrtMap::reload(int nWorld, int nTrack)
 				_close(h);
 				remove(kname);
 #if defined(RUSSIAN_VERSION) && !defined(GERMAN_VERSION)
-				ErrH.Abort("Недостаточно места на жестком диске для работы в режиме сохранения всех изменеий!");
+				ErrH.Abort("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!");
 #else
 				ErrH.Abort("Can't create KEEP File. Please, free more disk space for this feature working.");
 #endif
@@ -1691,8 +1698,8 @@ void vrtMap::checkAndRecoverWater()
 void vrtMap::load3Buf(int X,int Y,int num_track)
 #ifdef _SURMAP_
 {
-	X=0;Y=YS_Buf;//ТОлько для начала !
-	//Загрузка воды
+	X=0;Y=YS_Buf;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	LevelH2O=0;
 	LevelH2O = atoi(GetINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","LevelH2O"));
 	if(LevelH2O<0)LevelH2O =0;
@@ -1706,7 +1713,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 	const char id2[4]={'S','M','W','2'};
 	fmap.seek(0,XS_BEG);
 	fmap.read(&VmpHeader,sizeof(VmpHeader));
-	if (*(int*)VmpHeader.id == *(int*)id2 ){ //Загрузка 2 фориата VMP
+	if (*(int*)VmpHeader.id == *(int*)id2 ){ //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ VMP
 		fmap.read(&VxBuf[0][0][0],XS_Buf*YS_Buf*2);
 		fmap.read(&AtBuf[0][0][0],XS_Buf*YS_Buf);
 		// WORLD RENDER 
@@ -1716,7 +1723,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 		}
 	}
 	else {
-		if (*(int*)VmpHeader.id == *(int*)id1 ){ //Загрузка 1 фориата VMP
+		if (*(int*)VmpHeader.id == *(int*)id1 ){ //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ VMP
 
 			unsigned char* tVxBuf;
 			tVxBuf=new unsigned char [YS_Buf*XS_Buf];
@@ -1735,8 +1742,8 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 			save3BufOnly();
 		}
 		else {
-			if (*(int*)VmpHeader.id == *(int*)id ){ //Загрузка 0 формата VMP (в SpecBuf высота вокселей под водой)
-				//Загрузка и UPDATE 0 формата VMP
+			if (*(int*)VmpHeader.id == *(int*)id ){ //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ VMP (пїЅ SpecBuf пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+				//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ UPDATE 0 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ VMP
 
 				unsigned char* tVxBuf;
 				tVxBuf=new unsigned char [YS_Buf*XS_Buf];
@@ -1745,7 +1752,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 				for(i=0; i<YS_Buf; i++) for(j=0; j<XS_Buf; j++) VxBuf[0][i][j]=tVxBuf[j+i*XS_Buf]<<6;
 
 				fmap.read(tVxBuf,XS_Buf*YS_Buf);//&SpecBuf[0][0][0],XS_Buf*YS_Buf);
-				//Перемещение поверхности под водой к вокселям 
+				//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 				for(i=0; i<YS_Buf; i++){
 					for(j=0; j<XS_Buf; j++){
 						if(vMap->AtBuf[0][i][j] & At_WATER){
@@ -1765,7 +1772,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 				save3BufOnly();
 			}
 			else {
-				//Загрузка и UPDATE Non standart OLD!(который еще использует генератор мира)
+				//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ UPDATE Non standart OLD!(пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
 				unsigned char* tVxBuf;
 				tVxBuf=new unsigned char [XS_Buf];
 				fmap.seek(0,XS_BEG);
@@ -1804,7 +1811,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 		}
 	}
 
-//Рисование world_border
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ world_border
 #ifdef WORLD_BORDER
 	for(i=0;i<XS_Buf;i++) { 
 		ClTrBuf[0][2047][i]=255; ClTrBuf[0][i][2047]=255;
@@ -1827,7 +1834,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 
 #else
 {
-	X=0;Y=YS_Buf;//ТОлько для начала !
+	X=0;Y=YS_Buf;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 
 	LevelH2O = atoi(GetINIstringV(GetTargetName(wTable[cWorld].fname),"Global Parameters","LevelH2O"));
 	if(LevelH2O<0)LevelH2O =0;
@@ -1848,7 +1855,7 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 		//fmap.read(&AtBuf[0][0][0],XS_Buf*YS_Buf);
 		fmap.read(&AtBuf[0][0][0],(XS_Buf>>kmBuf)*(YS_Buf>>kmBuf));
 	}
-	else ErrH.Abort("Старый формат мира");
+	else ErrH.Abort("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ");
 
 //#if defined (HI_COLOR_WORLD)
 	if(loadClBufJ(0,YS_Buf-1,num_track) ==0) loadClBuf(0,YS_Buf-1,num_track);
@@ -1866,13 +1873,13 @@ void vrtMap::load3Buf(int X,int Y,int num_track)
 
 int vrtMap::loadClBufForRender(int X,int Y,int num_track)
 {
-	X=0;Y=YS_Buf;//ТОлько для начала !
+	X=0;Y=YS_Buf;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 
 	if(num_track==-1)num_track=0;
 	int i,j;
 	XBuffer buft;
 	char tmpstr[10];
-	buft < "i_track" < itoa(num_track%10,tmpstr,10) < ".tga";
+	buft < "i_track" < port_itoa(num_track%10,tmpstr,10) < ".tga";
 	XStream ss(0);
 #ifdef _MECHOSOMA_
 	if(!vmapOpenResource(GetTargetName(buft),ss)) return 0;
@@ -1906,13 +1913,13 @@ int vrtMap::loadClBufForRender(int X,int Y,int num_track)
 
 int vrtMap::loadClBuf(int X,int Y,int num_track)
 {
-	X=0;Y=YS_Buf;//ТОлько для начала !
+	X=0;Y=YS_Buf;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 
 	if(num_track==-1)num_track=0;
 	int i,j;
 	XBuffer buft;
 	char tmpstr[10];
-	buft < "track" < itoa(num_track%10,tmpstr,10) < ".tga";
+	buft < "track" < port_itoa(num_track%10,tmpstr,10) < ".tga";
 	XStream ss(0);
 #ifdef _MECHOSOMA_
 	if(!vmapOpenResource(GetTargetName(buft), ss)){
@@ -1946,7 +1953,7 @@ int vrtMap::loadClBuf(int X,int Y,int num_track)
 	delete line;
 	return 1;
 
-/*  //Загрузка и смешивание по альфа каналу.
+/*  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
 	int i,j;
 	XBuffer buft;
 	char tmpstr[10];
@@ -2041,13 +2048,13 @@ my_error_exit (j_common_ptr cinfo)
 
 int vrtMap::loadClBufJ(int X,int Y,int num_track)
 {
-	X=0;Y=YS_Buf;//ТОлько для начала !
+	X=0;Y=YS_Buf;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 
 	if(num_track==-1)num_track=0;
 	int i,j=0;
 	XBuffer buft;
 	char tmpstr[10];
-	buft < "track" < itoa(num_track%10,tmpstr,10) < ".jpg";
+	buft < "track" < port_itoa(num_track%10,tmpstr,10) < ".jpg";
 
 
 	struct jpeg_decompress_struct cinfo;
@@ -2590,18 +2597,18 @@ void vrtMap::save3Buf(void)
 	saveTrPal();
 }
 void vrtMap::saveVMM(void)
-	//Запись VMM
+	//пїЅпїЅпїЅпїЅпїЅпїЅ VMM
 {
 	int j,i;
 	XStream fo;
 	fo.open(GetTargetName("output.vmm"), XS_OUT);
-	// Запись заголовка
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	const char idm[4]={'M','M','W','1'};
 	fmap.seek(0,XS_BEG);
 	*(int*)VmpHeader.id = *(int*)idm;
 	VmpHeader.XS=1024;VmpHeader.YS=1024;VmpHeader.NX=0;VmpHeader.NY=0;
 	fo.write(&VmpHeader,sizeof(VmpHeader));
-	//Т.к. Это SUrmap, kmVxBu=0 равен 0, поэтому сдвигаем на фиксированную 1
+	//пїЅ.пїЅ. пїЅпїЅпїЅ SUrmap, kmVxBu=0 пїЅпїЅпїЅпїЅпїЅ 0, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1
 	unsigned char VB[XS_Buf>>1];  
 	for (j=0; j<(YS_Buf>>1); j++){
 		for(i=0; i<(XS_Buf>>1); i++){
@@ -2821,10 +2828,10 @@ void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ys
 // Pred LOOP
 						test ebp,3h
 						je l_loop1t
-						dec ecx //Уменьшаем на 1 основной loop т.к. Pred&End LOOP обработают 4 pix.
+						dec ecx //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ loop пїЅ.пїЅ. Pred&End LOOP пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 4 pix.
 						mov eax,ebp
 						and eax,3h
-						push eax // Сохранение кол. повторов End LOOP
+						push eax // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ End LOOP
 						neg eax
 						and eax,3h
 						push ecx // Save loop LOOP
@@ -2839,8 +2846,8 @@ p_loop1:
 						mov cx,[ebx+eax]
 						mov [edi],cx
 						xor cx,cx
-						test ah,020h // Это (At_WATER << 1)
-						jne p_loop2 //Если вода- то остается 0
+						test ah,020h // пїЅпїЅпїЅ (At_WATER << 1)
+						jne p_loop2 //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ- пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
 						mov cl,[esi+offsetVx+ebp]
 p_loop2:
 						movd eax,MM5
@@ -2942,8 +2949,8 @@ e_loop1:
 						mov cx,[ebx+eax]
 						mov [edi],cx
 						xor cx,cx
-						test ah,020h // Это (At_WATER << 1)
-						jne e_loop2 //Если вода- то остается 0
+						test ah,020h // пїЅпїЅпїЅ (At_WATER << 1)
+						jne e_loop2 //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ- пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
 						mov cl,[esi+offsetVx+ebp]
 e_loop2:
 						movd eax,MM5
@@ -3013,7 +3020,7 @@ void vrtMap::viewV(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 	int y0=YCYCL(cy)<<16;
 
 	// Compute the xy coordinates; a and b will be the position inside the
-	// single map cell (0..255). //a,b дробная часть
+	// single map cell (0..255). //a,b пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	u0=(x0>>16)&clip_mask_x;			a=(x0>>8)&255;
 	v0=((y0>>16)&clip_mask_y);			b=(y0>>8)&255;
 	u1=(u0+1)&clip_mask_x;
@@ -3029,7 +3036,7 @@ void vrtMap::viewV(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 	h0=(h0<<8)+a*(h1-h0);
 	h2=(h2<<8)+a*(h3-h2);
 	hCamera=((h0<<8)+b*(h2-h0))>>16>>VX_FRACTION;
-	hCamera+=30;//Высота камеры над поверхностью
+	hCamera+=30;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	// Draw the landscape from near to far without overdraw
 	for ( d=0; d<1000; d+=1 ){//d+=1+(d>>6)
@@ -3076,7 +3083,7 @@ void vrtMap::viewV(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 			//h0=(h0<<8)+a*(h1-h0);
 			//h2=(h2<<8)+a*(h3-h2);
 			//c=((h0<<8)+b*(h2-h0));
-			c=h0<<16; //Суммирование цвета пока выключено
+			c=h0<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 			// Compute screen height using the scaling factor
 			y=(((hCamera-h)*scaling)>>10)+240;//100
@@ -3086,9 +3093,9 @@ void vrtMap::viewV(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 				short *b=vp+a*XGR_MAXX+i;
 				int sc,cc;
 				if ( lastc[i]==-1 ) lastc[i]=c;
-				//sc=(c-lastc[i])/(a-y); // Переход цвета будет сделан потом
+				//sc=(c-lastc[i])/(a-y); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				sc=0;
-				cc=c;//lastc[i];//Переход цвета будет сделан потом
+				cc=c;//lastc[i];//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if ( a>(XGR_MAXY-1) ) {
 					b-=(a-(XGR_MAXY-1))*XGR_MAXX; cc+=(a-(XGR_MAXY-1))*sc; a=(XGR_MAXY-1); 
 				}
@@ -3157,7 +3164,7 @@ void vrtMap::viewV2D(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ysid
 	int x0=XCYCL(cx)<<16;
 	int y0=YCYCL(cy)<<16;
 
-	//hCamera=600;//Высота камеры над поверхностью
+	//hCamera=600;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	unsigned short* lv = &(vMap -> VxBuf[0][0][0]);
 
@@ -3219,7 +3226,7 @@ void vrtMap::viewV2D(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ysid
 			//h0=(h0<<8)+a*(h1-h0);
 			//h2=(h2<<8)+a*(h3-h2);
 			//c=((h0<<8)+b*(h2-h0));
-			c=h0<<16; //Суммирование цвета пока выключено*/
+			c=h0<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ*/
 			unsigned char* lc1 = &(vMap -> ClTrBuf[0][0][0]);//
 			unsigned char* lc2 = &(vMap -> AtBuf[0][0][0]);//
 			//c=TrPal[lc2[u0+v0]& TrW_MASK][lc1[u0+v0]]<<16;
@@ -3241,9 +3248,9 @@ void vrtMap::viewV2D(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ysid
 				short *b=vp+a*XGR_MAXX+i;
 				int sc,cc;
 				if ( lastc[i]==-1 ) lastc[i]=c;
-				//sc=(c-lastc[i])/(a-y); // Переход цвета будет сделан потом
+				//sc=(c-lastc[i])/(a-y); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				sc=0;
-				cc=c;//lastc[i];//Переход цвета будет сделан потом
+				cc=c;//lastc[i];//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if ( a>(XGR_MAXY-1) ) {
 					b-=(a-(XGR_MAXY-1))*XGR_MAXX; cc+=(a-(XGR_MAXY-1))*sc; a=(XGR_MAXY-1); 
 				}
@@ -3340,7 +3347,7 @@ void vrtMap::scaling16HC(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int 
 }
 
 
-#else //Mechosoma version С постоянным уровнем воды ! и сокращенным воксельным пространством
+#else //Mechosoma version пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ ! пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 {
 //	xt_mmxUse=0;
@@ -3367,7 +3374,7 @@ void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ys
 
 //	request(MIN(y0,y1) - MAX_RADIUS/2,MAX(y0,y1) + MAX_RADIUS/2,MIN(x0,x1) - 4,MAX(x0,x1) + 4);
 
-	register int i,j,fx,fy;
+	int i,j,fx,fy;
 	unsigned short* lc = &(vMap -> ClBuf[0][0][0]);//
 	unsigned char* la = &(vMap -> AtBuf[0][0][0]);
 	unsigned char* lv = &(vMap -> VxBuf[0][0][0]);
@@ -3402,7 +3409,7 @@ void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ys
 //#ifdef MMX
 //				}
 //				else {
-//					//Тут должен быть ускоренный код для MMX
+//					//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ MMX
 //				}
 //#endif
 			
@@ -3412,7 +3419,7 @@ void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ys
 
 
 
-// Старая версия для мехосомы ( где еще есть ClTrBuf )
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ( пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ ClTrBuf )
 /*
 void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int yside)
 {
@@ -3522,10 +3529,10 @@ void vrtMap::scaling16(int XSrcSize,int cx,int cy,int xc,int yc,int xside,int ys
 // Pred LOOP
 						test ebp,3h
 						je l_loop1t
-						dec ecx //Уменьшаем на 1 основной loop т.к. Pred&End LOOP обработают 4 pix.
+						dec ecx //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ loop пїЅ.пїЅ. Pred&End LOOP пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 4 pix.
 						mov eax,ebp
 						and eax,3h
-						push eax // Сохранение кол. повторов End LOOP
+						push eax // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ End LOOP
 						neg eax
 						and eax,3h
 						push ecx // Save loop LOOP
@@ -3540,9 +3547,9 @@ p_loop1:
 						mov cx,[ebx+eax]
 						mov [edi],cx
 						xor cx,cx
-//.						test ah,020h // Это (At_WATER << 1)
-//.						jne p_loop2 //Если вода- то остается 0
-						movd MM0,ebp //Для модифицированного VxBuf
+//.						test ah,020h // пїЅпїЅпїЅ (At_WATER << 1)
+//.						jne p_loop2 //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ- пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
+						movd MM0,ebp //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ VxBuf
 						psrlq MM0,1
 						paddd MM0,MM4
 						movd eax,MM0
@@ -3601,7 +3608,7 @@ l_loop1:
 //.						psrlw MM1,8+1+4 //zBuf
 //.						pcmpeqw MM1,MM6 //zBuf
 //.						pand MM2,MM1 //zBuf
-						movd MM0,ebp //Для модифицированного VxBuf
+						movd MM0,ebp //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ VxBuf
 						psrlq MM0,1
 						paddd MM0,MM4
 						movd eax,MM0
@@ -3659,9 +3666,9 @@ e_loop1:
 						mov cx,[ebx+eax]
 						mov [edi],cx
 						xor cx,cx
-//.						test ah,020h // Это (At_WATER << 1)
-//.						jne e_loop2 //Если вода- то остается 0
-						movd MM0,ebp //Для модифицированного VxBuf
+//.						test ah,020h // пїЅпїЅпїЅ (At_WATER << 1)
+//.						jne e_loop2 //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ- пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
+						movd MM0,ebp //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ VxBuf
 						psrlq MM0,1
 						paddd MM0,MM4
 						movd eax,MM0
@@ -4573,7 +4580,7 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 	maxWorld = atoi(pFile -> getAtom());
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
 	it= new sWorldTable[maxWorld];
-	register int i;
+	int i;
 	char* atom;
 	for(i = 0;i < maxWorld;i++){
 		atom = pFile -> getAtom();
@@ -4592,10 +4599,10 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 		*dirend = '\0';
 
 		char tString[256];
-		strcpy(tString,dirWorldPrm);//копирование в строку пути до каталога с worlds.prm
+		strcpy(tString,dirWorldPrm);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ worlds.prm
 		if(*dirWorldPrm) strcat(tString,"\\");		
-		strcat(tString,dir);		//добавление в строку пути до каталога с world.ini
-									//получаем путь до каталога с миром
+		strcat(tString,dir);		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ world.ini
+									//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 		free(dir);
 		it[i].dir = strdup(tString);
 		
@@ -4603,7 +4610,7 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 		it[i].numberMechosomWorld = atoi(pFile -> getAtom());
 		it[i].numberMechosomTrack = atoi(pFile -> getAtom());
 
-		//Временно ! получение путей до world.ini и др.
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ world.ini пїЅ пїЅпїЅ.
 		XBuffer tS;
 		tS.init();
 		tS < dirWorldPrm;
@@ -4620,11 +4627,11 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 		tS.init();
 		tS < it[i].dir;
 		if(*it[i].dir) tS < "\\";
-		if(!mch_vmapResourceInit(tS)) continue;	//Нужно в случае ZIP контейнера
+		if(!mch_vmapResourceInit(tS)) continue;	//пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ ZIP пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		tS < Ch_pointsFileName;
 
 		Ch_points.load(tS,0);
-		it[i].QuantityTrack=Ch_points.max_number; //Запись в таблицу количества трэков
+		it[i].QuantityTrack=Ch_points.max_number; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 		free(Ch_pointsFileName);
 
