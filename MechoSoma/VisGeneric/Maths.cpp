@@ -13,9 +13,9 @@ unsigned char	*OmniLightMap=0;
 
 void InitArray()
 {
-	if(CosNChar==0) // ������� cos � ������� COS_DEGREE ���� char ��� ��������� ����� cLight
+	if(CosNChar==0) // таблица cos в степени COS_DEGREE типа char для источника света cLight
 	{	
-		CosNChar=new unsigned char [128+3]; // 3 - ��� ��-�� ���������� � ��������
+		CosNChar=new unsigned char [128+3]; // 3 - это из-за неточности в расчетах
 		int j;
 		for(j=0;j<(128+3);j++)
 		{
@@ -31,7 +31,7 @@ void InitArray()
 			CosFloat[j]=cosf(j*GRAD_RAD/GRAD_TO_DGRAD(1));
 		}
 	}
-	if(OmniLightMap==0) // ��㬥ୠ� �㭪�� �뢠��� ��⥭ᨢ���� ��筮�� ���筨�� cOmni
+	if(OmniLightMap==0) // ¤ўг¬Ґа­ п дг­ЄжЁп гЎлў ­Ёп Ё­вҐ­бЁў­®бвЁ в®зҐз­®Ј® Ёбв®з­ЁЄ  cOmni
 	{
 		OmniLightMap=new unsigned char [1<<OMNI_MAP_SIZE<<OMNI_MAP_SIZE];
 		for(int j=0;j<1<<OMNI_MAP_SIZE;j++)

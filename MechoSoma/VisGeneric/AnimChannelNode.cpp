@@ -7,7 +7,7 @@
 #include "float.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// ���������� cAnimChainNode
+// реализация cAnimChainNode
 //////////////////////////////////////////////////////////////////////////////////////////
 void QuatSlerp(QuatF &from,QuatF &to,float t,QuatF &res)
 {
@@ -59,7 +59,7 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 {
 	Identity(Matrix);
 	float CurrentTime=phase*Time;
-	{ // �������� �������
+	{ // анимация позиции
 		sKey3f *a=0,*b=0;
 		int i;
 		for(i=0;i<GetNumberPos();i++)
@@ -74,7 +74,7 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 		else
 			Matrix.trans()=a->v+(b->v-a->v)*((CurrentTime-a->time)/(b->time-a->time));
 	}
-	{ // �������� ��������
+	{ // анимация вращения
 		sKey4f *a=0,*b=0;
 		int i;
 		for(i=0;i<GetNumberRot();i++)
@@ -95,7 +95,7 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 			Matrix.rot().set(q);
 		}
 	}
-	{ // �������� ��������
+	{ // анимация масштаба
 		sKey3f *a=0,*b=0;
 		int i;
 		for(i=0;i<GetNumberScale();i++)
@@ -110,7 +110,7 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 		else
 			Matrix.rot().scale(a->v+(b->v-a->v)*((CurrentTime-a->time)/(b->time-a->time)));
 	}
-	{ // �������� ���������
+	{ // анимация видимости
 		sKeyVisible *a=0;
 		for(int i=GetNumberVisible()-1;i>=0;i--)
 			if(GetVisible(i).time<=CurrentTime)
@@ -123,7 +123,7 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 #endif
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-// ���������� cAnimChannelNode
+// реализация cAnimChannelNode
 //////////////////////////////////////////////////////////////////////////////////////////
 cAnimChannelNode::cAnimChannelNode(int number)
 {

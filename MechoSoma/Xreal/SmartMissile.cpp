@@ -62,7 +62,7 @@ void SmartMissile::set_owner(int ID, int duration)
 
 void SmartMissile::quant()
 {
-	if(!time_to_live || test_collision(0)){ //  ������������ � ������������
+	if(!time_to_live || test_collision(0)){ //  столкновение с поверхностью
 		kill();
 		}
 }

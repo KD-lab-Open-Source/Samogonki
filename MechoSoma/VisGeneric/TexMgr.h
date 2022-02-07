@@ -17,14 +17,14 @@ class cTextureBuffer : public cBaseArrayPointer <sTexture>
 {
 	cBaseDynArray<sTextureChild>	TextureChildArray;
 	int								xCurrent,yCurrent,yMax;
-	sTexture						*MultiTexture;				// ������� �������� � ������� ���� ���������� �� Attach()
+	sTexture						*MultiTexture;				// òåêóùàÿ òåêñòóðà â êîòîðóþ èäåò íàêîïëåíèå ïî Attach()
 public:
 	cTextureBuffer():cBaseArrayPointer<sTexture>(1000,100)	{ }
 	~cTextureBuffer();
 
-	sTexture* BeginList(int x,int y);			// ������� ������ �������� ������� x*y
-	sTextureChild* AttachChild(char *name,int id);	// �������� � ������ �������� ��������
-	sTexture* EndList();						// ��������� �������� �������������
+	sTexture* BeginList(int x,int y);			// создать мульти текстуру размера x*y
+	sTextureChild* AttachChild(char *name,int id);	// добавить в мульти текстуру текстуру
+	sTexture* EndList();						// завершить создание мультитектуры
 	sTextureChild& GetTextureChild(int number)				{ assert(0<=number&&number<TextureChildArray.length()); return TextureChildArray[number]; }
 
 	sTexture* Get(char *name,char *path,char *warning="");

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////
-//	��������� � ������ ������
+//	Обращение к частям мехоса
 //////////////////////////////////////////////////////////////////
 #include "Base.h"
 
@@ -7,13 +7,13 @@
 #include "port.h"
 #endif
 
-// ������ ��� ��������� � ������� ������� (0-engine, front, back, rfw, rbw, lfw, lbw)
+// Индекс для обращения к массиву деталей (0-engine, front, back, rfw, rbw, lfw, lbw)
 inline int PART_INDEX(int type)	{ return BitSR(M3D_TYPE(type)); }
 
 class Mechos;
 
 //////////////////////////////////////////////////////////////////
-//	����� ������
+//	Часть мехоса
 //////////////////////////////////////////////////////////////////
 class Part : public Body {
 	friend class Mechos;
@@ -26,7 +26,7 @@ class Part : public Body {
 	int character; 
 	float distance_to_mechos;
 	int do_merge_to_mechos;
-	cMesh* formic;  // �������
+	cMesh* formic;  // Муравей
 	DurationTimer colliding_timer;
 	AverageConditionTimer stopping_detection_timer;
 

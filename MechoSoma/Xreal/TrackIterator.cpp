@@ -64,7 +64,7 @@ TrackIterator& TrackIterator::operator ++ ()
 			cp = mch_raceD -> cpLst -> first();
 		assert(cp);
 		br = cp -> getTrack();
-		xassert("������ ����!!!" && br);
+		xassert("Плохой трэк!!!" && br);
 		el = br -> pointLst -> first();
 		}
 	element = el;
@@ -86,7 +86,7 @@ TrackIterator& TrackIterator::operator -- ()
 		cp = cp -> prev;
 		assert(cp);
 		br = cp -> getTrack();
-		xassert("������ ����!!!" && br);
+		xassert("Плохой трэк!!!" && br);
 		el = br -> pointLst -> last();
 		}
 	element = el;

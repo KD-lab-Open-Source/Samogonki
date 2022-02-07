@@ -135,8 +135,8 @@ CameraDispatcher::CameraDispatcher(cUnknownClass* ivsRenderDevice_)
 {
 	ivsRenderDevice = ivsRenderDevice_;
 	ivsCamera = (cCamera*)gb_IVisGeneric->CreateCamera();
-	gb_IVisGeneric->AttachCamera(ivsCamera);		// ������������� ������ � �������� �����
-	gb_IVisGeneric->SetCameraAttribute(ivsCamera,ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE_CUTTING); // ����������� ������ � �����������
+	gb_IVisGeneric->AttachCamera(ivsCamera);		// присоединение камеры к активной сцене
+	gb_IVisGeneric->SetCameraAttribute(ivsCamera,ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE_CUTTING); // сферичность вывода и перспектива
 	{
 		Vect3f v1(0,0,512);
 		Vect3f v2(0,0,0);
@@ -148,12 +148,12 @@ CameraDispatcher::CameraDispatcher(cUnknownClass* ivsRenderDevice_)
 		Vect2f v2(1.0f,1.0f);
 		Vect2f v3(10.0f,3000.0f);
 		Vect2f v4(0.2f,0.90f);
-		gb_IVisGeneric->SetCameraFrustum(ivsCamera,	// ��������������� �������� ���������
-			&v1, // ����� ������
-			&r1, // ������� ������� ������
-			&v2, // ����� ������
-			&v3, // ��������� � ������� z-��������� ���������
-			&v4); // zNear � zFar ��� ����������� � zBuffer
+		gb_IVisGeneric->SetCameraFrustum(ivsCamera, // устанавливается пирамида видимости
+			&v1, // центр камеры
+			&r1, // видимая область камеры
+			&v2, // фокус камеры
+			&v3, // ближайший и дальний z-плоскости отсечения
+			&v4); // zNear и zFar для мапирования в zBuffer
 	}
 	gb_IVisGeneric->AttachCameraViewPort(ivsCamera, ivsRenderDevice);
 
@@ -189,7 +189,7 @@ CameraDispatcher::~CameraDispatcher()
 {
 	if(free_fly_body)
 		delete free_fly_body;
-	gb_IVisGeneric->ReleaseCamera(ivsCamera); // �������� �������� ������
+	gb_IVisGeneric->ReleaseCamera(ivsCamera); // удаление ненужной камеры
 }
 
 void CameraDispatcher::clear(void)
@@ -634,7 +634,7 @@ CameraCoords CameraDispatcher::bodyInput()
 	if(!is_interpolating_timer){
 		targetCoords().position = position;
 		if(input_mode == BodyInput){
-			if(interpolate_position_timer() && !fly_around_angle_incr){ // ���������� �� �����
+			if(interpolate_position_timer() && !fly_around_angle_incr){ // отставание на споте
 				float t = spot_acc_time - interpolate_position_timer(); // 0 - spot_acc_time
 				t = t < spot_acc_front ? t/spot_acc_front : 1.f - (t - spot_acc_front)/(spot_acc_time - spot_acc_front); // 0 - 1 - 0
 				targetCoords().position += getDist(currentCoords.position, targetCoords().position)*t;
@@ -668,7 +668,7 @@ CameraCoords CameraDispatcher::bodyInput()
 				coords.angles.x = fly_slope;
 			}
 
-		// ������������ ��� �����������
+		// Прозрачность при приближении
 		if(currentCoords.cameraDistance < camera_transparensy_distance){
 			const_cast<Mechos*>(advanced_observer) -> setPermanentAlpha(pow(currentCoords.cameraDistance/camera_transparensy_distance, camera_transparensy_power));
 			observer_transparent = 1;
@@ -1095,7 +1095,7 @@ void CameraDispatcher::setCoords(const Vect3f& vCamera_, const Vect3f& vTarget_)
 	currentCoords.position = vTarget;
 	currentCoords.CenteringDelta = 0;
 
-	Vect3f z_axis = vCamera - vTarget; // ������� ��������, �.�. Mat3f::ID ������� ����
+	Vect3f z_axis = vCamera - vTarget; // Смотрим наоборот, т.к. Mat3f::ID смотрит вниз
 	currentCoords.cameraDistance = z_axis.norm();
 	z_axis /= currentCoords.cameraDistance;
 	Vect3f x_axis = z_axis % Vect3f::K;
@@ -1119,7 +1119,7 @@ void CameraDispatcher::setCoords(const Vect3f& vCamera_, const Vect3f& vTarget_)
 
 void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 {
-	Vect3f vg = coords.position; // �����, ������� ����� ���������� �� ������ [0, CenteringDelta*SizeY/2, H]
+	Vect3f vg = coords.position; // Точка, которая будет находиться на экране [0, CenteringDelta*SizeY/2, H]
 
 	Mat3f R = coords.rot();
 
@@ -1140,7 +1140,7 @@ void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 		gb_IVisGeneric->ClearCameraAttribute(ivsCamera, ATTRIBUTE_CAMERA_WORLD_SHARE);
 #endif
 
-	// ������ ��� ������
+	// Только для чтения
 	mchCameraAX = coords.angles.x;
 	mchCameraAY = coords.angles.y;
 	mchCameraAZ = coords.angles.z;

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////
-//	��������
+//	Метеорит
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "Mechos.h"
@@ -36,7 +36,7 @@ void Meteorite::scaleRadius(float factor)
 void Meteorite::calc_forces_and_drags()
 {
 	Body::calc_forces_and_drags();
-	if(R().z < 0 || colliding()){ //  ������������ � ������������
+	if(R().z < 0 || colliding()){ //  столкновение с поверхностью
 		setTrans(R_prev);
 		kill();
 		return;
