@@ -496,7 +496,8 @@ link_directories(ThirdParty/libjpeg-turbo/lib)
 add_definitions(-D_MECHOSOMA_ -D_USE_TILEMAP_ -D_USE_TERRA_ -DNASSERT -D_FINAL_VERSION_ -D_MPPLUS_SOUNDTRACK_)
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
+target_link_libraries(${LIBRARY_NAME} PUBLIC iniparser jpeg)
+# 3dsftk3 
 
 set_target_properties(
         ${LIBRARY_NAME}
@@ -546,14 +547,34 @@ if (APPLE)
 
     # target_sources(${APPLICATION_NAME} PRIVATE ${METAL_LIBRARY})
     set_source_files_properties(${METAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+else ()
+    if (LINUX)
+        add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp)
+    endif (LINUX)
 
-    set_target_properties(
-            ${APPLICATION_NAME}
-            PROPERTIES
-            CXX_STANDARD 17
-            CXX_STANDARD_REQUIRED YES
-            CXX_EXTENSIONS NO
-    )
-elseif (LINUX)
-    add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp)
+    include_directories(ThirdParty/sokol)
+
+    set(APPLICATION_SOURCES
+            app/main.cpp
+            app/app.cpp
+            app/md3d.cpp
+            app/texture_manager.cpp
+            app/renderer.cpp
+            )
+
+    set(APPLICATION_NAME moonshine-runners)
+
+    add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
+
+    if (LINUX)
+        target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
+                X11 Xi Xcursor GL dl pthread)
+    endif (LINUX)
 endif (APPLE)
+
+set_target_properties(${APPLICATION_NAME}
+        PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+        )
