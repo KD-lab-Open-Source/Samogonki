@@ -23,7 +23,6 @@ cLight::~cLight()
 }
 
 #include "Object.h"
-#include "Math.h"
 #include "Maths.h"
 #include "Base.h"
 

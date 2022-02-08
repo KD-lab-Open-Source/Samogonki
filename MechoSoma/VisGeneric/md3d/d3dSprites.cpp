@@ -746,7 +746,7 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 	}
 
 	d3dSetTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
-				//MD3DTB_TEXTURE1);//Для совсем слабеньких карточек
+				//MD3DTB_TEXTURE1);//Р”Р»СЏ СЃРѕРІСЃРµРј СЃР»Р°Р±РµРЅСЊРєРёС… РєР°СЂС‚РѕС‡РµРє
 				MD3DTB_TEXTURE1_MOD_DIFFUSE );
 
 	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );

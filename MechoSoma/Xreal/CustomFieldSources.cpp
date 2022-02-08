@@ -3,7 +3,7 @@
 #include "CustomFieldSources.h"
 #include "Params.h"
 
-// Однородное поле
+// РћРґРЅРѕСЂРѕРґРЅРѕРµ РїРѕР»Рµ
 void UniformFieldSource::affect(Body& b) const
 {
 	if(!is_affecting(b))
@@ -30,7 +30,7 @@ void UniformFieldSource::affect(Body& b) const
 	b.applyGlobalForce(Ft/4);
 }
 
-// Течение (условие на погружение в воду)
+// РўРµС‡РµРЅРёРµ (СѓСЃР»РѕРІРёРµ РЅР° РїРѕРіСЂСѓР¶РµРЅРёРµ РІ РІРѕРґСѓ)
 void StreamFieldSource::affect(Body& b) const
 {
 	if(b.submersion() > 0.01)
@@ -42,10 +42,10 @@ void StreamFieldSource::affect(Body& b) const
 /////////////////////////////////////////////////////		
 void SensorFieldSource::affect(Body& b) const
 {
-	if(!is_affecting(b)) // Пропускает только Mechos
+	if(!is_affecting(b)) // РџСЂРѕРїСѓСЃРєР°РµС‚ С‚РѕР»СЊРєРѕ Mechos
 		return;
 
-	// Проверка на круг (цилиндр в 3D)
+	// РџСЂРѕРІРµСЂРєР° РЅР° РєСЂСѓРі (С†РёР»РёРЅРґСЂ РІ 3D)
 	Vect3f r = getDist(b.R(), position);
 	r.z = 0;	
 	float rad0 = radius + b.radius();

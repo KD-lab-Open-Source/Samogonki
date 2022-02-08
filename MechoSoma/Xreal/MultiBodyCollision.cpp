@@ -4,7 +4,7 @@
 #include "SimpleClip.h"
 #include "MultibodyContact.h"
 #include "BodyFeatureHT.h"
-
+#include <algorithm>
 
 /////////////////////////////////////////////////////////
 //	ContactingBodies
@@ -122,7 +122,7 @@ public:
 			return;
 
 		MatXf X12 = b2.pose();
-		X12.trans().x -= dx; X12.trans().y -= dy; // расцикливаем body2 по body1
+		X12.trans().x -= dx; X12.trans().y -= dy; // СЂР°СЃС†РёРєР»РёРІР°РµРј body2 РїРѕ body1
 		if(b1.R().distance(X12.trans()) < b1.radius() + b2.radius()){
 			X12.invert();
 			X12.postmult(b1.pose());  
@@ -205,7 +205,7 @@ public:
 			return;
 
 		MatXf X12 = b2.pose();
-		X12.trans().x -= dx; X12.trans().y -= dy; // расцикливаем body2 по body1
+		X12.trans().x -= dx; X12.trans().y -= dy; // СЂР°СЃС†РёРєР»РёРІР°РµРј body2 РїРѕ body1
 		if(b1.R().distance(X12.trans()) < b1.radius() + b2.radius()){
 			X12.invert();
 			X12.postmult(b1.pose());  

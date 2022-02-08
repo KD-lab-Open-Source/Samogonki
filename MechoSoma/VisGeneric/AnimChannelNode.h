@@ -20,21 +20,21 @@ struct sKeyVisible
 enum eAttributeAnimChannel
 {
 	ATTRCHANNEL_NULL						=	0,
-	ATTRCHANNEL_VISIBLE						=	1<<1,	// цепочки могут содержать анимацию видимости
-	ATTRCHANNEL_POSITION					=	1<<2,	// цепочки могут содержать анимацию позиции
-	ATTRCHANNEL_ROTATION					=	1<<3,	// цепочки могут содержать анимацию вращения
-	ATTRCHANNEL_SCALE						=	1<<4,	// цепочки могут содержать анимацию масштаба
+	ATTRCHANNEL_VISIBLE						=	1<<1,	// С†РµРїРѕС‡РєРё РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р°РЅРёРјР°С†РёСЋ РІРёРґРёРјРѕСЃС‚Рё
+	ATTRCHANNEL_POSITION					=	1<<2,	// С†РµРїРѕС‡РєРё РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р°РЅРёРјР°С†РёСЋ РїРѕР·РёС†РёРё
+	ATTRCHANNEL_ROTATION					=	1<<3,	// С†РµРїРѕС‡РєРё РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р°РЅРёРјР°С†РёСЋ РІСЂР°С‰РµРЅРёСЏ
+	ATTRCHANNEL_SCALE						=	1<<4,	// С†РµРїРѕС‡РєРё РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р°РЅРёРјР°С†РёСЋ РјР°СЃС€С‚Р°Р±Р°
 };
 
 class cAnimChainNode
-{ // одна цепочка анимации
+{ // РѕРґРЅР° С†РµРїРѕС‡РєР° Р°РЅРёРјР°С†РёРё
 	friend class cAnimChannelNode;
-	cBaseDynArray<sKeyVisible>	KeyVisible;			// анимация видимости объекта
-	cBaseDynArray<sKey3f>		KeyPosition;		// анимация позиции объекта
-	cBaseDynArray<sKey4f>		KeyRotation;		// анимация вращения объекта
-	cBaseDynArray<sKey3f>		KeyScale;			// анимация масштаба объекта
-	float						Time;				// продолжительность цепочки анимации
-	cString						name;				// имя анимационной цепочки
+	cBaseDynArray<sKeyVisible>	KeyVisible;			// Р°РЅРёРјР°С†РёСЏ РІРёРґРёРјРѕСЃС‚Рё РѕР±СЉРµРєС‚Р°
+	cBaseDynArray<sKey3f>		KeyPosition;		// Р°РЅРёРјР°С†РёСЏ РїРѕР·РёС†РёРё РѕР±СЉРµРєС‚Р°
+	cBaseDynArray<sKey4f>		KeyRotation;		// Р°РЅРёРјР°С†РёСЏ РІСЂР°С‰РµРЅРёСЏ РѕР±СЉРµРєС‚Р°
+	cBaseDynArray<sKey3f>		KeyScale;			// Р°РЅРёРјР°С†РёСЏ РјР°СЃС€С‚Р°Р±Р° РѕР±СЉРµРєС‚Р°
+	float						Time;				// РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ С†РµРїРѕС‡РєРё Р°РЅРёРјР°С†РёРё
+	cString						name;				// РёРјСЏ Р°РЅРёРјР°С†РёРѕРЅРЅРѕР№ С†РµРїРѕС‡РєРё
 public:
 	cAnimChainNode();
 	~cAnimChainNode();
@@ -54,12 +54,12 @@ public:
 	sKeyVisible& GetNewVisible()					{ return KeyVisible(KeyVisible.length()); }
 	void SetName(char *NameChain)					{ name=NameChain; }
 	char* GetName()									{ return name; }
-	// анимационные действия
+	// Р°РЅРёРјР°С†РёРѕРЅРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ
 	void GetMatrix(float phase,int &visible,MatXf &Matrix);
 };
 
 class cAnimChannelNode : public sAttribute, public cBaseDynArray<cAnimChainNode>
-{ // список каналов анимации
+{ // СЃРїРёСЃРѕРє РєР°РЅР°Р»РѕРІ Р°РЅРёРјР°С†РёРё
 public:
 	cAnimChannelNode(int number=0);
 	~cAnimChannelNode();

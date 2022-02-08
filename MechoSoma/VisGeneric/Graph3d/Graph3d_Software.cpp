@@ -454,7 +454,7 @@ void cGraph3dSoftware::InitColor16()
 	gPal16=&gPal16Mem[-GRAPH3D_SOFTWARE_TONE_MIN];
 	bPal16=&bPal16Mem[-GRAPH3D_SOFTWARE_TONE_MIN];
 	for(int i=GRAPH3D_SOFTWARE_TONE_MIN;i<GRAPH3D_SOFTWARE_TONE_MAX;i++)
-	{ // ïåðåâîäèò 256 êîìïîíåíòíûé öâåò (8 áèòíûé) â 16 áèòíûé ðåæèì (Hicolor)
+	{ // Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ñ‚ 256 ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð½Ñ‹Ð¹ Ñ†Ð²ÐµÑ‚ (8 Ð±Ð¸Ñ‚Ð½Ñ‹Ð¹) Ð² 16 Ð±Ð¸Ñ‚Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼ (Hicolor)
 		int tone;
 		if(i<0)	tone=0; else if(i<256) tone=i; else tone=255;
 		rPal16[i]=(tone>>(8-rBitCount))<<rBitShift;
@@ -462,7 +462,7 @@ void cGraph3dSoftware::InitColor16()
 		bPal16[i]=(tone>>(8-bBitCount))<<bBitShift;
 	}
 }
-////////////////////////// íà÷àëî ïðî÷èå ôóíêöèè //////////////////////////
+////////////////////////// Ð½Ð°Ñ‡Ð°Ð»Ð¾ Ð¿Ñ€Ð¾Ñ‡Ð¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ //////////////////////////
 int cGraph3dSoftware::CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat,DWORD dwFlags,DWORD* lpdwHandle)
 {
 	*lpdwHandle=0;

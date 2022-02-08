@@ -6,7 +6,7 @@
 
 #define TEXTURE_NOT_CYCLIC			0.0035f
 
-// переменные для работы c cPolyMgr
+// РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ СЂР°Р±РѕС‚С‹ c cPolyMgr
 int PosBufTileMap=0;
 unsigned short *GlobalColorBufferMap=0;
 

@@ -235,7 +235,7 @@ int cBasePolyGrid::DrawCycl(cCamera *Camera,int i1,int j1,int i2,int j2,cMateria
 		float ustep=u/xsize, vstep=v/ysize;
 		float xpos=xofs,ypos=yofs,duPoint0=du+uofs+ustep*i1,dvPoint=dv+vofs+vstep*j1;
 		if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))
-		{ // убирается зацикливание, константы подобраны имперически для текстуры 128
+		{ // СѓР±РёСЂР°РµС‚СЃСЏ Р·Р°С†РёРєР»РёРІР°РЅРёРµ, РєРѕРЅСЃС‚Р°РЅС‚С‹ РїРѕРґРѕР±СЂР°РЅС‹ РёРјРїРµСЂРёС‡РµСЃРєРё РґР»СЏ С‚РµРєСЃС‚СѓСЂС‹ 128
 			duPoint0=fmod(duPoint0+1,1);	dvPoint=fmod(dvPoint+1,1);
 			duPoint0+=0.0035f; dvPoint+=0.0035f;
 			ustep=(u-0.0035f)*(1.f-0.0035f)/xsize, vstep=(v-0.0035f)*(1.f-0.0035f)/ysize;

@@ -8,7 +8,7 @@
 #define __BASE_LIST__
 
 template <class cBase> class cBaseList
-{	// ������������ ������
+{	// двусвязанный список
 //	friend class cBase;
 public:
 	cBase		*Base;
@@ -51,12 +51,12 @@ public:
 	~cBaseLibrary()												{ }
 	
 	inline cBaseList* Attach(cBase *Base)	
-	{ // ����������� ������� � ������ 
+	{ // присоединие объекта к списку 
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
 	inline cBaseList* AttachEnd(cBase *Base)	
-	{ // ����������� ������� � ������ 
+	{ // присоединие объекта к списку 
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		cBaseList *start = nullptr;
 		for(start=BaseList; start->next; start=start->next);
@@ -64,7 +64,7 @@ public:
 		return List->Attach(start);
 	}
 	inline void Detach(cBase *Base)		
-	{ // ������������ ������� �� ������
+	{ // отсоединение объекта от списка
 		cBaseList *start=BaseList;
 		for(start; start; start=start->next)
 			if(start->Base==Base) break;
@@ -80,7 +80,7 @@ public:
 		if(List==BaseList) BaseList=BaseList->next; 
 		delete List; 
 	}
-	inline void Delete(cBase *Base)		// �������� ������� � ������
+	inline void Delete(cBase *Base)		// удаление объекта в списке
 	{
 		Detach(Base);
 		if(Base) delete Base; 
@@ -96,7 +96,7 @@ public:
 template <class cBase,class cBaseList> class cBaseDispatcher : public cBaseLibrary <cBase,cBaseList>
 {
 public:
-	unsigned int	NumberID;			// ID ���������� ������� = NumberID
+	unsigned int	NumberID;			// ID последнего объекта = NumberID
 
 	cBaseDispatcher()											{ NumberID=0; }
 	~cBaseDispatcher()											{ assert(this->BaseList==0); }
@@ -122,12 +122,12 @@ public:
 	cBaseStack()												{ BaseList=0; }
 	~cBaseStack()												{ assert(BaseList==0); }
 	
-	inline cBaseList* Push(cBase *Base)	// ����������� ������� � ������ 
+	inline cBaseList* Push(cBase *Base)	// присоединие объекта к списку 
 	{
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
-	inline void Pop()					// �������� ������� � ������
+	inline void Pop()					// удаление объекта в списке
 	{
 		cBaseList *tmp=BaseList;
 		if(tmp) 
@@ -146,18 +146,18 @@ public:
 template <class cBase,class cBaseList> class cBaseQueue
 {
 public:
-	cBaseList		*BaseList;			// ������ ������� - NULL ������
+	cBaseList		*BaseList;			// первый элемент - NULL объект
 	cBaseList		*Window;
 
 	cBaseQueue()												{ BaseList=0; First(); }
 	~cBaseQueue()												{ assert(BaseList==0); }
 	
-	inline cBaseList* Attach(cBase *Base)	// ����������� ������� � ������ 
+	inline cBaseList* Attach(cBase *Base)	// присоединие объекта к списку 
 	{
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
-	inline void Delete(cBase *Base=0)		// �������� ������� � ������
+	inline void Delete(cBase *Base=0)		// удаление объекта в списке
 	{
 		if(Base==0)
 		{
@@ -171,7 +171,7 @@ public:
 		Detach(Base);
 		delete Base; 
 	}
-	inline void Detach(cBase *Base)		// ������������ ������� �� ������
+	inline void Detach(cBase *Base)		// отсоединение объекта от списка
 	{
 		cBaseList *start = nullptr;
 		for(start=BaseList; start; start=start->next)
@@ -478,12 +478,12 @@ public:
 		return 0;
 	}
 	inline void Attach(cBase *base)
-	{ // ��������� ��������� � ����� ������
+	{ // добавляет указатель в конец списка
 		Resize(length()+BASEDYNARRAY_DSIZE);
 		Base[length()-1]=base;
 	}
 	inline void Detach(cBase *base)
-	{ // ���� ��������� ������� Base � ������ � ������� ��� �� ������
+	{ // отсоединение объекта от списка
 		int number;
 		for(number=0;number<length();number++)
 			if(Base[number]==base) 
@@ -494,7 +494,7 @@ public:
 		Resize(length()-1);
 	}
 	inline void Delete(int number)
-	{ // ������� �� ������ ������� � ������� number, � ������� ��� �������� � �������
+	{ // удаляет из списка элемент с номером number, и удаляет сам эелемент с номером
 		if(Base[number]) { delete Base[number]; Base[number]=0; }
 		memcpy(&Base[number],&Base[number+1],(length()-number-1)*sizeof(cBase*));
 		Resize(length()-1);

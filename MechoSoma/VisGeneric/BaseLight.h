@@ -8,7 +8,7 @@
 class cBaseLight : public cBaseObject, public cBaseVolumeObject
 {
 public:
-	int				id;	// ����� ��������� �����
+	int				id;	// номер источника света
 	sColor4f		Ambient;
 	sColor4f		Diffuse;
 	sColor4f		Illumination;

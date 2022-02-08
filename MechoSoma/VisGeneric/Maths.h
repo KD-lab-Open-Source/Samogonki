@@ -1,9 +1,11 @@
 #ifndef __MATHS_H__
 #define __MATHS_H__
 
-#include "math.h"
-#include "assert.h"
-#include "limits.h"
+#include <cstdint>
+#include <cmath>
+#include <cassert>
+#include <climits>
+
 #include "Base.h"
 
 #define XSIZE_CYCL_FLT				2048.f

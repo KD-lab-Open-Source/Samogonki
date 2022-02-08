@@ -78,7 +78,7 @@ static bool InitSoundBuffer()
 {
 	HRESULT hr;
 	/*
-		Здесь создавать DirectSoundBuffer
+		Р—РґРµСЃСЊ СЃРѕР·РґР°РІР°С‚СЊ DirectSoundBuffer
 	*/
 	WAVEFORMATEX  wfx;
 
@@ -255,7 +255,7 @@ Retry:
 	}
 
 	if(clear_end_buffer && !b_cycled)
-	{//Очистить конец буфера
+	{//РћС‡РёСЃС‚РёС‚СЊ РєРѕРЅРµС† Р±СѓС„РµСЂР°
 		clear_end_buffer=false;
 
 		BYTE *AudioPtr1,*AudioPtr2;

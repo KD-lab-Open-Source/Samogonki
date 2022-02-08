@@ -417,7 +417,7 @@ int cGraph3dDirect3D::DrawPixel(int x1,int y1,int r,int g,int b,int a)
 int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 {
 	if(MaterialMode==material) return 0;
-	// �������������� ����������
+	// \E2\EE\F1\F1\F2\E0\ED\EE\E2\EB\E5\ED\E8\E5 \EC\E0\F2\E5\F0\E8\E0\EB\EE\E2
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
 	{
 		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,FALSE);
@@ -432,7 +432,7 @@ int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
 		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
 	}
-	// ��������� ����������
+	// \F3\F1\F2\E0\ED\EE\E2\EA\E0 \EC\E0\F2\E5\F0\E8\E0\EB\EE\E2
 	MaterialMode=material;
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
 		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,TRUE);
@@ -563,7 +563,7 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 		d3dTexFmt.dwRBitShift,d3dTexFmt.dwGBitShift,d3dTexFmt.dwBBitShift,d3dTexFmt.dwAlphaBitShift);
 	return error!=MD3D_OK;
 }
-////////////////////////// ������ ������ ������� //////////////////////////
+////////////////////////// \ED\E0\F7\E0\EB\EE \EF\F0\EE\F7\E8\E5 \F4\F3\ED\EA\F6\E8\E8 //////////////////////////
 int cGraph3dDirect3D::CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat,DWORD dwFlags,DWORD* lpdwHandle )
 {
 	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(DWORD*)lpdwHandle);
@@ -737,18 +737,18 @@ void cGraph3dDirect3D::InitRenderState()
 	d3dSetProjectionMatrixToIdentity();
 
 	d3dSetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // ���� D3DTSS_COLORARG1==D3DTA_TEXTURE, ����� ����� �� ��������
+	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // \F5\E8\ED\F2 D3DTSS_COLORARG1==D3DTA_TEXTURE, \E8\ED\E0\F7\E5 \EC\EE\E6\E5\F2 \ED\E5 \F0\E0\E1\EE\F2\E0\F2\FC
 	d3dSetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // ���� D3DTSS_COLORARG1==D3DTA_TEXTURE, ����� ����� �� ��������
+	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // \F5\E8\ED\F2 D3DTSS_COLORARG1==D3DTA_TEXTURE, \E8\ED\E0\F7\E5 \EC\EE\E6\E5\F2 \ED\E5 \F0\E0\E1\EE\F2\E0\F2\FC
 	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 
 	d3dSetTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // ���� D3DTSS_COLORARG1==D3DTA_TEXTURE, ����� ����� �� ��������
+	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // \F5\E8\ED\F2 D3DTSS_COLORARG1==D3DTA_TEXTURE, \E8\ED\E0\F7\E5 \EC\EE\E6\E5\F2 \ED\E5 \F0\E0\E1\EE\F2\E0\F2\FC
 	d3dSetTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
 	d3dSetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // ���� D3DTSS_COLORARG1==D3DTA_TEXTURE, ����� ����� �� ��������
+	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // \F5\E8\ED\F2 D3DTSS_COLORARG1==D3DTA_TEXTURE, \E8\ED\E0\F7\E5 \EC\EE\E6\E5\F2 \ED\E5 \F0\E0\E1\EE\F2\E0\F2\FC
 	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 	d3dSetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 

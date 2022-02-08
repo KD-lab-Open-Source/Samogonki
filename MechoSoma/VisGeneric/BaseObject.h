@@ -20,49 +20,49 @@
 #endif
 
 #define BASEOBJECT_KIND_ALL										0xFFFFFFFF
-#define BASEOBJECT_KIND_DRAW_REFLECTION							(1<<0)		/* объект используется для вывода в 1-ю очередь - отражения*/
-#define BASEOBJECT_KIND_DRAW_WORLD								(1<<1)		/* вывод во 2-ю очередь - задник мира */
-#define BASEOBJECT_KIND_DRAW_OBJECT								(1<<2)		/* вывод во 3-ю очередь - просто объекты */
-#define BASEOBJECT_KIND_DRAW_EFFECT								(1<<3)		/* вывод во 4-ю очередь - прозрачные объекты и спецэффекты */
-#define BASEOBJECT_KIND_VOLUME									(1<<4)		/* объект для Volumetric Render */
-#define BASEOBJECT_KIND_PHYSICPROCESS							(1<<5)		/* объект физических процессов */
-#define BASEOBJECT_KIND_HELPER									(1<<6)		/* вспомогательный объект */
+#define BASEOBJECT_KIND_DRAW_REFLECTION							(1<<0)		/* РѕР±СЉРµРєС‚ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РІС‹РІРѕРґР° РІ 1-СЋ РѕС‡РµСЂРµРґСЊ - РѕС‚СЂР°Р¶РµРЅРёСЏ*/
+#define BASEOBJECT_KIND_DRAW_WORLD								(1<<1)		/* РІС‹РІРѕРґ РІРѕ 2-СЋ РѕС‡РµСЂРµРґСЊ - Р·Р°РґРЅРёРє РјРёСЂР° */
+#define BASEOBJECT_KIND_DRAW_OBJECT								(1<<2)		/* РІС‹РІРѕРґ РІРѕ 3-СЋ РѕС‡РµСЂРµРґСЊ - РїСЂРѕСЃС‚Рѕ РѕР±СЉРµРєС‚С‹ */
+#define BASEOBJECT_KIND_DRAW_EFFECT								(1<<3)		/* РІС‹РІРѕРґ РІРѕ 4-СЋ РѕС‡РµСЂРµРґСЊ - РїСЂРѕР·СЂР°С‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹ Рё СЃРїРµС†СЌС„С„РµРєС‚С‹ */
+#define BASEOBJECT_KIND_VOLUME									(1<<4)		/* РѕР±СЉРµРєС‚ РґР»СЏ Volumetric Render */
+#define BASEOBJECT_KIND_PHYSICPROCESS							(1<<5)		/* РѕР±СЉРµРєС‚ С„РёР·РёС‡РµСЃРєРёС… РїСЂРѕС†РµСЃСЃРѕРІ */
+#define BASEOBJECT_KIND_HELPER									(1<<6)		/* РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РѕР±СЉРµРєС‚ */
 
 #define BASEOBJECT_TYPE_ALL										0x7FFFFFFF
-#define BASEOBJECT_TYPE_DELETE									(1<<31)		/* объект должен быть удален */
-#define BASEOBJECT_TYPE_BASELIGHT_OMNI							(1<<0)		/* точечный источник света */
-#define BASEOBJECT_TYPE_BASETRAIL_TANGENT						(1<<1)		/* ориентированный след */
-#define BASEOBJECT_TYPE_BASEREFLECTION_SURFACE					(1<<2)		/* отражающая z-плоскость */
-#define BASEOBJECT_TYPE_BASEPOLYGRID_WORLD						(1<<3)		/* полигональная сетка для задника */
-#define BASEOBJECT_TYPE_BASEREFLECTION_SURFACE_MULTIMATERIAL	(1<<4)		/* отражающая z-плоскость */
-#define BASEOBJECT_TYPE_BASEWAVEPROCESS							(1<<5)		/* волновой процесс */
+#define BASEOBJECT_TYPE_DELETE									(1<<31)		/* РѕР±СЉРµРєС‚ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СѓРґР°Р»РµРЅ */
+#define BASEOBJECT_TYPE_BASELIGHT_OMNI							(1<<0)		/* С‚РѕС‡РµС‡РЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° */
+#define BASEOBJECT_TYPE_BASETRAIL_TANGENT						(1<<1)		/* РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Р№ СЃР»РµРґ */
+#define BASEOBJECT_TYPE_BASEREFLECTION_SURFACE					(1<<2)		/* РѕС‚СЂР°Р¶Р°СЋС‰Р°СЏ z-РїР»РѕСЃРєРѕСЃС‚СЊ */
+#define BASEOBJECT_TYPE_BASEPOLYGRID_WORLD						(1<<3)		/* РїРѕР»РёРіРѕРЅР°Р»СЊРЅР°СЏ СЃРµС‚РєР° РґР»СЏ Р·Р°РґРЅРёРєР° */
+#define BASEOBJECT_TYPE_BASEREFLECTION_SURFACE_MULTIMATERIAL	(1<<4)		/* РѕС‚СЂР°Р¶Р°СЋС‰Р°СЏ z-РїР»РѕСЃРєРѕСЃС‚СЊ */
+#define BASEOBJECT_TYPE_BASEWAVEPROCESS							(1<<5)		/* РІРѕР»РЅРѕРІРѕР№ РїСЂРѕС†РµСЃСЃ */
 // not used
-#define BASEOBJECT_TYPE_BASELIGHT_LIGHT							(1<<16)		/* направленный источник света */
-#define BASEOBJECT_TYPE_BASELIGHT_PROJECT						(1<<17)		/* направленный источник света проецирующий изображение */
+#define BASEOBJECT_TYPE_BASELIGHT_LIGHT							(1<<16)		/* РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° */
+#define BASEOBJECT_TYPE_BASELIGHT_PROJECT						(1<<17)		/* РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° РїСЂРѕРµС†РёСЂСѓСЋС‰РёР№ РёР·РѕР±СЂР°Р¶РµРЅРёРµ */
 ///////////////////// DRAW ///////////////////
-#define BASEOBJECT_ATTRIBUTE_DRAW_CYCL							(1<<0)		/* зацикленность координат */
-#define BASEOBJECT_ATTRIBUTE_DRAW_SPECIALCYCL					(1<<1)		/* зацикленность координат по другому циклу */
-#define BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCCW					(1<<2)		/* обход по против часовой стрелке */
-#define BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCW						(1<<3)		/* обход по часовой стрелке */
-#define BASEOBJECT_ATTRIBUTE_DRAW_ANIMATEMATERIAL				(1<<4)		/* объект содержит анимированную материал */
-#define BASEOBJECT_ATTRIBUTE_DRAW_COLOR							(1<<5)		/* объект имеет динамически изменяемое вертексное освещение */
-#define BASEOBJECT_ATTRIBUTE_DRAW_UVWARP						(1<<6)		/* объект имеет динамически изменяемое возмущение текстурных координат вершин */
-#define BASEOBJECT_ATTRIBUTE_DRAW_XYZWARP						(1<<7)		/* объект имеет динамически изменяемое возмущение пространственных координат вершин */
-#define BASEOBJECT_ATTRIBUTE_DRAW_TIMEWARP						(1<<8)		/* возмущение объекта описывает только время */
-#define BASEOBJECT_ATTRIBUTE_DRAW_WAVEWARP						(1<<9)		/* возмущение объекта описывает волновой процесс */
-#define BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL					(1<<10)		/* объект содержит несколько материалов */
+#define BASEOBJECT_ATTRIBUTE_DRAW_CYCL							(1<<0)		/* Р·Р°С†РёРєР»РµРЅРЅРѕСЃС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_SPECIALCYCL					(1<<1)		/* Р·Р°С†РёРєР»РµРЅРЅРѕСЃС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚ РїРѕ РґСЂСѓРіРѕРјСѓ С†РёРєР»Сѓ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCCW					(1<<2)		/* РѕР±С…РѕРґ РїРѕ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCW						(1<<3)		/* РѕР±С…РѕРґ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_ANIMATEMATERIAL				(1<<4)		/* РѕР±СЉРµРєС‚ СЃРѕРґРµСЂР¶РёС‚ Р°РЅРёРјРёСЂРѕРІР°РЅРЅСѓСЋ РјР°С‚РµСЂРёР°Р» */
+#define BASEOBJECT_ATTRIBUTE_DRAW_COLOR							(1<<5)		/* РѕР±СЉРµРєС‚ РёРјРµРµС‚ РґРёРЅР°РјРёС‡РµСЃРєРё РёР·РјРµРЅСЏРµРјРѕРµ РІРµСЂС‚РµРєСЃРЅРѕРµ РѕСЃРІРµС‰РµРЅРёРµ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_UVWARP						(1<<6)		/* РѕР±СЉРµРєС‚ РёРјРµРµС‚ РґРёРЅР°РјРёС‡РµСЃРєРё РёР·РјРµРЅСЏРµРјРѕРµ РІРѕР·РјСѓС‰РµРЅРёРµ С‚РµРєСЃС‚СѓСЂРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_XYZWARP						(1<<7)		/* РѕР±СЉРµРєС‚ РёРјРµРµС‚ РґРёРЅР°РјРёС‡РµСЃРєРё РёР·РјРµРЅСЏРµРјРѕРµ РІРѕР·РјСѓС‰РµРЅРёРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµРЅРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_TIMEWARP						(1<<8)		/* РІРѕР·РјСѓС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° РѕРїРёСЃС‹РІР°РµС‚ С‚РѕР»СЊРєРѕ РІСЂРµРјСЏ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_WAVEWARP						(1<<9)		/* РІРѕР·РјСѓС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° РѕРїРёСЃС‹РІР°РµС‚ РІРѕР»РЅРѕРІРѕР№ РїСЂРѕС†РµСЃСЃ */
+#define BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL					(1<<10)		/* РѕР±СЉРµРєС‚ СЃРѕРґРµСЂР¶РёС‚ РЅРµСЃРєРѕР»СЊРєРѕ РјР°С‚РµСЂРёР°Р»РѕРІ */
 ////////////////// VOLUME ////////////////////
-#define BASEOBJECT_ATTRIBUTE_VOLUME_CYCL						(1<<0)		/* зацикленность координат */
-#define BASEOBJECT_ATTRIBUTE_VOLUME_SPHERE						(1<<1)		/* BaseVolumeObject определяет попадание точки в сферу, с центром в VolumeCenter и радиусом dist */
-#define BASEOBJECT_ATTRIBUTE_VOLUME_BOX							(1<<2)		/* BaseVolumeObject определяет попадание точки в куб, с центром в VolumeCenter и стороной 2*dist */
-#define BASEOBJECT_ATTRIBUTE_VOLUME_2D							(1<<3)		/* BaseVolumeObject определяет попадание точки в проекцию Volume на плоскость OXY */
+#define BASEOBJECT_ATTRIBUTE_VOLUME_CYCL						(1<<0)		/* Р·Р°С†РёРєР»РµРЅРЅРѕСЃС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚ */
+#define BASEOBJECT_ATTRIBUTE_VOLUME_SPHERE						(1<<1)		/* BaseVolumeObject РѕРїСЂРµРґРµР»СЏРµС‚ РїРѕРїР°РґР°РЅРёРµ С‚РѕС‡РєРё РІ СЃС„РµСЂСѓ, СЃ С†РµРЅС‚СЂРѕРј РІ VolumeCenter Рё СЂР°РґРёСѓСЃРѕРј dist */
+#define BASEOBJECT_ATTRIBUTE_VOLUME_BOX							(1<<2)		/* BaseVolumeObject РѕРїСЂРµРґРµР»СЏРµС‚ РїРѕРїР°РґР°РЅРёРµ С‚РѕС‡РєРё РІ РєСѓР±, СЃ С†РµРЅС‚СЂРѕРј РІ VolumeCenter Рё СЃС‚РѕСЂРѕРЅРѕР№ 2*dist */
+#define BASEOBJECT_ATTRIBUTE_VOLUME_2D							(1<<3)		/* BaseVolumeObject РѕРїСЂРµРґРµР»СЏРµС‚ РїРѕРїР°РґР°РЅРёРµ С‚РѕС‡РєРё РІ РїСЂРѕРµРєС†РёСЋ Volume РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ OXY */
 
 class cBaseObject
 {
 public:
-	unsigned int	Kind;										// сеиейство объектов
-	unsigned int	Type;										// тип один из BASEOBJECT_XXXXX
-	unsigned int	ID;											// уникальный идентификационный номер
+	unsigned int	Kind;										// СЃРµРёРµР№СЃС‚РІРѕ РѕР±СЉРµРєС‚РѕРІ
+	unsigned int	Type;										// С‚РёРї РѕРґРёРЅ РёР· BASEOBJECT_XXXXX
+	unsigned int	ID;											// СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ
 
 	cBaseObject(unsigned int type=0,unsigned int kind=0)		{ Type=type; Kind=kind; ID=0; }
 	inline void SetType(unsigned int type)						{ Type=type; }
@@ -80,7 +80,7 @@ typedef cBaseList <cBaseObject> cBaseObjectList;
 typedef cBaseDispatcher <cBaseObject,cBaseObjectList> cManagerBaseObjectClass;
 
 class cManagerKindObject :  public cManagerBaseObjectClass
-{	// менеджер обработки объектов
+{	// РјРµРЅРµРґР¶РµСЂ РѕР±СЂР°Р±РѕС‚РєРё РѕР±СЉРµРєС‚РѕРІ
 public:
 	cManagerKindObject()													{ NumberID=1; }
 	~cManagerKindObject();
@@ -100,7 +100,7 @@ private:
 };
 
 class cManagerBaseObject : public cManagerBaseObjectClass
-{	// диспетчер хранения объектов
+{	// РґРёСЃРїРµС‚С‡РµСЂ С…СЂР°РЅРµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ
 	cManagerKindObject *ManagerDraw1;
 	cManagerKindObject *ManagerDraw2;
 	cManagerKindObject *ManagerVolume;
@@ -133,7 +133,7 @@ extern void GlobalFunctionSetMaterial(cMaterial &Material,char *TextureName=0,ch
 extern int GlobalVariable_DrawAll;
 
 class cBaseAttributeObject
-{// базовый объект для работы с аттрибутами
+{// Р±Р°Р·РѕРІС‹Р№ РѕР±СЉРµРєС‚ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р°С‚С‚СЂРёР±СѓС‚Р°РјРё
 public:
 	unsigned int Attribute;
 
@@ -143,7 +143,7 @@ public:
 };
 
 class cBaseDrawObject : public cBaseAttributeObject
-{// базовый объект отрисовки
+{// Р±Р°Р·РѕРІС‹Р№ РѕР±СЉРµРєС‚ РѕС‚СЂРёСЃРѕРІРєРё
 public:
 	cBaseArray<cMaterial>	MaterialArray;
 	
@@ -153,7 +153,7 @@ public:
 };
 
 class cBaseVolumeObject : public cBaseAttributeObject
-{// базовый объект для работы с объемами
+{// Р±Р°Р·РѕРІС‹Р№ РѕР±СЉРµРєС‚ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РѕР±СЉРµРјР°РјРё
 public:
 	Vect3f			VolumeCenter;
 	float			dist;

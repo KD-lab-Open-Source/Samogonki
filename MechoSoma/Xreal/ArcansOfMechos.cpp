@@ -21,12 +21,12 @@ Mechos::WheelMode Mechos::forward_wheels_mode()
 		WHEEL, //		
 		WHEEL, // 1
 		WHEEL, // 2
-		FOOT, // 3 - �������
+		FOOT, // 3 - мотылек
 		WHEEL, // 4
 		WHEEL, // 5
-		FOOT, // 6 - ��������
-		WHEEL, // 7 - ��������
-		FOOT, // 8 - ���� �������
+		FOOT, // 6 - жабасома
+		WHEEL, // 7 - вертолет
+		FOOT, // 8 - сила дракона
 		WHEEL // 9
 	};
 	return forward_wheels_modes[forward_wheels_kind()];
@@ -40,9 +40,9 @@ Mechos::WheelMode Mechos::backward_wheels_mode()
 		WHEEL, // 3
 		WHEEL, // 4
 		WHEEL, // 5
-		FOOT, // 6 - ������ �����
+		FOOT, // 6 - ярость слизи
 		WHEEL, // 7
-		WHEEL, // 8 - ������� �������
+		WHEEL, // 8 - бешеная плесень
 		WHEEL, // 9
 		WHEEL, // 10
 		WHEEL, // 11
@@ -264,7 +264,7 @@ int Mechos::jump_pad_quant()
 	Vect3f n = getDist(jump_pad_target, R());
 	n.z = 0;
 	float dist = n.norm();
-	features_ &= ~FLYING_BY_JUMP_PAD; // �� ��� �����
+	features_ &= ~FLYING_BY_JUMP_PAD; // ты сам аркан
 	if(dist < jump_pad_finish_radius || (isFlyingByArcane() && !(features() & JABASOMA)) || features() & STATIC_NULIFICATOR){
 		setGlobalVelocity(0, X_AXIS);
 		setGlobalVelocity(0, Y_AXIS);
@@ -298,13 +298,13 @@ void Mechos::jump()
 	if(jump_timer())
 		return;
 	jump_timer.start(400);
-	setLocalVelocity(jump_velocity_y, Y_AXIS); // �������� ������, ���������� ���������� ��������
-	setGlobalVelocity(jump_velocity_z, Z_AXIS); // �������� �����
+	setLocalVelocity(jump_velocity_y, Y_AXIS); // скорость вперед, игнорируем предыдущую скорость
+	setGlobalVelocity(jump_velocity_z, Z_AXIS); // скорость вверх
 	forces.push_back((QuantFunction)&Mechos::jump_quant);
 }
 int Mechos::jump_quant()
 {
-	setLocalVelocity(jump_velocity_y, Y_AXIS); // �������� ������, ���������� ���������� ��������
+	setLocalVelocity(jump_velocity_y, Y_AXIS); // скорость вперед, игнорируем предыдущую скорость
 	applyLocalTurnTorque(Zlocal(), Vect3f::K);
 	dragW += Vect3f(3, 3, 3);
 	return jump_timer();

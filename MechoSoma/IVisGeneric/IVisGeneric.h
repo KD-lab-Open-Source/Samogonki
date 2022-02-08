@@ -14,21 +14,21 @@ struct XBuffer;
 class cInterfaceGraph3d;
 
 UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
-	// ����������������� ����� 
+	// инициализационная часть 
 	UI_IMPORT( int Create(char *CreateBuffer) );
 	UI_IMPORT( int Release() );
-	// ������� ��� ������ ���������� � ����������� ������
+	// функции для работы собственно с библиотекой вывода
 	UI_IMPORT( int PreDraw(int mask=0xFFFFFFFF) );
 	UI_IMPORT( int Draw(int mask=0xFFFFFFFF) );
 	UI_IMPORT( int PostDraw(int mask=0xFFFFFFFF) );
 	UI_IMPORT( int SetTime(int Time) );
 	UI_IMPORT( int dSetTime(int dTime) );
 	UI_IMPORT( int GetTime(int *Time) );
-	// ������� ��� ������ �� ������
+	// функции для работы со сценой
 	UI_IMPORT( cUnknownClass* CreateScene() );
 	UI_IMPORT( int ReleaseScene(cUnknownClass* Scene) );
 	UI_IMPORT( int SetScene(cUnknownClass* Scene) );
-	// ����� ������� ��� ������ ��������� cUnknownClass
+	// общие функции для работы объектами cUnknownClass
 	UI_IMPORT( int Release(cUnknownClass *UnkClass) );
 	UI_IMPORT( int SetAttribute(cUnknownClass *UnkClass,int Attribute) );
 	UI_IMPORT( int GetAttribute(cUnknownClass *UnkClass,int Attribute=0xFFFFFFFF) );
@@ -36,7 +36,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int SetPosition(cUnknownClass *UnkClass,const Vect3f *Pos,const Vect3f *AngleGrad=0) );
 	UI_IMPORT( int dSetPosition(cUnknownClass *UnkClass,const Vect3f *dPos,const Vect3f *dAngleGrad) );
 	UI_IMPORT( int GetPosition(cUnknownClass *UnkClass,Vect3f *Pos,Vect3f *AngleGrad) );
-	// ������� ��� ������ � ����� ������
+	// функции для работы с окном вывода
 	UI_IMPORT( cUnknownClass* CreateGraph(int xScr,int yScr,int GraphMode=0,int FullScr=0,int ColorBit=16) );
 	UI_IMPORT( int SetGraphClipping(cUnknownClass *URenderDevice,const sRectangle4f *clip) );
 	UI_IMPORT( int GetGraphClipping(cUnknownClass *URenderDevice,sRectangle4f *clip) );
@@ -46,7 +46,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int ReInitGraph(cUnknownClass *URenderDevice,int xScr,int yScr,int GraphMode=0,int FullScr=0,int ColorBit=16) );
 	UI_IMPORT( int GetGraphInfo(cUnknownClass *URenderDevice,int *xScr,int *yScr,int *GraphMode=0,int *FullScr=0,int *ColorBit=0) );
 	UI_IMPORT( cInterfaceGraph3d* GetIGraph3d(cUnknownClass *URenderDevice=0) );
-	// ������� ��� ������ � ���������
+	// функции для работы с объектами
 	UI_IMPORT( int LoadObjectLibrary(const std::filesystem::path &path) );
 	UI_IMPORT( int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF) );
 	UI_IMPORT( int ReleaseObject(int kind,int type) );
@@ -81,7 +81,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int ClearRenderObjectSwitch(int attribute=0xFFFFFFFF) );
 	UI_IMPORT( int LoadObject(cUnknownClass **UObject,XBuffer &buf,cUnknownClass *UParent=0) );
 	UI_IMPORT( int SaveObject(cUnknownClass *UObject,XBuffer &buf) );
-	// ������� ��� ������ � ��������� ����������� �����
+	// функции для работы с точечными источниками света
 	UI_IMPORT( cUnknownClass* CreateOmni(const Vect3f *Pos,float radius,const sColor4f *Color) );
 	UI_IMPORT( int ReleaseOmni(cUnknownClass *UOmni) );
 	UI_IMPORT( int ReleaseOmni(int type) );
@@ -94,7 +94,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int GetOmniSize(cUnknownClass *UOmni,float *radius) );
 	UI_IMPORT( int SetOmniVisible(cUnknownClass *UOmni,int visible) );
 	UI_IMPORT( int GetOmniVisible(cUnknownClass *UOmni,int visible=0xFFFFFFFF) );
-	// ������� ��� ������ � ��������
+	// функции для работы с камерами
 	UI_IMPORT( cUnknownClass* CreateCamera(char *CreateBuffer=0) );
 	UI_IMPORT( int AttachCamera(cUnknownClass *UCamera) );
 	UI_IMPORT( int DetachCamera(cUnknownClass *UCamera) );
@@ -115,7 +115,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int SetCameraOfs(cUnknownClass *UCamera,const Vect3f *Ofs) );
 	UI_IMPORT( int GetCameraOfs(cUnknownClass *UCamera,Vect3f *Ofs) );
 	UI_IMPORT( int ReleaseCamera(cUnknownClass *UCamera=0) );
-	// ������� ��� ������ � ����������� �����, ��������� �� ��������� �������� ������� �����
+	// функции для работы с источниками света, влияющими на освещение объектов текущей сцены
 	UI_IMPORT( cUnknownClass* CreateLight(int id=-1) );
 	UI_IMPORT( int SetLightPosition(cUnknownClass *ULight,const Vect3f *pos) );
 	UI_IMPORT( int GetLightPosition(cUnknownClass *ULight,Vect3f *pos) );
@@ -124,16 +124,16 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int SetLightColor(cUnknownClass *ULight,const sColor4f *ambient=0,const sColor4f *diffuse=0,const sColor4f *illumination=0) );
 	UI_IMPORT( int GetLightColor(cUnknownClass *ULight,sColor4f *ambient=0,sColor4f *diffuse=0,sColor4f *illumination=0) );
 	UI_IMPORT( cUnknownClass* GetLight(int id) );
-	UI_IMPORT( int ReleaseLight(cUnknownClass *ULight) );// ������� �������� ��������
-	// ������� ��� ������ �� �������
+	UI_IMPORT( int ReleaseLight(cUnknownClass *ULight) );// удаляет точечный источник
+	// функции для работы со следами
 	UI_IMPORT( cUnknownClass* CreateTangentTrail(const Vect3f *pos,const sColor4f *c1,const Vect3f *dpos,const sColor4f *c2,float Time=10000.f,float dAnimTime=1.e30f,float Width=2.f) );
 	UI_IMPORT( int ReleaseTangentTrail(cUnknownClass* UTangentTrail) );
-	// �������� ����, �� ���������� � ������� fname, number - ����� ����
+	// создание мира, по информации в скрипте fname, number - номер мира
 	UI_IMPORT( cUnknownClass* CreateWorld(const std::filesystem::path &path,int number=0,int track=0,int LoadTerra=0) );
 	UI_IMPORT( int ReleaseWorld(cUnknownClass *UWorld=0) );
 	UI_IMPORT( int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3) );
-	UI_IMPORT( cUnknownClass* FindObject(char *name) ); // ����� ������� �� ���� �� ����� �������
-	UI_IMPORT( cUnknownClass* FindObjectByFileName(char *fname) ); // ����� ������� �� ���� �� ����� ����� �������
+	UI_IMPORT( cUnknownClass* FindObject(char *name) ); // поиск объекта на миру по имени объекта
+	UI_IMPORT( cUnknownClass* FindObjectByFileName(char *fname) ); // поиск объекта на миру по имени файла объекта
 	UI_IMPORT( cUnknownClass* GetMeshLibrary(cUnknownClass *UScene=0) );
 	UI_IMPORT( cUnknownClass* GetCameraList(cUnknownClass *UScene=0) );
 	UI_IMPORT( cUnknownClass* GetTileWater(cUnknownClass *UScene=0) );

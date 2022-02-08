@@ -5,9 +5,9 @@
 #include "BasePolyGrid.h"
 
 class cSurfaceReflection : public cBasePolyGrid
-{	// отражающая плоскость z=const
+{	// РѕС‚СЂР°Р¶Р°СЋС‰Р°СЏ РїР»РѕСЃРєРѕСЃС‚СЊ z=const
 public:
-	float			KoofReflection;		// коофициент отражения
+	float			KoofReflection;		// РєРѕРѕС„РёС†РёРµРЅС‚ РѕС‚СЂР°Р¶РµРЅРёСЏ
 
 	cSurfaceReflection(	unsigned int type=BASEOBJECT_TYPE_BASEREFLECTION_SURFACE,
 						unsigned int kind=BASEOBJECT_KIND_DRAW_REFLECTION) : cBasePolyGrid(type,kind)	{ BaseDrawObject()->SetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_CYCL|BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCW|BASEOBJECT_ATTRIBUTE_DRAW_COLOR|BASEOBJECT_ATTRIBUTE_DRAW_XYZWARP|BASEOBJECT_ATTRIBUTE_DRAW_TIMEWARP); }
@@ -15,7 +15,7 @@ public:
 };
 
 class cSurfaceReflectionMultiMaterial : public cSurfaceReflection
-{	// отражающая плоскость z=const мультитекстурированная
+{	// РѕС‚СЂР°Р¶Р°СЋС‰Р°СЏ РїР»РѕСЃРєРѕСЃС‚СЊ z=const РјСѓР»СЊС‚РёС‚РµРєСЃС‚СѓСЂРёСЂРѕРІР°РЅРЅР°СЏ
 public:
 	int				xMaterial,yMaterial;
 	int				WarpWavePlane;

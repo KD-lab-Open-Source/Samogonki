@@ -20,7 +20,7 @@ inline double StringToFloat(char *buf)
 	int i;
 	for(i=0;buf[i]!='+'&&buf[i]!='-'&&buf[i]<'0'&&buf[i]>'9';i++)
 		if(buf[i]) return a;
-	// ��������� ����� �����
+	// вычислене целой части
 	if(buf[i]=='-') { f_sign=-1; i++; } else { if(buf[i]=='+') i++; f_sign=1; }
 	for(;buf[i]&&'0'<=buf[i]&&buf[i]<='9';i++)
 		f_int=(f_int*10)+(buf[i]-'0');
@@ -29,7 +29,7 @@ inline double StringToFloat(char *buf)
 		assert(isfinite(a));
 		return a=f_sign*f_int;
 	}
-	// ��������� ������� �����
+	// вычислене дробной части
 	if(buf[i]=='.'||buf[i]==',')
 	{ 
 		i++;
@@ -41,7 +41,7 @@ inline double StringToFloat(char *buf)
 		assert(isfinite(a));
 		return a=f_sign*(f_int+f_fract);
 	}
-	// ���������� ������� �����
+	// вычисление степени числа
 	if(buf[i]=='e')
 	{
 		i++;

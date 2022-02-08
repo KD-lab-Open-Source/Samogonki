@@ -75,7 +75,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 			cRenderDevice *RenderDevice=Camera->GetViewPort();
 			cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 			SetClippingPlane(Camera);
-			// ���������� � ������� ��������� �������
+			// подготовка к расчету координат объекта
 			cConvertor ConvertorObjectToScreen;
 			Omni->BuildDrawMatrix(Camera,ConvertorObjectToScreen.GetMatrix(),Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE);
 			ConvertorObjectToScreen.BuildMatrix();
@@ -208,11 +208,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
 	cUnkClassDynArrayPointer &CameraArray=*(cUnkClassDynArrayPointer*)UCameraList;
 
-	// ������ ������������ ������� 
+	// расчет освещенности объекта 
 	sColor4s AmbientMesh,MulMesh,AddMesh,MetalColor(255,255,255,255);
 	int RenderDiffuse;
 	if(GET_RENDER_TUNING(RENDER_TUNING_DYNAMIC_LIGHTING)&&(Mesh->GetAttribute(MESH_NOT_LIGHTING)==0))
-	{ // ������ ������������ ��� ������� �� ���������� ����� �����
+	{ // расчет освещенности для объекта по источникам света сцены
 		sColor4f Ambient,Diffuse,Illumination=Mesh->GetSpecular();
 		if(IS_STATIC(Mesh->Type)) Ambient.set(0,0,0,1),Diffuse.set(0,0,0,1);
 		else Ambient=LightObject->GetAmbient(),Diffuse=LightObject->GetDiffuse();
@@ -234,13 +234,13 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 		RenderDiffuse=1;
 	}
 	else
-	{ // �� ������ �� ��������� ��������� �����, �� ���������� ������ ���������
+	{ // на объект не действуют источники света, не происходит рендер освещения
 		AmbientMesh.set(0,0,0,255);
 		MulMesh.set(Mesh->GetDiffuse().GetR(),Mesh->GetDiffuse().GetG(),Mesh->GetDiffuse().GetB(),Mesh->GetDiffuse().GetA());
 		AddMesh.set(Mesh->GetSpecular().GetR(),Mesh->GetSpecular().GetG(),Mesh->GetSpecular().GetB(),255);
 		RenderDiffuse=0;
 	}
-	// ���������� � ������� ������������ �������
+	// подготовка к расчету освещенности объекта
 	cConvertor ConvertorObjectToWorld;
 	ConvertorObjectToWorld.GetMatrix()=Mesh->GlobalMatrix;
 //	ConvertorObjectToWorld.BuildMatrix();
@@ -261,7 +261,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			SetClippingPlane(Camera);
 			sColor4s MetalTile=MetalColor;
 
-			// ���������� � ������� ������������ ������� - ������ ����������� ������
+			// подготовка к расчету освещенности объекта - расчет направления камеры
 			int Alpha=MulMesh.a;
 			if(Camera->GetAttribute(ATTRIBUTE_CAMERA_WORLD_SHARE))
 			{
@@ -289,7 +289,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			ConvertorObjectToWorld.InverseConvertVector(dPos,vView);
 			vView.normalize(1.f);
 			float cosLightView=dot(vLight,vView);
-			// ���������� � ������� ��������� �������
+			// подготовка к расчету координат объекта
 			cConvertor ConvertorObjectToScreen;
 			if(vReflection==0)
 				ConvertorObjectToScreen.GetMatrix()=Camera->GetMatrix()*Mesh->BuildDrawMatrix(Camera,ConvertorObjectToScreen.GetMatrix());
@@ -324,13 +324,13 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			ConvertorObjectToScreen.SetProjection(Camera,Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE));
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
 				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
-			// ���������� ������ ��������� � ������������
+			// собственно расчет координат и освещенности
 			for(int i=0;i<Mesh->GetNumberTile();i++)
 				{
 					sTile *tile=Mesh->GetTile(i);
 					sPoint	*Point=tile->GetPoint();
 					sPolygon *Polygon=tile->GetPolygon();
-					Vect3f pv,pe; // pv.z-z-���������� ���������� �� ����������� ����� �������
+					Vect3f pv,pe; // pv.z-z-координата расстояния до характерной точки объекта
 //					float zDistance=ConvertorObjectToScreen.Matrix[6]*Point->pos.x+ConvertorObjectToScreen.Matrix[7]*Point->pos.y+ConvertorObjectToScreen.Matrix[8]*Point->pos.z+ConvertorObjectToScreen.Matrix[11];
 					ConvertorObjectToScreen.ConvertPoint(Point->pos,pv,pe);
 					float fLOD=Mesh->Scale.x*tile->size/pv.z;
@@ -339,7 +339,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(tile->GetAttribute(ATTRMAT_TEXTURE_PAL)) 
 					{
 						if(tile->Texture->nTexture==0) CreateTexture((cMaterial*)tile,RenderDevice);
-						Graph3d->SetTexture(tile->Texture->nTexture); // ��������� ��������
+						Graph3d->SetTexture(tile->Texture->nTexture); // óñòàíîâêà òåêñòóðû
 					}
 					sColor4s MulTile(round(tile->MulCol.r*MulMesh.r),round(tile->MulCol.g*MulMesh.g),
 						round(tile->MulCol.b*MulMesh.b),round(Alpha*tile->MulCol.a)),
@@ -347,7 +347,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(AddTile.r>255) AddTile.r=255;
 					if(AddTile.g>255) AddTile.g=255;
 					if(AddTile.b>255) AddTile.b=255;
-					// ������������� ������� ���������� ������������
+					// инициализация буффера диспетчера растеризации
 					int AttributeTile=MATERIAL_ATTRIBUTE(tile->GetAttribute()|Mesh->Attribute);
 //					int RenderMetal=(GET_RENDER_TUNING(RENDER_TUNING_METAL)&&((Attribute&MESH_NOT_METALL)==0)&&(tile->GetAttribute(ATTRMAT_METAL)))&&RenderLighting;
 					int RenderMetal=(GET_RENDER_TUNING(RENDER_TUNING_METAL)&&((Attribute&MESH_NOT_METALL)==0)&&(tile->GetAttribute(ATTRMAT_METAL)));
@@ -382,7 +382,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 										RenderDiffuse,RenderMetal,RenderShade,
 										AmbientMesh,MulTile,AddTile,MetalTile,
 										&Point[i]);
-								// ����������� �������� � ������������ ���� ������������ back-��������� (���������, ��������������� �������� ������� �������)
+								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
 										AddPolygonFixTestPointFix(p->p1,p->p2,p->p3);
@@ -402,7 +402,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 										RenderDiffuse,RenderMetal,RenderShade,
 										AmbientMesh,MulTile,AddTile,MetalTile,
 										&Point[i],&Texel[i]);
-								// ����������� �������� � ������������ ���� ������������ back-��������� (���������, ��������������� �������� ������� �������)
+								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
 										AddPolygonFixTestPointFix(p->p1,p->p2,p->p3);
@@ -461,7 +461,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 								}
 								for(int i=0;i<tile->GetNumberPolygon();i++)
 								{ 
-									// �������� �������������� ���������
+									// передача геометрических координат
 									int i3=i*3;
 									Vect3f pv,pe;
 									sPolygon &p=Polygon[i];
@@ -470,7 +470,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 									SetPointMesh(i3+1,P3D,BufPoint[p.p2],BufPointAttribute[p.p2],Texel[t.p2]);
 									SetPointMesh(i3+2,P3D,BufPoint[p.p3],BufPointAttribute[p.p3],Texel[t.p3]);
 								}
-								// ����������� �������� � ������������ ���� ������������ back-��������� (���������, ��������������� �������� ������� �������)
+								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
 									for(int i3=0;i3<3*tile->GetNumberPolygon();i3+=3)
 										AddPolygonFixTestPointFix(i3+0,i3+1,i3+2);
@@ -507,7 +507,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 					{
 						if(bTile->GetTexture()->GetStatus(STATUS_TEXTURE_RESET|STATUS_TEXTURE_LOAD))
 							ResetTextureTileMap565(bTile->GetMaterial(),RenderDevice);
-						Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// ��������� ��������
+						Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// установка текстуры
 						Vect3f ShareOfs;
 						cConvertor ConvertorObjectToScreen;
 						ConvertorObjectToScreen.GetMatrix()=bTile->DrawMatrix[nCamera],ShareOfs=bTile->ShareOfs[nCamera];
@@ -533,7 +533,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						{
 							if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 							{
-//								Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// ��������� ��������
+//								Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
 //								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
 								this->Attribute|=RENDER_MULTICANAL;
 								Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
@@ -547,7 +547,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 		for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
 			if(bTile->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)
 			{
-				Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// ��������� ��������
+				Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// установка текстуры
 				Vect3f ShareOfs;
 				cConvertor ConvertorObjectToScreen;
 				ConvertorObjectToScreen.GetMatrix()=bTile->DrawMatrix[nCamera],ShareOfs=bTile->ShareOfs[nCamera];
@@ -575,7 +575,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				{
 					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 					{
-						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// ��������� ��������
+						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
 //								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
 						this->Attribute|=RENDER_MULTICANAL;
 						Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
@@ -590,7 +590,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 					{
-						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// ��������� ��������
+						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
 						this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
 						Draw(Camera,RenderDevice);
 					}
@@ -632,7 +632,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 			if(bTile->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)
 				if(bTile->GetAttribute(ATTR_TILE_REFLECTION))
 				{
-					Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// ��������� ��������
+					Graph3d->SetTexture(bTile->GetTexture()->nTexture);				// установка текстуры
 					Vect3f ShareOfs;
 					cConvertor ConvertorObjectToScreen;
 					ConvertorObjectToScreen.GetMatrix()=bTile->DrawMatrix[nCamera],ShareOfs=bTile->ShareOfs[nCamera];
@@ -680,7 +680,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					{
 						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 						{
-							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// ��������� ��������
+							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
 	//								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
 							this->Attribute|=RENDER_MULTICANAL;
 							Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
@@ -695,7 +695,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 						{
-							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// ��������� ��������
+							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
 							this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
 							Draw(Camera,RenderDevice);
 						}
@@ -718,14 +718,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 		SetClippingPlane(Camera);
 		int FlagShareWorld=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE;
-		// �������� ���������� �� ���������� � �������� ������������
+		// создание конвертера из объектного в экранное пространство
 		Vect3f ShareOfs;
 		cConvertor ConvertorObjectToScreen;
 		PolyGrid->BuildDrawMatrix(Camera,ConvertorObjectToScreen.GetMatrix(),ShareOfs);
 		ConvertorObjectToScreen.BuildMatrix();
 		ConvertorObjectToScreen.SetProjection(Camera,Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE));
 		int RadiusWorldShare=GlobalWorldRadius, RadiusWorldShare2=RadiusWorldShare*RadiusWorldShare;
-		// ���������� � �������
+		// подготовка к рендеру
 		int xsize=PolyGrid->xsize,ysize=PolyGrid->ysize;
 		int	xstep=PolyGrid->xstep,ystep=PolyGrid->ystep;
 		float du=PolyGrid->du,dv=PolyGrid->dv;
@@ -743,7 +743,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 			BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 		}
 		InitFix(BaseAttribute,xsize*ysize);
-		// ��������� ������
+		// установка вершин
 		float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
 		sPointPolyGrid *bPoint=Point,*ePoint=&Point[xsize*ysize];
 		for(;bPoint<ePoint;xpos=ShareOfs.x,ypos+=ystep,duPoint=du+uofs,dvPoint+=ddv)
@@ -765,7 +765,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 				SetPointFix(bPoint-Point,bPoint->r,bPoint->g,bPoint->b,bPoint->a,
 					Vect2f(duPoint+bPoint->du*uLimit,dvPoint+bPoint->dv*vLimit));
 			}
-		// ��������� ���������
+		// установка полигонов
 		for(int j=0,jend=(ysize-1)*xsize;j<jend;j+=xsize)
 			for(int i=j,iend=j+xsize-1;i<iend;i++)
 			{
@@ -792,7 +792,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 		SetClippingPlane(Camera);
 		int FlagShareWorld=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE;
-		// �������� ���������� �� ���������� � �������� ������������
+		// создание конвертера из объектного в экранное пространство
 		Vect2f dTex(0,0);
 		if(TileWater->GetAttribute(TILEWATER_MOVTEXTURE)) { dTex.x-=Camera->GetPos().x/(TileWater->GetScaleTex().x*(1<<TileWater->_SizeTileX())); dTex.y-=Camera->GetPos().y/(TileWater->GetScaleTex().y*(1<<TileWater->_SizeTileY())); }
 		dTex.x=dTex.x-(int)dTex.x; dTex.y=dTex.y-(int)dTex.y;
@@ -809,7 +809,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 				PolyGrid->BuildDrawMatrix(Camera,ConvertorObjectToScreen.GetMatrix(),ShareOfs);
 				ConvertorObjectToScreen.BuildMatrix();
 				ConvertorObjectToScreen.SetProjection(Camera,Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE));
-				// ���������� � �������
+				// подготовка к рендеру
 				int xsize=PolyGrid->xsize,ysize=PolyGrid->ysize;
 				int	xstep=PolyGrid->xstep,ystep=PolyGrid->ystep;
 				float du=PolyGrid->du+dTex.x,dv=PolyGrid->dv+dTex.y;
@@ -827,7 +827,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 					Graph3d->SetTexture(PolyGrid->Texture->nTexture);
 				}
 				InitFix(BaseAttribute,xsize*ysize);
-				// ��������� ������
+				// установка вершин
 				float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
 				sPointPolyGrid *bPoint=Point,*ePoint=&Point[xsize*ysize];
 				for(;bPoint<ePoint;xpos=ShareOfs.x,ypos+=ystep,duPoint=du+uofs,dvPoint+=ddv)
@@ -849,7 +849,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 						SetPointFix(bPoint-Point,bPoint->r,bPoint->g,bPoint->b,bPoint->a,
 							Vect2f(duPoint+bPoint->du*uLimit,dvPoint+bPoint->dv*vLimit));
 					}
-				// ��������� ���������
+				// установка полигонов
 				for(int j=0,jend=(ysize-1)*xsize;j<jend;j+=xsize)
 					for(int i=j,iend=j+xsize-1;i<iend;i++)
 					{
@@ -896,7 +896,7 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 	InitFix(BaseAttribute,isize*jsize);
 	float xpos=xofs,ypos=yofs, ustep, duPoint0,vstep, duPoint,dvPoint;
 	if(WorldPolyGrid->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))
-	{ // ��������� ������������, ��������� ��������� ����������� ��� �������� 128
+	{ // убирается зацикливание, константы подобраны имперически для текстуры 128
 		ustep=WorldPolyGrid->u/xsize, vstep=WorldPolyGrid->v/ysize;
 		duPoint0=WorldPolyGrid->du+WorldPolyGrid->uofs+ustep*i1;
 		dvPoint=WorldPolyGrid->dv+WorldPolyGrid->vofs+vstep*j1;
@@ -957,7 +957,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cWorldPolyGrid *WorldPolyG
 		{
 			if(Material->Texture->nTexture==0)
 				CreateTexture(Material,RenderDevice);
-			Graph3d->SetTexture(Material->Texture->nTexture); // ��������� ��������
+			Graph3d->SetTexture(Material->Texture->nTexture); // установка текстуры
 		}
 		Vect2f CameraPosScale(Camera->GetPos().x*GlobalWorldScale.x,Camera->GetPos().y*GlobalWorldScale.y);
 		int xView=Cycl(CameraPosScale.x+GlobalWorldSize.x*GlobalWorldScale.x/2,GlobalWorldSize.x*GlobalWorldScale.x),
@@ -1001,7 +1001,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cSurfaceReflectionMultiMat
 						CreateTexture(Material,RenderDevice);
 					if(Material->Texture->GetStatus(STATUS_TEXTURE_RESET))
 						ResetTextureMultiMaterialSurface565(Graph3d,Material,Surface);
-					Graph3d->SetTexture(Material->Texture->nTexture); // ��������� ��������
+					Graph3d->SetTexture(Material->Texture->nTexture); // установка текстуры
 				}
 				DrawTilePolyGrid(RenderDevice,Camera,Surface,i1,j1,i2,j2,Material);
 			}
@@ -1046,7 +1046,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 			Vect3f pw(0,0,0),pv,pe;
 			ConvertorObjectToScreen.ConvertPoint(pw,pv,pe);
 
-			// ������������� ������� ���������� ������������
+			// инициализация буффера диспетчера растеризации
 			if(Material->GetAttribute(ATTRMAT_TEXTURE_PAL))
 			{
 				float RadiusSun=Sun.GetRadiusSun();
@@ -1161,7 +1161,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) BaseAttribute|=RENDER_CLIPPING3D;
 		if(Material&&Material->GetAttribute(ATTRMAT_TEXTURE_PAL)) 
 		{
-			Graph3d->SetTexture(Material->Texture->nTexture); // ��������� ��������
+			Graph3d->SetTexture(Material->Texture->nTexture); // установка текстуры
 			BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 		}
 		InitFix(BaseAttribute,4);

@@ -272,15 +272,15 @@ void regRender(int LowX,int LowY,int HiX,int HiY,int changed)
 		int LastStep = (H_SIZE - 1 - HiX) * SHADOWDEEP;
 		LastStep -= ((LastStep >> POSPOWER) - MAX_ALT) << POSPOWER;
 
-		//ÔÂÔÓıÓ‰
+		//–ø—Ä–µ–ø—Ä–æ—Ö–æ–¥
 		PreStage(LastStep,HiX,pa0,hC,shadowParent + MAX_ALT);
-		//ÓÒÌÓ‚ÌÓÈ ÔÓıÓ‰
+		//–æ—Å–Ω–æ–≤–Ω–æ–π –ø—Ä–æ—Ö–æ–¥
 		int x = HiX;
 		BYTE* grid = shadowParent + MAX_ALT + MAX_ALT;
 		int MaxAlt = 0;
 		MainStage(pa0,hC,pc0,SizeX,x,grid,MaxAlt);
 		
-		//ÔÓÒÚ ÔÓıÓ‰
+		//–ø–æ—Å—Ç –ø—Ä–æ—Ö–æ–¥
 		{
 		x |= 1;
 		BYTE* pa = pa0 + x;
@@ -507,7 +507,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 			else h_s2=0;
 			if(h_s3 > delta_s) h_s3-=delta_s;
 			else h_s3=0;
-			//¬˚·ÓÍ‡ ‚ÓÍÒÂÎÂÈ
+			//–í—ã–±–æ—Ä–∫–∞ –≤–æ–∫—Å–µ–ª–µ–π
 			if(*(pa0+x)&At_WATER) lxV0=*(ps0+x);
 			else lxV0=*(pv0+x);
 			if(*(pa1+x)&At_WATER) lxV1=*(ps1+x);
@@ -534,7 +534,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 						if((*(pa1+x)&At_SHADOWS) ==0) *(pa1+x)|=At_SHADOWV;
 					}
 					else {
-						*(pc1+x)-=*(pc1+x)>>2;//ŒÒÎ‡·ÎÂÌÌ‡ˇ ÚÂÌ¸
+						*(pc1+x)-=*(pc1+x)>>2;//–û—Å–ª–∞–±–ª–µ–Ω–Ω–∞—è —Ç–µ–Ω—å
 						if(*(pc1+x) < (*(pv1+x)-V1>>1)) *(pc1+x)=0;
 						else *(pc1+x)-=(*(pv1+x)-V1>>1);
 					}
@@ -545,7 +545,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 //					if(h_s0 <= (V0<<16)) h_s0=V0<<16;
 				}
 			}
-			//—”ÿ¿ 1tchk
+			//–°–£–®–ê 1tchk
 			else{
 				//*(pc1+x)=light_G[0][temp1]-(127-(V1>>1));
 				*(pc1+x)=((terra.light_front[0][type1][temp1] * terra.light_sideways[0][type1][temp1y] >>8) +terra.ambient_light[0][type1]);
@@ -555,7 +555,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 						if((*(pa1+x)&At_SHADOWS) ==0) *(pa1+x)|=At_SHADOWV;
 					}
 					else {
-						*(pc1+x)-=*(pc1+x)>>2;//ŒÒÎ‡·ÎÂÌÌ‡ˇ ÚÂÌ¸
+						*(pc1+x)-=*(pc1+x)>>2;//–û—Å–ª–∞–±–ª–µ–Ω–Ω–∞—è —Ç–µ–Ω—å
 					}
 				}
 				else{
@@ -576,7 +576,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 						if((*(pa2+x)&At_SHADOWS) ==0) *(pa2+x)|=At_SHADOWV;
 					}
 					else {
-						*(pc2+x)-=*(pc2+x)>>2;//ŒÒÎ‡·ÎÂÌÌ‡ˇ ÚÂÌ¸
+						*(pc2+x)-=*(pc2+x)>>2;//–û—Å–ª–∞–±–ª–µ–Ω–Ω–∞—è —Ç–µ–Ω—å
 						if(*(pc2+x) < (*(pv2+x)-V2>>1)) *(pc2+x)=0;
 						else *(pc2+x)-=(*(pv2+x)-V2>>1);
 					}
@@ -589,7 +589,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 //					if(h_s3 <= (V3<<16)) h_s3=V3<<16;
 				}
 			}
-			//—”ÿ¿ 2tchk
+			//–°–£–®–ê 2tchk
 			else{
 				//*(pc2+x)=light_G[0][temp2]-(127-(V2>>1));
 				*(pc2+x)=((terra.light_front[0][type2][temp2] * terra.light_sideways[0][type2][temp2y] >>8) +terra.ambient_light[0][type2]);
@@ -599,7 +599,7 @@ void regRenderSNGC(int LowX,int LowY,int HiX,int HiY)//regRenderSNGC
 						if((*(pa2+x)&At_SHADOWS) ==0) *(pa2+x)|=At_SHADOWV;
 					}
 					else {
-						*(pc2+x)-=*(pc2+x)>>2;//ŒÒÎ‡·ÎÂÌÌ‡ˇ ÚÂÌ¸
+						*(pc2+x)-=*(pc2+x)>>2;//–û—Å–ª–∞–±–ª–µ–Ω–Ω–∞—è —Ç–µ–Ω—å
 					}
 				}
 				else{

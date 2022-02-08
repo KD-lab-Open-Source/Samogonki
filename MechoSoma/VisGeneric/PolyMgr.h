@@ -100,9 +100,9 @@ struct sSpriteFX
 
 struct sPointAttribute
 {
-	Vect3f			pv;		// ���������� � ����������� ������
-	unsigned char	clip;	// ����� �������������
-	unsigned int	edge;	// ��������� �� ��� ������� ���������� ��� �������� ������
+	Vect3f			pv;		// координаты в прострастве камеры
+	unsigned char	clip;	// флаги клиппирования
+	unsigned int	edge;	// указывает на две вершины породивших при клиповке данную
 	inline void Set(float fxv,float fyv,float fzv)						{ pv.x=fxv; pv.y=fyv; pv.z=fzv; }
 	inline void Set(const sPointAttribute &pa1,const sPointAttribute &pa2,float t)	{ pv.x=pa1.pv.x+(pa2.pv.x-pa1.pv.x)*t; pv.y=pa1.pv.y+(pa2.pv.y-pa1.pv.y)*t;	pv.z=pa1.pv.z+(pa2.pv.z-pa1.pv.z)*t; };
 };
@@ -142,7 +142,7 @@ public:
 
 	// Fix-format function
 	void InitFix(int attribute,int NumberPoint=0);
-	__forceinline void AddPolygonFixTestPointFix(int i1,int i2,int i3);// ���������� � ������������� ����� �����
+	__forceinline void AddPolygonFixTestPointFix(int i1,int i2,int i3);// добавление в конецполигона после теста
 	__forceinline void SetPointFix(int i,const Vect2f &tex);
 	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da);
 	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da,const Vect2f &tex);
@@ -157,7 +157,7 @@ public:
 	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,const Vect2f &tex,const Vect3f &pv);
 	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect3f &pv);
 	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect2f &tex,const Vect3f &pv);
-	// ������� ������������
+	// функции растеризации
 	void Draw(cUnknownClass *UCameraList,cOmni *Omni);
 	
 	void Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMesh *Mesh,Vect3f *vReflection=0);
@@ -181,10 +181,10 @@ public:
 	void Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrail);
 
 	void SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffuse,const sColor4f &Specular,int zWrite=0);
-	void BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix); // ��� ���������� ��������
+	void BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix); // для трехмерных эффектов
 	void AttachCenter(const Vect3f &pos,float angle,float scale,int rgbaDiffuse,int idTextureChild);
 	void AttachCenter(const Vect3f &pos,sSpriteFX *SpriteFX,int idTextureChild);
-	void BeginList(cUnknownClass *UCamera,int idTextureChild); // ��� ������� ��������
+	void BeginList(cUnknownClass *UCamera,int idTextureChild); // для плоских эффектов
 	void AttachCenter(const Vect2f &pos,sSpriteFX *SpriteFX,int idTextureChild);
 	void BeginListShare(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix);
 	void AttachCenterShare(const Vect3f &pos,sSpriteFX *SpriteFX,int idTextureChild);
@@ -193,10 +193,10 @@ public:
 private:
 	inline int AssertValid();
 	// PolygonFix
-	inline int  AddPolygonFix(int p1,int p2,int p3);		// ���������� � �����
-	inline void DelPolygonFix(int i);						// �������� �������� �� �������
-	inline void MovPolygonFix(int i);						// ����������� �� ��������� i � �����
-	inline void SetPolygonFix(int i,int p1,int p2,int p3);	// ��������� �������� ��������
+	inline int  AddPolygonFix(int p1,int p2,int p3);		// добавление в конец
+	inline void DelPolygonFix(int i);						// удаление полигона из позиции
+	inline void MovPolygonFix(int i);						// перемещение из положения i в конец
+	inline void SetPolygonFix(int i,int p1,int p2,int p3);	// установка значений полигона
 
 	inline sVertexFix& NextPointFix()					{ return PointFix[PointFix.CurrentSize++]; }
 	inline sPolygonFix& NextPolygonFix()				{ return PolygonFix[PolygonFix.CurrentSize++]; }
@@ -235,7 +235,7 @@ extern cPolyDispatcher *P3D;
 	}
 
 __forceinline void cPolyDispatcher::AddPolygonFixTestPointFix(int i1,int i2,int i3)	
-{	// ���������� � ����� �������� ����� �����
+{	// добавление в конец полигона после теста
 	assert((i1<PointFix.length())&&(i2<PointFix.length())&&(i3<PointFix.length()));
 	sVertexFix &p1=PointFix[i1],&p2=PointFix[i2],&p3=PointFix[i3];
 	if(PointAttribute[i1].clip&PointAttribute[i2].clip&PointAttribute[i3].clip) return;

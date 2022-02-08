@@ -2,6 +2,8 @@
 #ifndef __XINI_FILE_H__
 #define __XINI_FILE_H__
 
+#include <cstring>
+
 class xINI_FileKey 
 {
 	int size;

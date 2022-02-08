@@ -157,8 +157,8 @@ MD3DERROR __d3dCloseGammaSupport()
 }
 
 //*******************************************************************
-// Установка user-adjustable гаммы
-// работает для всех трех режимов
+// РЈСЃС‚Р°РЅРѕРІРєР° user-adjustable РіР°РјРјС‹
+// СЂР°Р±РѕС‚Р°РµС‚ РґР»СЏ РІСЃРµС… С‚СЂРµС… СЂРµР¶РёРјРѕРІ
 // 0.2 <= fXGamma <= 5.0
 //*******************************************************************
 MD3DERROR d3dSetAdjustedGamma( float fRGamma, float fGGamma, float fBGamma )
@@ -188,8 +188,8 @@ MD3DERROR d3dGetAdjustedGamma( float *pfRGamma, float *pfGGamma, float *pfBGamma
 
 
 //*******************************************************************
-// Эффект 'highlight'
-// работает в режимах MD3DGAMMA_RAMDACCALIBRATED и MD3DGAMMA_RAMDAC
+// Р­С„С„РµРєС‚ 'highlight'
+// СЂР°Р±РѕС‚Р°РµС‚ РІ СЂРµР¶РёРјР°С… MD3DGAMMA_RAMDACCALIBRATED Рё MD3DGAMMA_RAMDAC
 // -1 <= fXHilight <= 1 (0 = off)
 //*******************************************************************
 MD3DERROR d3dSetGammaFxHighlight( float fRHilight, float fGHilight, float fBHilight )
@@ -222,8 +222,8 @@ MD3DERROR d3dGetGammaFxHighlight( float *pfRHilight, float *pfGHilight, float *p
 
 
 //*******************************************************************
-// Эффект 'shadow'
-// работает в режимах MD3DGAMMA_RAMDACCALIBRATED и MD3DGAMMA_RAMDAC
+// Р­С„С„РµРєС‚ 'shadow'
+// СЂР°Р±РѕС‚Р°РµС‚ РІ СЂРµР¶РёРјР°С… MD3DGAMMA_RAMDACCALIBRATED Рё MD3DGAMMA_RAMDAC
 // -1.0 <= fxShadow <= 1.0 (0 = off)
 //*******************************************************************
 MD3DERROR d3dSetGammaFxShadow( float fRShadow, float fGShadow, float fBShadow )

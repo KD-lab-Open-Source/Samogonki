@@ -8,14 +8,14 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-// Hash-table ��� ����������� ����� �����
+// Hash-table для определения типов дамми
 //////////////////////////////////////////////////////////////////////////
 struct DummyNameMap :  HashStringGroup<int>
 {
 	DummyNameMap()
 	{
 		add("engine", M3D_ENGINE);
-		add("back", M3D_ENGINE); // ����� �� ��������������� ������ ������
+		add("back", M3D_ENGINE); // чтобы не переименовывать задние колеса
 		add("front", M3D_FRONT);
 		
 		add("lf_wheel", M3D_LF_WHEEL);
@@ -181,7 +181,7 @@ struct dummy_comp
 
 void DummyList::SortByName()
 {
-	//@caiiiycuk: not implemeted
+	// TODO: @caiiiycuk: not implemeted
 	// sort(begin(), end(), dummy_comp());
 	abort();
 }

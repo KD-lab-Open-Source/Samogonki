@@ -10,16 +10,16 @@ class cTileMap;
 class cBaseTrail : public cBaseObject, public cBaseDrawObject
 {
 public:
-	Vect3f			Point[4];			// 4-����� �������� 
-	Vect3f			Pos;				// ����� ��������� ������
-	sColor4f		Diffuse1;			// ������������ ������� � ������
-	sColor4f		Diffuse2;			// ������������ ������� � �����
+	Vect3f			Point[4];			// 4-точки текстуры 
+	Vect3f			Pos;				// место положение центра
+	sColor4f		Diffuse1;			// освещенность объекта в начале
+	sColor4f		Diffuse2;			// освещенность объекта в конце
 	MeasurementTimer Timer;
 	float			   Duration;		   
-//	float			CurrentTime;		// ������� �����, CurrentTime+StartTime==GlobalTime
-//	float			StartTime;			// ����� ������ ����� 
-//	float			FinishTime;			// ����� ����� 
-	float			AnimTime;			// ����� ��������
+//	float			CurrentTime;		// текущее время, CurrentTime+StartTime==GlobalTime
+//	float			StartTime;			// время начала жизни 
+//	float			FinishTime;			// время жизни 
+	float			AnimTime;			// время анимации
 
 	cBaseTrail(unsigned int type,unsigned int kind) : cBaseObject(type,kind)			{ /*StartTime=0;*/ }
 };

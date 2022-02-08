@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "RenderDevice.h"
 
-// ãëîáàëüíûå îáúÿâëåíèÿ ìèðà
+// Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ñ‹Ðµ Ð¾Ð±ÑŠÑÐ²Ð»ÐµÐ½Ð¸Ñ Ð¼Ð¸Ñ€Ð°
 Vect2f GlobalWorldSize(2048.f,2048.f);
 Vect2f GlobalWorldScale(1.f,1.f);
 float  GlobalWorldRadius=1000.f;
@@ -178,7 +178,7 @@ eConstVisible cCamera::TestVisible(const MatXf &matrix,float radius)
 	return (eConstVisible)visible;
 }
 eConstVisible cCamera::TestVisible(const MatXf &matrix,const Vect3f &min,const Vect3f &max)
-{ // äëÿ BoundBox ñ ãðàíèöàìè min && max
+{ // Ð´Ð»Ñ BoundBox Ñ Ð³Ñ€Ð°Ð½Ð¸Ñ†Ð°Ð¼Ð¸ min && max
 	int test=0;
 	Vect3f pv,pe;
 	Vect3f size=max-min,
@@ -295,7 +295,7 @@ Vect3f cCamera::Screen2World(int x_scr, int y_scr)
 		return origin + direct;
 	}
 	else
-	{ // ñêàíèðóåì ïàðàëëåëüíûìè ëó÷àìè
+	{ // ÑÐºÐ°Ð½Ð¸Ñ€ÑƒÐµÐ¼ Ð¿Ð°Ñ€Ð°Ð»Ð»ÐµÐ»ÑŒÐ½Ñ‹Ð¼Ð¸ Ð»ÑƒÑ‡Ð°Ð¼Ð¸
 		Vect3f direct(0,0,2000);
 		GetMatrix().invXformVect(direct);
 		float k = GetPos().z/(GetFocus().x*GetViewPort()->GetSize().x);

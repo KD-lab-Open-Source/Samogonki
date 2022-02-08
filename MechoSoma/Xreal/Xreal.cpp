@@ -82,7 +82,7 @@ void Xreal_init()
 				CONTROL_FP();
 				}
 
-			// ��� ������ - � �����
+			// Все потоки - в файлы
 			//cerr = *(new ofstream("cerr"));		// cerr
 			//_iob[1] = *fopen( "stdout", "w" );	// stdout
 			//_iob[2] = *fopen( "stderr", "w" );	// stderr

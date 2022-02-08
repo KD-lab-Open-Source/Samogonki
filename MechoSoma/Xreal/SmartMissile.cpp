@@ -4,7 +4,7 @@
 #include "FlyingObject.h"
 #include "SmartMissile.h"
 #include "BodyDispatcher.h"
-#include "M3d_Effects.h"
+#include "M3d_effects.h"
 #include "sound.h"
 
 ////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ void SmartMissile::set_owner(int ID, int duration)
 
 void SmartMissile::quant()
 {
-	if(!time_to_live || test_collision(0)){ //  ������������ � ������������
+	if(!time_to_live || test_collision(0)){ //  столкновение с поверхностью
 		kill();
 		}
 }

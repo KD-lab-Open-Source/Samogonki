@@ -35,9 +35,9 @@ public:
 };
 
 /*
-	throw char*; если функция некорректно завершилась
+	throw char*; РµСЃР»Рё С„СѓРЅРєС†РёСЏ РЅРµРєРѕСЂСЂРµРєС‚РЅРѕ Р·Р°РІРµСЂС€РёР»Р°СЃСЊ
 
-	return true если обработали эту переменную
+	return true РµСЃР»Рё РѕР±СЂР°Р±РѕС‚Р°Р»Рё СЌС‚Сѓ РїРµСЂРµРјРµРЅРЅСѓСЋ
 */
 typedef bool (*NonStaticByConst)(LPCSTR name,LPCSTR value,int& ret);
 
@@ -52,11 +52,11 @@ class ParseParam
 
 	NonStaticByConst pGetIntByConstNonstatic;
 public:
-	ParamBlock* pGetIntByConst;//какие значения может принимать этот тип
+	ParamBlock* pGetIntByConst;//РєР°РєРёРµ Р·РЅР°С‡РµРЅРёСЏ РјРѕР¶РµС‚ РїСЂРёРЅРёРјР°С‚СЊ СЌС‚РѕС‚ С‚РёРї
 
-	///Эти параметры пока не используются
-	ParamBlock* pGetIn;//какие переменные могут входить в эту группу
-	ParamBlock* pGetType;//какой тип у этой переменной
+	///Р­С‚Рё РїР°СЂР°РјРµС‚СЂС‹ РїРѕРєР° РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ
+	ParamBlock* pGetIn;//РєР°РєРёРµ РїРµСЂРµРјРµРЅРЅС‹Рµ РјРѕРіСѓС‚ РІС…РѕРґРёС‚СЊ РІ СЌС‚Сѓ РіСЂСѓРїРїСѓ
+	ParamBlock* pGetType;//РєР°РєРѕР№ С‚РёРї Сѓ СЌС‚РѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
 
 	int line;
 	char* cur;

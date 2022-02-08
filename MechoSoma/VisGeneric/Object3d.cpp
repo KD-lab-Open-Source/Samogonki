@@ -67,7 +67,7 @@ void sTile::CalcLOD()
 	size=Max.distance(Min);
 }
 void sTile::CalcNormal()
-{ // создание нормалей объекта
+{ // СЃРѕР·РґР°РЅРёРµ РЅРѕСЂРјР°Р»РµР№ РѕР±СЉРµРєС‚Р°
 	if(GetNumberPoint()==0||GetNumberPolygon()==0) return;
 	Vect3f *Normal3f=new Vect3f[GetNumberPoint()];
 	sPoint *Point=GetPoint();
@@ -178,7 +178,7 @@ void cMesh::Displace(float x,float y,float z)
 		tmp->Mesh->Displace(x,y,z);
 }
 void cMesh::TestVisible(cUnknownClass *UCameraList)
-{ // проводит тест на видимость
+{ // РїСЂРѕРІРѕРґРёС‚ С‚РµСЃС‚ РЅР° РІРёРґРёРјРѕСЃС‚СЊ
 	cUnkClassDynArrayPointer &ArrayCamera=*(cUnkClassDynArrayPointer*)UCameraList;
 	int TotalVisible=0;
 	for(int nCamera=0;nCamera<ArrayCamera.length();nCamera++)
@@ -257,13 +257,13 @@ void cMesh::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList)
 	assert(UScene->GetKind(KIND_SCENE));
 	if(UCameraList==0) UCameraList=((cScene*)UScene)->GetCameraList();
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
-	// отрисовка потомков, если видим хотя бы в одной камере
+	// РѕС‚СЂРёСЃРѕРІРєР° РїРѕС‚РѕРјРєРѕРІ, РµСЃР»Рё РІРёРґРёРј С…РѕС‚СЏ Р±С‹ РІ РѕРґРЅРѕР№ РєР°РјРµСЂРµ
 	for(cList *start=Child; start; start=start->next)
 		if(start->Mesh->isVisibleTotal(UCameraList))
 			start->Mesh->Draw(UScene,UCameraList);
-	// если видим хотя бы в одной камере
+	// РµСЃР»Рё РІРёРґРёРј С…РѕС‚СЏ Р±С‹ РІ РѕРґРЅРѕР№ РєР°РјРµСЂРµ
 	P3D->Draw(UScene,UCameraList,this);
-	// статистическая информация, число отрисованных объектов
+	// СЃС‚Р°С‚РёСЃС‚РёС‡РµСЃРєР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ, С‡РёСЃР»Рѕ РѕС‚СЂРёСЃРѕРІР°РЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 	MeshCountDraw++;
 }
 void cMesh::DrawReflection(cUnknownClass *UScene,cUnknownClass *UCameraList)
@@ -272,7 +272,7 @@ void cMesh::DrawReflection(cUnknownClass *UScene,cUnknownClass *UCameraList)
 	assert(UScene->GetKind(KIND_SCENE));
 	if(UCameraList==0) UCameraList=((cScene*)UScene)->GetCameraList();
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
-	// отрисовка потомков, если видим хотя бы в одной камере
+	// РѕС‚СЂРёСЃРѕРІРєР° РїРѕС‚РѕРјРєРѕРІ, РµСЃР»Рё РІРёРґРёРј С…РѕС‚СЏ Р±С‹ РІ РѕРґРЅРѕР№ РєР°РјРµСЂРµ
 #ifdef _MECHOSOMA_
 	if(GlobalRenderTuning&RENDER_TUNING_OBJECT_REFLECTION_MAP)
 	{
@@ -288,7 +288,7 @@ void cMesh::DrawReflection(cUnknownClass *UScene,cUnknownClass *UCameraList)
 		for(cList *start=Child; start; start=start->next)
 			if(start->Mesh->isVisibleTotal(UCameraList))
 				start->Mesh->DrawReflection(UScene,UCameraList);
-		// если видим хотя бы в одной камере
+		// РµСЃР»Рё РІРёРґРёРј С…РѕС‚СЏ Р±С‹ РІ РѕРґРЅРѕР№ РєР°РјРµСЂРµ
 		P3D->Draw(UScene,UCameraList,this,&pos);
 	}
 	else if(GlobalRenderTuning&RENDER_TUNING_OBJECT_REFLECTION_SURFACE)
@@ -301,12 +301,12 @@ void cMesh::DrawReflection(cUnknownClass *UScene,cUnknownClass *UCameraList)
 		for(cList *start=Child; start; start=start->next)
 			if(start->Mesh->isVisibleTotal(UCameraList))
 				start->Mesh->DrawReflection(UScene,UCameraList);
-		// если видим хотя бы в одной камере
+		// РµСЃР»Рё РІРёРґРёРј С…РѕС‚СЏ Р±С‹ РІ РѕРґРЅРѕР№ РєР°РјРµСЂРµ
 		P3D->Draw(UScene,UCameraList,this,&pos);
 		GlobalMatrix.trans()=TransOld;
 	}
 #endif
-	// статистическая информация, число отрисованных объектов
+	// СЃС‚Р°С‚РёСЃС‚РёС‡РµСЃРєР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ, С‡РёСЃР»Рѕ РѕС‚СЂРёСЃРѕРІР°РЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 	MeshCountDraw++;
 }
 void cMesh::AttachChild(cMesh *child)
@@ -559,7 +559,7 @@ cMesh* cMesh::FindUnique(unsigned int unique)
 		if((tmp=start->Mesh->FindUnique(unique))!=0) return tmp;
 	return 0;
 }
-void cMesh::Release()	// єфрыхэшх юс·хъЄр ё хую яюЄюьърьш
+void cMesh::Release()	// С”С„СЂС‹С…СЌС€С… СЋСЃВ·С…СЉР„СЂ С‘ С…СѓСЋ СЏСЋР„СЋСЊСЉСЂСЊС€
 { 
 	AssertValid();
 	if(description) delete description; description=0;
@@ -883,7 +883,7 @@ void cMesh::BuildShadeDynamic(short **shade,int *xShade,int *yShade,Vect3f &PosS
 		(*shade)=0; return; 
 	}
 	if(((*xShade)>1024)||((*yShade)>1024)) 
-	{ // очень большая тень отсекается
+	{ // РѕС‡РµРЅСЊ Р±РѕР»СЊС€Р°СЏ С‚РµРЅСЊ РѕС‚СЃРµРєР°РµС‚СЃСЏ
 #ifdef _DEBUG
 		if((*xShade)>1024) XCon<"Error : cMesh::BuildShadeStatic\r\nBig xSize shade = "<=(*xShade)<"\r\n"; 
 		if((*yShade)>1024) XCon<"Error : cMesh::BuildShadeStatic\r\nBig ySize shade = "<=(*yShade)<"\r\n"; 

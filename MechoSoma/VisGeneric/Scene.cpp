@@ -6,11 +6,11 @@
 #include "PolyMgr.h"
 #include "TexMgr.h"
 #include "RenderDevice.h"
-// ��� ������ �� ���������
+// для работы со скриптами
 #include "WorldSetup.h"
 #include "BaseDefine.h"
 #include "aci_parser.h"
-// ������ ���������
+// старые включения
 #include "Dispatcher.h"
 #include "BaseTrail.h"
 #include "BaseLight.h"
@@ -140,7 +140,7 @@ void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
 	UNKNOWN_ASSERT(!path.empty());
 	scrDataBlock *p,*root=loadScript(path);
 
-	// ������������� ��������� ������
+	// идентификация начальных данных
 	RadiusPlanet()=1000;
 	int DefaultAttribute=0,AirHeight=0,CloudHeight=0;
 	cString DefaultPathTextureWater;
@@ -174,12 +174,12 @@ void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
 	if((!DefaultPathObject3dMap)||(!DefaultPathTextureMap)||(!DefaultPathTextureWater)) 
 		ErrH.Abort("cScene::LoadWorld()\r\nWorld path not found\r\n");
 
-	// �������� ���������� ����
+	// загрузка собственно мира
 	p=root->nextLevel->first();
 	while(p)
 		if((p->ID==WORLD_STRUCT)&&(number==*p->i_dataPtr)) break;
 		else p=p->next;
-	// ������������� �� ���������
+	// инициализация по умолчанию
 	cString FileNameTileMap=DefaultFileNameTileMap,
 		FileNameObjectMap=DefaultFileNameObjectMap,
 		FileNameOmniMap=DefaultFileNameOmniMap,
@@ -295,7 +295,7 @@ void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
 		}
 	}
 	delete root;
-	// ������������� ����
+	// инициализация шара
 #ifdef _MECHOSOMA_
 	extern char* mch_mainINI;
 	extern char* getIniKey(char* fname,char* section,char* key);
@@ -303,23 +303,23 @@ void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
 #endif
 	InitArrayShare(RadiusPlanet()=RadiusPlanet());
 	xWorldSize()=2048; yWorldSize()=2048;
-	// �������� ������������� ����� ����
+	// создание полигональной карты мира
 	if(GetTileMap()) delete GetTileMap(); GetTileMap()=0;
 	GetTileMap()=new cTileMap;
 	GetTileMap()->Load(vMap_GetTargetName(FileNameTileMap));
-	// �������� ���� �� ����
+	// создание воды на мире
 	if(GetTileWater()) delete GetTileWater(); GetTileWater()=0;
 	GetTileWater()=new cTileWater;
 	GetTileWater()->Attach(GetTileMap());
 	GetTileWater()->SetLevelWater(vMap_LevelH2O());
 	GetTileWater()->Load(WaterTileSize,WaterTileSize,WaterScale,WaterScale,WaterVelocityX,WaterVelocityY,FileNameTextureWater,DefaultPathTextureWater,WaterEnvMap);
-	// �������� ������� �� ����
+	// создание облаков на мире
 	if(GetAir()) delete GetAir(); GetAir()=0;
 	GetAir()=LoadAir(AirTileSize,AirTileSize,AirScale,AirScale,AirVelocityX,AirVelocityY,FileNameTextureAir,DefaultPathTextureWater,AirHeight);
-	// �������� ������� �� ����
+	// создание облаков на мире
 	if(GetCloud()) delete GetCloud(); GetCloud()=0;
 	GetCloud()=LoadCloud(CloudTileSize,CloudTileSize,CloudScale,CloudScale,CloudVelocityX,CloudVelocityY,FileNameTextureCloud,FileNameOpacityCloud,DefaultPathTextureWater,CloudHeight);
-	// �������� ���������� ����� ��� ���� (�� ����, ������)
+	// загрузка источников света для мира (на небо, облака)
 	if(GetAir())
 		for(int k=0;k<GetAir()->ysize*GetAir()->xsize;k++)
 			GetAir()->pColor[k].Set(ColorAmbientAir.GetR(),ColorAmbientAir.GetG(),ColorAmbientAir.GetB());
@@ -336,7 +336,7 @@ void cScene::Animate(float CurrentTime,float PreviousTime)
 	start_timer(cScene_Animate, STAT_M3D);
 	float dTime=CurrentTime-PreviousTime;
 	GetM3D()->Animate(GetCameraList(),CurrentTime,PreviousTime);
-	// ��������
+	// процессы
 	if((GetAir())&&(GetCloud()))
 	{
 		GetAir()->uofs=fmod(GetAir()->uofs+GetAir()->du*dTime,1.f);
@@ -347,7 +347,7 @@ void cScene::Animate(float CurrentTime,float PreviousTime)
 	if(GetBaseObjectMgr()&&GetBaseObjectMgr()->BaseList)
 	{
 /*		for(cBaseObjectList *start=GetBaseObjectMgr()->BaseList;start;start=start->next) 
-		{ // �������� ������
+		{ // анимация следов
 			assert(start->Base);
 			if(start->Base->GetType(BASEOBJECT_TYPE_BASETRAIL_TANGENT)) 
 			{
@@ -356,7 +356,7 @@ void cScene::Animate(float CurrentTime,float PreviousTime)
 			}
 		}
 */
-		//������� �� ������ ��������
+		//очистка от лишних объектов
 		GetBaseObjectMgr()->Release(BASEOBJECT_TYPE_DELETE);
 	}
 	stop_timer(cScene_Animate, STAT_M3D);
@@ -364,7 +364,7 @@ void cScene::Animate(float CurrentTime,float PreviousTime)
 void cScene::Draw(int number)
 {
 	if(number&0x0000000F)
-	{	// ������ ���������� ������� 
+	{	// только отраженные объекты 
 		start_timer(cTileMap_DrawReflection, STAT_M3D);
 		if(GET_RENDER_TUNING(RENDER_TUNING_TILEMAP)) 
 			if(GetTileMap()) GetTileMap()->DrawReflection(GetCameraList());
@@ -375,7 +375,7 @@ void cScene::Draw(int number)
 		stop_timer(cM3D_DrawReflection, STAT_M3D);
 	}
 	if(number&0x000000F0)
-	{	// ���������� �� ���������� ������� ����
+	{	// глобальные не прозрачные объекты мира
 		cWorldPolyGrid *pAir=GetAir(),*pCloud=GetCloud();
 		start_timer(cTileMap_Draw, STAT_M3D);
 		if(GET_RENDER_TUNING(RENDER_TUNING_TILEMAP)) 
@@ -397,14 +397,14 @@ void cScene::Draw(int number)
 		stop_timer(Cloud_Sky_Sun_Draw, STAT_M3D);
 	}
 	if(number&0x00000F00)
-	{	// ������������ �� ���������� �������
+	{	// динамические не прозрачные объекты
 		start_timer(cM3D_Draw, STAT_M3D);
 		M3D->Draw(this); 
 		P3D->GetRenderDevice(0)->GetIGraph3d()->NullClipRect();
 		stop_timer(cM3D_Draw, STAT_M3D);
 	}
 	if(number&0x0000F000)
-	{	// ���������� ���������� ������� ����
+	{	// глобальные прозрачные объекты мира
 		start_timer(cTangentTrail_Draw, STAT_M3D);
 		if(GetBaseObjectMgr()&&GetBaseObjectMgr()->BaseList)
 			for(cBaseObjectList *start=GetBaseObjectMgr()->BaseList;start;start=start->next) 
@@ -427,7 +427,7 @@ void cScene::Draw(int number)
 			O3D->Draw(GetCameraList());
 		stop_timer(cO3D_Draw, STAT_M3D);
 	}
-	if(number&0x00F00000) // ��������� ����� ������ ��� �����
+	if(number&0x00F00000) // установка цвета экрана под водой
 		if(vMap_IsActive())
 			for(int i=0;i<GetNumberCamera();i++)
 			{
@@ -447,7 +447,7 @@ void cScene::PreDraw(int number)
 {
 	start_timer(cTileMap_RadiusShare, STAT_M3D);
 	if(GetNumberCamera()==1)
-	{ // ���������� ������� ������� � �������
+	{ // уменьшение радиуса планеты с высотой
 		float HeightMin=512,HeightMax=1024+512,RadiusHeightMin=RadiusPlanet(),RadiusHeightMax=1025;
 		assert(GetCamera(0)->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)GetCamera(0);
@@ -468,7 +468,7 @@ void cScene::PreDraw(int number)
 	else
 		GlobalWorldRadius=RadiusPlanet();
 	stop_timer(cTileMap_RadiusShare, STAT_M3D);
-	// ����� ��������� �������� � ����
+	// тесты видимости объектов и мира
 	start_timer(cTileMap_TestVisible, STAT_M3D);
 	if(number&0x000000F0)
 		if(GetTileMap()) GetTileMap()->TestVisible(GetCameraList());
@@ -479,20 +479,20 @@ void cScene::PreDraw(int number)
 	stop_timer(cM3D_TestVisible, STAT_M3D);
 	start_timer(cM3D_ShadeDynamic, STAT_M3D);
 	if(number&0x000000F0)
-		if(GetTileMap()) M3D->ShadeDynamic(GetCameraList(),GetTileMap()); // ���������� ������������ �����
+		if(GetTileMap()) M3D->ShadeDynamic(GetCameraList(),GetTileMap()); // построение динамических теней
 	stop_timer(cM3D_ShadeDynamic, STAT_M3D);
 	start_timer(cTileWater_PreDraw, STAT_M3D);
 	if(number&0x0000F000)
 		if(GetTileWater()) GetTileWater()->PreDraw(this);
 	stop_timer(cTileWater_PreDraw, STAT_M3D);
-	// ����������� �������
+	// кеширование текстур
 	start_timer(cTileMap_UnlockTexture, STAT_M3D);
 	if(number&0x000000F0)
 		if(GetTileMap()) GetTileMap()->UnlockTexture(GetCameraList());
 	stop_timer(cTileMap_UnlockTexture, STAT_M3D);
 }
 void cScene::PostDraw(int number)
-{ // �������� ����� ����������, ������������ ��������� ������� � �.�. 
+{ // действия после прорисовки, освобождение временных буферов и т.д. 
 	start_timer(cScene_PostDraw, STAT_M3D);
 	if(GetTileMap()) M3D->RestoreShadeDynamic();
 	stop_timer(cScene_PostDraw, STAT_M3D);
@@ -690,7 +690,7 @@ void cScene::LoadWorldLight(int number,int track,sColor4f &ColorAmbientAir,char 
 			case 2: 
 				AddAirLight(pos,ambient,diffuse,illumination,t_radius*0.7f,100,50,TextureMoon,TexturePath);
 				break;
-			case -1: // ������ ������
+			case -1: // старый скрипт
 				break;
 			default:
 				assert(0);

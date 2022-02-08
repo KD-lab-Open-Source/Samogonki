@@ -13,8 +13,8 @@ struct sTexture;
 
 struct sTextureDevice
 {
-	int							hTexture;		// ����� ��������
-	int							Status;			// ������ ��������
+	int							hTexture;		// номер текстуры
+	int							Status;			// статус текстуры
 	sTexture					*Texture;		
 
 	inline int& GetStatus()								{ return Status; }
@@ -40,7 +40,7 @@ public:
 	void Release();
 
 	void Attach(cInterfaceGraph3d *iGraph3d);
-	// ������� ��� ������ �� ������� ����� ��� ������� ����������
+	// функции для работы со списком камер для данного устройства
 	void Attach(cCamera *Camera);
 	void Detach(cCamera *Camera);
 	inline cCamera* GetCamera(int number)					{ return (cCamera*)CameraList[number]; }

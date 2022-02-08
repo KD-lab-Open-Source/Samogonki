@@ -9,7 +9,7 @@ typedef cBaseDynArrayPointer <cUnknownClass> cUnknownDynArrayPointer;
 typedef cBaseLibrary <cUnknownClass,cUnknownClassList> cUnknownClassLibrary;
 
 class cUnknownLibrary : public cUnknownClass, public cUnknownClassLibrary
-{	// удалять бибилиотеку можно только посло вызова Release()
+{	// СѓРґР°Р»СЏС‚СЊ Р±РёР±РёР»РёРѕС‚РµРєСѓ РјРѕР¶РЅРѕ С‚РѕР»СЊРєРѕ РїРѕСЃР»Рѕ РІС‹Р·РѕРІР° Release()
 public:
 	cUnknownLibrary(int kind,int type=TYPE_NULL):cUnknownClass(kind,type)	{ }
 	~cUnknownLibrary()											
@@ -19,7 +19,7 @@ public:
 	}
 	inline void Attach(cUnknownClass *UnkClass)
 	{
-		UnkClass->IncRef();	// указатель хранится и в библиотеке
+		UnkClass->IncRef();	// СѓРєР°Р·Р°С‚РµР»СЊ С…СЂР°РЅРёС‚СЃСЏ Рё РІ Р±РёР±Р»РёРѕС‚РµРєРµ
 		cUnknownClassLibrary::Attach(UnkClass);
 	}
 /*
@@ -28,7 +28,7 @@ public:
 		for(cUnknownClassList *tmp=BaseList,*start=BaseList;tmp;tmp=start)
 		{
 			start=start->next;
-			if(tmp->Base->GetRef()==1) // на данный объект имеется единственная ссылка tmp->Base
+			if(tmp->Base->GetRef()==1) // РЅР° РґР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ РёРјРµРµС‚СЃСЏ РµРґРёРЅСЃС‚РІРµРЅРЅР°СЏ СЃСЃС‹Р»РєР° tmp->Base
 			{
 				DeleteBase(tmp->Base);
 				tmp->Base=0;
@@ -42,7 +42,7 @@ private:
 };
 
 class cUnkClassDynArrayPointer : public cUnknownClass, public cBaseDynArrayPointer <cUnknownClass>
-{ // динамический массив указателей на cUnknownClass
+{ // РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° cUnknownClass
 public:
 	cUnkClassDynArrayPointer(int kind,int type=TYPE_NULL):cUnknownClass(kind,type)		{ }
 	~cUnkClassDynArrayPointer()										{ UNKNOWN_DESTRUCTOR; }

@@ -13,7 +13,7 @@
 #include "RenderDevice.h"
 #include "VisGeneric.h"
 
-// ��� ������ �� ���������
+// для работы со скриптами
 #include "WorldScript.h"
 #include "BaseDefine.h"
 #include "aci_parser.h"
@@ -53,7 +53,7 @@ protected:
 };
 
 class cConnectBaseWSC : public cElementWorldScript, public cAnimChainNode
-{ // ������� ������� ��� �������� � ������������
+{ // соннект базовый для объектов и спецэффектов
 public:
 	cConnectBaseWSC()														{}
 	virtual ~cConnectBaseWSC()												{ cAnimChainNode::Release(); }
@@ -328,7 +328,7 @@ int cWorldScriptPlay::OpenWorldScript(const std::filesystem::path &path)
 	if(IVisGeneric==0) return 1;
 	if(root) delete root;
 	root=loadScript(path);
-	// ������������� ��������� ������
+	// идентификация начальных данных
 	scrDataBlock *p,*p1;
 	p=root->find(WORLDSCRIPT_DEFOBJECT3D_PATH);
 	if(p) DefaultPathObject3d=(char*)p->c_dataPtr;
@@ -341,7 +341,7 @@ int cWorldScriptPlay::OpenWorldScript(const std::filesystem::path &path)
 	if((!DefaultPathObject3d)||(!DefaultPathTexture)) 
 		return 1;
 	p=root->nextLevel->first();
-	// ����������� �����
+	// кэширование сцены
 	CurrentPathObject3d=DefaultPathObject3d;
 	while(p)
 	{
@@ -377,7 +377,7 @@ int cWorldScriptPlay::OpenWorldScript(const std::filesystem::path &path)
 	}
 	current=root->nextLevel->first();
 	mch_sndD->Free(1);
-	if(SoundScriptName) mch_sndD->Load(SoundScriptName,1); // ��������� ������, ������� ����� ��� ���� ���� ����������
+	if(SoundScriptName) mch_sndD->Load(SoundScriptName,1); // загрузить скрипт, мировые звуки при этом сами выгрузятся
 	return 0;
 }
 void cWorldScriptPlay::CloseWorldScript()
@@ -394,7 +394,7 @@ void cWorldScriptPlay::CloseWorldScript()
 		sndMusicStop();
 		sndMusicSetVolume(mchMusicVolume);
 	}
-	mchLoadWorldSound(); // ����� ������ ��������� �� ����� ������� �����/��������� ������ �� ������
+	mchLoadWorldSound(); // после ролика загрузить на место мировые звуки/выгрузить скрипт от ролика
 }
 int cWorldScriptPlay::LoadNextWorldScript()
 {
@@ -605,10 +605,10 @@ int cWorldScriptPlay::LoadWSC(void *buffer,int length)
 			strcpy(ConnectName,buf);
 			while(InWSC.eof()==0&&buf[0]!='{') InWSC>>buf;
 			while(InWSC.eof()==0&&buf[0]!='}') 
-			{ // ������ connect'�
+			{ // чтение connect'а
 				InWSC>>buf;
 				while(InWSC.eof()==0&&buf[0]!='$'&&buf[0]!='}')
-					InWSC>>buf; // ���������� ������
+					InWSC>>buf; // пропускает лишнее
 				if(stricmp(buf,WSC_CONNECT_POSITION)==0)
 				{
 					sKey3f &key=Connect->GetNewPos();
@@ -674,10 +674,10 @@ int cWorldScriptPlay::LoadWSC(void *buffer,int length)
 					InWSC>>buf;
 					Orientation->SetName(buf);
 					while(InWSC.eof()==0&&buf[0]!='}') 
-					{ // ������ orientation'�
+					{ // чтение orientation'а
 						InWSC>>buf;
 						while(InWSC.eof()==0&&buf[0]!='$'&&buf[0]!='}')
-							InWSC>>buf; // ���������� ������
+							InWSC>>buf; // пропускает лишнее
 						if(stricmp(buf,WSC_CONNECT_POSITION)==0)
 						{
 							sKey3f &key=Orientation->GetNewPos();

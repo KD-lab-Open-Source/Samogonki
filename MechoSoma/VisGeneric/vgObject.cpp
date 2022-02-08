@@ -249,7 +249,7 @@ int cVisGeneric::ClearRenderObjectSwitch(int attribute)
 	return 0;
 }
 cUnknownClass* cVisGeneric::FindObjectByFileName(char *fname)
-{ // ����� ������� �� ���� �� ����� ����� �������
+{ // поиск объекта на миру по имени файла объекта
 	if(fname==0||fname[0]==0) return 0;
 	return GetActiveScene()->GetM3D()->FindObjectByFileName(fname);
 }

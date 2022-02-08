@@ -4,7 +4,7 @@
 #include "Contact.h"
 #include "BaseObject.h"
 #include "Stone.h"
-#include "params.h"
+#include "Params.h"
 #include "sound.h"
 #include "AnimalsPrm.h"
 

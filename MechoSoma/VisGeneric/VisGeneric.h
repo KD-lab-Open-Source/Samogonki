@@ -9,24 +9,24 @@ class cInterfaceGraph3d;
 class cVisGeneric : public cInterfaceVisGeneric
 {
 public:
-	// ����������������� ����� 
+	// инициализационная часть 
 	cVisGeneric();
 	~cVisGeneric();
-	// ����������������� ����� 
+	// инициализационная часть 
 	virtual int Create(char *CreateBuffer);
 	virtual int Release();
-	// ������� ��� ������ ���������� � ����������� ������
+	// функции для работы собственно с библиотекой вывода
 	virtual int PreDraw(int mask=0xFFFFFFFF);
 	virtual int Draw(int mask=0xFFFFFFFF);
 	virtual int PostDraw(int mask=0xFFFFFFFF);
 	virtual int SetTime(int Time);
 	virtual int dSetTime(int dTime);
 	virtual int GetTime(int *Time);
-	// ������� ��� ������ �� ������
+	// функции для работы со сценой
 	virtual cUnknownClass* CreateScene();
 	virtual int ReleaseScene(cUnknownClass* Scene);
 	virtual int SetScene(cUnknownClass* Scene);
-	// ����� ������� ��� ������ ��������� cUnknownClass: Camera
+	// общие функции для работы объектами cUnknownClass: Camera
 	virtual int Release(cUnknownClass *UnkClass);
 	virtual int SetAttribute(cUnknownClass *UnkClass,int Attribute);
 	virtual int ClearAttribute(cUnknownClass *UnkClass,int Attribute);
@@ -34,7 +34,7 @@ public:
 	virtual int SetPosition(cUnknownClass *UnkClass,const Vect3f *Pos,const Vect3f *AngleGrad=0);
 	virtual int dSetPosition(cUnknownClass *UnkClass,const Vect3f *dPos,const Vect3f *dAngleGrad);
 	virtual int GetPosition(cUnknownClass *UnkClass,Vect3f *Pos,Vect3f *AngleGrad);
-	// ������� ��� ������ � ����� ������
+	// функции для работы с окном вывода
 	virtual cUnknownClass* CreateGraph(int xScr,int yScr,int GraphMode=0,int FullScr=0,int ColorBit=16);
 	virtual int ReInitGraph(cUnknownClass *URenderDevice,int xScr,int yScr,int GraphMode=0,int FullScr=0,int ColorBit=16);
 	virtual int GetGraphInfo(cUnknownClass *URenderDevice,int *xScr,int *yScr,int *GraphMode=0,int *FullScr=0,int *ColorBit=0);
@@ -44,7 +44,7 @@ public:
 	virtual int FlushGraph(cUnknownClass *URenderDevice=0);
 	virtual int ReleaseGraph(cUnknownClass *URenderDevice=0);
 	virtual cInterfaceGraph3d* GetIGraph3d(cUnknownClass *URenderDevice=0);
-	// ������� ��� ������ � ���������
+	// функции для работы с объектами
 	virtual int LoadObjectLibrary(const std::filesystem::path &path);
 	virtual int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF);
 	virtual int ReleaseObject(int kind,int type);
@@ -79,7 +79,7 @@ public:
 	virtual int ClearRenderObjectSwitch(int attribute=0xFFFFFFFF);
 	virtual int LoadObject(cUnknownClass **UObject,XBuffer &buf,cUnknownClass *UParent=0);
 	virtual int SaveObject(cUnknownClass *UObject,XBuffer &buf);
-	// ������� ��� ������ � ��������� ����������� �����
+	// функции для работы с точечными источниками света
 	virtual cUnknownClass* CreateOmni(const Vect3f *Pos,float radius,const sColor4f *Color);
 	virtual int ReleaseOmni(cUnknownClass *UOmni);
 	virtual int ReleaseOmni(int type);
@@ -92,7 +92,7 @@ public:
 	virtual int GetOmniSize(cUnknownClass *UOmni,float *radius);
 	virtual int SetOmniVisible(cUnknownClass *UOmni,int visible);
 	virtual int GetOmniVisible(cUnknownClass *UOmni,int visible=0xFFFFFFFF);
-	// ������� ��� ������ � ��������
+	// функции для работы с камерами
 	virtual cUnknownClass* CreateCamera(char *CreateBuffer=0);
 	virtual int AttachCamera(cUnknownClass *UCamera);
 	virtual int DetachCamera(cUnknownClass *UCamera);
@@ -113,8 +113,8 @@ public:
 	virtual int ConvertorWorldToCamera(cUnknownClass *UCamera,const Vect3f *pw,Vect3f *pv,Vect3f *pe);
 	virtual int ConvertorWorldToViewPort(cUnknownClass *UCamera,const Vect3f *pw,Vect3f *pv,Vect3f *pe);
 	virtual int ReleaseCamera(cUnknownClass *UCamera);
-	// ������� ��� ������ � ����������� �����, ��������� �� ��������� �������� ������� �����
-	virtual cUnknownClass* CreateLight(int id=-1);// ��������� �������� ��������
+	// функции для работы с источниками света, влияющими на освещение объектов текущей сцены
+	virtual cUnknownClass* CreateLight(int id=-1);// добавляет точечный источник
 	virtual int SetLightPosition(cUnknownClass *ULight,const Vect3f *pos);
 	virtual int GetLightPosition(cUnknownClass *ULight,Vect3f *pos);
 	virtual int SetLightSize(cUnknownClass *ULight,float radius);
@@ -122,16 +122,16 @@ public:
 	virtual int SetLightColor(cUnknownClass *ULight,const sColor4f *ambient=0,const sColor4f *diffuse=0,const sColor4f *illumination=0);
 	virtual int GetLightColor(cUnknownClass *ULight,sColor4f *ambient=0,sColor4f *diffuse=0,sColor4f *illumination=0);
 	virtual cUnknownClass* GetLight(int id);
-	virtual int ReleaseLight(cUnknownClass *ULight);// ������� �������� ��������
-	// ������� ��� ������ �� �������
+	virtual int ReleaseLight(cUnknownClass *ULight);// удаляет точечный источник
+	// функции для работы со следами
 	virtual cUnknownClass* CreateTangentTrail(const Vect3f *pos,const sColor4f *c1,const Vect3f *dpos,const sColor4f *c2,float Time=10000.f,float dAnimTime=1.e30f,float Width=2.f);
 	virtual int ReleaseTangentTrail(cUnknownClass* UTangentTrail);
-	// �������� ����, �� ���������� � ������� fname, number - ����� ����
+	// создание мира, по информации в скрипте fname, number - номер мира
 	virtual cUnknownClass* CreateWorld(const std::filesystem::path &path,int number=0,int track=0,int LoadTerra=0);
 	virtual int ReleaseWorld(cUnknownClass *UWorld);
 	virtual int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3);
-	virtual cUnknownClass* FindObject(char *name); // ����� ������� �� ���� �� ����� �������
-	virtual cUnknownClass* FindObjectByFileName(char *fname); // ����� ������� �� ���� �� ����� ����� �������
+	virtual cUnknownClass* FindObject(char *name); // поиск объекта на миру по имени объекта
+	virtual cUnknownClass* FindObjectByFileName(char *fname); // поиск объекта на миру по имени файла объекта
 	virtual cUnknownClass* GetMeshLibrary(cUnknownClass *UScene=0);
 	virtual cUnknownClass* GetCameraList(cUnknownClass *UScene=0);
 	virtual cUnknownClass* GetTileWater(cUnknownClass *UScene=0);
@@ -144,8 +144,8 @@ public:
 	inline cScene* GetActiveScene()					{ return Scene; }
 private:
 	int								CurrentTime,PreviousTime;
-	cUnkClassDynArrayPointer		SceneArray;		// ������� �����
-	cScene							*Scene;			// ��������� �� ������� �����
+	cUnkClassDynArrayPointer		SceneArray;		// текущая сцена
+	cScene							*Scene;			// указатель на текущую сцену
 	
 	inline int GetNumberScene()						{ return SceneArray.length(); }
 	inline cScene*& GetScene(int number)			{ return (cScene*&)SceneArray[number]; }

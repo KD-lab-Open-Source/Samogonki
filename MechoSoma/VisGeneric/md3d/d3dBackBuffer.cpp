@@ -98,7 +98,7 @@ MD3DERROR d3dCreateBackBuffer()
 	}
 */
 
-	//Создавать m_pddsBackBufferSM всегда одного формата
+	//РЎРѕР·РґР°РІР°С‚СЊ m_pddsBackBufferSM РІСЃРµРіРґР° РѕРґРЅРѕРіРѕ С„РѕСЂРјР°С‚Р°
 	m_ddpfBB.dwRGBBitCount = 16;
 	m_ddpfBB.dwRBitMask = 0xF800;
 	m_ddpfBB.dwGBitMask = 0x07E0;

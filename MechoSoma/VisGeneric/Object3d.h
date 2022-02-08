@@ -25,7 +25,7 @@ enum eAttributeTile
 	ATTRTILE_VERTEX			=	1<<0,	// NumberPoint=NumberVertex - NumberTexPoly=0, NumberTexel=0
 	ATTRTILE_VERTEX_TEXEL	=	1<<1,	// NumberPoint=NumberVertex - NumberTexPoly=NumberPolygon, NumberVertex=NumberTexel
 	ATTRTILE_TEXEL			=	1<<2,	// NumberPoint=3*NumberPolygon
-	ATTRTILE_COPY			=	1<<31	// ������ ����� ������� ������������ � ���������� ������
+	ATTRTILE_COPY			=	1<<31	// данные тайла созданы копированием с выделением памяти
 };
 
 class cFrame;
@@ -96,7 +96,7 @@ public:
 
 struct sVertex
 {
-	Vect3f		pos;	// ���������� � ����������� ������� ���������
+	Vect3f		pos;	// координаты в собственной системе координат
 	inline float xw()										{ return pos.x; }
 	inline float yw()										{ return pos.y; }
 	inline float zw()										{ return pos.z; }
@@ -104,7 +104,7 @@ struct sVertex
 };
 struct sNormal
 {
-	sVect3c		normal;	// �������
+	sVect3c		normal;	// нормаль
 	inline float nx()										{ return (float)normal.x/127.f; }
 	inline float ny()										{ return (float)normal.y/127.f; }
 	inline float nz()										{ return (float)normal.z/127.f; }
@@ -115,7 +115,7 @@ struct sPoint : public sVertex, public sNormal
 };
 struct sTexel
 {
-	Vect2s		texel;	// ���������� ����������
+	Vect2s		texel;	// текстурные координаты
 	inline float u()										{ return texel.x/4096.f; }
 	inline float v()										{ return texel.y/4096.f; }
 	inline void SetTexel(float u,float v)					{ texel.x=(u*4096.f); texel.y=round(v*4096.f); }
@@ -292,10 +292,10 @@ class cMesh : public cUnknownClass, public cBound
 {
 public:
 	unsigned int	Type,ID,Unique;
-	Vect3f			Scale;				// ������ �������� �������
-	sColor4f		Diffuse;			// ����������������� ������������ �����
-	sColor4f		Specular;			// ���������� ������������ �����
-	int				Attribute;			// �������� 
+	Vect3f			Scale;				// вектор масштаба объекта
+	sColor4f		Diffuse;			// мультипликативная составляющая цвета
+	sColor4f		Specular;			// аддитивная составляющая цвета
+	int				Attribute;			// атрибуты 
 	cList			*Child;
 	cMesh			*Parent;
 	cFrame			*Frame;
@@ -303,7 +303,7 @@ public:
 	cMatrix			LocalMatrix;
 	cMatrix			GlobalMatrix;
 	DummyList		Dummies;
-	char			TotalVisibleCamera[NUMBER_CAMERA_MAX];	// ��������� �� ������ TotalBoundingBox (������ � Childs)
+	char			TotalVisibleCamera[NUMBER_CAMERA_MAX];	// видимость из камеры TotalBoundingBox (вместе с Childs)
 	char			*description;
 	sStaticMesh		*StaticMesh;
 	cMesh			*Bound;
@@ -325,13 +325,13 @@ public:
 	void DetachChild();
 	void SetParent(cMesh *parent)							{ Parent=parent; }
 	cMesh* GetGeneralParent()						{ cMesh *tmp=this; while(tmp->Parent) tmp=tmp->Parent; return tmp; }
-	// ������� ��� ������ � ����������
+	// функции для работы с видимостью
 	void SetVisible(int visible);
 	inline int GetVisible(int visible)						{ for(int i=0;i<NUMBER_CAMERA_MAX;i++) visible&=GetVisibleTotal(i); return visible; }
 	inline int isVisibleTotal(cUnknownClass *UCameraList)	{ int test=0; for(int i=0;i<((cUnkClassDynArrayPointer*)UCameraList)->length();i++) test|=GetVisibleTotal(i); return test; }
 	inline char& GetVisibleTotal(int number)				{ assert(number<NUMBER_CAMERA_MAX); return TotalVisibleCamera[number]; }
-	void TestVisible(cUnknownClass *UCameraList);	// �������� ���� �� ���������
-	// ������� ��� ������ ���������
+	void TestVisible(cUnknownClass *UCameraList);	// проводит тест на видимость
+	// функции для работы анимацией
 	void Animate(float dt);
 	cFrame* FindFrame(); // finds first frame in hierarchy
 	void SetFirstAnimation(float animation_period = 0, float start_phase = -1, float finish_phase = -1); // for first frame only
@@ -341,7 +341,7 @@ public:
 	void SetFrame(char *name,char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
 				  float *PosKXYZ,int nPos,float *RotKWXYZ,int nRot,float *ScaleKXYZ,int nScale);
 	void SetFrame();
-	// ������ � �������� �������
+	// работа с матрицей объекта
 	void dSetScale(float dScale)						{ dSetScale(Vect3f(dScale,dScale,dScale)); }
 	void dSetScale(const Vect3f &dScale)				{ Vect3f ds=dScale; if(ds.x<=0) ds.x=1e-10f; if(ds.y<=0) ds.y=1e-10f; if(ds.z<=0) ds.z=1e-10f; ScaleMesh(ds); }
 	void SetScale(float Scale)							{ SetScale(Vect3f(Scale,Scale,Scale)); }
@@ -351,12 +351,12 @@ public:
 	void SetOrientation(const class Mat3f& matrix3x3)	{ LocalMatrix.rot()=matrix3x3; CalcMatrix(); }
 	void SetPosition(const class Vect3f& vector3)		{ LocalMatrix.trans()=vector3; CalcMatrix(); }
 	inline Vect3f& GetScale()							{ return Scale; }
-	// ������ � ����������� �������
+	// работа с параметрами объекта
 	void SetColor(float r,float g,float b,float a=1.f,unsigned int type=0xFFFFFFFF)	{ if(Type&type) Diffuse.set(r,g,b,a); for(cList *tmp=Child;tmp;tmp=tmp->next) tmp->Mesh->SetColor(r,g,b,a,type); }
 	void SetColor(const sColor4f &diffuse,const sColor4f &specular=sColor4f(0,0,0,1),unsigned int type=0xFFFFFFFF) { if(Type&type) { Diffuse=diffuse; Specular=specular; } for(cList *tmp=Child;tmp;tmp=tmp->next) tmp->Mesh->SetColor(diffuse,specular,type); }
 	sColor4f& GetDiffuse()								{ return Diffuse; }
 	sColor4f& GetSpecular()								{ return Specular; }
-	// ������� ������
+	// функции вывода
 	void Draw(cUnknownClass *UScene,cUnknownClass *UCameraList);
 	void DrawReflection(cUnknownClass *UScene,cUnknownClass *UCameraList);
 	void BuildShadeDynamic(short **shade,int *xShade,int *yShade,Vect3f &PosShade,Vect3f &PosLight);
@@ -401,8 +401,8 @@ public:
 	inline const char* GetDescription()							{ if(description) return description; return ""; }
 
 	template <class Operation>
-	void ScanHierarchy(Operation& op) // operator()(cMesh&) ������ ���������� 1 ��� ����������� ������������
-	{							// �������� ��������� ��������!!!  
+	void ScanHierarchy(Operation& op) // operator()(cMesh&) должен возвращать 1 для продолжения сканирования
+	{							// родителя проверять отдельно!!!  
 		cList *startList;
 		for(startList=Child; startList; startList=startList->next)
 			if(!op(*startList->Mesh))

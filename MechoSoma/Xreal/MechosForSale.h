@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////
-//		Mechos ��� ��������
+//		Mechos для магазина
 ////////////////////////////////////////////////////////////////////
 #include "Body.h"
 #include "Mesh3ds.h"
@@ -9,11 +9,11 @@
 #endif
 
 class MechosForSale : Body {
-	// ������ ��� ��������� � ������� ������� (0-engine, front, back, rfw, rbw, lfw, lbw)
+	// Индекс для обращения к массиву деталей (0-engine, front, back, rfw, rbw, lfw, lbw)
 	static int PART_INDEX(int type)	{ return BitSR(M3D_TYPE(type)); }
-	// ��������� � ������ �� ����
+	// Обращение к детали по типу
 	cMesh* part_by_type(int partType) const;
-	// ��������� � ������ �� �������: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
+	// Обращение к детали по индексу: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
 	cMesh* part_by_index(int index) const;
 
 public:

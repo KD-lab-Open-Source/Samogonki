@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////
-//		Mechos äëÿ ìàãàçèíà
+//		Mechos Ğ´Ğ»Ñ Ğ¼Ğ°Ğ³Ğ°Ğ·Ğ¸Ğ½Ğ°
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "MechosForSale.h"
@@ -93,9 +93,9 @@ char* MechosForSale::getConfig()
 	return str;
 }
 
-// Îáğàùåíèå ê äåòàëè ïî òèïó
+// ĞĞ±Ñ€Ğ°Ñ‰ĞµĞ½Ğ¸Ğµ Ğº Ğ´ĞµÑ‚Ğ°Ğ»Ğ¸ Ğ¿Ğ¾ Ñ‚Ğ¸Ğ¿Ñƒ
 cMesh* MechosForSale::part_by_type(int partType) const { return geometry ? geometry -> FindMesh(partType) : 0; }
-// Îáğàùåíèå ê äåòàëè ïî èíäåêñó: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
+// ĞĞ±Ñ€Ğ°Ñ‰ĞµĞ½Ğ¸Ğµ Ğº Ğ´ĞµÑ‚Ğ°Ğ»Ğ¸ Ğ¿Ğ¾ Ğ¸Ğ½Ğ´ĞµĞºÑÑƒ: 0-engine, 1-front, 2-back, 3-rf, 4-rb, 5-lf, 6-lb
 cMesh* MechosForSale::part_by_index(int index) const { return geometry ? geometry -> FindMesh(1 << index) : 0; }
 
 		

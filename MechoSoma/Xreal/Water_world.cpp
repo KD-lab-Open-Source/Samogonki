@@ -11,7 +11,7 @@
 WaterWorld::WaterWorld(int track_)
 : WorldDispatcher(track_)
 {      
-	// Ôîðò
+	// Ð¤Ð¾Ñ€Ñ‚
 	cMesh* fort = (cMesh*)xrealIVG -> FindObject("Fortress");
 	if(fort){
 		fort -> SetAnimation(5000);

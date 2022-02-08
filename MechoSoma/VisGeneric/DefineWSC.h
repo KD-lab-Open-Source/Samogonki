@@ -3,7 +3,7 @@
 
 #define WSC_VERSION						"WSC 1.0"
 
-// описание dummy
+// РѕРїРёСЃР°РЅРёРµ dummy
 #define WSC_CONNECT_OBJECT				"$CONNECT"
 #define WSC_STARTFRAME					"$STARTFRAME"
 #define WSC_FINISHFRAME					"$FINISHFRAME"
