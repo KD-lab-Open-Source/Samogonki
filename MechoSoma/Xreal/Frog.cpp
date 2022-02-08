@@ -4,7 +4,7 @@
 #include "Mesh3ds.h"
 #include "PointControlledObject.h"
 #include "Frog.h"
-#include "params.h"
+#include "Params.h"
 #include "sound.h"
 #include "AnimalsPrm.h"
 

@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "ResourceDispatcher.h"
-#include "xreal_utl.h"
-#include "statistics.h"
-#include "Terra.h"
+#include "Xreal_utl.h"
+#include "Statistics.h"
+#include "TERRA.H"
 
 int ResourceUser::IDs;
 

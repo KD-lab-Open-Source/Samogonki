@@ -2,7 +2,7 @@
 #define __BASE_H__
 
 //  Типы объектов
-#include "m3d_id.h"
+#include "M3d_id.h"
 
 // Тип объекта
 #define M3D_TYPE(type)		((unsigned)(type) & 0xffff)

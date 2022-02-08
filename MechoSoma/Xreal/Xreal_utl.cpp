@@ -4,11 +4,11 @@
 #include "SimpleClip.h"
 #include "mechosoma.h"
 #include "XGR.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "IVisGeneric.h"
 #include "IGraph3d.h"
 #include "Xreal_utl.h"
-#include "params.h"
+#include "Params.h"
 #include "DebugPrm.h"
 
 int XCOL(int color, int intensity, int alpha) 

@@ -2,9 +2,14 @@
 //
 //	All 3D-functionality
 //
+//	Configuration:
+//	Define _XMATH_NO_IOSTREAM to disable iostream using
+//
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef __XMATH_H__
 #define __XMATH_H__
+
+#include <math.h>
 
 #ifndef _XMATH_NO_IOSTREAM
 #include <iostream>
@@ -37,9 +42,6 @@ class Mat4f;
 struct XStream;
 struct XBuffer;
 
-//class ostream;
-//class istream;
-
 ///////////////////////////////////////////////////////////////////////////////
 //		Axes 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,6 +62,7 @@ const float FLT_EPS = 1.e-7f;
 const float FLT_INF = 1.e+30f;
 const float FLT_COMPARE_TOLERANCE = 1.e-5f;
 
+const int INT_INF = 0x7fffffff;
 
 #if _MSC_VER == 1100 /* if MSVisual C++ 5.0 */
 #define xm_inline inline
@@ -198,6 +201,9 @@ public:
 
 	xm_inline Vect2f()								{ }
 	xm_inline Vect2f(float x_,float y_)					{ x = x_; y = y_; }
+	
+	typedef float float2[2];
+	xm_inline Vect2f(const float2& v) { x = v[0]; y = v[1]; }
 
 	xm_inline Vect2f(const Vect3f& v);
 	xm_inline Vect2f(const Vect2i& v);
@@ -212,32 +218,47 @@ public:
 	xm_inline const float& operator[](int i) const			{ return *(&x + i); }
 	xm_inline float& operator[](int i)						{ return *(&x + i); }
 	
-	xm_inline Vect2f& operator += (const Vect2f &v)	{ x+=v.x; y+=v.y; return *this; }
-	xm_inline Vect2f& operator -= (const Vect2f &v)	{ x-=v.x; y-=v.y; return *this; }
-	xm_inline Vect2f& operator *= (const Vect2f &v)	{ x*=v.x; y*=v.y; return *this; }
-	xm_inline Vect2f& operator /= (const Vect2f &v)	{ x/=v.x; y/=v.y; return *this; }
-	xm_inline Vect2f& operator *= (float f)			{ x*=f; y*=f; return *this; }
-	xm_inline Vect2f& operator /= (float f)			{ if(f!=0.f) f=1/f; else f=0.0001f; x*=f; y*=f; return *this; }
-	xm_inline Vect2f& operator %= (const Vect2f &v)	{ set(x*v.y,-y*v.x); return *this; } 
-	xm_inline Vect2f operator + (const Vect2f &v) const		{ return Vect2f(x+v.x,y+v.y); }
-	xm_inline Vect2f operator - (const Vect2f &v) const		{ return Vect2f(x-v.x,y-v.y); }
-	xm_inline Vect2f operator * (const Vect2f &v) const		{ return Vect2f(x*v.x,y*v.y); }
-	xm_inline Vect2f operator * (float f)	const		{ return Vect2f(x*f,y*f); }
-	xm_inline Vect2f operator / (float f)	const		{ if(f!=0.f) f=1/f; else f=0.0001f; Vect2f tmp(x*f,y*f); return tmp; }
-	xm_inline Vect2f operator % (const Vect2f &v) const { return Vect2f(x*v.y,-y*v.x); }
+	xm_inline Vect2f& operator += (const Vect2f &v)	{ x += v.x; y += v.y; return *this; }
+	xm_inline Vect2f& operator -= (const Vect2f &v)	{ x -= v.x; y -= v.y; return *this; }
+	xm_inline Vect2f& operator *= (const Vect2f &v)	{ x *= v.x; y *= v.y; return *this; }
+	xm_inline Vect2f& operator /= (const Vect2f &v)	{ x /= v.x; y /= v.y; return *this; }
+	xm_inline Vect2f& operator *= (float f)			{ x *= f; y *= f; return *this; }
+	xm_inline Vect2f& operator /= (float f)			{ if(f != 0.f) f = 1/f; else f = 0.0001f; x *= f; y *= f; return *this; }
 
-	xm_inline int operator== (const Vect2f &v) const	{ return v.x == x && v.y==y; }
+	xm_inline Vect2f operator + (const Vect2f &v) const		{ return Vect2f(*this) += v; }
+	xm_inline Vect2f operator - (const Vect2f &v) const		{ return Vect2f(*this) -= v; }
+	xm_inline Vect2f operator * (const Vect2f &v) const		{ return Vect2f(*this) *= v; }
+	xm_inline Vect2f operator * (float f)	const		{ return Vect2f(*this) *= f; }
+	xm_inline Vect2f operator / (float f)	const		{ return Vect2f(*this) /= f; }
+
+	xm_inline int operator== (const Vect2f &v) const { return v.x == x && v.y==y; }
 
 	xm_inline float dot(const Vect2f& v) const { return x*v.x + y*v.y; }
 	xm_inline friend float dot(const Vect2f& u, const Vect2f& v) { return u.dot(v); }
 
-	xm_inline float norm()	const						{ return sqrtf(x*x+y*y); }
-	xm_inline float norm2() const						{ return x*x+y*y; }
-	xm_inline void normalize(float norma)				{ float f=norma/sqrtf(x*x+y*y); x*=f; y*=f; }
+	xm_inline float operator % (const Vect2f &v) const { return x*v.y - y*v.x; }
+
+	xm_inline float norm()	const						{ return sqrtf(x*x + y*y); }
+	xm_inline float norm2() const						{ return x*x + y*y; }
+	xm_inline void normalize(float norma)				{ float f = norma/sqrtf(x*x + y*y); x *= f; y *= f; }
 	xm_inline float distance(const Vect2f &v) const	{ return sqrtf(distance2(v)); }
-	xm_inline float distance2(const Vect2f &v) const	{ float dx=x-v.x, dy=y-v.y; return dx*dx+dy*dy; }
+	xm_inline float distance2(const Vect2f &v) const	{ float dx = x - v.x, dy = y - v.y; return dx*dx + dy*dy; }
 
 	xm_inline void swap(Vect2f &v)					{ Vect2f tmp = v; v = *this; *this = tmp; }
+
+	//	I/O operations    //////////////////////////////////////
+	friend ostream& operator<< (ostream& os, const Vect2f& v);
+	friend istream& operator>> (istream& is, Vect2f& v);
+	
+	friend XStream& operator<= (XStream& s,const Vect2f& v);
+	friend XStream& operator>= (XStream& s,Vect2f& v);
+	friend XStream& operator< (XStream& s,const Vect2f& v);
+	friend XStream& operator> (XStream& s,Vect2f& v);
+	
+	friend XBuffer& operator<= (XBuffer& b,const Vect2f& v);
+	friend XBuffer& operator>= (XBuffer& b,Vect2f& v);
+	friend XBuffer& operator< (XBuffer& b,const Vect2f& v);
+	friend XBuffer& operator> (XBuffer& b,Vect2f& v);
 
 	static const Vect2f ZERO;
 	static const Vect2f ID;
@@ -269,33 +290,52 @@ public:
 	xm_inline const int& operator[](int i) const			{ return *(&x + i); }
 	xm_inline int& operator[](int i)						{ return *(&x + i); }
 
-	xm_inline Vect2i& operator += (const Vect2i& v)	{ x+=v.x; y+=v.y; return *this; }
-	xm_inline Vect2i& operator -= (const Vect2i& v)	{ x-=v.x; y-=v.y; return *this; }
-	xm_inline Vect2i& operator *= (const Vect2i& v)	{ x*=v.x; y*=v.y; return *this; }
-	xm_inline Vect2i& operator /= (const Vect2i& v)	{ x/=v.x; y/=v.y; return *this; }
+	xm_inline Vect2i& operator += (const Vect2i& v)	{ x += v.x; y += v.y; return *this; }
+	xm_inline Vect2i& operator -= (const Vect2i& v)	{ x -= v.x; y -= v.y; return *this; }
+	xm_inline Vect2i& operator *= (const Vect2i& v)	{ x *= v.x; y *= v.y; return *this; }
+	xm_inline Vect2i& operator /= (const Vect2i& v)	{ x /= v.x; y /= v.y; return *this; }
 
-	xm_inline Vect2i operator + (const Vect2i& v) const 	{ return Vect2i(x + v.x, y + v.y); }
-	xm_inline Vect2i operator - (const Vect2i& v) const 	{ return Vect2i(x - v.x, y - v.y); }
-	xm_inline Vect2i operator * (const Vect2i& v) const 	{ return Vect2i(x*v.x, y*v.y); }
+	xm_inline Vect2i operator + (const Vect2i& v) const 	{ return Vect2i(*this) += v; }
+	xm_inline Vect2i operator - (const Vect2i& v) const 	{ return Vect2i(*this) -= v; }
+	xm_inline Vect2i operator * (const Vect2i& v) const 	{ return Vect2i(*this) *= v; }
 
 	xm_inline Vect2i& operator *= (int f)				{ x *= f; y *= f; return *this; }
-	xm_inline Vect2i operator * (int f) const 		{ return Vect2i(x*f, y*f); }
+	xm_inline Vect2i operator * (int f) const 		{ return Vect2i(*this) *= f; }
+	
+	xm_inline Vect2i& operator >>= (int n)				{ x >>= n; y >>= n; return *this; }
+	xm_inline Vect2i operator >> (int n) const 		{ return Vect2i(*this) >>= n; }
 
 	xm_inline Vect2i& operator *= (float f)				{ x = round(x*f); y = round(y*f); return *this; }
 	xm_inline Vect2i& operator /= (float f)				{  return *this *= 1.f/f; }
-	xm_inline Vect2i operator * (float f) const 		{ return Vect2i(x*f, y*f); }
-	xm_inline Vect2i operator / (float f) const 		{  return *this * (1.f/f); }
+	xm_inline Vect2i operator * (float f) const 		{ return Vect2i(*this) *= f; }
+	xm_inline Vect2i operator / (float f) const 		{  return Vect2i(*this) /= f; }
 
 	xm_inline int dot(const Vect2i& v) const { return x*v.x + y*v.y; }
 	xm_inline friend int dot(const Vect2i& u, const Vect2i& v) { return u.dot(v); }
+	
+	xm_inline int operator % (const Vect2i &v) const { return x*v.y - y*v.x; }
 
-	xm_inline int norm() const 						{ return round(sqrt((double)(x*x+y*y))); }
+	xm_inline int norm() const 						{ return round(sqrtf(float(x*x+y*y))); }
 	xm_inline int norm2() const						{ return x*x+y*y; }
 
 	xm_inline int operator == (const Vect2i& v)	const	{ return x == v.x && y == v.y; }
 	xm_inline int operator != (const Vect2i& v)	const	{ return x != v.x || y != v.y; }
 
 	xm_inline void swap(Vect2i &v)					{ Vect2i tmp = v; v = *this; *this = tmp; }
+
+	//	I/O operations    //////////////////////////////////////
+	friend ostream& operator<< (ostream& os, const Vect2i& v);
+	friend istream& operator>> (istream& is, Vect2i& v);
+	
+	friend XStream& operator<= (XStream& s,const Vect2i& v);
+	friend XStream& operator>= (XStream& s,Vect2i& v);
+	friend XStream& operator< (XStream& s,const Vect2i& v);
+	friend XStream& operator> (XStream& s,Vect2i& v);
+	
+	friend XBuffer& operator<= (XBuffer& b,const Vect2i& v);
+	friend XBuffer& operator>= (XBuffer& b,Vect2i& v);
+	friend XBuffer& operator< (XBuffer& b,const Vect2i& v);
+	friend XBuffer& operator> (XBuffer& b,Vect2i& v);
 
 	static const Vect2i ZERO;
 	static const Vect2i ID;
@@ -374,6 +414,7 @@ class Mat2f
 public:
 	Mat2f(){}
 	explicit Mat2f(float angle) { set(angle); }
+	Mat2f(float xx_, float xy_, float yx_, float yy_) { xx = xx_; xy = xy_; yx = yx_; yy = yy_; }
 	void set(float angle){ xx = yy = cosf(angle); yx = sinf(angle); xy = -yx; }
 	
 	// Rows
@@ -387,10 +428,15 @@ public:
 
 	void invert(){ float t = xy; xy = yx; yx = t; }
 
+	xm_inline Mat2f& operator*= (const Mat2f& m) { return (*this) = Mat2f(xx*m.xx+xy*m.yx, xx*m.xy+xy*m.yy, yx*m.xx+yy*m.yx, yx*m.xy+yy*m.yy); }
+	xm_inline const Mat2f operator* (const Mat2f& m) const { return Mat2f(*this) *= m; }
+
 	// forward transform
 	xm_inline friend Vect2f& operator*= (Vect2f& v, const Mat2f& m) { float x = v.x*m.xx + v.y*m.xy; v.y = v.x*m.yx + v.y*m.yy; v.x = x; return v; }
 	// backward transform
 	xm_inline Vect2f invXform(const Vect2f& v) const { return Vect2f(v.x*xx + v.y*yx, v.x*xy + v.y*yy); }
+
+	static const Mat2f ID;
 };
 // forward transform
 xm_inline const Vect2f operator* (const Mat2f& m, const Vect2f& v) { return Vect2f(v) *= m; }
@@ -408,15 +454,18 @@ public:
 	Mat2f rot;
 	Vect2f trans;
 
+	MatX2f(){}
 	MatX2f(const Mat2f& r, const Vect2f& t) : rot(r), trans(t) {}
 	void set(const Mat2f& r, const Vect2f& t) { rot = r; trans = t; }
 
 	void invert() { rot.invert(); trans = -rot.invXform(trans); }
 
 	// forward transform
-	Vect2f invXform(const Vect2f& v) const { return rot.invXform(v - trans); }
-	// backward transform
 	friend Vect2f& operator *=(Vect2f& v, const MatX2f& m) { v *= m.rot; v += m.trans; return v; }
+	// backward transform
+	Vect2f invXform(const Vect2f& v) const { return rot.invXform(v - trans); }
+
+	static const MatX2f ID;
 };
 // forward transform
 xm_inline const Vect2f operator* (const MatX2f& m, const Vect2f& v) { return Vect2f(v) *= m; }
@@ -440,6 +489,7 @@ public:
 
   xm_inline Vect3f() {}
   xm_inline Vect3f(float x_, float y_, float z_) {x = x_; y = y_; z = z_;}
+
   typedef float float3[3];
   xm_inline Vect3f(const float3& v) {x = v[0]; y = v[1]; z = v[2];}
   xm_inline Vect3f(const float v) {x = v; y = v; z = v;}
@@ -452,8 +502,7 @@ public:
   // setters / accessors / translators /////////////////////////////////////////
 
   xm_inline Vect3f& set(float x_, float y_, float z_) { x = x_; y = y_; z = z_; return *this; }
-
-  xm_inline Vect3f& set(const float v[3]) {x = v[0]; y = v[1]; z = v[2]; return *this; }
+  xm_inline Vect3f& set(const float3& v) {x = v[0]; y = v[1]; z = v[2]; return *this; }
   xm_inline Vect3f& set(const float v) {x = v; y = v; z = v; return *this; }
 
   xm_inline Vect3f& setSpherical(float psi,float theta,float radius);
@@ -602,7 +651,9 @@ public:
 
   xm_inline Vect3d() {}
   xm_inline Vect3d(double x_, double y_, double z_) { x = x_; y = y_; z = z_; }
-  xm_inline Vect3d(const double v[3]) {x = v[0]; y = v[1]; z = v[2];}
+  
+  typedef float double3[3];
+  xm_inline Vect3d(const double3& v) {x = v[0]; y = v[1]; z = v[2];}
 
   xm_inline operator Vect3f () const;
 
@@ -822,10 +873,10 @@ public:
   xm_inline Vect3f& zrow()  {return *((Vect3f *) &zx);}
 
   // for reading columns
-  xm_inline Vect3f xcol() const {return Vect3f(xx, yx, zx);}
-  xm_inline Vect3f ycol() const {return Vect3f(xy, yy, zy);}
-  xm_inline Vect3f zcol() const {return Vect3f(xz, yz, zz);}
-  xm_inline Vect3f col(int axis) const { return axis == X_AXIS ? Vect3f(xx, yx, zx) : (axis == Y_AXIS ? Vect3f(xy, yy, zy) : Vect3f(xz, yz, zz) ); }
+  xm_inline const Vect3f xcol() const {return Vect3f(xx, yx, zx);}
+  xm_inline const Vect3f ycol() const {return Vect3f(xy, yy, zy);}
+  xm_inline const Vect3f zcol() const {return Vect3f(xz, yz, zz);}
+  xm_inline const Vect3f col(int axis) const { return axis == X_AXIS ? Vect3f(xx, yx, zx) : (axis == Y_AXIS ? Vect3f(xy, yy, zy) : Vect3f(xz, yz, zz) ); }
   // for writing to columns
   xm_inline Mat3f& setXcol(const Vect3f& v);
   xm_inline Mat3f& setYcol(const Vect3f& v);
@@ -1198,7 +1249,9 @@ public:
   xm_inline MatXf()				{}
   xm_inline MatXf(const Mat3f& R_, const Vect3f& d_) {set(R_, d_);}
   xm_inline MatXf(const Se3f& T)			{set(T);}
-  xm_inline MatXf(const float T[16]);
+
+  typedef float float16[16];
+  xm_inline MatXf(const float16& T);
 
   xm_inline operator MatXd () const;
 
@@ -1297,7 +1350,9 @@ public:
   xm_inline MatXd()				{}
   xm_inline MatXd(const Mat3d& R_, const Vect3d& d_) {set(R_, d_);}
   xm_inline MatXd(const Se3d& T)			{set(T);}
-  xm_inline MatXd(const double T[16]);
+  
+  typedef double double16[16];
+  xm_inline MatXd(const double16& T);
 
   xm_inline operator MatXf () const;
 
@@ -1673,8 +1728,6 @@ private:
   QuatF q;     // rotation component
   Vect3f d;    // translation component
 
-  istream& read(istream& is);
-
 public:
 
   // constructors //////////////////////////////////////////////////////////////
@@ -1730,7 +1783,7 @@ public:
   //	I/O operations    //////////////////////////////////////
   
   friend ostream& operator<<(ostream& os, const Se3f& se3);
-  friend istream& operator>>(istream& is, Se3f& se3) { return se3.read(is); }
+  friend istream& operator>>(istream& is, Se3f& se3);
 
 
   // Se3f constants /////////////////////////////////////////////////////////////
@@ -1751,8 +1804,6 @@ private:
 
   QuatD q;     // rotation component
   Vect3d d;    // translation component
-
-  istream& read(istream& is);
 
 public:
 
@@ -1809,7 +1860,7 @@ public:
   //	I/O operations    //////////////////////////////////////
   
   friend ostream& operator<<(ostream& os, const Se3d& se3);
-  friend istream& operator>>(istream& is, Se3d& se3) { return se3.read(is); }
+  friend istream& operator>>(istream& is, Se3d& se3);
 
 
   // Se3d constants /////////////////////////////////////////////////////////////
@@ -2096,6 +2147,7 @@ xm_inline Vect2f::Vect2f(const Vect3f& v)	{ x = v.x; y = v.y; }
 xm_inline Vect2f::Vect2f(const Vect2i& v)	{ x = float(v.x); y = float(v.y); }
 xm_inline Vect2f::Vect2f(const Vect2s& v)	{ x = v.x; y = v.y; }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		Vect3f xm_inline definitions
@@ -2110,8 +2162,8 @@ Vect3f::operator Vect3d () const
   return Vect3d(x, y, z); 
 }
 //  Dot product  //////////////////////
-xm_inline double dot(const Vect3d& u, const Vect3f& v) { return u.dot(v); }
-xm_inline float dot(const Vect3f& u, const Vect3d& v) { return u.dot(v); }
+//xm_inline double dot(const Vect3d& u, const Vect3f& v) { return u.dot(v); }
+//xm_inline float dot(const Vect3f& u, const Vect3d& v) { return u.dot(v); }
 
 int Vect3f::operator== (const Vect3f& other) const
 {
@@ -3810,12 +3862,12 @@ Vect3f& Mat3d::invXform(Vect3f& v) const
 //		MatXf xm_inline definitions
 //
 ///////////////////////////////////////////////////////////////////////////////
-MatXf::MatXf(const float T[16])
+MatXf::MatXf(const float16& T)
 {
-	R[0][0] = *T++;	R[1][0] = *T++;	R[2][0] = *T++; T++;
-	R[0][1] = *T++;	R[1][1] = *T++;	R[2][1] = *T++; T++;
-	R[0][2] = *T++;	R[1][2] = *T++;	R[2][2] = *T++; T++;
-	d[0] = *T++; d[1] = *T++; d[2] = *T;
+	R[0][0] = T[0];	R[1][0] = T[1];	R[2][0] = T[2]; 
+	R[0][1] = T[4]; R[1][1] = T[5];	R[2][1] = T[6]; 
+	R[0][2] = T[8]; R[1][2] = T[9];	R[2][2] = T[10];
+	d[0] = T[12]; d[1] = T[13]; d[2] = T[14];
 }
 
 MatXf::operator MatXd () const 
@@ -3951,12 +4003,12 @@ Vect3f& MatXf::invXformPoint(Vect3f& p) const
 //		MatXd xm_inline definitions
 //
 ///////////////////////////////////////////////////////////////////////////////
-MatXd::MatXd(const double T[16])
+MatXd::MatXd(const double16& T)
 {
-	R[0][0] = *T++;	R[1][0] = *T++;	R[2][0] = *T++; T++;
-	R[0][1] = *T++;	R[1][1] = *T++;	R[2][1] = *T++; T++;
-	R[0][2] = *T++;	R[1][2] = *T++;	R[2][2] = *T++; T++;
-	d[0] = *T++; d[1] = *T++; d[2] = *T;
+	R[0][0] = T[0];	R[1][0] = T[1];	R[2][0] = T[2]; 
+	R[0][1] = T[4]; R[1][1] = T[5];	R[2][1] = T[6]; 
+	R[0][2] = T[8]; R[1][2] = T[9];	R[2][2] = T[10];
+	d[0] = T[12]; d[1] = T[13]; d[2] = T[14];
 }
 
 MatXd::operator MatXf () const 
@@ -5000,5 +5052,211 @@ Mat4f& Mat4f::xpose()
   return *this;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+//  	     Stream's I/O operations 
+//
+//////////////////////////////////////////////////////////////////////////////////
+#ifndef _XMATH_NO_IOSTREAM
+
+//  Vect2s  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, const Vect2i& v)
+{
+	os << v.x << "  " << v.y;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect2i& v)
+{
+	is >> v.x >> v.y;
+	return is;
+}
+
+//  Vect2s  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, const Vect2f& v)
+{
+	os << v.x << "  " << v.y;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect2f& v)
+{
+	is >> v.x >> v.y;
+	return is;
+}
+
+
+//  Vect2s  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, const Vect2s& v)
+{
+	os << v.x << "  " << v.y;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect2s& v)
+{
+	is >> v.x >> v.y;
+	return is;
+}
+
+
+//  Vect3d  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, const Vect3d& v)
+{
+	os << v.x << "  " << v.y << "  " << v.z;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect3d& v)
+{
+	is >> v.x >> v.y >> v.z;
+	return is;
+}
+
+
+//  Vect3f  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, Vect3f& v)
+{
+	os << v.x << "  " << v.y << "  " << v.z;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect3f& v)
+{
+	is >> v.x >> v.y >> v.z;
+	return is;
+}
+
+//  Vect4f  I/O //////////////////////////
+inline ostream& operator<<(ostream &os, const Vect4f& v)
+{
+	os << v.x << "  " << v.y << "  " << v.z << "  " << v.w;
+	return os;
+}
+
+inline istream& operator>>(istream &is, Vect4f& v)
+{
+	is >> v.x >> v.y >> v.z >> v.w;
+	return is;
+}
+
+
+//  Mat3d I/O  ////////////////////////
+inline ostream& operator<<(ostream& os, const Mat3d& m)
+{
+  os << m.xx << " \t" << m.xy << " \t" << m.xz << endl;
+  os << m.yx << " \t" << m.yy << " \t" << m.yz << endl;
+  os << m.zx << " \t" << m.zy << " \t" << m.zz;
+  return os;
+}
+
+inline istream& operator>>(istream &is, Mat3d& m)
+{
+  is >> m.xx >> m.xy >> m.xz;
+  is >> m.yx >> m.yy >> m.yz;
+  is >> m.zx >> m.zy >> m.zz;
+  return is;
+}
+
+//  Mat3f I/O  ////////////////////////
+inline ostream& operator<<(ostream& os, const Mat3f& m)
+{
+  os << m.xx << " \t" << m.xy << " \t" << m.xz << endl;
+  os << m.yx << " \t" << m.yy << " \t" << m.yz << endl;
+  os << m.zx << " \t" << m.zy << " \t" << m.zz;
+  return os;
+}
+
+inline istream& operator>>(istream &is, Mat3f& m)
+{
+  is >> m.xx >> m.xy >> m.xz;
+  is >> m.yx >> m.yy >> m.yz;
+  is >> m.zx >> m.zy >> m.zz;
+  return is;
+}
+
+
+//  MatXd  I/O   ///////////////////
+inline ostream& operator<<(ostream& os, const MatXd& m)
+{
+  return os << m.R << "  " << m.d;
+}
+
+inline istream& operator>>(istream& is, MatXd& m)
+{
+  Se3d T;
+  is >> T;
+  m.set(T);
+  return is;
+}
+
+
+//  MatXf  I/O   ///////////////////
+inline ostream& operator<<(ostream& os, const MatXf& m)
+{
+  return os << m.R << "  " << m.d;
+}
+
+inline istream& operator>>(istream& is, MatXf& m)
+{
+  Se3d T;
+  is >> T;
+  m.set(T);
+  return is;
+}
+
+
+//  QuatD  I/O   ///////////////////
+inline istream& operator>>(istream& is, QuatD& q)
+{
+  is >> q.s_ >> q.x_ >> q.y_ >> q.z_;
+  return is;
+}
+
+inline ostream& operator<<(ostream& os, const QuatD& q)
+{
+  os << q.s_ << "  " << q.x_ << "  " << q.y_ << "  " << q.z_;
+  return os;
+}
+
+//  QuatF  I/O   ///////////////////
+inline istream& operator>>(istream& is, QuatF& q)
+{
+  is >> q.s_ >> q.x_ >> q.y_ >> q.z_;
+  return is;
+}
+
+inline ostream& operator<<(ostream& os, const QuatF& q)
+{
+  os << q.s_ << "  " << q.x_ << "  " << q.y_ << "  " << q.z_;
+  return os;
+}
+
+
+//  Se3d I/O  ///////////////////
+inline ostream& operator<<(ostream& os, const Se3d& se3)
+{
+  return os << se3.q << "  " << se3.d;
+}
+
+inline istream& operator>>(istream& is, Se3d& se3)
+{
+	return is >> se3.q >> se3.d;
+}
+
+//  Se3f I/O  ///////////////////
+inline ostream& operator<<(ostream& os, const Se3f& se3)
+{
+  return os << se3.q << "  " << se3.d;
+}
+
+inline istream& operator>>(istream& is, Se3f& se3)
+{
+	return is >> se3.q >> se3.d;
+}
+
+
+#endif  // _XMATH_NO_IOSTREAM
 
 #endif // __XMATH_H__

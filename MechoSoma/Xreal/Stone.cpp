@@ -76,7 +76,8 @@ void Stone::damage(float decr,int damage_style)
 void Stone::kill()
 {
 	Body::kill();
-	fxlabStoneDust(Vect3f(R()), radius());
+	Vect3f v1(R());
+	fxlabStoneDust(v1, radius());
 	startSound(EFF_ROCK_BREAK);
 };
 

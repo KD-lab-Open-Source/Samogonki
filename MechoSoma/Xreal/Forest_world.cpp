@@ -4,8 +4,9 @@
 #include "Mechos.h"
 #include "CrawlingObject.h"
 #include "Worm.h"
-#include "params.h"
-#include "algorithm"
+#include "Params.h"
+
+#include <algorithm>
 
 const int NumWorms = 12;
 
@@ -34,8 +35,7 @@ void ForestWorld::pre_quant()
 	BodyDispatcher::pre_quant();
 	if(!isSnow() && !quant_latency){
 		quant_latency.start(1000);
-		int num = 0;
-		count_if(total_bodies.begin(), total_bodies.end(), IsWorm(), num);
+		int num = std::count_if(total_bodies.begin(), total_bodies.end(), IsWorm());
 		if(num < NumWorms)
 			createBody("Worm", Vect3f(random(2047), random(2047), 0));
 		}

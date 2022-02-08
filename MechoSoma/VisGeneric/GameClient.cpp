@@ -13,31 +13,7 @@ int gb_InitKeyMode=0;
 
 float GlobalGetCPUSpeed()
 {
-	int count=0;
-	clock_t start, finish;
-	start=clock();
-	__asm
-	{
-		mov ebx,0
-		mov ecx,1
-		mov edx,2
-		mov eax,15000000
-		BEGIN_CYCL:
-	
-			add ebx,ecx
-			add ebx,edx
-			add ecx,1
-			add edx,2
-
-			sub eax,1
-			jnz BEGIN_CYCL
-		mov [count],ebx
-	}
-	finish=clock();
-	if(count==0) exit(1);
-	float CyclPentiumIII_450=0.11f;
-	float duration=(float)(finish-start)/CLOCKS_PER_SEC;
-	return CyclPentiumIII_450/duration;
+	return 0;
 }
 cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,float yPos,float zPos,float xSizeReflection,float ySizeReflection,int xTextureSize,int yTextureSize,float du,float dv,char **TextureName,char **OpacityName,char *TexturePath,int KoofReflection,float dPeriod)
 {

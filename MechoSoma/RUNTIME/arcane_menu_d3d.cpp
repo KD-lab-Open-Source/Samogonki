@@ -1,18 +1,18 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "md3d.h"
-#include "hfont.h"
+#include "Md3d.h"
+#include "HFONT.H"
 #include "hbm.h"
 
-#include "base.h"
+#include "Base.h"
 
-#include "mch_rto.h"
+#include "mch_rto.H"
 
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
 
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "IGraph3d.h"
 #include "CameraDispatcher.h"
 
@@ -562,7 +562,12 @@ void mchA_d3dSetClip(int x,int y,int sx,int sy)
 {
 //	gb_IGraph3d->EndScene();
 
-	RECT r = { round((float)x * mchA_d3dResX), round((float)y * mchA_d3dResY), round(float(x + sx) * mchA_d3dResX),round(float(y + sy) * mchA_d3dResY) };
+	RECT r = {
+		LONG(round((float)x * mchA_d3dResX)),
+		LONG(round((float)y * mchA_d3dResY)),
+		LONG(round(float(x + sx) * mchA_d3dResX)),
+		LONG(round(float(y + sy) * mchA_d3dResY))
+	};
 	if(!sx || !sy) return;
 
 	d3dSetClipRect(&r);
@@ -1019,4 +1024,3 @@ MD3DERROR mchA_d3dCreateChildSprite(int parent_id,int x,int y,int sx,int sy,int 
 #endif
 	return d3dCreateChildSprite(mchA_d3dSprParent[parent_id],x,y,sx,sy,&mchA_d3dSpr[child_id]);
 }
-

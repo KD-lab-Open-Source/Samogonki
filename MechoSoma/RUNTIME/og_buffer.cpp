@@ -1,10 +1,14 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "online_game.h"
+
+#ifndef _WIN32
+#include "port.h"
+#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */
@@ -100,42 +104,42 @@ ogBuffer& ogBuffer::operator< (unsigned char var)
 
 ogBuffer& ogBuffer::operator< (short var)
 {
-	char* s = itoa(var,wiConvertBuffer,radix);
+	char* s = port_itoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned short var)
 {
-	char* s = ltoa(var,wiConvertBuffer,radix);
+	char* s = port_ltoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (int var)
 {
-	char* s = itoa(var,wiConvertBuffer,radix);
+	char* s = port_itoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned var)
 {
-	char* s = ultoa(var,wiConvertBuffer,radix);
+	char* s = port_ultoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (long var)
 {
-	char* s = ltoa(var,wiConvertBuffer,radix);
+	char* s = port_ltoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned long var)
 {
-	char* s = ultoa(var,wiConvertBuffer,radix);
+	char* s = port_ultoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }

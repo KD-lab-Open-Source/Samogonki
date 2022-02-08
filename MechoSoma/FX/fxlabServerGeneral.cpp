@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "CustomFieldSources.h"
-#include "keys.h"
+#include "KEYS.H"
 #include "ctl_point.h"
 #include "race.h"
 #include "arcane_menu.h"
@@ -19,7 +19,7 @@
 #include "fxlabApplication.h"
 #include "XTList.h"
 #include "fxlabServerGeneral.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 
 void fxlabServerEvolutionType::Start(void)

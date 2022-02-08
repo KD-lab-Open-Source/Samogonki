@@ -1,6 +1,9 @@
-
 #ifndef _XJOYSTICK_H
 #define _XJOYSTICK_H
+
+#ifndef _WIN32
+#include <cstring>
+#endif
 
 //---------------------------------------------------------------------------
 
@@ -21,15 +24,24 @@ struct XJOYSTATE
 class XJoystick : public XJOYSTATE
 {
 	int next_input;
+#ifdef _WIN32
 	struct IDirectInputDevice2* gpdiJoystick;
+#endif
 	XJOYSTATE prev_state;
 
 public:	
 	int ID;
 
-	XJoystick() { gpdiJoystick = 0; }
+	XJoystick()
+	{
+#ifdef _WIN32
+		gpdiJoystick = 0;
+#endif
+	}
 	~XJoystick() { release(); }
+#ifdef _WIN32
 	int prepare(IDirectInputDevice2* gpdiJoystick);
+#endif
  	int acquire();
 	int input();
 	void release();

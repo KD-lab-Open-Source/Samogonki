@@ -8,12 +8,12 @@
 #include "Params.h"
 #include "Mesh3ds.h"
 #include "sound.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 #include "PolyhedronLibrary.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "DebugPrm.h"
-#include "Mechosoma.h"
-#include "statistics.h"
+#include "mechosoma.h"
+#include "Statistics.h"
 #include "CollisionHandler.hpp"
 
 const int MIN_BODY_RADIUS = 10;
@@ -479,15 +479,22 @@ void Body::setChannelRandom(char* channel)
 
 void Body::setAlpha(float alpha)
 {
-	xrealIVG -> SetObjectColor(geometry, &sColor4f(geometry -> GetDiffuse().r, geometry -> GetDiffuse().g, geometry -> GetDiffuse().b, alpha));
+	sColor4f c1(geometry -> GetDiffuse().r, geometry -> GetDiffuse().g, geometry -> GetDiffuse().b, alpha);
+	xrealIVG -> SetObjectColor(geometry, &c1);
 }
 
 void Body::setColor(float r, float g, float b)
 {
 	if(geometry -> GetAttribute(MESH_REFLECTION))
-		xrealIVG -> SetObjectColor(geometry, &sColor4f(r, g, b, geometry -> GetDiffuse().a));
+	{
+		sColor4f c1(r, g, b, geometry -> GetDiffuse().a);
+		xrealIVG -> SetObjectColor(geometry, &c1);
+	}
 	else
-		xrealIVG -> SetObjectColor(geometry, 0, &sColor4f(r, g, b, 1));
+	{
+		sColor4f c1(r, g, b, 1);
+		xrealIVG -> SetObjectColor(geometry, 0, &c1);
+	}
 }
 
 float Body::H() const 

@@ -1,6 +1,8 @@
 #ifndef __SST_READER__
 #define __SST_READER__
 
+#include <list>
+
 struct UsualRecord
 {
 	int x, y;
@@ -16,7 +18,7 @@ struct DirectedRecord : UsualRecord
 int vmapOpenResource(char* fname,XStream& fh);
 
 template <class Record>
-class SST_Reader : public list<Record>
+class SST_Reader : public std::list<Record>
 {
 public:
 
@@ -43,11 +45,10 @@ SST_Reader(char* fname)
 				break;
 			++buffer;
 			}
-		push_back(Record());
-		back().read(buffer);
+		this->push_back(Record());
+		this->back().read(buffer);
 		}
 }
 };
 		
 #endif  // __SST_READER__
-	

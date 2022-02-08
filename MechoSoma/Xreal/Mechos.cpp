@@ -5,24 +5,24 @@
 #include "SimpleClip.h"
 #include "Params.h"
 #include "sound.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "IVisGeneric.h"
-#include "m3d_effects.h"
+#include "M3d_effects.h"
 #include "Line2D.h"
-#include "MechoSoma.h"
-#include "xreal_utl.h"
+#include "mechosoma.h"
+#include "Xreal_utl.h"
 #include "fxlabInterface.h"
 #include "BaseTrail.h"
-#include "terra.h"
+#include "TERRA.H"
 #include "controls.h"
 #include "CustomFieldSources.h"
-#include "Joystick\XJoystick.h"
+#include "XJoystick.h"
 #include "PolyhedronLibrary.h"
 #include "RungeKutta4.h"
 #include "MechosPrm.h"
 #include "ArcansPrm.h"
 #include "PersonageDifferetiationPrm.h"
-#include "statistics.h"
+#include "Statistics.h"
 #include "DebugPrm.h"
 #include "AnimalArcansPrm.h"
 
@@ -165,14 +165,14 @@ void Mechos::registerGeometry()
 	for(i = 1; i < NUM_PARTS; i++)
 		part_offsets[i] = part_by_index(i) -> LocalMatrix;
 	swing_phase = 0;
-	character_angles.set(0);
-	character_angles_velocity.set(0);
+	character_angles.set(0.0);
+	character_angles_velocity.set(0.0);
 	velocity_y_prev = 0;
 	sensor_source = 0;
 	effects_queue.clear();
 	if(current_effect != StoneHitEffect)
 		runEffect(NoEffect);
-	acceleration_spot_direction.set(0);
+	acceleration_spot_direction.set(0.0);
 	formic_transport_finish_angle = 0;
 	rotation_angle = 0;
 	alpha = 1;
@@ -183,7 +183,7 @@ void Mechos::registerGeometry()
 	left_rudder_angle = right_rudder_angle = 0;
 	forward_wheels_phase = backward_wheels_phase = 0;
 	assembling_point_dist = 0;
-	dV_applied.set(0);
+	dV_applied.set(0.0);
 	reset_stopping();
 	jabasoma_jumping_log = 0;
 
@@ -233,15 +233,15 @@ void Mechos::createBound()
 	float zmin = geometry -> zminTotal();
 	float zmax = geometry -> zmaxTotal()*mechos_zsize_scale;
 
-	// Поправка для персонажей, ассиметричных по X
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
 	float delta_x = -(part_by_index(RBWheel) -> GlobalMatrix.trans().x + part_by_index(LBWheel) -> GlobalMatrix.trans().x)/2;
 
-	// Сдвигаем вперед ЦМ
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 	float delta_y = -(ymax + ymin)/2;
 	ymin += delta_y;
 	ymax += delta_y;
 
-	// Опускаем ЦМ
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 	float z_axles = 0;
 	for(w = RFWheel; w <= LBWheel; w++)
 		z_axles += part_by_index(w) -> GlobalMatrix.trans().z;
@@ -356,7 +356,7 @@ void Mechos::disorganize()
 		}
 
 	setTrans(R().z + mesh_offset.z, Z_AXIS);
-	mesh_offset.set(0);
+	mesh_offset.set(0.0);
 	Body::createBound();
 	set_archimedean_force(personage_buoyancy);
 
@@ -674,7 +674,7 @@ void Mechos::calc_forces_and_drags()
 			setLocalAngularVelocity(teleportation_spin*teleportation_timer()/starting_teleportation_time + teleportation_spin_initial, Z_AXIS);
 			setPermanentAlpha(1 - teleportation_timer()/starting_teleportation_time);
 			geometry -> SetScale(1 + (teleportation_size - 1)*teleportation_timer()/finishing_teleportation_time);
-			if(!teleportation_timer && (fabs(getDist(teleportation_psi, psi(), 2*M_PI)) < teleportation_psi_error || !after_disorganize_latency)){
+			if(!teleportation_timer && (fabs(getDist_f(teleportation_psi, psi(), 2*M_PI)) < teleportation_psi_error || !after_disorganize_latency)){
 				state_ = ASSEMBLING_MECHOS;
 				features_ &= ~ROTATING;
 				setRot(-teleportation_psi, Z_AXIS);
@@ -745,11 +745,11 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 	float Vy = Vlocal().y;
 	Vy -= dV_applied.y*mechos_collision_correction_restitution;
 	setLocalVelocity(Vy, Y_AXIS);
-	dV_applied.set(0);
+	dV_applied.set(0.0);
 
 	control();
 	
-	// Установка на колеса
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if(theta() > M_PI/3)
 		applyLocalTurnTorque(Zlocal(), Vect3f::K);
 
@@ -773,7 +773,7 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 			applyLocalForce( traction*speed_increment_factor*k_traction_water, Y_AXIS);
 			applyLocalTorque( rudder*k_rudder_water*SIGN(Vlocal().y + traction*5), Z_AXIS);
 			}
-		// Покачивание
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if(!ground_colliding){
 			swing_phase += evolve_time_step*(1. + speed_avr/20);
 			applyGlobalForce(mechos_swing_lift_force*sin(swing_phase), Z_AXIS);
@@ -830,18 +830,22 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 			float u_n = dot(vel, normal) - horizontal_velocity_relaxation_value;
 			if(u_n < 0){
 				Mat3f Ig_inv1(Ig_inv), Ig_inv2;
-				Ig_inv[0].set(0);
-				Ig_inv[1].set(0);
+				Ig_inv[0].set(0.0);
+				Ig_inv[1].set(0.0);
 				Ig_inv[2] *= horizontal_Ig_inv_z_factor;
-				float Aii = dot(normal, global_mass_matrix(c.cp1g, c.cp1g, Mat3f())*normal);
+				Mat3f m1;
+				float Aii = dot(normal, global_mass_matrix(c.cp1g, c.cp1g, m1)*normal);
 				if(body2 && body2 -> is_dynamic()){
 					if(body2 -> type() == MECHOS){
 						Ig_inv2 = body2 -> Ig_inv;
-						body2 -> Ig_inv[0].set(0);
-						body2 -> Ig_inv[1].set(0);
+						body2 -> Ig_inv[0].set(0.0);
+						body2 -> Ig_inv[1].set(0.0);
 						body2 -> Ig_inv[2] *= horizontal_Ig_inv_z_factor;
 						}
-					Aii += dot(normal, body2 -> global_mass_matrix(c.cp2g, c.cp2g, Mat3f())*normal);
+					{
+						Mat3f m1;
+						Aii += dot(normal, body2 -> global_mass_matrix(c.cp2g, c.cp2g, m1)*normal);
+					}
 					}
 				float j_n = -u_n*horizontal_k_restitution_plus_one/(Aii + 0.001);
 				Vect3f J = normal*j_n;
@@ -860,9 +864,13 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 			Vect3f z_axis = Vect3f::K;
 			float u_z = dot(vel, z_axis) + vertical_velocity_relaxation_value;
 			if(enable_vertical_analytics && u_z > 0){
-				float Aii = dot(z_axis, global_mass_matrix(c.cp1g, c.cp1g, Mat3f())*z_axis);
+				Mat3f m1;
+				float Aii = dot(z_axis, global_mass_matrix(c.cp1g, c.cp1g, m1)*z_axis);
 				if(body2)
-					Aii += dot(z_axis, body2 -> global_mass_matrix(c.cp2g, c.cp2g, Mat3f())*z_axis);
+				{
+					Mat3f m2;
+					Aii += dot(z_axis, body2 -> global_mass_matrix(c.cp2g, c.cp2g, m2)*z_axis);
+				}
 				float j = -u_z/(Aii + 0.001);
 				Vect3f J = z_axis*j;
 				V.scaleAdd(J, mass_inv);
@@ -894,13 +902,13 @@ void Mechos::calc_forces_and_drags_of_moving_personage()
 
 void Mechos::calc_forces_and_drags_of_assembling_personage()
 {
-	// Ручной поворот сущности
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if(active() && (mchKeyPressed(MCH_KEY_TURN_LEFT, control_config) || mchKeyPressed(MCH_KEY_TURN_RIGHT, control_config))){
 		manual_essence_turn = 1;
 		setGlobalAngularVelocity((mchKeyPressed(MCH_KEY_TURN_RIGHT, control_config) ? 1 : -1)*standing_personage_manual_rudder, Z_AXIS);
 		}
 
-	// Поворот на семя
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 	if(!manual_essence_turn){
 		Vect3f r;
 		Alg().invXform(assembling_direction, r);
@@ -1098,7 +1106,8 @@ void Mechos::damage(float dE, int damage_style)
 			energy = 0;		
 		if(features() & NON_DESTRUCTING && energy < 1)
 			energy = 1;
-		fxlabDamageWarinig(Vect3f(R()),this,damage_style);
+		Vect3f v1(R());
+		fxlabDamageWarinig(v1,this,damage_style);
 		}
 }
 
@@ -1283,7 +1292,7 @@ void Mechos::hide()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		Система обратной связи для PointControl
+//		пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ PointControl
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Mechos::target_achieved()
 {
@@ -1357,8 +1366,8 @@ void Mechos::control()
 
 void Mechos::keyboard_control()
 {
-	float traction_incr = 1.; // скорость набора мощности
-	float traction_decr = 1; // скорость сброса (противоположная стрелка - мгновенно + тормоз)
+	float traction_incr = 1.; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	float traction_decr = 1; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ + пїЅпїЅпїЅпїЅпїЅпїЅ)
 
 	XJoystick* joystick = enable_joystick_control ? XJoystickGetJoystick() : 0;
 	  
@@ -1435,7 +1444,7 @@ void Mechos::keyboard_control()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		Муравейник
+//		пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Mechos::formicTransport(const Vect3f& target, const Vect3f& next_point_for_direction)
 {
@@ -1459,7 +1468,7 @@ void Mechos::formicTransport(const Vect3f& target, const Vect3f& next_point_for_
 		}
 
 	setTrans(R().z + mesh_offset.z, Z_AXIS);
-	mesh_offset.set(0);
+	mesh_offset.set(0.0);
 	state_ = FORMIC_TRANSPORTED_MECHOS;
 	completed_ = 0;
 	visible_ = 0;
@@ -1670,7 +1679,10 @@ void Mechos::setColor(int index, const sColor4f* diffuse, const sColor4f* specul
 {
 	cMesh* mesh = part_by_index(index);
 	if(mesh)
-		xrealIVG -> SetObjectColor(mesh, diffuse ? &sColor4f(diffuse -> r, diffuse -> g, diffuse -> b, diffuse -> a*alpha) : 0, specular, 1 << index);
+	{
+		sColor4f c1(diffuse -> r, diffuse -> g, diffuse -> b, diffuse -> a*alpha);
+		xrealIVG -> SetObjectColor(mesh, diffuse ? &c1 : 0, specular, 1 << index);
+	}
 }
 
 void Mechos::getColor(int index, sColor4f* diffuse, sColor4f* specular)
@@ -1840,7 +1852,7 @@ int Mechos::startRotation(float angle, float speed)
 int Mechos::rotation_quant()
 {
 	setLocalAngularVelocity(rotation_speed, Z_AXIS);
-	float dangle = getDist(psi(), prev_psi, 2*M_PI);
+	float dangle = getDist_f(psi(), prev_psi, 2*M_PI);
 	if(fabs(dangle) > fabs(rotation_angle)){
 		features_ &= ~ROTATING;
 		setLocalAngularVelocity(0, Z_AXIS);
@@ -2000,14 +2012,14 @@ void Mechos::Wheel::convert(const MatXf& pose)
 
 	n_contacts = 0;
 	total_penetration = 0;
-	contact_point.set(0);
-	normal.set(0);
+	contact_point.set(0.0);
+	normal.set(0.0);
 	property = 0;
 
 	n_contacts_non_central = 0;
 	total_penetration_non_central = 0;
-	contact_point_non_central.set(0);
-	normal_non_central.set(0);
+	contact_point_non_central.set(0.0);
+	normal_non_central.set(0.0);
 	property_non_central = 0;
 
 	f_n = j_t = 0;
@@ -2015,7 +2027,7 @@ void Mechos::Wheel::convert(const MatXf& pose)
 	angular_acceleration = 0;
 	contacted_body = 0;
 	
-	axle_cross_radius.set(0);
+	axle_cross_radius.set(0.0);
 	radius_cross_tangent_dot_axle = 0;
 	brake_delta_omega = 0;
 	max_friction_impulse = 0;
@@ -2332,12 +2344,14 @@ void Mechos::applyWheelsForce()
 	float B[4], X[4];
 	for(i = 0; i < 4; i++){
 		Wheel& wi = wheels[i];
-		A[i][i] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wi.contact_point, Mat3f())*wi.tangent
+		Mat3f m1;
+		A[i][i] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wi.contact_point, m1)*wi.tangent
 			+ (wi.TOI_inv*wi.radius_cross_tangent_dot_axle)*wi.axle_cross_radius
 			)*mechos_diagonal_element_scaling_factor;
 		for(int j = i + 1; j < 4; j++){
 			Wheel& wj = wheels[j];
-			A[i][j] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wj.contact_point, Mat3f())*wj.tangent);
+			Mat3f m2;
+			A[i][j] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wj.contact_point, m2)*wj.tangent);
 			}
 		B[i] = -wi.v_t;
 		}
@@ -2348,7 +2362,8 @@ void Mechos::applyWheelsForce()
 	for(i = 0; i < 4; i++){
 		Wheel& wi = wheels[i];
 		if(wi.check_if_blocked(X[i])){
-			A[i][i] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wi.contact_point, Mat3f())*wi.tangent)*mechos_diagonal_element_scaling_factor;
+			Mat3f m3;
+			A[i][i] = dot(wi.tangent, global_mass_matrix(wi.contact_point, wi.contact_point, m3)*wi.tangent)*mechos_diagonal_element_scaling_factor;
 			wheels_blocked++;
 			}
 		}
@@ -2431,7 +2446,8 @@ void Mechos::applyWheelsForce()
 						if(i == WheelRB){
 							Vect3f dx = Alg().xcol()*((wheels[WheelLB].position.x - wheels[WheelRB].position.x)/2);
 							dx.z = 0;
-							xrealIVG -> CreateTangentTrail(&(trail_pos0[WheelRB] + dx), 
+							auto v1 = (trail_pos0[WheelRB] + dx);
+							xrealIVG -> CreateTangentTrail(&v1, 
 								&TrailColors[RedTrackTrail], &dr, &TrailColors[RedTrackTrail], 	mechos_red_track_time, mechos_red_track_animation_period, 
 								dx.norm() + mechos_red_track_thickness_add);
 							}

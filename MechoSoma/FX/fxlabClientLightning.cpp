@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "Levin.h"
 
 #include "fxlabID.h"

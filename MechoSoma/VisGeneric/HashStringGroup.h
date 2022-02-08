@@ -6,16 +6,11 @@
 #ifndef __HASH_STRING_GROUP__
 #define __HASH_STRING_GROUP__
 
-#include "hash_map.h"
+#include <unordered_map>
 #include <ctype.h>
 
-struct eqstr
-{																	       
-bool operator()(const char* s1, const char* s2)const{ return !strcmp(s1, s2); }
-};
-
 template <class T>
-struct HashStringGroup :  hash_map<char*, T, hash<const char*>, eqstr>
+struct HashStringGroup :  std::unordered_map<std::string, T>
 {
 	void add(char* str, const T& data) 
 	{ (*this)[str] = data; }
@@ -31,8 +26,8 @@ struct HashStringGroup :  hash_map<char*, T, hash<const char*>, eqstr>
 				break;
 				}
 	
-		iterator it = find(name);
-		return it == end() ? 0 : &(*it).second;
+		auto it = this->find(name);
+		return it == this->end() ? 0 : &(*it).second;
 	}
 };
 

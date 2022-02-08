@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TrackSpline.h"
 #include "CycledMath.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 
 TrackSpline::TrackSpline(float avr_dist, int step_)
 {
@@ -76,8 +76,8 @@ TrackSpline& TrackSpline::operator -= (float dt)
 
 Vect3f TrackSpline::operator()() const 
 {
-	return CYCLE((3.0f/2.0f*P[1]-3.0f/2.0f*P[2]-P[0]/2.0f+P[3]/2.0f)*t*t*t +
-		(2.0f*P[2]+P[0]-P[3]/2.0f-5.0f/2.0f*P[1])*t*t + (P[2]/2.0f-P[0]/2.0f)*t + P[1]);
+	Vect3f v1((3.0f/2.0f*P[1]-3.0f/2.0f*P[2]-P[0]/2.0f+P[3]/2.0f)*t*t*t + (2.0f*P[2]+P[0]-P[3]/2.0f-5.0f/2.0f*P[1])*t*t + (P[2]/2.0f-P[0]/2.0f)*t + P[1]);
+	return CYCLE(v1);
 }
 
 Vect3f TrackSpline::deriv() const 

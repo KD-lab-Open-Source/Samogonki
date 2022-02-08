@@ -2,7 +2,7 @@
 #include "BodyDispatcher.h"
 #include "Body.h"
 #include "ControlledObject.h"
-#include "params.h"
+#include "Params.h"
 #include "DebugPrm.h"
 
 ControlledObject::ControlledObject() 

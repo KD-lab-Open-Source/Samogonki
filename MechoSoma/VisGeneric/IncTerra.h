@@ -4,7 +4,7 @@
 #ifdef _USE_TERRA_
 
 #include "BaseDefine.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #define TERRA_XCYCL(a)								XCYCL(a)
 #define TERRA_YCYCL(a)								YCYCL(a)

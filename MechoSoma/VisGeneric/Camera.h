@@ -5,8 +5,12 @@
 #include "VisGenericDefine.h"
 #include "Math3d.h"
 #include "memory.h"
-#include "umath.h"
+#include "UMATH.H"
 #include "float.h"
+
+#ifdef __APPLE__
+#define __forceinline inline
+#endif
 
 #define FLOAT_CONST_PREC					1.f
 
@@ -256,7 +260,7 @@ inline void WorldShareMapping(Vect3f &pos,cCamera *Camera)
 		int d=GlobalWorldRadius-sqrt(desc);
 		pos.x=CameraPos.x+xr; pos.y=CameraPos.y+yr;
 		pos.z-=2*GlobalWorldRadius-d;
-/*
+
 		float k=(float)GlobalWorldRadius/sqrt(l);
 		xr=round(xr*k); yr=round(yr*k);
 		l=xr*xr+yr*yr;

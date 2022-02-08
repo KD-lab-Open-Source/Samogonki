@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#include "terra.h"
+#include "TERRA.H"
 
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "CustomFieldSources.h"
-#include "keys.h"
+#include "KEYS.H"
 #include "ctl_point.h"
 #include "race.h"
 #include "arcane_menu.h"
@@ -23,9 +23,9 @@
 #include "fxlabServerGeneral.h"
 #include "fxlabServerStuff.h"
 #include "fxlabServerArcane.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
-#include "win32f.h"
+// #include "win32f.h"
 #include "mechosoma.h"
 #include "fxlabBodyInterface.h"
 
@@ -63,8 +63,8 @@ void fxlabDamageSensorType::Action(void)
 		case FXLAB_DAMAGE_SPHERE_TYPE_CHARGE_ENERGY:
 			while(mp){
 				if(CheckProtection(mp) && mp->completed() && mp->Type == MCH_RACER_TYPE_MECHOS){
-					dx = getDistX(round(mp->R().x),x);
-					dy = getDistY(round(mp->R().y),y);
+					dx = getDistX_f(round(mp->R().x),x);
+					dy = getDistY_f(round(mp->R().y),y);
 					dz = round(mp->R().z) - z;
 					d = dx*dx + dy*dy + dz*dz;
 					r2 = round(Radius + mp->radius());
@@ -81,8 +81,8 @@ void fxlabDamageSensorType::Action(void)
 		case FXLAB_DAMAGE_SPHERE_TYPE_CHARGE_MANA:
 			while(mp){
 				if(CheckProtection(mp) && mp->completed() && mp->Type == MCH_RACER_TYPE_MECHOS){
-					dx = getDistX(round(mp->R().x),x);
-					dy = getDistY(round(mp->R().y),y);
+					dx = getDistX_f(round(mp->R().x),x);
+					dy = getDistY_f(round(mp->R().y),y);
 					dz = round(mp->R().z) - z;
 					d = dx*dx + dy*dy + dz*dz;
 					r2 = round(Radius + mp->radius());
@@ -99,8 +99,8 @@ void fxlabDamageSensorType::Action(void)
 		case FXLAB_DAMAGE_SPHERE_TYPE_KINETIC:
 			while(mp){
 				if(CheckProtection(mp) && mp->completed() && mp->Type == MCH_RACER_TYPE_MECHOS){
-					dx = getDistX(round(mp->R().x),x);
-					dy = getDistY(round(mp->R().y),y);
+					dx = getDistX_f(round(mp->R().x),x);
+					dy = getDistY_f(round(mp->R().y),y);
 					dz = round(mp->R().z) - z;
 					d = dx*dx + dy*dy + dz*dz;
 					r2 = round(Radius + mp->radius());
@@ -115,8 +115,8 @@ void fxlabDamageSensorType::Action(void)
 		default:
 			while(mp){
 				if(CheckProtection(mp) && mp->completed() && mp->Type == MCH_RACER_TYPE_MECHOS){
-					dx = getDistX(round(mp->R().x),x);
-					dy = getDistY(round(mp->R().y),y);
+					dx = getDistX_f(round(mp->R().x),x);
+					dy = getDistY_f(round(mp->R().y),y);
 					dz = round(mp->R().z) - z;
 					d = dx*dx + dy*dy + dz*dz;
 					r2 = round(Radius + mp->radius());

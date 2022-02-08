@@ -11,14 +11,22 @@
 #define STRICT 1
 #endif
 
+#ifdef _WIN32
 #include <windows.h>
 #include <d3d.h>
+#else
+#include "d3d_port.h"
+#endif
 
 //#define _PROFILE_D3D
 
 // Types ---------------------------------------------------------- //
 
 typedef DWORD MD3DERROR;
+
+#ifndef _WIN32
+#define FAILED(hr) (((MD3DERROR)(hr)) < 0)
+#endif
 
 typedef struct {
 	DWORD dwTotalBitCount;
@@ -98,7 +106,7 @@ struct MD3DMODE
 
 // Function prototypes -------------------------------------------- //
 
-//////array после использования необходимо уничтожать при помощи delete[] pArray;
+//////array пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ delete[] pArray;
 MD3DERROR d3dEnumVideoMode(int* pnumvideomode,MD3DMODE** ppArray);
 MD3DERROR d3dGetAvailableVidMem (DWORD* allvideomem);
 
@@ -110,7 +118,7 @@ MD3DERROR d3dQueryCaps( MD3DCAPS Caps, DWORD *dwData );
 MD3DERROR d3dGetWindowHandle( HWND *hWnd );
 MD3DERROR d3dClear(DWORD);
 MD3DERROR d3dFlip(bool WaitVerticalBlank=true);
-MD3DERROR d3dFlipToGdiSurface();///Вызывать перед использованием диалогов и т.д.
+MD3DERROR d3dFlipToGdiSurface();///пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
 
 
 MD3DERROR d3dCreateBackBuffer();
@@ -130,7 +138,7 @@ MD3DERROR d3dTestCooperativeLevel();
 #ifdef _PROFILE_D3D
 void d3dGetTransferMemoryVideo(DWORD& byte_per_frame,
 			DWORD& n256,DWORD& n128,DWORD& n64,DWORD& n32);
-#endif _PROFILE_D3D
+#endif // _PROFILE_D3D
 
 
 MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE, DWORD);
@@ -235,25 +243,25 @@ MD3DERROR d3dSetFocusLossBehavior( BOOL bSleep );
 
 #define MD3D_OK 0
 
-// Generic (облом общего вида)
+// Generic (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
 #define MD3DERR_GENERIC				0x83000001	
 
-#define MD3DERR_NODIRECTDRAW		0x83000002	// Не удалось создать DirectDraw-объект (DX не установлен или установлен криво)
-#define MD3DERR_NODIRECT3D			0x83000003	// Нету 3D-железа или драйвера
-#define MD3DERR_ENUMERATIONFAILED	0x83000004	// Не удалось получить информацию о DirectDraw-драйверах (DX не установлен или установлен криво)
-#define MD3DERR_NOCOMPATIBLEDEVICES 0x83000005	// Ни один из найденных акселераторов не удовлетворяет нашим требованиям
+#define MD3DERR_NODIRECTDRAW		0x83000002	// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ DirectDraw-пїЅпїЅпїЅпїЅпїЅпїЅ (DX пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+#define MD3DERR_NODIRECT3D			0x83000003	// пїЅпїЅпїЅпїЅ 3D-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MD3DERR_ENUMERATIONFAILED	0x83000004	// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ DirectDraw-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (DX пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+#define MD3DERR_NOCOMPATIBLEDEVICES 0x83000005	// пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #define MD3DERR_OUTOFMEMORY			0x83000006
-#define MD3DERR_OUTOFVIDEOMEMORY	0x83000007	// Недостаточно видеопамяти
+#define MD3DERR_OUTOFVIDEOMEMORY	0x83000007	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #define MD3DERR_VMCACHEFULL			0x83000008	// Videomemory texture cache is full
-#define MD3DERR_BADDISPLAYMODE		0x83000009	// Текущий режим дисплея не позволяет рендерить в окно
-#define MD3DERR_INVALIDMODE			0x8300000a	// Указанный режим дисплея не поддерживается
-#define MD3DERR_NOZBUFFER			0x8300000b	// Не удалось создать Z-буфер (возможно не хватает видеопамяти)
-#define MD3DERR_NOTINITIALIZED		0x8300000c	// md3d не инициализирован
-#define MD3DERR_ILLEGALCALL			0x8300000d	// Функцию нельзя вызывать в этом контексте
-#define MD3DERR_NOEXCLUSIVEMODE		0x8300000e	// Кто-то другой получил exclusive-доступ к устройству
-#define MD3DERR_INVALIDPARAM		0x8300000f	// Ошибка в параметрах вызова
+#define MD3DERR_BADDISPLAYMODE		0x83000009	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
+#define MD3DERR_INVALIDMODE			0x8300000a	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MD3DERR_NOZBUFFER			0x8300000b	// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Z-пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+#define MD3DERR_NOTINITIALIZED		0x8300000c	// md3d пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MD3DERR_ILLEGALCALL			0x8300000d	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MD3DERR_NOEXCLUSIVEMODE		0x8300000e	// пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ exclusive-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MD3DERR_INVALIDPARAM		0x8300000f	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
-#define MD3DERR_UNSUPPORTED			0x83000010	// Запрошенная операция не поддерживается железом
+#define MD3DERR_UNSUPPORTED			0x83000010	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 // Debugging stuff -------------------------------------------------- //
 
@@ -311,32 +319,32 @@ void __d3dLogMessage( DWORD dwLevel, TCHAR *szFormat, ... );
 
 TCHAR* __d3dBinaryDump( LPVOID, DWORD );
 
-BOOL d3dIsActive();//Активно ли приложение в данный момент
+BOOL d3dIsActive();//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
-//Текущие установки экрана
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 MD3DERROR d3dGetDisplayMode(DWORD& width,DWORD& height,DWORD& bpp);
 
 /*
-	Функции, позволяющии рисовать на BackBuffer
-	с помощью стандартных функций
+	пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ BackBuffer
+	пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-	GetBackBufferDC - Получить hdc и начать рисовать
-	ReleaseBackBufferDC удалить hdc полученный с помощью GetBackBufferDC 
+	GetBackBufferDC - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ hdc пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	ReleaseBackBufferDC пїЅпїЅпїЅпїЅпїЅпїЅпїЅ hdc пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ GetBackBufferDC 
 
-	hdc не должен нигде глобально сохраняться, так как
-	это временный handle, имеющий смысл только один кадр.
+	hdc пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ
+	пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ handle, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ.
 */
 MD3DERROR GetBackBufferDC(HDC* hdc);
 MD3DERROR ReleaseBackBufferDC(HDC hdc);
 
 /*
-	Операции для работы с мультитекстуированием
+	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 */
-//Может ли карточка поддерживать мультитекстуирование
+//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 BOOL IsMultiTextureSupport();
 
-//dwVertexTypeDesc обязательно должен иметь хотябы один набор текстурных координат
-//Эта функция работает даже в случае IsMultiTextureSupport()==FALSE
+//dwVertexTypeDesc пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ IsMultiTextureSupport()==FALSE
 MD3DERROR d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, 
 							  LPVOID lpvVertices, DWORD dwVertexCount, 
 							  LPWORD lpwIndices, DWORD dwIndexCount,

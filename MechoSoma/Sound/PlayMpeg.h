@@ -5,10 +5,19 @@
 
 //#include "dsound.h"
 
+#ifndef _WIN32
+#include <cstdint>
+typedef const char *LPCSTR;
+typedef void *LPVOID;
+typedef uint32_t DWORD;
+#define WINAPI
+#define NULL 0
+#endif
+
 #define MPP_STAT
 #ifdef MPP_STAT
 double MpegCPUUsing();//Возвращает используемое на проигрывание Mpeg время (1 - всё время загрузки)
-#endif MPP_STAT
+#endif // MPP_STAT
 
 //
 bool MpegInitLibrary(void* LPDIRECTSOUND_pDS);

@@ -3,11 +3,11 @@
 #include "Mesh3ds.h"
 #include "CycledMath.h"
 #include "IVisGeneric.h"
-#include "terra.h"
-#include "xreal_utl.h"
+#include "TERRA.H"
+#include "Xreal_utl.h"
 #include "SST_Reader.h"
 #include "CameraPrm.h"
-#include "Mechosoma.h"
+#include "mechosoma.h"
 #include "Statistics.h"
 #include "DebugPrm.h"
 #include "Params.h"
@@ -618,7 +618,7 @@ float Triangle::area() const
 
 MatXf TriangleMap::getPlacementPose(const Vect3f& center, int disabled_triangles_mask)
 {
-	const float dz = 0; //приподнимает над поверхностью
+	const float dz = 0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	const Triangle* tri = 0;
 	float s, smax = 0;
 	SList& list = (*this)(center.xi(), center.yi());
@@ -675,8 +675,8 @@ public:
 
 MatXf getPlacementPose(const Vect3f& center)
 {
-	const float dz = 3; //приподнимает над поверхностью
-	float radius = 20; // радиус окрестности для поиска (чем больше - тем медленней)
+	const float dz = 3; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	float radius = 20; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	const Triangle* tri;
 	while(1){
 		ClosetNonVerticalTriangleSearchOp op(center);

@@ -5,7 +5,7 @@
 #include "string.h"
 #include "BaseClass.h"
 #include "cString.h"
-#include "umath.h"
+#include "UMATH.H"
 
 enum eAttributeMaterial
 {

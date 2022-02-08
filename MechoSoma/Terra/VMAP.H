@@ -1,4 +1,4 @@
-#include "_xtool.h"
+#include "xtool.h"
 
 //const unsigned int H_POWER = H_SIZE_POWER;
 //const unsigned int H_SIZE = 1 << H_POWER;

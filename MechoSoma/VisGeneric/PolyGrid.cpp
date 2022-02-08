@@ -1,6 +1,8 @@
 #include "float.h"
 #include "PolyGrid.h"
+#ifdef _WIN32
 #include "SoftWare16.h"
+#endif
 
 cPolyGrid::cPolyGrid()
 {

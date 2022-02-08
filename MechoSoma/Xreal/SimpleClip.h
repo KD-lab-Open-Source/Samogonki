@@ -109,7 +109,7 @@ private:
 //////////////////////////////////////
 //	TriangleBrush
 //////////////////////////////////////
-class TriangleBrush : vector<Triangle>
+class TriangleBrush : std::vector<Triangle>
 {
 	const MatXf& pose;
 	iRectangle bound;
@@ -160,11 +160,11 @@ class SphereList : public vector<Sphere> {};
 //////////////////////////////////////////
 //	Triangle Map
 //////////////////////////////////////////
-class TriangleMap : public slist<Triangle>, public Grid2D<Triangle, 4>
+class TriangleMap : public std::list<Triangle>, public Grid2D<Triangle, 4>
 {
-	typedef slist<Triangle> List;
+	typedef std::list<Triangle> List;
 	typedef Grid2D<Triangle, 4> Grid;
-	typedef hash_map<int, Spot> SpotMap;
+	typedef std::unordered_map<int, Spot> SpotMap;
 	
 	SpotMap spot_map;
 

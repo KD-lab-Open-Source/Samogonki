@@ -2,13 +2,13 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "_xsound.h"
+#include "xsound.h"
 
 #include "mechosoma.h"
 #include "aci_parser.h"
-#include "aci_evnt.h"
-#include "aci_ids.h"
-#include "aci_scr.h"
+#include "ACI_EVNT.H"
+#include "ACI_IDS.H"
+#include "ACI_SCR.H"
 #include "sound.h"
 #include "sound_api.h"
 
@@ -16,15 +16,22 @@
 
 #include "arcane_menu_d3d.h"
 
-#include "maths.h"
-#include "base.h"
-#include "mesh3ds.h"
+#include "Maths.h"
+#include "Base.h"
+#include "Mesh3ds.h"
 
+#ifdef _WIN32
 #include "wininet_api.h"
 #include "online_game.h"
+#else
+#define _MAX_PATH 1024
+#define MAX_PATH 1024
+#include "filesystem.h"
+#include "port.h"
+#endif
 
 #include "CameraDispatcher.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 
 #include "mch_common.h" // For far target
 
@@ -121,7 +128,7 @@ void mchA_d3dSetGamma(float v);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-// HotSeat параметры
+// HotSeat пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 int hsStartAssembled = 1;
 int hsTurnSeedsMax = 5;
 int hsWaitTurnTime = 100;
@@ -192,24 +199,25 @@ char* getIniKey(char* fname,char* section,char* key)
 	char* p = NULL;
 
 	static char buf[256];
-	static char path[_MAX_PATH];
 
 	if(!xINI_InitFlag) xINI_Init();
 
-	if(_fullpath(path,fname,_MAX_PATH) == NULL) ErrH.Abort("Invalid path...");  
+	const auto path = file::normalize_path(fname);
 
 	if(xINI_Enable){
-		p = xINI_GetKey(path,section,key);
+		p = xINI_GetKey(path.c_str(),section,key);
 		if(p)
 			strcpy(buf,p);
 		else
 			*buf = 0;
 	}
 
+#ifdef _WIN32
 	if(!p){
 		if(!GetPrivateProfileString(section,key,NULL,buf,256,path))
 			*buf = 0;
 	}
+#endif
 
 	return buf;
 }
@@ -238,8 +246,10 @@ void putIniKey(char* fname,char* section,char* key,char* val)
 	if(xINI_Enable)
 		flag = xINI_PutKey(path,section,key,val);
 
+#ifdef _WIN32
 	if(!flag)
 		WritePrivateProfileString(section,key,val,path);
+#endif
 }
 
 void mchSetup(void)
@@ -258,9 +268,11 @@ void mchSetup(void)
 		xgrColorDepth = 16 + 16 * flag;
 	}
 
+#ifdef _WIN32
 	wiServerPort = atoi(getIniKey(mch_mainINI,"online","server_port"));
 	wiServerName = strdup(getIniKey(mch_mainINI,"online","server"));
 	wiGameURL = strdup(getIniKey(mch_mainINI,"online","url"));
+#endif
 
 	mchPBEM_DisableReturnFlag = atoi(getIniKey(mch_mainINI,"online","disable_return"));
 
@@ -687,6 +699,7 @@ void mchOptionData::Update(void)
 
 void hsOnlineSetup(void)
 {
+#ifdef _WIN32
 	int i;
 	ogPlayerInfo* p;
 
@@ -738,10 +751,12 @@ void hsOnlineSetup(void)
 
 //	if(mchPBEM_CurPlayer == -1)
 //		mchPBEM_CurPlayer = 0;
+#endif
 }
 
 void cdCheck(char* f0,char* f1)
 {
+#ifdef _WIN32
 	char* str = new char[MAX_PATH];
 	char* label = new char[64];
 	char* system = new char[64];
@@ -772,4 +787,5 @@ void cdCheck(char* f0,char* f1)
 	delete str;
 	delete label;
 	delete system;
+#endif
 }

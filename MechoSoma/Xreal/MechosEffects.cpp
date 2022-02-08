@@ -3,7 +3,7 @@
 #include "Mechos.h"
 #include "MechosPrm.h"
 #include "sound.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //			Effects
@@ -11,22 +11,22 @@
 EffectData Mechos::effect_data[EffectsMax] = 
 {
 	EffectData(0, "main", EffectData::Cycled), 
-	EffectData(1000, "no", EffectData::Forward, EFF_ANIMATION_1_BACK), // "HugeAcceleration", // Сильное ускорение после наезда на специальные споты: одноразовая анимация.
-	EffectData(1000, "no", EffectData::Forward), // "Landing", // Приземление после долгого полета: одноразовая анимация.
-	EffectData(1000, "no", EffectData::Cycled), // "SpringBoardFly", // Свободный продолжительный полет после трамплина: зацикленная анимация.
-	EffectData(main_period, "main", EffectData::Forward), // "Resting", // Cпокойное состоянии: периодически возникающая анимация.
-	EffectData(outstrip_period, "exult", EffectData::Forward, EFF_ANIMATION_1_OUTRUN), // "OutstripTheNeighbour", // Обгон соперника (суматоху на старте не учитывать): одноразовая анимация, раньше была "outstrip"
-	EffectData(sadness_period, "sadness", EffectData::Forward, EFF_ANIMATION_1_OUTDRIVEN), // "OutstrippedByNeighbour", // Обгон соперником (суматоху на старте не учитывать): одноразовая анимация.
-	EffectData(1000, "no", EffectData::Forward), // "Collision", // Столкновение с соперником: одноразовая анимация.
-	EffectData(sadness_period, "sadness", EffectData::Forward, EFF_ANIMATION_1_SADNESS), // "InfluenceOfArcane", // Действие чужого Аркана: несколько видов одноразовой анимации.
-	EffectData(exult_period, "exult", EffectData::Forward, EFF_ANIMATION_1_LUCKY), // "ExultEffect", // Ликование от попадания в соперника Арканом, успешное финиширование: одноразовая анимация.
-	EffectData(sadness_period, "sadness", EffectData::Forward), // "ObstacleAnnoying", // Раздражение от столкновения с препятствием-Арканом: одноразовая анимация.
-	EffectData(1000, "no", EffectData::Forward, EFF_ANIMATION_1_CHECKDROP), // "CheckPointOmission", // Пропуск чекпойнта: одноразовая анимация (оборачивается и кричит в камеру).
-	EffectData(2000, "no", EffectData::Cycled), // "FlyingByArcane", // Управляемый полет с помощью Аркана: зацикленная анимация (например, машет ручками).
-	EffectData(2000, "no", EffectData::Cycled), // "Swimming", // Плавание по воде: зацикленная анимация (например, переворачивается  как поплавок).
-	EffectData(hit_period, "hit", EffectData::ForwardThenBackwardThenForwardThenBackward, EFF_ANIMATION_1_CRUSH, hit_delay), // "StoneHit", // Падает камень на голову
+	EffectData(1000, "no", EffectData::Forward, EFF_ANIMATION_1_BACK), // "HugeAcceleration", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(1000, "no", EffectData::Forward), // "Landing", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(1000, "no", EffectData::Cycled), // "SpringBoardFly", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(main_period, "main", EffectData::Forward), // "Resting", // CпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(outstrip_period, "exult", EffectData::Forward, EFF_ANIMATION_1_OUTRUN), // "OutstripTheNeighbour", // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ): пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ "outstrip"
+	EffectData(sadness_period, "sadness", EffectData::Forward, EFF_ANIMATION_1_OUTDRIVEN), // "OutstrippedByNeighbour", // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ): пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(1000, "no", EffectData::Forward), // "Collision", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(sadness_period, "sadness", EffectData::Forward, EFF_ANIMATION_1_SADNESS), // "InfluenceOfArcane", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(exult_period, "exult", EffectData::Forward, EFF_ANIMATION_1_LUCKY), // "ExultEffect", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(sadness_period, "sadness", EffectData::Forward), // "ObstacleAnnoying", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+	EffectData(1000, "no", EffectData::Forward, EFF_ANIMATION_1_CHECKDROP), // "CheckPointOmission", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ).
+	EffectData(2000, "no", EffectData::Cycled), // "FlyingByArcane", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ).
+	EffectData(2000, "no", EffectData::Cycled), // "Swimming", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ).
+	EffectData(hit_period, "hit", EffectData::ForwardThenBackwardThenForwardThenBackward, EFF_ANIMATION_1_CRUSH, hit_delay), // "StoneHit", // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	EffectData(run_period, "run", EffectData::Cycled), // "RunToSeed", 
-	EffectData(exult_period, "exult", EffectData::Forward, EFF_ANIMATION_1_BONUS) // "BonusExultEffect", // Ликование от взятия бонуса
+	EffectData(exult_period, "exult", EffectData::Forward, EFF_ANIMATION_1_BONUS) // "BonusExultEffect", // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 };
 
 EffectData::EffectData(float period, char* channel, Mode mode_, int sound_, int delay_) 

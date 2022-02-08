@@ -2,10 +2,10 @@
 #include "Dispatcher.h"
 #include "Frame.h"
 
-int cVisGeneric::LoadObjectLibrary(char *fname)
+int cVisGeneric::LoadObjectLibrary(const std::filesystem::path &path)
 {
 	assert(Scene);
-	Scene->GetM3D()->LoadLib(fname);
+	Scene->GetM3D()->LoadLib(path);
 	return 0;
 }
 int cVisGeneric::FreeObjectLibrary(int kind,int type)
@@ -249,7 +249,7 @@ int cVisGeneric::ClearRenderObjectSwitch(int attribute)
 	return 0;
 }
 cUnknownClass* cVisGeneric::FindObjectByFileName(char *fname)
-{ // поиск объекта на миру по имени файла объекта
+{ // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if(fname==0||fname[0]==0) return 0;
 	return GetActiveScene()->GetM3D()->FindObjectByFileName(fname);
 }

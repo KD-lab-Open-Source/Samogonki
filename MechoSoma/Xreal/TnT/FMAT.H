@@ -13,14 +13,14 @@
 #ifndef FMAT_H
 #define FMAT_H
 
-#include "subscrpt.h"
-#include "vec.h"
+#include "SUBSCRPT.H"
+#include "VEC.H"
 #include <cstdlib>
 #include <cassert>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <strstream>
 #ifdef TNT_USE_REGIONS
-#include "region2d.h"
+#include "REGION2D.H"
 #endif
 
 // simple 1-based, column oriented Matrix class

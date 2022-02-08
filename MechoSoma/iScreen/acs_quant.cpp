@@ -2,9 +2,9 @@
 #include "StdAfx.h"
 
 #include "iText.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 
-#include "hfont.h"
+#include "HFONT.H"
 
 #include "arcane_menu.h"
 #include "arcane_menu_d3d.h"
@@ -17,16 +17,16 @@
 #include "parts_pool.h"
 #include "race.h"
 
-#include "aci_evnt.h"
-#include "aci_scr.h"
-#include "aci_ids.h"
+#include "ACI_EVNT.H"
+#include "ACI_SCR.H"
+#include "ACI_IDS.H"
 
-#include "keys.h"
+#include "KEYS.H"
 #include "sound.h"
 
-#include "xJoystick.h"
+#include "XJoystick.h"
 
-#include "Mechosoma.h"
+#include "mechosoma.h"
 
 #include "mch_common.h" // For far target
 #include "IGraph3d.h"
@@ -291,8 +291,8 @@ int acsDistRnd;
 acsScreenMatrix acsScr0;
 acsScreenMatrix acsScr1;
 
-char* mchIscreenINI = "RESOURCE\\ISCREEN\\iscreen.ini";
-char* mchLocalINI = "RESOURCE\\ISCREEN\\local.ini";
+char* mchIscreenINI = "RESOURCE/ISCREEN/iscreen.ini";
+char* mchLocalINI = "RESOURCE/ISCREEN/local.ini";
 
 acsTextureMosaic* acsTM = NULL;
 acsEssenceData** acsBody = NULL;
@@ -604,16 +604,17 @@ void mchA_OutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float
 	scale_x = (float)XGR_MAXX / 640.0f;
 	scale_y = (float)XGR_MAXY / 480.0f;
 
-	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsFont3D[ch],
-		&Vect3f(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc));
+	Vect3f v1(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc);
+	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsFont3D[ch],&v1);
 
 	rr = Vect3f(0,0,0);
 	r0 = Vect3f(x,y,z);
 
 	if(rr.norm() > 3.0f) rr.normalize(3.0f);
 
-	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsFont3D[ch],
-		&Vect3f(r0.x,r0.y,r0.z),&Vect3f(0,0,0));
+	Vect3f v2(r0.x,r0.y,r0.z);
+	Vect3f v3(0,0,0);
+	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsFont3D[ch],&v2,&v3);
 
 	if(mat_fl)
 		acsFont3D[ch] -> SetOrientation(mat);
@@ -634,8 +635,8 @@ void acsOutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float b
 	scale_x = (float)XGR_MAXX / 640.0f;
 	scale_y = (float)XGR_MAXY / 480.0f;
 
-	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsFont3D[ch],
-		&Vect3f(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc));
+	Vect3f v1(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc);
+	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsFont3D[ch],&v1);
 
 	rr = Vect3f(0,0,0);
 	r0 = Vect3f(x,y,z);
@@ -645,8 +646,9 @@ void acsOutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float b
 	if(rr.norm() > 3.0f) rr.normalize(3.0f);
 //	r0 += z0 * rr;
 
-	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsFont3D[ch],
-		&Vect3f(r0.x,r0.y,r0.z),&Vect3f(0,0,0));
+	Vect3f v2(r0.x,r0.y,r0.z);
+	Vect3f v3(0,0,0);
+	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsFont3D[ch],&v2,&v3);
 
 	if(z0 > 0.5f) z0 = 0.5f;
 	if(z0 < -0.5f) z0 = -0.5f;
@@ -773,7 +775,8 @@ void acsOutMouse3D(void)
 	x = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 	y = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
 
-	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsMouse3D,&Vect3f(acsMouseScale));
+	Vect3f v1(acsMouseScale);
+	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsMouse3D,&v1);
 
 	f = acsCalcForce(acsMouseZ - acsMouse3D -> rmaxTotal()/2.0f,acsMouseZ + acsMouse3D -> rmaxTotal()/2.0f,acsWaterZ);
 	acsMouseVz += f * acs_dT;
@@ -791,8 +794,9 @@ void acsOutMouse3D(void)
 	Vect3f r = getDist(target, pos);
 
 	Mat3f M = Mat3f(M_PI/2 + r.psi(), Z_AXIS)*Mat3f(r.theta(), X_AXIS);
-	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsMouse3D,
-		&Vect3f(x,y,acsMouseZ),&Vect3f(0,0,0));
+	Vect3f v2(x,y,acsMouseZ);
+	Vect3f v3(0,0,0);
+	gb_IVisGeneric -> SetObjectPosition((cUnknownClass*)acsMouse3D,&v2,&v3);
 	acsMouse3D -> SetOrientation(M);
 
 	BaseObject_SurfaceReflection_WaveWarp(acsMouse3D->x(),acsMouse3D->y(),acsMouse3D->z());
@@ -1776,15 +1780,20 @@ void acsExtSetCamera(int zbuf_flag)
 	acsCameraR.x = XGR_MAXX/2;
 	acsCameraR.y = XGR_MAXY/2;
 
-	gb_IVisGeneric->SetCameraPosition(iCamera,
-		&Vect3f(acsCameraR.x,acsCameraR.y,acsCameraR.z),
-		&Vect3f(acsCameraA.x,acsCameraA.y,acsCameraA.z));
+	Vect3f v1(acsCameraR.x,acsCameraR.y,acsCameraR.z);
+	Vect3f v2(acsCameraA.x,acsCameraA.y,acsCameraA.z);
+	gb_IVisGeneric->SetCameraPosition(iCamera,&v1,&v2);
+	Vect2f v3(0.5f,0.5f);
+	sRectangle4f r1(-0.499f,-0.499f,0.499f,0.499f);
+	Vect2f v4((float)acsCameraFocus/XGR_MAXX,(float)acsCameraFocus/XGR_MAXX);
+	Vect2f v5(10.0f,3000.0f);
+	Vect2f v6(0.0f,z);
 	gb_IVisGeneric->SetCameraFrustum(iCamera,	// ��������������� �������� ���������
-		&Vect2f(0.5f,0.5f),						// ����� ������
-		&sRectangle4f(-0.499f,-0.499f,0.499f,0.499f),	// ������� ������� ������
-		&Vect2f((float)acsCameraFocus/XGR_MAXX,(float)acsCameraFocus/XGR_MAXX),// ����� ������
-		&Vect2f(10.0f,3000.0f),					// ��������� � ������� z-��������� ���������
-		&Vect2f(0.0f,z));						// zNear � zFar ��� ����������� � zBuffer
+		&v3,						// ����� ������
+		&r1,	// ������� ������� ������
+		&v4,// ����� ������
+		&v5,					// ��������� � ������� z-��������� ���������
+		&v6);						// zNear � zFar ��� ����������� � zBuffer
 	if(acsCameraPerspective) gb_IVisGeneric->SetCameraAttribute(iCamera,ATTRIBUTE_CAMERA_PERSPECTIVE);
 	else gb_IVisGeneric->ClearCameraAttribute(iCamera,ATTRIBUTE_CAMERA_PERSPECTIVE);
 }
@@ -1898,8 +1907,8 @@ void acsInitShop(int pl)
 	acsShopPlayer = pl;
 	acsMechos = new MechosForSale(hsPlayers[acsShopPlayer].configStr,Vect3f(x,y,80));
 
-	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsMechos -> getGeometry(),
-		&Vect3f(SHOP_MECH_SCALE * mchA_d3dResX));
+	Vect3f v1(SHOP_MECH_SCALE * mchA_d3dResX);
+	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsMechos -> getGeometry(),&v1);
 
 	acsMechos -> rotate(1,0);
 	acsMechos -> rotate(-1,0);

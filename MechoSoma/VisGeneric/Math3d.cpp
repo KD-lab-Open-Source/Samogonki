@@ -2,7 +2,7 @@
 #include "Maths.h"
 #include "math.h"
 
-inline void GetNormal(float *v1,float *v2,float *v3,float *Normal)
+void GetNormal(float *v1,float *v2,float *v3,float *Normal)
 {
 	float	mx=v3[0]-v1[0],	my=v3[1]-v1[1],	mz=v3[2]-v1[2],
 			nx=v2[0]-v1[0],	ny=v2[1]-v1[1],	nz=v2[2]-v1[2],

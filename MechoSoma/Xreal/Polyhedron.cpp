@@ -1,8 +1,10 @@
+#include <unordered_map>
+
 #include "StdAfx.h"
 #include "Polyhedron.h"
 #include "Mesh3ds.h"
 #include "Xreal_utl.h"
-#include "Mechosoma.h"
+#include "mechosoma.h"
 
 template<>
 struct hash<const Vertex*> {
@@ -11,7 +13,7 @@ struct hash<const Vertex*> {
 
 Polyhedron::Polyhedron(const Polyhedron& poly, const Vect3f& scale, const Vect3f& displace)
 {
-	hash_map<const Vertex*, Vertex*> indexedVerts(poly.verts().size()*2);
+	std::unordered_map<const Vertex*, Vertex*> indexedVerts(poly.verts().size()*2);
 	list<Vertex>::const_iterator vi;
 	FOR_EACH(poly.verts(), vi)
 		indexedVerts[&*vi] = addVertex(vi -> name(), vi -> coords()*scale + displace );
@@ -48,7 +50,7 @@ static inline void quantize(Vect3f& v, float eps)
 
 void Polyhedron::setMesh(cMesh& mesh, int recursive)
 {
-	string name = mesh.GetFileName() ? mesh.GetFileName() : mesh.GetGeneralParent() -> GetFileName();
+	string name = mesh.GetFileName() ? mesh.GetFileName().ptr() : mesh.GetGeneralParent() -> GetFileName().ptr();
 	int dot_pos = name.find(".");
 	int slash_pos = name.rfind("\\", dot_pos);
 	name.replace(dot_pos, 4, recursive ? string(".hul") : string("_") + string(mesh.GetName()) + ".hul");
@@ -156,7 +158,7 @@ void Polyhedron::load(const char* fname, const Vect3f& scale)
 	
 	int n_verts;
 	in > n_verts;
-	hash_map<int, Vertex*> indexedVerts(n_verts);
+	std::unordered_map<int, Vertex*> indexedVerts(n_verts);
 	char name_buf[256];
 	Vect3f coords;
 	int i;

@@ -29,7 +29,7 @@ struct FirePoint : Vect3f {
 	};
 };
 
-void fxlabCannonFire(Vect3f& pos,Vect3f& vel,float pow);
+void fxlabCannonFire(const Vect3f& pos,Vect3f& vel,float pow);
 
 struct CannonPoint : FirePoint
 {
@@ -49,7 +49,8 @@ struct CannonPoint : FirePoint
 			bodyPose.xformVect(direction, d);
 			CYCLE(v);
 
-			fxlabCannonFire(v,d*(4 + fabsRnd(4)),2000);
+			Vect3f v1(d*(4 + fabsRnd(4)));
+			fxlabCannonFire(v,v1,2000);
 		};
 	};
 };

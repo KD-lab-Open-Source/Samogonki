@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 
-#include "terra.h"
+#include "TERRA.H"
 #include "tgai.h"
 //#include "vmap.h"
 //#include "world.h"
 //#include "render.h"
 //#include "color.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #ifdef _SURMAP_
 #include "common.h"
 #include "sqint.h"
@@ -31,7 +31,7 @@ unsigned int sin_GM[2][512*3];
 s_terra terra;
 
 int h_l=160;
-//const  h_l=120; //интенсивность 255 // 1/2 - 180
+//const  h_l=120; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 255 // 1/2 - 180
 int d_x=4;
 int d_xw=8;
 int delta_s;
@@ -557,11 +557,11 @@ void GeoSetZone(int x,int y,int rad,int level,int delta)
 			GeoPoint((x + xx[j]) & clip_mask_x,(y + yy[j]) & clip_mask_y,level,delta,0);
 		}
 
-	GeoPoint(0,0,level,delta,2);//здесь дельта и левел нобходимы для правильного масштабирования по измененной поверхности
+	GeoPoint(0,0,level,delta,2);//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 #endif
 
-void pixSet(int x,int y,int delta,int terrain)//В заголовочнике terrain по умолчанию -1
+void pixSet(int x,int y,int delta,int terrain)//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ terrain пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ -1
 {
 ////	if(!delta) return;
 	x=XCYCL(x);
@@ -608,7 +608,7 @@ void pixSet(int x,int y,int delta,int terrain)//В заголовочнике terrain по умолч
 #endif
 	if (terrain!=-1) SetTer(x,y,terrain%TERRAIN_MAX);
 
-// ПРоверка на воду 
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ 
 	if(h < vMap->LevelH2O ){
 		if (GetW(XCYCL(x-1),y)>0 || GetW(XCYCL(x+1),y)>0 || GetW(x,y)>0 || GetW(x,YCYCL(y-1))>0 || GetW(x,YCYCL(y+1))>0 ) SetW(x,y);
 	}
@@ -641,7 +641,7 @@ void RenderRegStr(int Yh,int Yd)
 	while (i!=j)
 	{
 		RenderStr(i);
-		i=YCYCL(++i); // РАЗНИЦА МЕЖДУ i++ ++i тут ОГРОМНАЯ (2048 не зацикливается)
+		i=YCYCL(++i); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ i++ ++i пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (2048 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	}
 }
 
@@ -660,10 +660,10 @@ void RenderPrepare1(void)
 	h_l1=h_l; 
 //	k=h_l1/(sqrt(257*257-h_l1*h_l1));
 //	delta_s=round(k*256)*fraction;
-	k=h_l1/(sqrt((double)257*257-h_l1*h_l1)); // k -это tg угла падения света
+	k=h_l1/(sqrt((double)257*257-h_l1*h_l1)); // k -пїЅпїЅпїЅ tg пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	delta_s=round(k*(1<<8)*(1<<VX_FRACTION)); 
 
-	//Расчет суши
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	for(i=0;i<TERRAIN_MAX;i++){
 		h_l1=h_l; 
 		d_x=terra.d_x[0][i];
@@ -687,7 +687,7 @@ void RenderPrepare1(void)
 		}*/
 
 	}
-	//расчет дна
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 //	h_l=200;
 /*	for(i=0;i<TERRAIN_MAX;i++){
 		h_l1=h_l;
@@ -719,7 +719,7 @@ void RenderStr(int Y)
 
 		int i=XS_Buf-1;
 //		int j=XS_Buf+((delta_s>>8)*256)+1;
-		int j=XS_Buf+( 1024*(1<<VX_FRACTION)*(1<<8)/delta_s )+1; //1024 -Максимальная высота для которой высчитывается запас тени
+		int j=XS_Buf+( 1024*(1<<VX_FRACTION)*(1<<8)/delta_s )+1; //1024 -пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 		Vr = vMap -> VxBuf[0][Y][0];
 
 		for(j;j>=0;j--){ //,pvh--,pvd--
@@ -823,7 +823,7 @@ void RenderPrepare1(void)
 	h_l1=h_l; 
 	k=h_l1/(sqrt(257*257-h_l1*h_l1));
 	delta_s=round(k*65536*2);
-	//Расчет суши
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	for(i=0;i<TERRAIN_MAX;i++){
 		h_l1=h_l; 
 		d_x=terra.d_x[0][i];
@@ -846,7 +846,7 @@ void RenderPrepare1(void)
 		}
 
 	}
-	//расчет дна
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 //	h_l=200;
 	for(i=0;i<TERRAIN_MAX;i++){
 		h_l1=h_l;
@@ -864,7 +864,7 @@ void RenderPrepare1(void)
 
 }
 
-//Для мехосомы с фиксированной высотой воды
+//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 void RenderStr(int Y)
 {
 	Y=YCYCL(Y);
@@ -1024,7 +1024,7 @@ void RenderShadovM3D(int number, float y)
 
 
 #if defined(_OLDSURMAP_)
-//Рендер от точечных источников
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 inline int radiusL(int j, int i){
 	return 4-XRnd(8)+(int)sqrt(j*j+i*i);
@@ -1048,18 +1048,18 @@ unsigned char (*vidBufR)[YS_Buf][XS_Buf];
 unsigned char (*vidBufG)[YS_Buf][XS_Buf];
 unsigned char (*vidBufB)[YS_Buf][XS_Buf];
 
-	int begOffLight=10<<16;	// Начальное смещение угла яркости ~~ 10-20 <<16
-	int dOffLight=2<<10;	// delta уменьшения яркости 1-я       2<<10
-	int minOffLight= -20<<16;	// Минимальное смещение угла яркости 
-	double begDelta_s=5;		//Начальная величена уменьшения тени 5
-	double dDelta_s=0.015;		// delta уменьшения тени             0.015
-	double minDelta_s=0.5;		// Минимальная величена уменьшения тени 0.5
-	int begLight=0;			// Начальная освещенность источника
-	int dLight=1<<12;		// delta уменьшения яркости 2-я 1<<12
+	int begOffLight=10<<16;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ~~ 10-20 <<16
+	int dOffLight=2<<10;	// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1-пїЅ       2<<10
+	int minOffLight= -20<<16;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	double begDelta_s=5;		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 5
+	double dDelta_s=0.015;		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ             0.015
+	double minDelta_s=0.5;		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 0.5
+	int begLight=0;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	int dLight=1<<12;		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2-пїЅ 1<<12
 
-	int minLightForShadow=0; //Освещенность при которой уже не отбрасывается тень 
+	int minLightForShadow=0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 
-	double tgAnglLight[XS_Buf];//На самом деле надо sqrt(XS_Buf*XS_Buf/2/2 + YS_Buf*YS_Buf/2/2)=1450
+	double tgAnglLight[XS_Buf];//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ sqrt(XS_Buf*XS_Buf/2/2 + YS_Buf*YS_Buf/2/2)=1450
 
 	//short CLSlight[256];
 	unsigned char CLSlightR[256];
@@ -1090,14 +1090,14 @@ void RenderShadowM3DPLold(int xL, int yL, int zL)
 
 			int cmpx=H_SIZE; cmpx=(cmpx>>1);
 			int cmpy=V_SIZE; cmpy=(cmpy>>1);
-			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //Расцикливание по источнику
+			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if(dyL<-cmpy) dyL+=V_SIZE; if(dyL>cmpy)dyL-=V_SIZE;
 
 			double LLight=sqrt((dxL)*(dxL)+(dyL)*(dyL) );
 			float f_dzx=1/tgAnglLight[round(LLight)];
 			DrawMeshShade(&Sh,xL,yL,f_dzx);
 			//int dxS=Sh.x-xL,dyS=Sh.y-yL;
-			//if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //Расцикливание по источнику
+			//if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			//if(dyS<-cmpy) dyS+=V_SIZE; if(dyS>cmpy)dyS-=V_SIZE;
 			//int LSh=sqrt((dxS)*(dxS)+(dyS)*(dyS) );
 			float dshx=(dxL)/LLight;
@@ -1116,7 +1116,7 @@ void RenderShadowM3DPLold(int xL, int yL, int zL)
 				v=GetAlt(XCYCL(round(Sh.x+dshx*stl+dshy*j)),YCYCL(round(Sh.y+dshy*stl-dshx*j)));
 				//f_dzx=1/tgAnglLight[LSh+stl];
 				int xshade=round((stl)-(Sh.z-v)*f_dzx);
-				while( xshade<Sh.xShade )//или cmpy т.е. 1/2 карты
+				while( xshade<Sh.xShade )//пїЅпїЅпїЅ cmpy пїЅ.пїЅ. 1/2 пїЅпїЅпїЅпїЅпїЅ
 				{
 					if( (xshade>0)&&(shadeBuf[xshade]>= v)) {
 						SetAt(XCYCL(round(Sh.x+dshx*stl+dshy*j)),YCYCL(round(Sh.y+dshy*stl-dshx*j)),At_SHADOWS); //*(pc0+x_cycl)>>=1;
@@ -1137,10 +1137,10 @@ void RenderShadowM3DPLold(int xL, int yL, int zL)
 }
 
 
-void RenderShadowM3DPL(int xL, int yL, int zL) //Не исправленные баги тени:
-{											// 1.тень шире из-за трассировки || лучами
-											// 2.Расстояние до тени считается до левого угла битмапа,
-											// а надо до центра
+void RenderShadowM3DPL(int xL, int yL, int zL) //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:
+{											// 1.пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ || пїЅпїЅпїЅпїЅпїЅпїЅ
+											// 2.пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ,
+											// пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	cMesh *Mesh=M3D->First();
 	while(Mesh)
 	{
@@ -1154,7 +1154,7 @@ void RenderShadowM3DPL(int xL, int yL, int zL) //Не исправленные баги тени:
 
 			int cmpx=H_SIZE; cmpx=(cmpx>>1);
 			int cmpy=V_SIZE; cmpy=(cmpy>>1);
-			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //Расцикливание по источнику
+			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if(dyL<-cmpy) dyL+=V_SIZE; if(dyL>cmpy)dyL-=V_SIZE;
 
 			double LLight=sqrt((dxL)*(dxL)+(dyL)*(dyL) );
@@ -1164,7 +1164,7 @@ void RenderShadowM3DPL(int xL, int yL, int zL) //Не исправленные баги тени:
 			DrawMeshShade(&Sh,xL,yL,f_dzx);
 
 			int dxS=Sh.x-xL,dyS=Sh.y-yL;
-			if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //Расцикливание по источнику
+			if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if(dyS<-cmpy) dyS+=V_SIZE; if(dyS>cmpy)dyS-=V_SIZE;
 			int LSh=sqrt((dxS)*(dxS)+(dyS)*(dyS) );
 			double dshx=(dxL)/LLight;
@@ -1184,7 +1184,7 @@ void RenderShadowM3DPL(int xL, int yL, int zL) //Не исправленные баги тени:
 				//f_dzx=1/tgAnglLight[LSh+stl];
 				f_dzx=(double)(LSh+stl)/(hLight-v);
 				int xshade=round((stl)-(Sh.z-v)*f_dzx);
-				while( xshade>0 )//или cmpy т.е. 1/2 карты
+				while( xshade>0 )//пїЅпїЅпїЅ cmpy пїЅ.пїЅ. 1/2 пїЅпїЅпїЅпїЅпїЅ
 				{
 					if( (xshade<Sh.xShade)&&(shadeBuf[xshade]> v)&&((LSh+stl)<cmpx) ) { // 
 						SetAt(XCYCL(round(Sh.x+dshx*stl+dshy*j)),YCYCL(round(Sh.y+dshy*stl-dshx*j)),At_SHADOWS); //*(pc0+x_cycl)>>=1;
@@ -1215,7 +1215,7 @@ void clearShBit()
 
 void renderHiBmp(int num_track)
 {
-	//Открытие Скрипта скрипта
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	XBuffer buft;
 	char tmpstr[10];
 	buft < "SLight" < itoa(num_track%10,tmpstr,10) < ".sst";
@@ -1224,7 +1224,7 @@ void renderHiBmp(int num_track)
 
 	minLightForShadow =8;
 	int i,j;
-	//Конвер палитры в Try Color
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Try Color
 	double dr,dg,db;
 	for(i=0; i<32; i++){
 		dr=(double)( (((vMap ->TrPal[i][200]>>11)&0x1f)<<3) - (((vMap ->TrPal[i][0]>>11)&0x1f)<<3) )/200;
@@ -1260,7 +1260,7 @@ void renderHiBmp(int num_track)
 	vidBufB= new unsigned char [1][YS_Buf][XS_Buf];
 	tempG=new short[1][YS_Buf][XS_Buf];
 	tempV=new short[1][YS_Buf][XS_Buf];
-	//Перемещение поверхности под водой на воксельную карту
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<V_SIZE; i++){
 		for(j=0; j<H_SIZE; j++){
 			if(vMap->AtBuf[0][i][j] & At_WATER){
@@ -1270,8 +1270,8 @@ void renderHiBmp(int num_track)
 			}
 		}
 	}
-	//Создание нормалей горизонтальных- вертикальных
-	for(i=0; i<V_SIZE; i++){ //Может быть оптимизировано
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	for(i=0; i<V_SIZE; i++){ //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		for(j=0; j<H_SIZE; j++){
 			unsigned char lxV,lxVh,lxVd,rxV,rxVh,rxVd,Vh,Vd;
 			unsigned char (*tV)[YS_Buf][XS_Buf]=vMap -> VxBuf;
@@ -1289,7 +1289,7 @@ void renderHiBmp(int num_track)
 			//256*3+lxVh+Vh+rxVh-lxVd-Vd-rxVd
 			//(*tempV)[i][j]=vMap -> VxBuf[0][YCYCL(i-1)][XCYCL(j-1)]+vMap -> VxBuf[0][YCYCL(i-1)][j]+vMap -> VxBuf[0][YCYCL(i-1)][XCYCL(j+1)]- vMap -> VxBuf[0][YCYCL(i+1)][XCYCL(j-1)]- vMap -> VxBuf[0][YCYCL(i+1)][j]- vMap -> VxBuf[0][YCYCL(i+1)][XCYCL(j+1)];
 			(*tempV)[i][j]=lxVh+Vh+rxVh-lxVd-Vd-rxVd;
-			//очистка ClTrBuf
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ClTrBuf
 			vMap -> ClTrBuf[0][i][j]=0;
 			(*vidBuf)[i][j]=0;
 			(*vidBufR)[i][j]=0;
@@ -1298,7 +1298,7 @@ void renderHiBmp(int num_track)
 			vMap -> AtBuf[0][i][j]&=~At_SHADOW;
 		}
 	}
-	//Перемещение поверхности обратно
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<V_SIZE; i++){
 		for(j=0; j<H_SIZE; j++){
 			if(vMap->AtBuf[0][i][j] & At_WATER){
@@ -1311,7 +1311,7 @@ void renderHiBmp(int num_track)
 
 	int t_x,t_y, t_r,t_g,t_b,t_a,t_dlinaTeni;
 	double t_begOffLight, t_dOffLight, t_minOffLight, t_begDelta_s, t_dDelta_s, t_minDelta_s, t_begLight, t_radius;//t_dLight,
-//Рендер источников без тени
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	for(i=0; i<sur_scr.numbers_cell; i++){
 		sur_scr.row[0].get_el(i,t_x);
 		sur_scr.row[1].get_el(i,t_y);
@@ -1329,15 +1329,15 @@ void renderHiBmp(int num_track)
 		sur_scr.row[12].get_el(i,t_b);
 		sur_scr.row[13].get_el(i,t_a);
 		sur_scr.row[14].get_el(i,t_dlinaTeni);
-//Глобальные переменные рендера
-	begOffLight=round(t_begOffLight*65536);	// Начальное смещение угла яркости ~~ 
-	dOffLight=	round(t_dOffLight*65536);	// delta уменьшения яркости 1-я 
-	minOffLight=round(t_minOffLight*65536);	// Минимальное смещение угла яркости 
-	begDelta_s=	255;		//Начальная величена уменьшения тени 
-	dDelta_s=	0; //t_dDelta_s;		// delta уменьшения тени
-	minDelta_s=	t_minDelta_s;		// Минимальная величена уменьшения тени
-	begLight=	round(t_begLight*65536);			// Начальная освещенность источника
-	dLight=		(255+t_begLight)*65536/t_radius;//round(t_dLight*65536);		// delta уменьшения яркости 2-я 1<<12
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	begOffLight=round(t_begOffLight*65536);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ~~ 
+	dOffLight=	round(t_dOffLight*65536);	// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1-пїЅ 
+	minOffLight=round(t_minOffLight*65536);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	begDelta_s=	255;		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
+	dDelta_s=	0; //t_dDelta_s;		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	minDelta_s=	t_minDelta_s;		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	begLight=	round(t_begLight*65536);			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	dLight=		(255+t_begLight)*65536/t_radius;//round(t_dLight*65536);		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2-пїЅ 1<<12
 
 	for(j=0; j<XS_Buf; j++) tgAnglLight[j]=255;
 
@@ -1345,14 +1345,14 @@ void renderHiBmp(int num_track)
 	double dcr,dcg,dcb;
 	dcr = (double) (t_r<<3)/256;
 	dcg = (double) (t_g<<2)/256;
-	dcb = (double) (t_b<<3)/256; // Палитра 565 !!!
+	dcb = (double) (t_b<<3)/256; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 565 !!!
 	for(j=0; j<256; j++) {
 		CLSlightR[j]= round(dcr*j);
 		CLSlightG[j]= round(dcg*j);
 		CLSlightB[j]= round(dcb*j);
 	}
 
-	CLSalpha=t_a<<(16-6);//Вычисление целочисленной альфы
+	CLSalpha=t_a<<(16-6);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	CLSalpha1=(63-t_a)<<(16-6);
 
 	render025HiBmp0(t_x,t_y);
@@ -1360,7 +1360,7 @@ void renderHiBmp(int num_track)
 	render025HiBmp2(t_x,t_y);
 	render025HiBmp3(t_x,t_y);
 	}
-	/////// Сложение итоговых источников с палитройповерхности карты
+	/////// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<YS_Buf; i++){ 
 		for(j=0; j<XS_Buf; j++){
 			int r,g,b;
@@ -1377,12 +1377,12 @@ void renderHiBmp(int num_track)
 		}
 	}
 
-//Запись HiColor битмапа, который без теней
+//пїЅпїЅпїЅпїЅпїЅпїЅ HiColor пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	TGAHEAD thead;
 	thead.save3layers(GetTargetName("outputnh.tga"),H_SIZE,V_SIZE,(unsigned char*)(*vidBufR),(unsigned char*)(*vidBufG),(unsigned char*)(*vidBufB) );
 
-//Очистка перед рендером
-	for(i=0; i<V_SIZE; i++){ //Может быть оптимизировано
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	for(i=0; i<V_SIZE; i++){ //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		for(j=0; j<H_SIZE; j++){
 			vMap -> ClTrBuf[0][i][j]=0;
 			(*vidBufR)[i][j]=0;
@@ -1392,7 +1392,7 @@ void renderHiBmp(int num_track)
 		}
 	}
 
-//Рендер источников с тенью
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<sur_scr.numbers_cell; i++){
 		sur_scr.row[0].get_el(i,t_x);
 		sur_scr.row[1].get_el(i,t_y);
@@ -1410,18 +1410,18 @@ void renderHiBmp(int num_track)
 		sur_scr.row[12].get_el(i,t_b);
 		sur_scr.row[13].get_el(i,t_a);
 		sur_scr.row[14].get_el(i,t_dlinaTeni);
-//Глобальные переменные рендера
-	begOffLight=round(t_begOffLight*65536);	// Начальное смещение угла яркости ~~ 
-	dOffLight=	round(t_dOffLight*65536);	// delta уменьшения яркости 1-я 
-	minOffLight=round(t_minOffLight*65536);	// Минимальное смещение угла яркости 
-	begDelta_s=	t_begDelta_s;		//Начальная величена уменьшения тени 
-	dDelta_s=	(double)t_dlinaTeni/1000; //t_dDelta_s;		// delta уменьшения тени
-	minDelta_s=	t_minDelta_s;		// Минимальная величена уменьшения тени
-	begLight=	round(t_begLight*65536);			// Начальная освещенность источника
-	dLight=		(255+t_begLight)*65536/t_radius;//round(t_dLight*65536);		// delta уменьшения яркости 2-я 1<<12
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	begOffLight=round(t_begOffLight*65536);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ~~ 
+	dOffLight=	round(t_dOffLight*65536);	// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1-пїЅ 
+	minOffLight=round(t_minOffLight*65536);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	begDelta_s=	t_begDelta_s;		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
+	dDelta_s=	(double)t_dlinaTeni/1000; //t_dDelta_s;		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	minDelta_s=	t_minDelta_s;		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	begLight=	round(t_begLight*65536);			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	dLight=		(255+t_begLight)*65536/t_radius;//round(t_dLight*65536);		// delta пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2-пїЅ 1<<12
 
 	if(t_dlinaTeni==0)minDelta_s=255;
-	for(j=0; j<XS_Buf; j++) { //На самом деле j< 1450
+	for(j=0; j<XS_Buf; j++) { //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ j< 1450
 		double ttg=(double)t_dlinaTeni/(1+j);
 		if(ttg<minDelta_s)ttg=minDelta_s;
 		tgAnglLight[j]=ttg;//round(ttg*65536);
@@ -1434,19 +1434,19 @@ void renderHiBmp(int num_track)
 //	double dcr,dcg,dcb;
 //	dcr = (double) t_r/256;
 //	dcg = (double) t_g/256;
-//	dcb = (double) t_b/256; // Палитра 565 !!!
+//	dcb = (double) t_b/256; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 565 !!!
 //	for(j=0; j<256; j++) CLSlight[j]= ((round(dcr*j)&0x1f)<<11) + ((round(dcg*j)&0x3f)<<5) + (round(dcb*j)&0x1f);
 	double dcr,dcg,dcb;
 	dcr = (double) (t_r<<3)/256;
 	dcg = (double) (t_g<<2)/256;
-	dcb = (double) (t_b<<3)/256; // Палитра 565 !!!
+	dcb = (double) (t_b<<3)/256; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 565 !!!
 	for(j=0; j<256; j++) {
 		CLSlightR[j]= round(dcr*j);
 		CLSlightG[j]= round(dcg*j);
 		CLSlightB[j]= round(dcb*j);
 	}
 
-	CLSalpha=t_a<<(16-6);//Вычисление целочисленной альфы
+	CLSalpha=t_a<<(16-6);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	CLSalpha1=(63-t_a)<<(16-6);
 
 	render025HiBmp0(t_x,t_y);
@@ -1457,7 +1457,7 @@ void renderHiBmp(int num_track)
 	}
 	thead.save3layers(GetTargetName("colormap.tga"),H_SIZE,V_SIZE,(unsigned char*)(*vidBufR),(unsigned char*)(*vidBufG),(unsigned char*)(*vidBufB) );
 	//thead.save3layers(GetTargetName("lightmap.tga"),H_SIZE,V_SIZE,(unsigned char*)(*(vMap -> ClTrBuf)),(unsigned char*)(*(vMap -> ClTrBuf)),(unsigned char*)(*(vMap -> ClTrBuf)) );
-	/////// Сложение итоговых источников с палитройповерхности карты
+	/////// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<YS_Buf; i++){ 
 		for(j=0; j<XS_Buf; j++){
 			int r,g,b;
@@ -1474,7 +1474,7 @@ void renderHiBmp(int num_track)
 		}
 	}
 
-	///// Запись HiColor bitmap-а
+	///// пїЅпїЅпїЅпїЅпїЅпїЅ HiColor bitmap-пїЅ
 	thead.save3layers(GetTargetName("output.tga"),H_SIZE,V_SIZE,(unsigned char*)(*vidBufR),(unsigned char*)(*vidBufG),(unsigned char*)(*vidBufB) );
 
 
@@ -1498,7 +1498,7 @@ void renderHiBmp(int num_track)
 	delete [] (tempG);
 	delete [] (tempV);
 	//delete [] (vidBuf);
-//	Компайр двух поверхностей
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	unsigned char (*vidBufR2)[YS_Buf][XS_Buf];
 	unsigned char (*vidBufG2)[YS_Buf][XS_Buf];
 	unsigned char (*vidBufB2)[YS_Buf][XS_Buf];
@@ -1559,11 +1559,11 @@ void render025HiBmp0(int xl, int yl)
 
 	int i,j;
 
-//Рендер от 1-го источника верхняя четверть
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	unsigned char *pc;
 	char type;
 	double d_bs=0;//int d_bs=0;
-	//int delta_s=15<<16; //Начальное значение убывания тени
+	//int delta_s=15<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	double delta_s=begDelta_s;
 	double dd_s=dDelta_s;
 	unsigned char V;
@@ -1576,7 +1576,7 @@ void render025HiBmp0(int xl, int yl)
 	int ddg=dOffLight; //2<<10
 	int Light=begLight;
 	//int dLight= 2<<12;
-//Очистка буверов тени 
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<H_SIZE; i++){ buf_shadow2[i]=buf_shadow1[i]=0;}
 
 
@@ -1635,13 +1635,13 @@ void render025HiBmp0(int xl, int yl)
 			l=((terra.light_front[0][type][ilf] * terra.light_sideways[0][type][ils] >>8) +terra.ambient_light[0][type]);
 			if (l > minLightForShadow){
 				if (s-tgAnglLight[dlina] > V+1) {
-//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //Что-бы тень на пересечении была посветлее
+//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //					else l=l>>1;
 					l=l>>1;
 					*(pa+off)|=At_SHADOWV;
 				}
 				else {
-					//Не тень(Воксельная)
+					//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 					s=V;
 					if (*(pa+off)&At_SHADOWS) {
 //						if(*(pa+off) & At_SHADOWV) l-=l>>2;
@@ -1693,11 +1693,11 @@ void render025HiBmp1(int xl, int yl)
 
 	int i,j;
 
-//Рендер от 1-го источника верхняя четверть
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	unsigned char *pc;
 	char type;
 	double d_bs=0;//int d_bs=0;
-	//int delta_s=15<<16; //Начальное значение убывания тени
+	//int delta_s=15<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	double delta_s=begDelta_s;
 	double dd_s=dDelta_s;
 	unsigned char V;
@@ -1710,7 +1710,7 @@ void render025HiBmp1(int xl, int yl)
 	int ddg=dOffLight; //2<<10
 	int Light=begLight;
 	//int dLight= 2<<12;
-//Очистка буверов тени 
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<H_SIZE; i++){ buf_shadow2[i]=buf_shadow1[i]=0;}
 
 
@@ -1765,13 +1765,13 @@ void render025HiBmp1(int xl, int yl)
 			l=((terra.light_front[0][type][ilf] * terra.light_sideways[0][type][ils] >>8) +terra.ambient_light[0][type]);
 			if (l > minLightForShadow){
 				if (s-tgAnglLight[dlina] > V+1) {
-//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //Что-бы тень на пересечении была посветлее
+//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //					else l=l>>1;
 					l=l>>1;
 					*(pa+off)|=At_SHADOWV;
 				}
 				else {
-					//Не тень(Воксельная)
+					//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 					s=V;
 					if (*(pa+off)&At_SHADOWS) {
 //						if(*(pa+off) & At_SHADOWV) l-=l>>2;
@@ -1823,11 +1823,11 @@ void render025HiBmp2(int xl, int yl)
 
 	int i,j;
 
-//Рендер от 1-го источника верхняя четверть
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	unsigned char *pc;
 	char type;
 	double d_bs=0;//int d_bs=0;
-	//int delta_s=15<<16; //Начальное значение убывания тени
+	//int delta_s=15<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	double delta_s=begDelta_s;
 	double dd_s=dDelta_s;
 	unsigned char V;
@@ -1840,7 +1840,7 @@ void render025HiBmp2(int xl, int yl)
 	int ddg=dOffLight; //2<<10
 	int Light=begLight;
 	//int dLight= 2<<12;
-//Очистка буверов тени 
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<H_SIZE; i++){ buf_shadow2[i]=buf_shadow1[i]=0;}
 
 
@@ -1895,13 +1895,13 @@ void render025HiBmp2(int xl, int yl)
 			l=((terra.light_front[0][type][ilf] * terra.light_sideways[0][type][ils] >>8) +terra.ambient_light[0][type]);
 			if (l > minLightForShadow){
 				if (s-tgAnglLight[dlina] > V+1) {
-//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //Что-бы тень на пересечении была посветлее
+//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //					else l=l>>1;
 					l=l>>1;
 					*(pa+off)|=At_SHADOWV;
 				}
 				else {
-					//Не тень(Воксельная)
+					//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 					s=V;
 					if (*(pa+off)&At_SHADOWS) {
 //						if(*(pa+off) & At_SHADOWV) l-=l>>2;
@@ -1953,11 +1953,11 @@ void render025HiBmp3(int xl, int yl)
 
 	int i,j;
 
-//Рендер от 1-го источника верхняя четверть
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 1-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	unsigned char *pc;
 	char type;
 	double d_bs=0;//int d_bs=0;
-	//int delta_s=15<<16; //Начальное значение убывания тени
+	//int delta_s=15<<16; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	double delta_s=begDelta_s;
 	double dd_s=dDelta_s;
 	unsigned char V;
@@ -1970,7 +1970,7 @@ void render025HiBmp3(int xl, int yl)
 	int ddg=dOffLight; //2<<10
 	int Light=begLight;
 	//int dLight= 2<<12;
-//Очистка буверов тени 
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<H_SIZE; i++){ buf_shadow2[i]=buf_shadow1[i]=0;}
 
 
@@ -2029,13 +2029,13 @@ void render025HiBmp3(int xl, int yl)
 			l=((terra.light_front[0][type][ilf] * terra.light_sideways[0][type][ils] >>8) +terra.ambient_light[0][type]);
 			if (l > minLightForShadow){
 				if (s-tgAnglLight[dlina] > V+1) {
-//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //Что-бы тень на пересечении была посветлее
+//					if(*(pa+off) & At_SHADOWV) l-=l>>2; //пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //					else l=l>>1;
 					l=l>>1;
 					*(pa+off)|=At_SHADOWV;
 				}
 				else {
-					//Не тень(Воксельная)
+					//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 					s=V;
 					if (*(pa+off)&At_SHADOWS) {
 //						if(*(pa+off) & At_SHADOWV) l-=l>>2;
@@ -2085,10 +2085,10 @@ void render025HiBmp3(int xl, int yl)
 #include "land.h"
 s_renderV renderV;
 
-void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не исправленные баги тени:
-{											// 1.тень шире из-за трассировки || лучами
-											// 2.Расстояние до тени считается до левого угла битмапа,
-											// а надо до центра
+void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:
+{											// 1.пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ || пїЅпїЅпїЅпїЅпїЅпїЅ
+											// 2.пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ,
+											// пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	extern cInterfaceVisGeneric *gb_IVisGeneric;
 	cM3D *M3D=(cM3D*)gb_IVisGeneric->GetM3D();
 	assert(M3D);
@@ -2096,7 +2096,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 	while(Mesh)
 	{
 		//if(IS_STATIC(Mesh->Type) && (Mesh->NumberTrack&STATIC_NUMBER) ) {
-		if( IS_STATIC(Mesh->Type) && (!(Mesh->Attribute&MESH_NOT_SHADE)) ) { //Первая проверка не обязательна т.к. Surmape нет не статических объектов
+		if( IS_STATIC(Mesh->Type) && (!(Mesh->Attribute&MESH_NOT_SHADE)) ) { //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ.пїЅ. Surmape пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 			cShadow Sh;
 			Sh.number=Mesh->ID;
@@ -2106,7 +2106,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 
 			int cmpx=H_SIZE; cmpx=(cmpx>>1);
 			int cmpy=V_SIZE; cmpy=(cmpy>>1);
-			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //Расцикливание по источнику
+			if(dxL<-cmpx) dxL+=H_SIZE; if(dxL>cmpx)dxL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if(dyL<-cmpy) dyL+=V_SIZE; if(dyL>cmpy)dyL-=V_SIZE;
 
 			double LLight=sqrt((dxL)*(dxL)+(dyL)*(dyL) );
@@ -2116,7 +2116,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 			DrawMeshShade(&Sh,xL,yL,f_dzx,RadiusL);
 
 			int dxS=Sh.x-xL,dyS=Sh.y-yL;
-			if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //Расцикливание по источнику
+			if(dxS<-cmpx) dxS+=H_SIZE; if(dxS>cmpx)dxS-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if(dyS<-cmpy) dyS+=V_SIZE; if(dyS>cmpy)dyS-=V_SIZE;
 			int LSh=sqrt((dxS)*(dxS)+(dyS)*(dyS) );
 			double dshx=(dxL)/LLight;
@@ -2136,7 +2136,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 				//f_dzx=1/tgAnglLight[LSh+stl];
 				f_dzx=(double)(LSh+stl)/(zL-v);
 				int xshade=round((stl)-(Sh.z-v)*f_dzx);
-				while( xshade>0 )//или cmpy т.е. 1/2 карты
+				while( xshade>0 )//пїЅпїЅпїЅ cmpy пїЅ.пїЅ. 1/2 пїЅпїЅпїЅпїЅпїЅ
 				{
 					if( (xshade<Sh.xShade)&&(shadeBuf[xshade]> v)&&((LSh+stl)<cmpx) ) { // 
 						SetAt(XCYCL(round(Sh.x+dshx*stl+dshy*j)),YCYCL(round(Sh.y+dshy*stl-dshx*j)),At_SHADOWV); //*(pc0+x_cycl)>>=1;
@@ -2151,7 +2151,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 			}*/
 
 
-/*			{	//Показ границ и самого битмапа тени, для отладки
+/*			{	//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				for (int j=0;j<Sh.yShade;j++,shadeBuf+=Sh.xShade)   {
 					for (int i=0;i<Sh.xShade;i++)  {
 					
@@ -2160,12 +2160,12 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 					}
 				}
 			}*/
-			int xBitC=round(Sh.x+dshx*Sh.xShade/2+dshy*Sh.yShade/2);//Координаты центра битмапа
+			int xBitC=round(Sh.x+dshx*Sh.xShade/2+dshy*Sh.yShade/2);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			int yBitC=round(Sh.y+dshy*Sh.xShade/2-dshx*Sh.yShade/2);
 
 			int dxSC=xBitC-xL,dySC=yBitC-yL;
-			if(dxSC<-cmpx) dxSC+=H_SIZE; if(dxSC>cmpx)dxSC-=H_SIZE; //Расцикливание по источнику расстояния 
-			if(dySC<-cmpy) dySC+=V_SIZE; if(dySC>cmpy)dySC-=V_SIZE; //от источника до центра тени
+			if(dxSC<-cmpx) dxSC+=H_SIZE; if(dxSC>cmpx)dxSC-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+			if(dySC<-cmpy) dySC+=V_SIZE; if(dySC>cmpy)dySC-=V_SIZE; //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
 			int Rlb=sqrt((double)(dxSC*dxSC)+(double)(dySC*dySC));
 			float cosPovK,sinPovK;
@@ -2180,7 +2180,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 			int boundYL=-Sh.yShade/2;
 			int boundYR=+Sh.yShade/2;
 
-			//Расчет наиболее близкой точки которая может быть при высоте поверхности 1024
+			//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1024
 			//int ddl=(Rlb-Sh.xShade/2);
 			//float ctgT;
 			//if(zL>0)ctgT=(float)ddl/(float)zL;
@@ -2193,25 +2193,25 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 			x[0]=(round(Sh.x+dshx*dl+dshy*0)), y[0]=(round(Sh.y+dshy*dl-dshx*0));
 			x[1]=(round(Sh.x+dshx*dl+dshy*Sh.yShade)), y[1]=(round(Sh.y+dshy*dl-dshx*Sh.yShade));
 			//if(Sh.number==10){ 
-			//	int a=0; //Для остановки при отладке на определенной модели
+			//	int a=0; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			//}
 			x[2]=(round(Sh.x+dshx*Sh.xShade+dshy*0)), y[2]=(round(Sh.y+dshy*Sh.xShade-dshx*0));
 			x[3]=(round(Sh.x+dshx*Sh.xShade+dshy*Sh.yShade)), y[3]=(round(Sh.y+dshy*Sh.xShade-dshx*Sh.yShade));
 			int i,t;
-			//В нулевую ячейку помещаем самую верхнюю вешину
+			//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			for(i=1; i<4; i++) if(y[0]>y[i]) { t=x[0]; x[0]=x[i]; x[i]=t; t=y[0]; y[0]=y[i]; y[i]=t;}
-			//В первую ячейку помещаем самую нижнию вешину
+			//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			for(i=2; i<4; i++) if(y[1]<y[i]) { t=x[1]; x[1]=x[i]; x[i]=t; t=y[1]; y[1]=y[i]; y[i]=t;}
-			//Во вторую ячейку помещаем самую верхнюю из оставшихся вешину 
+			//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 			if(y[2]>y[3]) { t=x[2]; x[2]=x[3]; x[3]=t; t=y[2]; y[2]=y[3]; y[3]=t;}
-			//В третьей остается самая низшая из оставшихся вершин
+			//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			int dx02,dx03,dx21,dx31;
-			int curXl=(x[0]<<16)+(1<<15),curXr=(x[0]<<16)+(1<<15); //Левая и правая границы четырехугольника
+			int curXl=(x[0]<<16)+(1<<15),curXr=(x[0]<<16)+(1<<15); //пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			int X=x[0], Y=y[0];
 			int dxl,dxr;
-			//Теперь 3 этапа заполнения четырехугольника 
-			//1-й от 0 до 2-й вершины
-			if((y[2]-y[0]) >0){ // само собой (y[3]-y[0]) >0
+			//пїЅпїЅпїЅпїЅпїЅпїЅ 3 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+			//1-пїЅ пїЅпїЅ 0 пїЅпїЅ 2-пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			if((y[2]-y[0]) >0){ // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (y[3]-y[0]) >0
 				dx02=((x[0]-x[2]<<16) ) / (y[2]-y[0]); //+(1<<15)
 				dx03=((x[0]-x[3]<<16) ) / (y[3]-y[0]); //+(1<<15)
 				if(dx02>dx03){ dxl=dx02; dxr=dx03;}
@@ -2221,8 +2221,8 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 
 						int V=GetAlt(XCYCL(X),YCYCL(Y))>>SHIFT_FRACTION_VX;
 						int dxSL=(X-xL), dySL=(Y-yL);
-						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //Расцикливание по источнику расстояния 
-						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //от источника до точки
+						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 						float L=sqrt(dxSL*dxSL+ dySL*dySL);
 						float ddxSL,ddySL;
 						if(L>0) { ddxSL=dxSL/L; ddySL=dySL/L; }
@@ -2234,7 +2234,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 						float ys=dySL + dL*ddySL;
 						int xns=round(xs*cosPovK + ys*sinPovK);
 						int yns=round(xs*sinPovK - ys*cosPovK);
-						//извлечение из тени и проверка по Z буферу
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z пїЅпїЅпїЅпїЅпїЅпїЅ
 						if( (xns > boundXL) && (xns< boundXR) && (yns>boundYL) && (yns<boundYR) ){
 							if (Sh.shade[(xns-boundXL)+((yns+boundYR)*Sh.xShade)]>V )
 								SetAt(XCYCL(X),YCYCL(Y),At_SHADOWV);
@@ -2245,19 +2245,19 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 					curXl-=dxl; curXr-=dxr;
 				}
 			}
-			//2-й от 2 до 3-й вершины
-			if((y[3]-y[2]) >0){ // само собой (y[1]-y[2])>0
+			//2-пїЅ пїЅпїЅ 2 пїЅпїЅ 3-пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			if((y[3]-y[2]) >0){ // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (y[1]-y[2])>0
 				dx21=((x[2]-x[1]<<16) ) / (y[1]-y[2]); //+(1<<15)
-				dx03=((x[0]-x[3]<<16) ) / (y[3]-y[0]);//Повтор вместо условия //+(1<<15)
-				if(dx02>dx03){ dxl=dx21; dxr=dx03; curXl=x[2]<<16+(1<<15);} //Определение с какой стороны 2и 3я вершины; и 
-				else { dxl=dx03; dxr=dx21; curXr=x[2]<<16+(1<<15); }		// коррекция curXr(curXl) чтобыне накапливалась ошибка
+				dx03=((x[0]-x[3]<<16) ) / (y[3]-y[0]);//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ //+(1<<15)
+				if(dx02>dx03){ dxl=dx21; dxr=dx03; curXl=x[2]<<16+(1<<15);} //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2пїЅ 3пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ; пїЅ 
+				else { dxl=dx03; dxr=dx21; curXr=x[2]<<16+(1<<15); }		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ curXr(curXl) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				for (Y; Y<=y[3]; Y++){
 					for(X=(curXl>>16); X<=(curXr>>16); X++){
 						//SetAt(XCYCL(X),YCYCL(Y),At_SHADOWV);
 						int V=GetAlt(XCYCL(X),YCYCL(Y))>>SHIFT_FRACTION_VX;
 						int dxSL=(X-xL), dySL=(Y-yL);
-						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //Расцикливание по источнику расстояния 
-						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //от источника до точки
+						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 						float L=sqrt(dxSL*dxSL+ dySL*dySL);
 						float ddxSL,ddySL;
 						if(L>0) { ddxSL=dxSL/L; ddySL=dySL/L; }
@@ -2269,7 +2269,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 						float ys=dySL + dL*ddySL;
 						int xns=round(xs*cosPovK + ys*sinPovK);
 						int yns=round(xs*sinPovK - ys*cosPovK);
-						//извлечение из тени и проверка по Z буферу
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z пїЅпїЅпїЅпїЅпїЅпїЅ
 						if( (xns > boundXL) && (xns< boundXR) && (yns>boundYL) && (yns<boundYR) ){
 							if (Sh.shade[(xns-boundXL)+((yns+boundYR)*Sh.xShade)]>V )
 								SetAt(XCYCL(X),YCYCL(Y),At_SHADOWV);
@@ -2278,10 +2278,10 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 					curXl-=dxl; curXr-=dxr;
 				}
 			}
-			//3-й от 3 до 1-ой вершины
-			if((y[1]-y[3]) >0){ // само собой (y[1]-y[2])>0
+			//3-пїЅ пїЅпїЅ 3 пїЅпїЅ 1-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			if((y[1]-y[3]) >0){ // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (y[1]-y[2])>0
 				dx21=((x[2]-x[1]<<16) ) / (y[1]-y[2]);//+(1<<15)
-				dx31=((x[3]-x[1]<<16) ) / (y[1]-y[3]);//Повтор вместо условия //+(1<<15)
+				dx31=((x[3]-x[1]<<16) ) / (y[1]-y[3]);//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ //+(1<<15)
 				if(dx02>dx03){ dxl=dx21; dxr=dx31; curXr=x[3]<<16+(1<<15);}
 				else { dxl=dx31; dxr=dx21; curXl=x[3]<<16+(1<<15);}
 				for (Y; Y<=y[1]; Y++){
@@ -2289,8 +2289,8 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 						//SetAt(XCYCL(X),YCYCL(Y),At_SHADOWV);
 						int V=GetAlt(XCYCL(X),YCYCL(Y))>>SHIFT_FRACTION_VX;
 						int dxSL=(X-xL), dySL=(Y-yL);
-						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //Расцикливание по источнику расстояния 
-						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //от источника до точки
+						if(dxSL<-cmpx) dxSL+=H_SIZE; if(dxSL>cmpx)dxSL-=H_SIZE; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+						if(dySL<-cmpy) dySL+=V_SIZE; if(dySL>cmpy)dySL-=V_SIZE; //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 						float L=sqrt(dxSL*dxSL+ dySL*dySL);
 						float ddxSL,ddySL;
 						if(L>0) { ddxSL=dxSL/L; ddySL=dySL/L; }
@@ -2302,7 +2302,7 @@ void s_renderV::RenderShadowM3DPL(int xL, int yL, int zL, int RadiusL) //Не испр
 						float ys=dySL + dL*ddySL;
 						int xns=round(xs*cosPovK + ys*sinPovK);
 						int yns=round(xs*sinPovK - ys*cosPovK);
-						//извлечение из тени и проверка по Z буферу
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z пїЅпїЅпїЅпїЅпїЅпїЅ
 						if( (xns > boundXL) && (xns< boundXR) && (yns>boundYL) && (yns<boundYR) ){
 							if (Sh.shade[(xns-boundXL)+((yns+boundYR)*Sh.xShade)]>V )
 								SetAt(XCYCL(X),YCYCL(Y),At_SHADOWV);
@@ -2322,9 +2322,9 @@ void s_renderV::init(void)
 	k_Ambient=30;
 	k_SAmbient=30;
 /*	for(int i=0; i<TERRAIN_MAX; i++){
-		ref_n[i]=5; //0-20(степень)
+		ref_n[i]=5; //0-20(пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 		ref_k[i]=50; //0-100
-		self_luminescence[i]=0; //очистка самосвечения
+		self_luminescence[i]=0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		dif_k[i]=1;
 	}
 	self_luminescence[2]=90;
@@ -2335,9 +2335,9 @@ void s_renderV::init(void)
 
 void s_renderV::main(int num_track)
 {
-	//Инициализация (потом нужно заменить на загрузку данных)
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 
-	//Открытие Скрипта скрипта
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	XBuffer buft;
 	char tmpstr[10];
 	buft < "SLightR" < itoa(num_track%10,tmpstr,10) < ".sst";
@@ -2365,10 +2365,10 @@ void s_renderV::main(int num_track)
 	thead.load3layers(GetTargetName(buft),H_SIZE,V_SIZE,(unsigned char*)(*vidBufRI),(unsigned char*)(*vidBufGI),(unsigned char*)(*vidBufBI) );
 
 
-	//Создание нормалей вокселей
-	for(i=0; i<V_SIZE; i++){ //Может быть оптимизировано
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	for(i=0; i<V_SIZE; i++){ //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		for(j=0; j<H_SIZE; j++){
-			unsigned int Z0,Z1,Z2; //Z0-главный, Z1 - правый, Z2 -верхний
+			unsigned int Z0,Z1,Z2; //Z0-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, Z1 - пїЅпїЅпїЅпїЅпїЅпїЅ, Z2 -пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			unsigned short (*tV)[YS_Buf][XS_Buf]=vMap -> VxBuf;
 			//unsigned char (*tVL)[YS_Buf][XS_Buf]=vMap -> SpecBuf;
 			Z0 =(tV[0][i][j]<<2);
@@ -2380,9 +2380,9 @@ void s_renderV::main(int num_track)
 			N_Y[0][i][j]=(B<<8)/ModV>>2; 
 			N_Z[0][i][j]=(C<<8)/ModV>>2;
 
-			//очистка
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			shadowBuf[0][i][j]=0;
-			//Занесение амбиентного источника и самосветящихся поверхностей
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			int rt=0;//(*vidBufRI)[i][j]*k_Ambient/100; 
 			int gt=0;//(*vidBufGI)[i][j]*k_Ambient/100;
 			int bt=0;//(*vidBufBI)[i][j]*k_Ambient/100;
@@ -2414,7 +2414,7 @@ void s_renderV::main(int num_track)
 
 		sur_scr.row[0].get_el(i,xL);
 		sur_scr.row[1].get_el(i,yL);
-		xVis=xL, yVis=yL, zVis=GetAlt(xL,yL)+50;	// Для расчета угла зрения
+		xVis=xL, yVis=yL, zVis=GetAlt(xL,yL)+50;	// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		sur_scr.row[2].get_el(i,zL);
 		sur_scr.row[3].get_el(i,rL);
 		sur_scr.row[4].get_el(i,gL);
@@ -2437,7 +2437,7 @@ void s_renderV::main(int num_track)
 		sur_scr.row[14].get_el(i,t_dlinaTeni);*/
 
 
-		calculateLightOnDistance(Radius); //Расчет яркости в зависимости от расстояния
+		calculateLightOnDistance(Radius); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		calculateShadowVx(xL,yL,zL,Radius);
 //		if(Radius <=1024){
 			RenderShadowM3DPL(xL,yL,zL,Radius);
@@ -2445,16 +2445,16 @@ void s_renderV::main(int num_track)
 //		else {
 //			RenderShadowM3DPL(xL,yL,zL,1023);
 //		}
-		prepareGaussFilter(k_SmusShadow);// (радиус/10)
-		//float kl=1,kml=0.001; //kml - коэффициент масштабирования по расстоянию затухание источника
+		prepareGaussFilter(k_SmusShadow);// (пїЅпїЅпїЅпїЅпїЅпїЅ/10)
+		//float kl=1,kml=0.001; //kml - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		double k_zat=1;//0.999;//0.2
 		//int begL=255;
-		float Ld,Ls,Ldif,Lspec; //Ld - освещение с учетом коэффициента диффузного отражения
-								//Ls - освещение с учетом коэффициента спекулярного отражения
+		float Ld,Ls,Ldif,Lspec; //Ld - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+								//Ls - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		int l;
 
 
-		//непосредственно рендер
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		int x,y,xx,yy;
 		int dx,dy,dz;
 		int dxVis,dyVis,dzVis,lVis;
@@ -2463,7 +2463,7 @@ void s_renderV::main(int num_track)
 		for( yy=yL-Radius; yy<yL+Radius; yy++){
 			y=YCYCL(yy);
 			//dy=calcDY(yL,y);//yL-y;
-			//dyVis=calcDY(yVis,y);					//Для расчета угла зрения
+			//dyVis=calcDY(yVis,y);					//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			dy=yy-yL;
 			dyVis=yy-yVis;
 //			for( x=0; x<H_SIZE; x++)
@@ -2473,18 +2473,18 @@ void s_renderV::main(int num_track)
 				dx=xx-xL;
 				dz=(vBuf[0][y][x]>>SHIFT_FRACTION_VX)-zL;
 
-				//Тень, которая выходит за границы мира была положена атрибутом At_SHADOWS
+				//пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ At_SHADOWS
 				if( abs(dy)>V_SIZE/2 || (abs(dx) > H_SIZE/2) ) ShadowIs=At_SHADOWS;
 				else {
 					//if( ((abs(dy)< V_SIZE/2+3) && (abs(dy)> V_SIZE/2-3)) || ((abs(dx)< H_SIZE/2+3) && (abs(dx)> H_SIZE/2-3)) ){
 					//	ShadowIs=At_SHADOW;
 					//}
 					//else 
-				//Тень, которая не выходит за границы мира была положена атрибутом At_SHADOWV
+				//пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ At_SHADOWV
 						ShadowIs=At_SHADOWV;
 				}
 
-				//dxVis=calcDX(xVis,x);					 //Для расчета угла зрения
+				//dxVis=calcDX(xVis,x);					 //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				dxVis=xx-xVis;
 				dzVis=zVis-(vBuf[0][y][x]>>SHIFT_FRACTION_VX);
 				lVis=round(sqrt(dxVis*dxVis+dyVis*dyVis+dzVis*dzVis));
@@ -2493,14 +2493,14 @@ void s_renderV::main(int num_track)
 				l=round(sqrt(dx*dx+dy*dy+dz*dz));
 				unsigned char atr=GetAt(x,y);
 				unsigned char terrain=atr&Tr_MASK;//GetTer(x,y);
-				//L=(float)begL/((float)l*kml+kl); // Яркость источника в данной точке
+				//L=(float)begL/((float)l*kml+kl); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				//L=begL*(pow(k_zat,l>>2));
 				//L=begL-k_zat*(float)l; if(L<0)L=0;
 				float lightDistance=tableLightOnDistance[round(sqrt(dx*dx+dy*dy))];//+XRnd(10);
 				Ld=lightDistance*dif_k[terrain];
 				Ls=lightDistance;
 				float nxL=(float)dx/l,nyL=(float)dy/l,nzL=(float)dz/l;
-				float cosA=((int)N_X[0][y][x]*nxL + (int)N_Y[0][y][x]*nyL +(int)N_Z[0][y][x]*nzL)/64;// на 64 умножена нормаль вокселей (<<8 и >>2)
+				float cosA=((int)N_X[0][y][x]*nxL + (int)N_Y[0][y][x]*nyL +(int)N_Z[0][y][x]*nzL)/64;// пїЅпїЅ 64 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (<<8 пїЅ >>2)
 				if (cosA<0) cosA=0;
 				Ldif=Ld*cosA; if(Ldif>256)Ldif=256; //+Lambient
 				float cosLV=nxL*nxVis + nyL*nyVis + nzL*nzVis;
@@ -2509,12 +2509,12 @@ void s_renderV::main(int num_track)
 				if (cosG > 255) cosG=255; if(cosG < 0)cosG=0; //if(cosG < -255)cosG=-255;
 				Lspec=Ls*COSnG[terrain][256+cosG];
 				int ro,go,bo;
-/*				if((atr&At_SHADOWV)==0){//if(shadowBuf[0][y][x]==0){ //нет тени
+/*				if((atr&At_SHADOWV)==0){//if(shadowBuf[0][y][x]==0){ //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 					ro=vidBufRI[0][y][x]*Ldif*kR/256 + (rL*Lspec/(256*256));
 					go=vidBufGI[0][y][x]*Ldif*kG/256 + (gL*Lspec/(256*256));
 					bo=vidBufBI[0][y][x]*Ldif*kB/256 + (bL*Lspec/(256*256));
 				}
-				else { //есть тень
+				else { //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 					ro=0; go=0; bo=0;
 					//ro=(vidBufRI[0][y][x]*Ldif/256)*k_ambient/100;
 					//go=(vidBufGI[0][y][x]*Ldif/256)*k_ambient/100;
@@ -2594,8 +2594,8 @@ void s_renderV::main(int num_track)
 
 	vMap->saveVMM();
 
-	//Конверт из Try в High Color для показа на экране
-	// И изменение режима показа на экране
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Try пїЅ High Color пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<YS_Buf; i++){ 
 		for(j=0; j<XS_Buf; j++){
 			vMap->ClBuf[0][i][j]=((((*vidBufRO)[i][j]>>3)&0x1f)<<11)+((((*vidBufGO)[i][j]>>2)&0x3f)<<5)+(((*vidBufBO)[i][j]>>3)&0x1f);
@@ -2603,7 +2603,7 @@ void s_renderV::main(int num_track)
 	}
 	GCM.setFV( 1 , FLAG_Show_PrimaryOrRender_World);
 
-	//Показ где тень
+	//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	//for(i=0; i<V_SIZE; i++) for(j=0; j<H_SIZE; j++) {
 	//	if(GetAt(j,i)&At_SHADOWV) vMap->ClTrBuf[0][i][j]=255;
 	//}
@@ -2678,7 +2678,7 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 	(*b_ds)[BUF_CENTR]=0;(*b_ds_i)[BUF_CENTR]=0;
 
 	int i,j;
-	//Очистка атрибутов тени (At_SHADOWV и At_SHADOS)
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (At_SHADOWV пїЅ At_SHADOS)
 	for(i=0;i<V_SIZE;i++) for(j=0;j<H_SIZE;j++) vMap->AtBuf[0][i][j]&=~At_SHADOW;
 
 	char typeL,typeR;
@@ -2689,8 +2689,8 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 	int offL,offR;
 	float sL,dsL,sR,dsR;
 	unsigned char ShadowIs;
-	//Расчет тени Верхней четверти
-	//Очистка буверов тени 
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<BUF_SIZE; i++){ buf_delta_shadow2[i]=buf_delta_shadow1[i]=buf_shadow2[i]=buf_shadow1[i]=0;}
 
 	for(i=0; i<Radius_Light; i++){
@@ -2735,15 +2735,15 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 			sL-=dsL;
 			sR-=dsR;
 
-			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //Тень
-			else { 				//Не тень(Воксельная)
+			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
+			else { 				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offL)&=~At_SHADOWV;
 				sL=VL;
 				dsL=(float)(zl-VL)/(float)(i);
 			}
-			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //Тень
+			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
 			else {
-				//Не тень(Воксельная)
+				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offR)&=~At_SHADOWV;
 				sR=VR;
 				dsR=(float)(zl-VR)/(float)(i);
@@ -2757,8 +2757,8 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 		d_bs=(float)i/(i+1);
 	}
 
-	//Расчет тени нижней четверти
-	//Очистка буверов тени 
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<BUF_SIZE; i++){ buf_delta_shadow2[i]=buf_delta_shadow1[i]=buf_shadow2[i]=buf_shadow1[i]=0;}
 
 	for(i=0; i<Radius_Light; i++){
@@ -2803,15 +2803,15 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 			sL-=dsL;
 			sR-=dsR;
 
-			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //Тень
-			else { 				//Не тень(Воксельная)
+			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
+			else { 				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offL)&=~At_SHADOWV;
 				sL=VL;
 				dsL=(float)(zl-VL)/(float)(i);
 			}
-			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //Тень
+			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
 			else {
-				//Не тень(Воксельная)
+				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offR)&=~At_SHADOWV;
 				sR=VR;
 				dsR=(float)(zl-VR)/(float)(i);
@@ -2826,8 +2826,8 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 	}
 
 
-	//Расчет тени левой четверти
-	//Очистка буверов тени 
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 	for(i=0; i<BUF_SIZE; i++){ buf_delta_shadow2[i]=buf_delta_shadow1[i]=buf_shadow2[i]=buf_shadow1[i]=0;}
 
 	for(i=1; i<Radius_Light; i++){
@@ -2872,15 +2872,15 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 			sL-=dsL;
 			sR-=dsR;
 
-			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //Тень
-			else { 				//Не тень(Воксельная)
+			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
+			else { 				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offL)&=~At_SHADOWV;
 				sL=VL;
 				dsL=(float)(zl-VL)/(float)(i);
 			}
-			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //Тень
+			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
 			else {
-				//Не тень(Воксельная)
+				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offR)&=~At_SHADOWV;
 				sR=VR;
 				dsR=(float)(zl-VR)/(float)(i);
@@ -2894,8 +2894,8 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 		d_bs=(float)i/(i+1);
 	}
 
-	//Расчет тени правой четверти
-	//Очистка буверов тени 
+	//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 
 
 	for(i=0; i<BUF_SIZE; i++){ buf_delta_shadow2[i]=buf_delta_shadow1[i]=buf_shadow2[i]=buf_shadow1[i]=0;}
 
@@ -2940,15 +2940,15 @@ void s_renderV::calculateShadowVx(int xl, int yl,int zl, int Radius_Light)
 			sL-=dsL;
 			sR-=dsR;
 
-			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //Тень
-			else { 				//Не тень(Воксельная)
+			if (sL > VL)  { *(pa+offL)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
+			else { 				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offL)&=~At_SHADOWV;
 				sL=VL;
 				dsL=(float)(zl-VL)/(float)(i);
 			}
-			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //Тень
+			if (sR > VR)  { *(pa+offR)|=ShadowIs; } //пїЅпїЅпїЅпїЅ
 			else {
-				//Не тень(Воксельная)
+				//пїЅпїЅ пїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 				//*(pa+offR)&=~At_SHADOWV;
 				sR=VR;
 				dsR=(float)(zl-VR)/(float)(i);
@@ -3008,10 +3008,10 @@ void s_renderV::init(void)
 
 void s_renderV::main(int num_track)
 {
-	//Инициализация (потом нужно заменить на загрузку данных)
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 	init();
 
-	//Открытие Скрипта скрипта
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	XBuffer buft;
 	char tmpstr[10];
 	buft < "SLightR" < itoa(num_track%10,tmpstr,10) < ".sst";
@@ -3037,10 +3037,10 @@ void s_renderV::main(int num_track)
 	thead.load3layers(GetTargetName("input.tga"),H_SIZE,V_SIZE,(unsigned char*)(*vidBufRI),(unsigned char*)(*vidBufGI),(unsigned char*)(*vidBufBI) );
 
 
-	//Создание нормалей вокселей
-	for(i=0; i<V_SIZE; i++){ //Может быть оптимизировано
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	for(i=0; i<V_SIZE; i++){ //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		for(j=0; j<H_SIZE; j++){
-			unsigned short Z0,Z1,Z2; //Z0-главный, Z1 - правый, Z2 -верхний
+			unsigned short Z0,Z1,Z2; //Z0-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, Z1 - пїЅпїЅпїЅпїЅпїЅпїЅ, Z2 -пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			unsigned char (*tV)[YS_Buf][XS_Buf]=vMap -> VxBuf;
 			unsigned char (*tVL)[YS_Buf][XS_Buf]=vMap -> SpecBuf;
 			Z0 =(tV[0][i][j]<<8) | tVL[0][i][j];
@@ -3052,7 +3052,7 @@ void s_renderV::main(int num_track)
 			N_Y[0][i][j]=(B<<8)/ModV>>2; 
 			N_Z[0][i][j]=(C<<8)/ModV>>2;
 
-			//очистка
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			shadowBuf[0][i][j]=0;
 			(*vidBufRO)[i][j]=0;
 			(*vidBufGO)[i][j]=0;
@@ -3086,16 +3086,16 @@ void s_renderV::main(int num_track)
 		sur_scr.row[8].get_el(i,k_ambient);
 
 
-		calculateLightOnDistance(Radius); //Расчет яркости в зависимости от расстояния
+		calculateLightOnDistance(Radius); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-		//float kl=1,kml=0.001; //kml - коэффициент масштабирования по расстоянию затухание источника
+		//float kl=1,kml=0.001; //kml - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		double k_zat=1;//0.999;//0.2
 		//int begL=255;
 		float L,Ldif,Lspec;
 		int l;
 
 
-		//непосредственно рендер
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		int x,y;
 		int dx,dy,dz;
 		for( y=0; y<V_SIZE; y++){
@@ -3104,12 +3104,12 @@ void s_renderV::main(int num_track)
 				dx=calcDX(xL,x);//xL-x;
 				dz=vBuf[0][y][x]-zL;
 				l=round(sqrt(dx*dx+dy*dy+dz*dz));
-				//L=(float)begL/((float)l*kml+kl); // Яркость источника в данной точке
+				//L=(float)begL/((float)l*kml+kl); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				//L=begL*(pow(k_zat,l>>2));
 				//L=begL-k_zat*(float)l; if(L<0)L=0;
 				L=tableLightOnDistance[l];
 				float nxL=(float)dx/l,nyL=(float)dy/l,nzL=(float)dz/l;
-				float cosA=((int)N_X[0][y][x]*nxL + (int)N_Y[0][y][x]*nyL +(int)N_Z[0][y][x]*nzL)/64;// на 64 умножена нормаль вокселей (<<8 и >>2)
+				float cosA=((int)N_X[0][y][x]*nxL + (int)N_Y[0][y][x]*nyL +(int)N_Z[0][y][x]*nzL)/64;// пїЅпїЅ 64 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (<<8 пїЅ >>2)
 				if (cosA<0) cosA=0;
 				Ldif=L*cosA; if(Ldif>256)Ldif=256; //+Lambient
 				float cosLV=nxL*nxVis + nyL*nyVis + nzL*nzVis;
@@ -3118,12 +3118,12 @@ void s_renderV::main(int num_track)
 				if (cosG > 255) cosG=255; if(cosG < 0)cosG=0;
 				Lspec=L*COSnG[GetTer(x,y)][256+cosG];
 				int ro,go,bo;
-				if(shadowBuf[0][y][x]==0){ //нет тени
+				if(shadowBuf[0][y][x]==0){ //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 					ro=vidBufRI[0][y][x]*Ldif/256 + (rL*Lspec/(256*256));
 					go=vidBufGI[0][y][x]*Ldif/256 + (gL*Lspec/(256*256));
 					bo=vidBufBI[0][y][x]*Ldif/256 + (bL*Lspec/(256*256));
 				}
-				else { //есть тень
+				else { //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 					ro=(vidBufRI[0][y][x]*Ldif/256)*k_ambient/100;
 					go=(vidBufGI[0][y][x]*Ldif/256)*k_ambient/100;
 					bo=(vidBufBI[0][y][x]*Ldif/256)*k_ambient/100;
@@ -3144,7 +3144,7 @@ void s_renderV::main(int num_track)
 
 	thead.save3layers(GetTargetName("track0.tga"),H_SIZE,V_SIZE,(unsigned char*)(*vidBufRO),(unsigned char*)(*vidBufGO),(unsigned char*)(*vidBufBO) );
 
-	//Конверт из Try в High Color для показа на экране
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Try пїЅ High Color пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	for(i=0; i<YS_Buf; i++){ 
 		for(j=0; j<XS_Buf; j++){
 			vMap->ClBuf[0][i][j]=((((*vidBufRO)[i][j]>>3)&0x1f)<<11)+((((*vidBufGO)[i][j]>>2)&0x3f)<<5)+(((*vidBufBO)[i][j]>>3)&0x1f);

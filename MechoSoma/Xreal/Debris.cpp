@@ -2,7 +2,7 @@
 #include "BodyDispatcher.h"
 #include "Body.h"
 #include "Debris.h"
-#include "params.h"
+#include "Params.h"
 #include "AnimalsPrm.h"
 #include "Mesh3ds.h"
 

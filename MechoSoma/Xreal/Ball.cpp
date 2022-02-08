@@ -2,12 +2,12 @@
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "Ball.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
-#include "params.h"
+#include "Params.h"
 #include "controls.h"
-#include "MechoSoma.h"
+#include "mechoSoma.h"
 
 void fxlabClownProcess(Vect3f& v);
 void fxlabBubbleSource(Vect3f& pos,DurationTimer& timer);
@@ -43,7 +43,8 @@ void Ball::kill()
 {
 	if(!alive())
 		return;
-	fxlabClownProcess(Vect3f(R()));
+	Vect3f v1(R());
+	fxlabClownProcess(v1);
 	startSound(EFF_CLOWN_BALL); // Ball -> Mechos
 	mechos -> setTrans(R());
 	mechos -> make_non_colliding();
@@ -55,8 +56,10 @@ void Ball::kill()
 
 void Ball::quant()
 {
-	if(!wave_timer && submersion())
-		fxlabBubbleSource(Vect3f(R()),wave_timer);
+	if(!wave_timer && submersion()) {
+		Vect3f v1(R());
+		fxlabBubbleSource(v1,wave_timer);
+	}
 	if(!time_to_live)
 		kill();
 	if(mechos && kill_mechos){

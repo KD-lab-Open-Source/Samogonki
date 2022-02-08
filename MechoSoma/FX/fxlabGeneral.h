@@ -48,16 +48,16 @@ struct fxlabGeneralObjectType
 	virtual void SetStartTime(float time){ StartTime = time; };
 	virtual void SetFinishTime(float time){ FinishTime = time; };
 
-	virtual void SetPosition(class Vect3f& v){};
+	virtual void SetPosition(const class Vect3f& v){};
 	virtual void GetPosition(class Vect3f& v){};
 
 	virtual void SetConversion(int conv){};
 	virtual void SetSplineOwner(void* point){};
 
-	virtual void SetVelocity(Vect3f& v){};
+	virtual void SetVelocity(const Vect3f& v){};
 
 	virtual void SetScale(float scale){};
-	virtual void SetMatrix(class MatXf& m){};
+	virtual void SetMatrix(const class MatXf& m){};
 
 	virtual void SetAngle(float angle){};
 	virtual void SetMode(int mode){};
@@ -66,9 +66,9 @@ struct fxlabGeneralObjectType
 	virtual void SetCheckPointRacer(int mode,struct mchRacer* p,int init_flag = 0){};
 	virtual void SetCheckPointCamera(int camera){};
 
-	virtual void SetScaleVector(Vect3f& v){};
-	virtual void SetAngleVector(Vect3f& v){};
-	virtual void SetColorVector(Vect3f& v){};
+	virtual void SetScaleVector(const Vect3f& v){};
+	virtual void SetAngleVector(const Vect3f& v){};
+	virtual void SetColorVector(const Vect3f& v){};
 	virtual void SetTransparency(float a){};
 	virtual void SetModel(int id){};
 	virtual void SetRacerPoint(struct mchRacer* p){};
@@ -145,7 +145,7 @@ struct fxlabGeneralObjectType
 
 	virtual void SetScaleAnimation(float start_scale,float end_scale,int time){};
 
-	virtual void SetDirectionMatrix(class Mat3f& m){};
+	virtual void SetDirectionMatrix(const class Mat3f& m){};
 
 	virtual void SetBigBossWorldStatus(int world){};
 };

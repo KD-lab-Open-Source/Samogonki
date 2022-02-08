@@ -8,7 +8,7 @@
 #define __BASE_LIST__
 
 template <class cBase> class cBaseList
-{	// двусвязанный список
+{	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 //	friend class cBase;
 public:
 	cBase		*Base;
@@ -51,19 +51,20 @@ public:
 	~cBaseLibrary()												{ }
 	
 	inline cBaseList* Attach(cBase *Base)	
-	{ // присоединие объекта к списку 
+	{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
 	inline cBaseList* AttachEnd(cBase *Base)	
-	{ // присоединие объекта к списку 
+	{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 		if(BaseList==0) return BaseList=new cBaseList(Base);
-		for(cBaseList *start=BaseList; start->next; start=start->next);
+		cBaseList *start = nullptr;
+		for(start=BaseList; start->next; start=start->next);
 		cBaseList *List=new cBaseList(Base);
 		return List->Attach(start);
 	}
 	inline void Detach(cBase *Base)		
-	{ // отсоединение объекта от списка
+	{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		cBaseList *start=BaseList;
 		for(start; start; start=start->next)
 			if(start->Base==Base) break;
@@ -79,7 +80,7 @@ public:
 		if(List==BaseList) BaseList=BaseList->next; 
 		delete List; 
 	}
-	inline void Delete(cBase *Base)		// удаление объекта в списке
+	inline void Delete(cBase *Base)		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		Detach(Base);
 		if(Base) delete Base; 
@@ -95,11 +96,17 @@ public:
 template <class cBase,class cBaseList> class cBaseDispatcher : public cBaseLibrary <cBase,cBaseList>
 {
 public:
-	unsigned int	NumberID;			// ID последнего объекта = NumberID
+	unsigned int	NumberID;			// ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ = NumberID
 
 	cBaseDispatcher()											{ NumberID=0; }
-	~cBaseDispatcher()											{ assert(BaseList==0); }
-	inline cBase* FindID(unsigned int ID)						{ for(cBaseList *start=BaseList; start; start=start->next) if(start->Base->ID==ID) return start->Base; return 0; }
+	~cBaseDispatcher()											{ assert(this->BaseList==0); }
+	inline cBase* FindID(unsigned int ID)
+	{
+		cBaseList *start = nullptr;
+		for(start=this->BaseList; start; start=start->next);
+		if(start->Base->ID==ID) return start->Base;
+		return 0;
+	}
 };
 
 #endif //__BASE_DISPATCHER__
@@ -115,12 +122,12 @@ public:
 	cBaseStack()												{ BaseList=0; }
 	~cBaseStack()												{ assert(BaseList==0); }
 	
-	inline cBaseList* Push(cBase *Base)	// присоединие объекта к списку 
+	inline cBaseList* Push(cBase *Base)	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 	{
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
-	inline void Pop()					// удаление объекта в списке
+	inline void Pop()					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		cBaseList *tmp=BaseList;
 		if(tmp) 
@@ -139,22 +146,23 @@ public:
 template <class cBase,class cBaseList> class cBaseQueue
 {
 public:
-	cBaseList		*BaseList;			// первый элемент - NULL объект
+	cBaseList		*BaseList;			// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - NULL пїЅпїЅпїЅпїЅпїЅпїЅ
 	cBaseList		*Window;
 
 	cBaseQueue()												{ BaseList=0; First(); }
 	~cBaseQueue()												{ assert(BaseList==0); }
 	
-	inline cBaseList* Attach(cBase *Base)	// присоединие объекта к списку 
+	inline cBaseList* Attach(cBase *Base)	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 	{
 		if(BaseList==0) return BaseList=new cBaseList(Base);
 		return BaseList->Attach(new cBaseList(Base));
 	}
-	inline void Delete(cBase *Base=0)		// удаление объекта в списке
+	inline void Delete(cBase *Base=0)		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		if(Base==0)
 		{
-			for(cBaseList *start=BaseList; start->next; start=start->next)
+			cBaseList *start = nullptr;
+			for(start=BaseList; start->next; start=start->next)
 			if(start==0) return;
 			if(start==Window) Window=start->next;
 			if(start->Base) delete start->Base;
@@ -163,13 +171,14 @@ public:
 		Detach(Base);
 		delete Base; 
 	}
-	inline void Detach(cBase *Base)		// отсоединение объекта от списка
+	inline void Detach(cBase *Base)		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
-		for(cBaseList *start=BaseList; start; start=start->next)
+		cBaseList *start = nullptr;
+		for(start=BaseList; start; start=start->next)
 			if(start->Base==Base) break;
 		if(start) { if(start==Window) Window=start->next; delete start; }
 	}
-	inline cBase* First()										{ if(Window=BaseList) return Window->Base; return 0; }
+	inline cBase* First()										{ if((Window=BaseList)) return Window->Base; return 0; }
 	inline cBase* Prev()										{ if((Window)&&(Window=Window->prev)) return Window->Base; return 0; }
 	inline cBase* Next()										{ if((Window)&&(Window=Window->next)) return Window->Base; return 0; }
 };
@@ -341,24 +350,24 @@ template <class cBase> class cBaseArrayManager : public cBaseArrayPointer <cBase
 public:
 	cBaseArrayManager()										{ }
 	cBaseArrayManager(int MaxLength,int AddSize=1):cBaseArrayPointer<cBase>(MaxLength,AddSize)	{ }
-	~cBaseArrayManager()									{ assert(length()==0); }
+	~cBaseArrayManager()									{ assert(this->length()==0); }
 	inline int Attach(cBase *base)							
 	{ 
-		for(int i=0;i<length();i++)
-			if(Base[i]==0) 
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]==0) 
 			{
-				Base[i]=base;
+				this->Base[i]=base;
 				return i;
 			}
 		cBaseArrayPointer<cBase>::Attach(base);
-		return length()-1;
+		return this->length()-1;
 	}
 	inline void Detach(cBase *base)					
 	{ 
-		for(int i=0;i<length();i++)
-			if(Base[i]==base) 
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]==base) 
 			{
-				Base[i]=0;
+				this->Base[i]=0;
 				break;
 			}
 	}
@@ -469,12 +478,12 @@ public:
 		return 0;
 	}
 	inline void Attach(cBase *base)
-	{ // добавляет указатель в конец списка
+	{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		Resize(length()+BASEDYNARRAY_DSIZE);
 		Base[length()-1]=base;
 	}
 	inline void Detach(cBase *base)
-	{ // ищет указатель элемент Base в списке и удаляет его из списка
+	{ // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Base пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		int number;
 		for(number=0;number<length();number++)
 			if(Base[number]==base) 
@@ -485,7 +494,7 @@ public:
 		Resize(length()-1);
 	}
 	inline void Delete(int number)
-	{ // удаляет из списка элемент с номером number, и удаляет сам эелемент с номером
+	{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ number, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if(Base[number]) { delete Base[number]; Base[number]=0; }
 		memcpy(&Base[number],&Base[number+1],(length()-number-1)*sizeof(cBase*));
 		Resize(length()-1);

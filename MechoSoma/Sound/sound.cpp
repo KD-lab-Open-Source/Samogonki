@@ -2,10 +2,12 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include <StdAfx.h>
 
+#include <unordered_map>
+
 #include "mechosoma.h"
 
-#include "md3d.h"
-#include "_xsound.h"
+#include "Md3d.h"
+#include "xsound.h"
 
 #include "aci_parser.h"
 #include "sound.h"
@@ -494,9 +496,9 @@ void mchSoundDispatcher::Load(char* scr_name,int local)
 	eff = lst -> first();
 	while(eff){
 		if(local)
-			map_localEFF.insert(hash_multimap<int,mchSoundEFF*>::value_type(eff -> ID,eff));
+			map_localEFF.insert(std::unordered_multimap<int,mchSoundEFF*>::value_type(eff -> ID,eff));
 		else
-			map_globalEFF.insert(hash_multimap<int,mchSoundEFF*>::value_type(eff -> ID,eff));
+			map_globalEFF.insert(std::unordered_multimap<int,mchSoundEFF*>::value_type(eff -> ID,eff));
 
 		eff -> Load();
 		eff = eff -> next;
@@ -545,8 +547,8 @@ void mchSoundDispatcher::StartEFF(int id,int x,int y,float vol,float speed)
 	int i,eff_size = 0,eff_id;
 	mchSoundEFF* p = NULL;
 	
-	hash_multimap<int,mchSoundEFF*>::iterator si;
-	pair<hash_multimap<int,mchSoundEFF*>::iterator,hash_multimap<int,mchSoundEFF*>::iterator> pr;
+	std::unordered_multimap<int,mchSoundEFF*>::iterator si;
+	pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
 
 	eff_size = map_localEFF.count(id);
 
@@ -593,7 +595,7 @@ void mchSoundDispatcher::SetCoordsEFF(int id,int x,int y)
 {
 	mchSoundEFF* p = NULL;
 
-	hash_multimap<int,mchSoundEFF*>::iterator si = map_localEFF.find(id);
+	std::unordered_multimap<int,mchSoundEFF*>::iterator si = map_localEFF.find(id);
 
 	if(si == map_localEFF.end()){
 		si = map_globalEFF.find(id);
@@ -618,7 +620,7 @@ void mchSoundDispatcher::StopEFF(int id)
 
 	mchSoundEFF* p = NULL;
 
-	hash_multimap<int,mchSoundEFF*>::iterator si = map_localEFF.find(id);
+	std::unordered_multimap<int,mchSoundEFF*>::iterator si = map_localEFF.find(id);
 
 	if(si == map_localEFF.end()){
 		si = map_globalEFF.find(id);
@@ -1037,9 +1039,9 @@ int mchSoundDispatcher::GetStatusEFF(int id)
 {
 	int i,eff_size = 0,eff_id;
 	mchSoundEFF* p = NULL;
-	
-	hash_multimap<int,mchSoundEFF*>::iterator si;
-	pair<hash_multimap<int,mchSoundEFF*>::iterator,hash_multimap<int,mchSoundEFF*>::iterator> pr;
+
+	std::unordered_multimap<int,mchSoundEFF*>::iterator si;
+	pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
 
 	eff_size = map_localEFF.count(id);
 

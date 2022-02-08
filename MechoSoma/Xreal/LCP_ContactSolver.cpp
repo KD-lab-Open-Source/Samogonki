@@ -2,11 +2,11 @@
 #include "Body.h"
 #include "Contact.h"
 #include "LCP_ContactSolver.h"
-#include "params.h"
-#include "cholesky.h"
-#include "Mechosoma.h"
+#include "Params.h"
+#include "CHOLESKY.H"
+#include "mechosoma.h"
 #include "Statistics.h"
-#include "xreal_utl.h"
+#include "Xreal_utl.h"
 
 //#define _CHECK_RESOLVING_
 
@@ -80,7 +80,7 @@ Mat3f& DynamicBody::global_mass_matrix(const Vect3f& ri, const Vect3f& rj, Mat3f
 void Body::calc_normal_mass_matrix(Mat& M)
 {
 	int normal_size = contacts.size() + contacts2.size();
-	mass_matrix_array = new(tnt_mem_heap) Mass_Matrix_Array(normal_size);
+	mass_matrix_array = new Mass_Matrix_Array(normal_size);
 	
 	normal_contacts.clear();
 

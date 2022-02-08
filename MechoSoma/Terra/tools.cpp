@@ -11,7 +11,7 @@
 #include "tools.h"
 //#include "sqexp.h"
 
-#include "terra.h"
+#include "TERRA.H"
 #include "sur_scr.h"
 //#include "vmap.h"
 //#include "world.h"
@@ -19,6 +19,13 @@
 //#include "impass.h"
 //#include "moveland.h"
 //#include "all.h"
+
+#ifndef _WIN32
+char *itoa(int number, char *dest, size_t dest_size)
+{
+	return nullptr;
+}
+#endif
 
 /* ----------------------------- EXTERN SECTION ---------------------------- */
 //extern int LayerStatus;
@@ -105,7 +112,7 @@ void BitMap::convert(void)
 {
 	unsigned char* pb = palette;
 	unsigned char* p = data;
-	register int i,j;
+	int i,j;
 	int v,max = 0;
 	for(i = 0;i < sz;i++,p++){
 		v = *p*3;
@@ -163,7 +170,7 @@ void BitMap::place(char* name,int x,int y,int _force,int _mode,int _border,int _
 
 	//	vMap -> increase(y,y + sy - 1);
 
-		register int i,j;
+		int i,j;
 		int v,xx,yy,vv;
 		for(j = 0;j < sy;j++){
 			//pv0 = pv = &(vMap -> VxBuf[0][yy = YCYCL(y + j)][0]);
@@ -216,7 +223,7 @@ void BitMap::place(char* name,int x,int y,int _force,int _mode,int _border,int _
 		int xt,yt;
 		int xpp=0,ypp=0;
 
-		register int i,j;
+		int i,j;
 		int v,xx,yy,vv;
 		for(j = 0;j < sy;j++){
 			xt=xbeg; yt=ybeg;
@@ -357,7 +364,7 @@ void S3Dload(char* name,int x, int y)
 
 void S3Danalyze(void)
 {
-	//Проверка на подозрительный эксцепшин
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if((upper_buffer==0)||(lower_buffer==0)) ErrH.Abort("Shape Buf is NULL");
 	//unsigned char** lt = vMap -> lineT;
 	int x = shape_x;
@@ -370,7 +377,7 @@ void S3Danalyze(void)
 	if(!S3Dside) surface = upper_buffer, empty = 0;
 	else surface = lower_buffer, empty = MAX_VX_HEIGHT;
 
-	register int i,j;
+	int i,j;
 	for(j = 0;j < xysize;j++){
 		p = surface + (j << shape_shift);
 //		pa0 = lt[yy = YCYCL(y + j)];

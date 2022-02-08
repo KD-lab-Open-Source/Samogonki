@@ -1,8 +1,8 @@
 #ifndef __GRID_2D__
 #define __GRID_2D__
 
-#include <slist>
-#include "xreal_utl.h"
+#include <list>
+#include "Xreal_utl.h"
 
 /////////////////////////////////////////
 //	Integer Rectangle
@@ -86,6 +86,7 @@ struct Grid2DConfig {
 template <class T, int cell_size_len>	
 class Grid2D : PassDispatcher, Grid2DConfig<cell_size_len>
 {
+	using G2D = Grid2DConfig<cell_size_len>;
 public:	
 	class Node 
 	{
@@ -99,67 +100,67 @@ public:
 		short dy() const { return dy_; }
 	};
 
-	typedef slist<Node> SList;
+	using SList = std::list<Node>;
 
 	////////////////////////////////////////////////////////////////////////////////////
 	//		Insertion & removing
 	////////////////////////////////////////////////////////////////////////////////////
 	void insert(const T& obj, iRectangle rect)
 	{
-		prep_rectangle(rect);
+		G2D::prep_rectangle(rect);
 		for(int y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++)
-				if(obj.belongSquare(x*cell_sx, y*cell_sy, cell_sx, cell_sy))
-					table[mask_y(y)][mask_x(x)].push_front( Node(&obj, cycling_dx(x), cycling_dy(y)) );
+				if(obj.belongSquare(x*G2D::cell_sx, y*G2D::cell_sy, G2D::cell_sx, G2D::cell_sy))
+					table[G2D::mask_y(y)][G2D::mask_x(x)].push_front( Node(&obj, G2D::cycling_dx(x), G2D::cycling_dy(y)) );
 	}
 
 	void erase(const T& obj, iRectangle rect)
 	{
-		prep_rectangle(rect);
+		G2D::prep_rectangle(rect);
 		for(int y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++)
-				table[mask_y(y)][mask_x(x)].remove( Node(&obj, cycling_dx(x), cycling_dy(y)) );
+				table[G2D::mask_y(y)][G2D::mask_x(x)].remove( Node(&obj, G2D::cycling_dx(x), G2D::cycling_dy(y)) );
 	}
 
 	void move(const T& obj,  iRectangle prev_rect,  iRectangle rect)
 	{
-		prep_rectangle(rect);
-		prep_rectangle(prev_rect);
+		G2D::prep_rectangle(rect);
+		G2D::prep_rectangle(prev_rect);
 		if(rect == prev_rect)
 			return;
 		int y;
 		for(y = prev_rect.y0;y <= prev_rect.y1;y++)
 			for(int x = prev_rect.x0;x <= prev_rect.x1;x++)
-				table[mask_y(y)][mask_x(x)].remove( Node(&obj, cycling_dx(x), cycling_dy(y)) );
+				table[G2D::mask_y(y)][G2D::mask_x(x)].remove( Node(&obj, G2D::cycling_dx(x), G2D::cycling_dy(y)) );
 		for(y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++)
-				if(obj.belongSquare(x*cell_sx, y*cell_sy, cell_sx, cell_sy))
-					table[mask_y(y)][mask_x(x)].push_front( Node(&obj, cycling_dx(x), cycling_dy(y)) );
+				if(obj.belongSquare(x*G2D::cell_sx, y*G2D::cell_sy, G2D::cell_sx, G2D::cell_sy))
+					table[G2D::mask_y(y)][G2D::mask_x(x)].push_front( Node(&obj, G2D::cycling_dx(x), G2D::cycling_dy(y)) );
 	}
 
 	void clear()
 	{
-		for(int y = 0;y < sy;y++)
-			for(int x = 0;x < sx;x++)
+		for(int y = 0;y < G2D::sy;y++)
+			for(int x = 0;x < G2D::sx;x++)
 				table[y][x].clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
 	//		Accessing
 	////////////////////////////////////////////////////////////////////////////////////
-	SList& operator() (int x, int y) { return table[masked_prep_y(y)][masked_prep_x(x)]; }
+	SList& operator() (int x, int y) { return table[G2D::masked_prep_y(y)][G2D::masked_prep_x(x)]; }
 
 	template <class Op>
 	void scan(iRectangle rect, Op& op) const
 	{
 		beginPass();
-		prep_rectangle(rect);
+		G2D::prep_rectangle(rect);
 		for(int y = rect.y0;y <= rect.y1;y++){
-			short dy = cycling_dy(y);
+			short dy = G2D::cycling_dy(y);
 			for(int x = rect.x0;x <= rect.x1;x++){
-				short dx = cycling_dx(x);
-				const SList& root = table[mask_y(y)][mask_x(x)];
-				SList::const_iterator i;
+				short dx = G2D::cycling_dx(x);
+				const SList& root = table[G2D::mask_y(y)][G2D::mask_x(x)];
+				typename SList::const_iterator i;
 				FOR_EACH(root, i)
 					if(doPass(**i))
 						op(**i, dx - i -> dx(), dy - i -> dy());
@@ -170,10 +171,10 @@ public:
 	template <class Op>
 	int process_cell(int x, int y, Op& op) const
 	{
-		short dx = cycling_dx(x);
-		short dy = cycling_dy(y);
-		const SList& root = table[mask_y(y)][mask_x(x)];
-		SList::const_iterator i;
+		short dx = G2D::cycling_dx(x);
+		short dy = G2D::cycling_dy(y);
+		const SList& root = table[G2D::mask_y(y)][G2D::mask_x(x)];
+		typename SList::const_iterator i;
 		FOR_EACH(root, i)
 			if(doPass(**i))
 				if(!op(**i, dx - i -> dx(), dy - i -> dy()))
@@ -188,7 +189,7 @@ public:
 		const int F_PREC = 16;
 
 		iRectangle rect(x1_, y1_, x2_, y2_);
-		prep_rectangle(rect);
+		G2D::prep_rectangle(rect);
 		int x1 = rect.x0;
 		int y1 = rect.y0;
 		int x2 = rect.x1;
@@ -262,8 +263,8 @@ public:
 
 		int i;
 		for(i = 0; i < n; i++){
-			pX[i] >>= shift_x;
-			pY[i] >>= shift_y;
+			pX[i] >>= G2D::shift_x;
+			pY[i] >>= G2D::shift_y;
 			}
 
 		int vals_up = 0;
@@ -355,16 +356,16 @@ public:
 	void show(int x, int y) const
 	{
 		beginPass();
-		int x0 = masked_prep_x(x);
-		int y0 = masked_prep_y(y);
+		int x0 = G2D::masked_prep_x(x);
+		int y0 = G2D::masked_prep_y(y);
 		const SList& root = table[y0][x0];
-		SList::const_iterator i;
+		typename SList::const_iterator i;
 		FOR_EACH(root, i)
 			if(doPass(**i))
 				(*i) -> show();
-		Vect3f p0(x0*cell_sx, y0*cell_sy, 0);
-		Vect3f dx(cell_sx, 0, 0);
-		Vect3f dy(0, cell_sy, 0);
+		Vect3f p0(x0*G2D::cell_sx, y0*G2D::cell_sy, 0);
+		Vect3f dx(G2D::cell_sx, 0, 0);
+		Vect3f dy(0, G2D::cell_sy, 0);
 		show_vector(p0, p0 + dx, p0 + dx + dy, p0 + dy, XCOL(CYAN, 100));
 	}
 
@@ -372,19 +373,19 @@ public:
 	{
 		beginPass();
 		iRectangle rect(xc - sz, yc - sz, xc + sz, yc + sz);
-		prep_rectangle(rect);
+		G2D::prep_rectangle(rect);
 		for(int y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++){
-				const SList& root = table[mask_y(y)][mask_x(x)];
-				SList::const_iterator i;
+				const SList& root = table[G2D::mask_y(y)][G2D::mask_x(x)];
+				typename SList::const_iterator i;
 				FOR_EACH(root, i)
 					if(doPass(**i))
 						(*i) -> show();
 
 				if(greed_color){
-					Vect3f p0(x*cell_sx, y*cell_sy, 0);
-					Vect3f dx(cell_sx, 0, 0);
-					Vect3f dy(0, cell_sy, 0);
+					Vect3f p0(x*G2D::cell_sx, y*G2D::cell_sy, 0);
+					Vect3f dx(G2D::cell_sx, 0, 0);
+					Vect3f dy(0, G2D::cell_sy, 0);
 					show_vector(p0, p0 + dx, p0 + dx + dy, p0 + dy, greed_color);
 					}
 				}
@@ -392,15 +393,15 @@ public:
 
 	void show_area(const T& obj, int color) const
 	{
-		for(int y = 0;y < sy;y++)
-			for(int x = 0;x < sx;x++){
+		for(int y = 0;y < G2D::sy;y++)
+			for(int x = 0;x < G2D::sx;x++){
 				const SList& root = table[y][x];
-				SList::const_iterator i;
+				typename SList::const_iterator i;
 				FOR_EACH(root, i)
 					if(&obj == *i){
-						Vect3f p0(x*cell_sx, y*cell_sy, 0);
-						Vect3f dx(cell_sx, 0, 0);
-						Vect3f dy(0, cell_sy, 0);
+						Vect3f p0(x*G2D::cell_sx, y*G2D::cell_sy, 0);
+						Vect3f dx(G2D::cell_sx, 0, 0);
+						Vect3f dy(0, G2D::cell_sy, 0);
 						show_vector(p0, p0 + dx, p0 + dx + dy, p0 + dy, color);
 						}
 				}
@@ -409,14 +410,14 @@ public:
 	int size() const
 	{
 		int sz = 0;
-		for(int y = 0;y < sy;y++)
-			for(int x = 0;x < sx;x++)
+		for(int y = 0;y < G2D::sy;y++)
+			for(int x = 0;x < G2D::sx;x++)
 				sz += table[y][x].size();
 		return sz;
 	}
 
 protected:
-	SList table[sy][sx];
+	SList table[G2D::sy][G2D::sx];
 };
 
 #endif  // __GRID_2D__

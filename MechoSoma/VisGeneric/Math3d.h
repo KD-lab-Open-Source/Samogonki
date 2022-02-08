@@ -1,9 +1,9 @@
 #ifndef __MATH3D_H__
 #define __MATH3D_H__
 
-#include "maths.h"
-#include "umath.h"
-#include "base.h"
+#include "Maths.h"
+#include "UMATH.H"
+#include "Base.h"
 
 extern void GetNormal(float *v1,float *v2,float *v3,float *Normal);
 extern void NormalizeVector(int norma,int *x,int *y,int *z);
@@ -40,7 +40,7 @@ public:
 		rot()[0][2]=matrix[6]; rot()[1][2]=matrix[7]; rot()[2][2]=matrix[8]; 
 		trans().set(matrix[9],matrix[10],matrix[11]);
 	}
-	inline operator MatXf&()							{ return *(MatXf*)this; }
+//	inline operator MatXf&()							{ return *(MatXf*)this; }
 };
 
 #define PREC_EPSILON			0.00001f
@@ -56,7 +56,7 @@ public:
 	~cPlane()															{}
 	char CrossCut(float x1,float y1,float z1,float x2,float y2,float z2,float *x,float *y,float *z);
 	char CrossPolygon(float xv1,float yv1,float zv1,float xv2,float yv2,float zv2,float *x,float *y,float *z);
-	// угол между двумя плоскостями (в градусах)
+	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	float AnglePlane(cPlane *Plane);
 	inline float Norma()								{ float f=A*A+B*B+C*C; if(f>PREC_EPSILON) return sqrtf(f); return 0; }
 };
@@ -109,10 +109,10 @@ inline int  ConvertorVector(int xw,int yw,int zw,int *xv,int *yv)
 	return round(m8*xw+m9*yw+m10*zw);
 }
 inline void LoadMatrix(cMatrix *m,float sx,float sy,float sz)
-{ // осуществляет переход из правой системы координат в левую
+{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	m0 =MATRIX_SIGN_X(sx*m->rot()[0][0]), m1 =MATRIX_SIGN_X(sy*m->rot()[0][1]), m2 =MATRIX_SIGN_X(sz*m->rot()[0][2]), dMx=MATRIX_SIGN_X(m->trans()[0]);	
 	m4 =MATRIX_SIGN_Y(sx*m->rot()[1][0]), m5 =MATRIX_SIGN_Y(sy*m->rot()[1][1]), m6 =MATRIX_SIGN_Y(sz*m->rot()[1][2]), dMy=MATRIX_SIGN_Y(m->trans()[1]);
 	m8 =MATRIX_SIGN_Z(sx*m->rot()[2][0]), m9 =MATRIX_SIGN_Z(sy*m->rot()[2][1]), m10=MATRIX_SIGN_Z(sz*m->rot()[2][2]), dMz=MATRIX_SIGN_Z(m->trans()[2]);
 }
 
-#endif __CONVERTOR3D_H__
+#endif // __CONVERTOR3D_H__

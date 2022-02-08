@@ -10,14 +10,14 @@
 //	ContactingBodies
 /////////////////////////////////////////////////////////
 
-ContactingBodies& ContactingBodiesList::search_group(Body* body)
+std::vector<ContactingBodies>::iterator ContactingBodiesList::search_group(Body* body)
 {
 	iterator gi;
 	FOR_EACH(*this, gi)
 		if(find(gi -> begin(), gi -> end(), body) != gi -> end())
-			return *gi;
+			return gi;
 	assert(0);
-	return *end();
+	return end();
 }
 
 void ContactingBodiesList::insert_pair(Body* body1, Body* body2)
@@ -29,17 +29,17 @@ void ContactingBodiesList::insert_pair(Body* body1, Body* body2)
 			back().push_back(body2);
 			break;
 		case 1: // add body2 to body1's group
-			search_group(body1).push_back(body2);
+			search_group(body1)->push_back(body2);
 			break;
 		case 2: // add body1 to body2's group
-			search_group(body2).push_back(body1);
+			search_group(body2)->push_back(body1);
 			break;
 		case 3: { // join 2 groups
-			ContactingBodies& group1 = search_group(body1);	
-			ContactingBodies& group2 = search_group(body2);	
-			if(&group1 != &group2){
-				group1.insert(group1.end(), group2.begin(), group2.end());
-				erase(&group2);
+			auto group1 = search_group(body1);	
+			auto group2 = search_group(body2);	
+			if(group1 != group2){
+				group1->insert(group1->end(), group2->begin(), group2->end());
+				erase(group2);
 				}
 			break;
 			}

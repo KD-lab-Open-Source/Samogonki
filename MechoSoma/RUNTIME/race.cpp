@@ -7,17 +7,17 @@
 #include "demo_dispatcher.h"
 #include "TrackDispatcher.h"
 #include "TrackRecorder.h"
-#include "mesh3ds.h"
-#include "xreal.h"
-#include "params.h"
-#include "terra.h"
+#include "Mesh3ds.h"
+#include "Xreal.h"
+#include "Params.h"
+#include "TERRA.H"
 #include "arcane.h"
 #include "arcane_menu.h"
 #include "sound.h"
 
 #include "iText.h"
 
-#include "keys.h"
+#include "KEYS.H"
 #include "controls.h"
 
 #include "CameraDispatcher.h"
@@ -26,12 +26,12 @@
 
 #include "track.h"
 
-#include "aci_ids.h"
+#include "ACI_IDS.H"
 #include "aci_parser.h"
-#include "m3dsetup.h"
+#include "M3DSETUP.H"
 
 #include "parts_pool.h"
-#include "scr_defs.h"
+#include "SCR_DEFS.H"
 
 #include "ai_arcane.h"
 
@@ -41,9 +41,11 @@
 #include "mch_script.h"
 #include "savegame.h"
 
-#include "statistics.h"
+#include "Statistics.h"
 
+#ifdef _WIN32
 #include "online_game.h"
+#endif
 
 #include "cdcheck.h"
 
@@ -3320,8 +3322,11 @@ void mchRacer::MoveSeed(int x,int y,int z)
 	mouseSeed -> PosZ = z;
 
 	if(mouseSeed -> mPtr)
-		gb_IVisGeneric->SetObjectPosition((cUnknownClass*)mouseSeed -> mPtr,
-		&Vect3f((float)mouseSeed -> PosX,(float)mouseSeed -> PosY,(float)mouseSeed -> PosZ),&Vect3f(0,0,0));
+	{
+		Vect3f v1((float)mouseSeed -> PosX,(float)mouseSeed -> PosY,(float)mouseSeed -> PosZ);
+		Vect3f v2(0,0,0);
+		gb_IVisGeneric->SetObjectPosition((cUnknownClass*)mouseSeed -> mPtr,&v1,&v2);
+	}
 }
 
 void mchRacer::NextSeed(void)
@@ -3752,14 +3757,14 @@ void mchInitWorldsPrm(void)
 
 void mchRacer::SetTractionPrm(int fl,float v)
 {
-	set_traction_by_distance = fl;	// зависимость от расстояния между семенами
-	traction_modulation = v;	// 0..2 - модуляция тяги
+	set_traction_by_distance = fl;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	traction_modulation = v;	// 0..2 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 }
 
 void mchRacer::GetTractionPrm(int& fl,float& v)
 {
-	fl = set_traction_by_distance;	// зависимость от расстояния между семенами
-	v = traction_modulation;	// 0..2 - модуляция тяги
+	fl = set_traction_by_distance;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	v = traction_modulation;	// 0..2 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 }
 
 void mchRacerStats::ReplacePart(int pt)
@@ -4244,6 +4249,7 @@ void mchRaceDispatcher::KeyTrap(void)
 		if(mch_trkRec)
 			mch_trkRec -> KeyTrap(k);
 
+#ifdef _WIN32
 		if(k == VK_SPACE){
 			if(mchGameMode == MCH_ENTIRE_CONTROL_HS && mchPBEM_Game){
 				if(mchTimeMode == MCH_TIME_WAITING_TURN && !(activeRacer -> flags & MCH_FINISHED) && mchPBEM_CheckFlag(PBEM_DATA_SENT) && og_inP.express_game()){
@@ -4278,6 +4284,7 @@ void mchRaceDispatcher::KeyTrap(void)
 				firstRacer(mchPBEM_CurPlayer);
 			}
 		}
+#endif
 
 		id = mchGetKeyID_First(k);
 
@@ -4318,8 +4325,8 @@ void mchRaceDispatcher::KeyTrap(void)
 					break;
 				case MCH_KEY_START_TIME:
 					if(!mchTurnBasedGame) break;
-
 					if(mchGameMode == MCH_ENTIRE_CONTROL_HS && mchPBEM_Game){ 
+#ifdef _WIN32
 						if(mchPBEM_GameMode == MCH_PBEM_REPLAY_TURN && (mchTimeMode == MCH_TIME_RUNNING || mchPBEM_Pause)){
 							if(!mchPBEM_Pause){
 								mchGameFlags |= MCH_STOP_TIME_FLAG | MCH_TOGGLE_PAUSE_FLAG;
@@ -4350,6 +4357,7 @@ void mchRaceDispatcher::KeyTrap(void)
 								ogSetRefreshTime();
 							}
 						}
+#endif						
 					}
 					else {
 						if(mchTimeMode == MCH_TIME_STOPPED && (activeRacer -> seedLst.size() || activeRacer -> flags & MCH_AI))
@@ -4826,6 +4834,7 @@ void mchRacer::SetPointControl(void)
 
 int mchRaceDispatcher::online_checkEndGame(void)
 {
+#ifdef _WIN32
 	int num_not_finished_humans;
 	mchRacer* p;
 	ogPlayerInfo* pl;
@@ -4891,6 +4900,7 @@ int mchRaceDispatcher::online_checkEndGame(void)
 	}
 
 	return 0;
+#endif
 }
 
 void mchRaceDispatcher::InitReplay(int all_flag)

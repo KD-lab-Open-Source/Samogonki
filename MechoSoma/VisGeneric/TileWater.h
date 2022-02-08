@@ -3,8 +3,8 @@
 
 #define TILEWATER_MOVTEXTURE							1
 
-#include "unknown.h"
-#include "umath.h"
+#include "Unknown.h"
+#include "UMATH.H"
 
 class cTileMap;
 class cPolyGrid;

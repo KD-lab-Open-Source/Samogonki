@@ -2,7 +2,7 @@
 #include "BodyDispatcher.h"
 #include "Mechos.h"
 #include "EvilEye.h"
-#include "mesh3ds.h"
+#include "Mesh3ds.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
 
@@ -12,7 +12,7 @@ EvilEye::EvilEye()
 : Body(myM3DType(10), CenteredScaledBy2Bound)
 {
 	type_ = EVIL_EYE;
-	//attack_latency.start(evil_eye_attack_latency_time); // ждет до первой атаки
+	//attack_latency.start(evil_eye_attack_latency_time); // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	setAnimation(evil_eye_period);
 	time_to_live.start(evil_eye_time_to_live);
 	make_non_dynamic = 0;
@@ -49,39 +49,39 @@ void EvilEye::body_overlap_reaction(Body& body)
 		if(r.norm() > d)
 			r.normalize(d);
 		victim = &body;
-		time_to_explode.start(min(time_to_live(), evil_eye_time_to_explode)); // Время до взрыва
+		time_to_explode.start(min(time_to_live(), evil_eye_time_to_explode)); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		startSound(EFF_EVIL_EYE_ATTACK);
 		}
 } 
 
 void EvilEye::non_dynamic_evolve(float dt)
 {
-	// Прилипший
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	setPose(victim -> pose()*Xem);
 	if(victim -> completed()){
-		if(time_to_explode()){ // пришло время
+		if(time_to_explode()){ // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			victim -> damage(1000);
 			fxlabTitaniumExplosion(this);
-			kill();  // взрывает мехос
+			kill();  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			}
 		else{
-			if(dynamic_cast<Mechos*>(victim()) -> isFlyingByArcane() || !victim -> visible()){ // отлипает
+			if(dynamic_cast<Mechos*>(victim()) -> isFlyingByArcane() || !victim -> visible()){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				is_dynamic_ = 1;
 				make_non_colliding();
-				attack_latency.start(evil_eye_attack_latency_time); // ждет до следующей атаки
+				attack_latency.start(evil_eye_attack_latency_time); // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				stopSound(EFF_EVIL_EYE_ADD);
 				}
 			}
 		}
 	else
-		kill(); // мехос развалился сам
+		kill(); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 }
 
 void EvilEye::calc_forces_and_drags()
 { 
 	Body::calc_forces_and_drags();
 
-	// Ждущий жертву
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if(!attack_latency && !jump_latency && (colliding() || submersion() > 0.1)){ 
 		Body* body = Mdisp -> searchBody(R(), MECHOS);
 		if(body && (!body -> completed() || body -> ID == owner())){
@@ -91,7 +91,7 @@ void EvilEye::calc_forces_and_drags()
 			}
 		if(body){
 			Vect3f dr = getDist(body -> R(), R());
-			if(dr.norm() < evil_eye_attack_distance){ // попал в зону атаки
+			if(dr.norm() < evil_eye_attack_distance){ // пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				dr.z += evil_eye_delta_z;
 				dr *= evil_eye_velocity_factor;
 				setGlobalVelocity(dr);

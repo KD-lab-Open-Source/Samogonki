@@ -8,7 +8,7 @@
 
 #include "IGraph3d.h"
 
-#include "hfont.h"
+#include "HFONT.H"
 #include "hbm.h"
 
 #include "arcane_menu.h"

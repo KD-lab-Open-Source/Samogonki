@@ -1,7 +1,7 @@
 #ifndef __UNKLIBRARY_H__
 #define __UNKLIBRARY_H__
 
-#include "unknown.h"
+#include "Unknown.h"
 #include "BaseDefine.h"
 
 typedef cBaseList <cUnknownClass> cUnknownClassList;

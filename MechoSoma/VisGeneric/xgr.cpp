@@ -1,8 +1,8 @@
-#include "_xtool.h"
-#include "xgr.h"
-#include "assert.h"
+#include "xtool.h"
+#include "XGR.h"
+#include <cassert>
 
-#include "md3d.h"
+#include "Md3d.h"
 
 int RenderMode=XGRAPH_HICOLOR;
 

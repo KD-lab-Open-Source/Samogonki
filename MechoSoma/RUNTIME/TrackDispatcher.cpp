@@ -9,7 +9,7 @@
 #include "aci_parser.h"
 #include "mch_script.h"
 
-#include "terra.h"
+#include "TERRA.H"
 
 #include "mch_common.h" // For far target
 
@@ -144,7 +144,7 @@ mchTrackDispatcher::mchTrackDispatcher(void)
 {
 	mchTrackInfo* tr;
 	scrDataBlock* root,*p;
-	root = loadScript("RESOURCE\\mch_tracks.scb");
+	root = loadScript("RESOURCE/mch_tracks.scb");
 
 	p = root -> nextLevel -> first();
 	while(p){

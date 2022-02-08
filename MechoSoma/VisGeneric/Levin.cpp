@@ -1,5 +1,5 @@
 #include "PolyMgr.h"
-#include "camera.h"
+#include "Camera.h"
 #include "Levin.h"
 #include "Unknown.h"
 #include "BaseDefine.h"
@@ -8,7 +8,7 @@
 #include "mch_common.h" // For far target
 #endif
 
-inline float random()							{ return (((float)rand())/RAND_MAX); }
+inline float random_f()							{ return (((float)rand())/RAND_MAX); }
 
 void cLevin::Draw(cUnknownClass *UCameraList,int var)
 {
@@ -72,19 +72,19 @@ void cLevin::GenerationLevin1(const Vect3f &pos,const Vect3f &dpos,const Vect2f 
 		}	
 	}
 	Vect3f posNew(
-		pos.x+step*dpos.x+(random()-0.5f)*pAberration.x,
-		pos.y+step*dpos.y+(random()-0.5f)*pAberration.y,
-		pos.z+step*dpos.z+(random()-0.5f)*pAberration.z);
+		pos.x+step*dpos.x+(random_f()-0.5f)*pAberration.x,
+		pos.y+step*dpos.y+(random_f()-0.5f)*pAberration.y,
+		pos.z+step*dpos.z+(random_f()-0.5f)*pAberration.z);
 
-	if(random()*level*step<pNascency)
+	if(random_f()*level*step<pNascency)
 	{
 		Vect3f dposNew(
-			dpos.x+(random()-0.5f)*pLevel.x*pAberration.x,
-			dpos.y+(random()-0.5f)*pLevel.y*pAberration.y,
-			dpos.z+(random()-0.5f)*pLevel.z*pAberration.z);
+			dpos.x+(random_f()-0.5f)*pLevel.x*pAberration.x,
+			dpos.y+(random_f()-0.5f)*pLevel.y*pAberration.y,
+			dpos.z+(random_f()-0.5f)*pLevel.z*pAberration.z);
 		GenerationLevin1(posNew,dposNew,width,level+1,count+=step);
 	}
-	if(random()>(pStop*level*step))
+	if(random_f()>(pStop*level*step))
 		GenerationLevin1(posNew,dpos,width,level,count+=step);
 }
 void cLevin::GenerationLevin4(const Vect3f &pos,const Vect3f &dpos,const Vect2f &width,int length,int level,int count)
@@ -110,19 +110,19 @@ void cLevin::GenerationLevin4(const Vect3f &pos,const Vect3f &dpos,const Vect2f 
 		}
 	}
 	Vect3f posNew(
-		pos.x+step*dpos.x+(random()-0.5f)*pAberration.x,
-		pos.y+step*dpos.y+(random()-0.5f)*pAberration.y,
-		pos.z+step*dpos.z+(random()-0.5f)*pAberration.z);
+		pos.x+step*dpos.x+(random_f()-0.5f)*pAberration.x,
+		pos.y+step*dpos.y+(random_f()-0.5f)*pAberration.y,
+		pos.z+step*dpos.z+(random_f()-0.5f)*pAberration.z);
 
-	if(random()*level*step<pNascency)
+	if(random_f()*level*step<pNascency)
 	{
 		Vect3f dposNew(
-			dpos.x+(random()-0.5f)*pLevel.x*pAberration.x,
-			dpos.y+(random()-0.5f)*pLevel.y*pAberration.y,
-			dpos.z+(random()-0.5f)*pLevel.z*pAberration.z);
+			dpos.x+(random_f()-0.5f)*pLevel.x*pAberration.x,
+			dpos.y+(random_f()-0.5f)*pLevel.y*pAberration.y,
+			dpos.z+(random_f()-0.5f)*pLevel.z*pAberration.z);
 		GenerationLevin4(posNew,dposNew,width,length,level+1,count+=step);
 	}
-	if((random()>(pStop*level*step))||((level==1)&&(count<length)))
+	if((random_f()>(pStop*level*step))||((level==1)&&(count<length)))
 		GenerationLevin4(posNew,dpos,width,length,level,count+=step);
 }
 

@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////
-//	Кристалл
+//	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "Body.h"
 #include "Tomato.h"
 #include "Contact.h"
 
-#include "mesh3ds.h"
-#include "m3d_effects.h"
+#include "Mesh3ds.h"
+#include "M3d_effects.h"
 #include "sound.h"
 #include "AnimalArcansPrm.h"
-#include "params.h"
+#include "Params.h"
 
 static const float overlap_decrement = 0.005f;
 
@@ -63,7 +63,8 @@ void Tomato::body_overlap_reaction(Body& body)
 
 void Tomato::kill()
 {
-	fxlabTomatoBurst(Vect3f(R()));	
+	Vect3f v1(R());
+	fxlabTomatoBurst(v1);	
 	startSound(EFF_TOMATO_ADD);
 	Body::kill();
 }

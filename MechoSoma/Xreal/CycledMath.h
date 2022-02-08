@@ -9,7 +9,7 @@ const float V_SIZE_FLT = 2048.f;
 const double H_SIZE_DBL = 2048.;
 const double V_SIZE_DBL = 2048.;
 
-inline double getDistX(double v0,double v1)
+inline double getDistX_d(double v0,double v1)
 {
 	double d = v0 - v1;
 	double ad = fabs(d);
@@ -18,7 +18,7 @@ inline double getDistX(double v0,double v1)
 	return d < 0 ? d + H_SIZE_DBL : d - H_SIZE_DBL;
 }
 
-inline double getDistY(double v0,double v1)
+inline double getDistY_d(double v0,double v1)
 {
 	double d = v0 - v1;
 	double ad = fabs(d);
@@ -27,7 +27,7 @@ inline double getDistY(double v0,double v1)
 	return d < 0 ? d + V_SIZE_DBL : d - V_SIZE_DBL;
 }
 
-inline float getDistX(float v0,float v1)
+inline float getDistX_f(float v0,float v1)
 {
 	float d = v0 - v1;
 	float ad = (float)fabs(d);
@@ -36,7 +36,7 @@ inline float getDistX(float v0,float v1)
 	return d < 0 ? d + H_SIZE_FLT : d - H_SIZE_FLT;
 }
 
-inline float getDistY(float v0,float v1)
+inline float getDistY_f(float v0,float v1)
 {
 	float d = v0 - v1;
 	float ad = (float)fabs(d);
@@ -51,7 +51,7 @@ inline float& cycle(float& f, float size)
 	return f;
 }
 
-inline float getDist(float v0, float v1, float size)
+inline float getDist_f(float v0, float v1, float size)
 {
 	float d = fmod(v0 - v1, size);
 	float ad = (float)fabs(d);
@@ -62,7 +62,7 @@ inline float getDist(float v0, float v1, float size)
 
 inline float& uncycle(float& f1, float f0, float size)
 {
-	f1 = f0 + getDist(f1, f0, size);
+	f1 = f0 + getDist_f(f1, f0, size);
 	return f1;
 }
 
@@ -78,7 +78,7 @@ inline Vect3d& CYCLE(Vect3d &R)
 }
 inline Vect3d getDist(const Vect3d &P1,const Vect3d &P0)
 {
-	return Vect3d( getDistX(P1.x,P0.x), getDistY(P1.y,P0.y), P1.z - P0.z );
+	return Vect3d( getDistX_d(P1.x,P0.x), getDistY_d(P1.y,P0.y), P1.z - P0.z );
 }
 inline Vect3d getDelta(const Vect3d &P1,const Vect3d &P0)
 {
@@ -86,14 +86,14 @@ inline Vect3d getDelta(const Vect3d &P1,const Vect3d &P0)
 }
 inline Vect3d& UNCYCLE(Vect3d &P1,const Vect3d &P0)
 {
-	P1.x = P0.x + getDistX(P1.x, P0.x);
-	P1.y = P0.y + getDistY(P1.y, P0.y);
+	P1.x = P0.x + getDistX_d(P1.x, P0.x);
+	P1.y = P0.y + getDistY_d(P1.y, P0.y);
 	return P1;
 }
 inline Vect3d getUNCYCLED(const Vect3d &P1,const Vect3d &P0)
 {
-	return Vect3d (P0.x + getDistX(P1.x, P0.x),
-			     P0.y + getDistY(P1.y, P0.y),
+	return Vect3d (P0.x + getDistX_d(P1.x, P0.x),
+			     P0.y + getDistY_d(P1.y, P0.y),
 			     P1.z);
 }
 
@@ -108,7 +108,7 @@ inline Vect3f& CYCLE(Vect3f &R)
 }
 inline Vect3f getDist(const Vect3f &P1,const Vect3f &P0)
 {
-	return Vect3f( getDistX(P1.x,P0.x), getDistY(P1.y,P0.y), P1.z - P0.z );
+	return Vect3f( getDistX_f(P1.x,P0.x), getDistY_f(P1.y,P0.y), P1.z - P0.z );
 }
 inline Vect3f getDelta(const Vect3f &P1,const Vect3f &P0)
 {
@@ -116,14 +116,14 @@ inline Vect3f getDelta(const Vect3f &P1,const Vect3f &P0)
 }
 inline Vect3f& UNCYCLE(Vect3f &P1,const Vect3f &P0)
 {
-	P1.x = P0.x + getDistX(P1.x, P0.x);
-	P1.y = P0.y + getDistY(P1.y, P0.y);
+	P1.x = P0.x + getDistX_f(P1.x, P0.x);
+	P1.y = P0.y + getDistY_f(P1.y, P0.y);
 	return P1;
 }
 inline Vect3f getUNCYCLED(const Vect3f &P1,const Vect3f &P0)
 {
-	return Vect3f (P0.x + getDistX(P1.x, P0.x),
-			     P0.y + getDistY(P1.y, P0.y),
+	return Vect3f (P0.x + getDistX_f(P1.x, P0.x),
+			     P0.y + getDistY_f(P1.y, P0.y),
 			     P1.z);
 }
 

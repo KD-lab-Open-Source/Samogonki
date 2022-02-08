@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Body.h"
 #include "SimpleClip.h"
-#include "params.h"
+#include "Params.h"
 #include "CollisionHandler.hpp"
 
 const int contacts_vector_size_max = 300;
