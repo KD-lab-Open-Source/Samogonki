@@ -413,7 +413,7 @@ void cPolyDispatcher::CreateTexture(cTileMap *TileMap)
 #endif //_USE_TILEMAP_
 }
 void cPolyDispatcher::UnlockTexture(cUnknownClass *UCameraList,cTileMap *TileMap)
-{ // только для однодевайсного устройства
+{ // С‚РѕР»СЊРєРѕ РґР»СЏ РѕРґРЅРѕРґРµРІР°Р№СЃРЅРѕРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 	for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
@@ -425,7 +425,7 @@ void cPolyDispatcher::UnlockTexture(cUnknownClass *UCameraList,cTileMap *TileMap
 		}
 }
 void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosShade,cTileMap *TileMap)
-{ // только для однодевайсного устройства
+{ // С‚РѕР»СЊРєРѕ РґР»СЏ РѕРґРЅРѕРґРµРІР°Р№СЃРЅРѕРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 	unsigned char *MemTextureTile=0;
 	int iTileMap=0,jTileMap=0;
 	sTexture *CurrentLightMap=0;
@@ -449,7 +449,7 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 		int y=YCYCL(ySh+j), x=xSh,x_cycl=xSh,v;
 		unsigned char *pv0=&(vMap_VxBuf()[(y>>TERRA_kmVxBuf)<<(TERRA_H_SIZE_POWER-TERRA_kmVxBuf)]);
 		unsigned char *pa0=&(vMap_AtBuf()[(y>>TERRA_kmVxBuf)<<(TERRA_H_SIZE_POWER-TERRA_kmVxBuf)]);
-		if(!ReflectionShade) // тень отбрасывается на дно водоема
+		if(!ReflectionShade) // С‚РµРЅСЊ РѕС‚Р±СЂР°СЃС‹РІР°РµС‚СЃСЏ РЅР° РґРЅРѕ РІРѕРґРѕРµРјР°
 			while((zSh<(v=(pv0[x_cycl>>TERRA_kmVxBuf]<<TERRA_SHIFT_VX)))&&((xSh-x)<xShade))
 				x_cycl=XCYCL(x-=(1<<MAP_LIGHTMAP_STEP_BIT));
 		else
@@ -459,7 +459,7 @@ void cPolyDispatcher::BuildShade(short *shade,int xShade,int yShade,Vect3f &PosS
 		int xshade=(xSh-x)-(((zSh-v)*dzx)>>16);
 		while(xshade<xShade)
 		{
-			if(!ReflectionShade) // тень отбрасывается на дно водоема
+			if(!ReflectionShade) // С‚РµРЅСЊ РѕС‚Р±СЂР°СЃС‹РІР°РµС‚СЃСЏ РЅР° РґРЅРѕ РІРѕРґРѕРµРјР°
 				v=pv0[x_cycl>>TERRA_kmVxBuf]<<TERRA_SHIFT_VX;
 			else
 				v=(((pa0[x_cycl>>TERRA_kmVxBuf]&TERRA_At_WATER)==0)?(pv0[x_cycl>>TERRA_kmVxBuf]<<TERRA_SHIFT_VX):vMap_LevelH2O());

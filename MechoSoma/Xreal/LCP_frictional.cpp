@@ -22,11 +22,11 @@ void LCP_Solver::compute_force_frictional()
 	while(1){
 
 		/////////////////////////////////////////////////////////////
-		//  ��������� ����������� �������
+		//  Установка касательных условий
 		int d;
 		drive_friction = _CLEAN_F_;
 		for(d = 1; d <= size_frictional; d++){
-			if(prp_t(d) != _CLEAN_F_) // ������� ��� �����������
+			if(prp_t(d) != _CLEAN_F_) // условие уже установлено
 				continue;
 
 			switch(prp(fn_index(d))){
@@ -34,24 +34,24 @@ void LCP_Solver::compute_force_frictional()
 					if(fabs(a_t(d)) > a_t_zero_threshould)
 						drive_to_zero_frictional(d);
 					else
-						// ��� ������������ ���������
+						// нет касательного ускорения
 						prp_t(d) = a_t(d) < 0 ? _NCP_ : _NCM_;
 					break;
 
-				case _NC_:  // ��� ���������� ���� �� ������ ��������
-					if(fabs(f_t(d)) > LCP_delta_tolerance)  // ������� ����� ������������� ����������� ����
+				case _NC_:  // нет нормальной силы на данном контакте
+					if(fabs(f_t(d)) > LCP_delta_tolerance)  // убираем ранее установленную касательную силу
 						drive_to_zero_frictional(d);
 					else
 						prp_t(d) = a_t(d) < 0 ? _NCP_ : _NCM_;
 					break;
 
-				case _CLEAN_:  // ������������� ����������� ������� ����� ��������� ����������� 
+				case _CLEAN_:  // устанавливать касательное условие после установки нормального 
 					break;
 				}
 			}
 	
 		/////////////////////////////////////////////////////////////
-		//  ��������� ���������� ������� 	
+		//  Установка нормальных условий 	
 		drive_friction = 0;
 		for(d = 1; d <= size; d++){
 			if(prp(d) != _CLEAN_)
@@ -151,18 +151,18 @@ void LCP_Solver::drive_to_zero_frictional(int d)
 			//	Normal
 			case _CLEAN_:
 			case _NC_: {
-				int index_t = ft_index(index);	// ��������� ������� �� ������, ���� ���� 			
+				int index_t = ft_index(index);	// проверяем условие на трение, если есть 			
 				if(index_t){
-					if(prp_t(index_t) & _CF_)  // ���� clamped - �������
+					if(prp_t(index_t) & _CF_)  // было clamped - убираем
 						C_size_frictional--;
-					prp_t(index_t) = _CLEAN_F_;  // �������
+					prp_t(index_t) = _CLEAN_F_;  // очищаем
 					}
 				if(prev_state == _C_)
 					C_size_frictional--;
 				break; }
 
 			case _C_:
-//				assert(0); // ���� ���� ����������� �������, �� ��� ����, ��������, ��������
+//				assert(0); // если есть касательное условие, то его надо, возможно, очистить
 				C_size_frictional++;
 				break;
 			}
@@ -184,11 +184,11 @@ void LCP_Solver::fdirection_frictional(int d)
 	
 	if(drive_friction)
 		if(prp(fn_index(d)) == _C_)
-			df_t(d) = dir = -SIGN(a_t(d));  // ����������� ����������� ����, ����� �������������� ����������� ���������
+			df_t(d) = dir = -SIGN(a_t(d));  // настраиваем касательную силу, чтобы минимизировать касательное ускорение
 		else
-			df_t(d) = dir = -SIGN(f_t(d)); // ������� ����������� ����, �.�. ��� ����������
+			df_t(d) = dir = -SIGN(f_t(d)); // убираем касательную силу, т.к. нет нормальной
 	else
-		df(d) = 1; // ����������� ���������� ����
+		df(d) = 1; // настраиваем нормальную силу
 
 	if(!C_size_frictional)
 		return;

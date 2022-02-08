@@ -11,8 +11,8 @@ struct sTextureSoftware
 {
 	unsigned int	ID;
 	eTextureFormat	format;
-	int				_x,_y;	// áèòîâûé ðàçìåð òåêñòóðû
-	int				bpl;	// áàéò íà ñòðîêó òåêñòóðû
+	int				_x,_y;	// Ð±Ð¸Ñ‚Ð¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
+	int				bpl;	// Ð±Ð°Ð¹Ñ‚ Ð½Ð° ÑÑ‚Ñ€Ð¾ÐºÑƒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
 	void			*buf;
 
 	sTextureSoftware(int id,eTextureFormat fmtTex,int xTex,int yTex);
@@ -57,7 +57,7 @@ public:
 	virtual int CreateTexture(int x,int y,eTextureFormat TextureFormat);
 	virtual int DeleteTexture(int hTexture);
 
-	// íà÷àëî ïðî÷èå ôóíêöèè
+	// Ð½Ð°Ñ‡Ð°Ð»Ð¾ Ð¿Ñ€Ð¾Ñ‡Ð¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	virtual int CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat, 
 							  DWORD dwFlags,DWORD* lpdwHandle );
 	virtual int CreateChildSprite(DWORD dwParentHandle,DWORD dwLeft,DWORD dwTop, 
@@ -92,7 +92,7 @@ public:
 
 	virtual int ScreenShot(VOID *lpBuffer,DWORD dwSize);
 	virtual int GetWindowHandle( HWND *hWnd );
-	// êîíåö ïðî÷èå ôóíêöèè
+	// ÐºÐ¾Ð½ÐµÑ† Ð¿Ñ€Ð¾Ñ‡Ð¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	virtual int SetViewColor(int r,int g,int b,int a);
 
 	virtual int	GetSizeX()											{ return xScr; }
@@ -120,11 +120,11 @@ private:
 
 	inline sTextureSoftwareList* GetTexture(unsigned int hTexture)				{ for(sTextureSoftwareList *start=TextureLibrary.BaseList;start;start=start->next) if(start->Base->ID==hTexture) return start; assert(0); return 0; }
 	inline int GetColor(int r,int g,int b)										{ if(r>255) r=255; if(g>255) g=255; if(b>255) b=255; return ((r>>(8-rBitCount))<<rBitShift)+((g>>(8-gBitCount))<<gBitShift)+((b>>(8-bBitCount))<<bBitShift); }
-// äàííûå äëÿ ñîôòâàðíîãî ðåíäåðà
-	void			*texture;							// óêàçàòåëü íà òåêóùóþ òåêñòóðó
-	int				_xt1,_yt1;							// áèòîâûé ðàçìåð òåêñòóðû
-	int				xmt1,ymt1;							// ìàñêà òåêñòóðû ñäâèíóòàÿ
-	int				xst1_,yst1_;						// ðàçìåð òåêñòóðû
+// Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð´Ð»Ñ ÑÐ¾Ñ„Ñ‚Ð²Ð°Ñ€Ð½Ð¾Ð³Ð¾ Ñ€ÐµÐ½Ð´ÐµÑ€Ð°
+	void			*texture;							// ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ
+	int				_xt1,_yt1;							// Ð±Ð¸Ñ‚Ð¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
+	int				xmt1,ymt1;							// Ð¼Ð°ÑÐºÐ° Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ ÑÐ´Ð²Ð¸Ð½ÑƒÑ‚Ð°Ñ
+	int				xst1_,yst1_;						// Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
 	int				xe1,ye1,z1, mr1,mg1,mb1,ma1, ar1,ag1,ab1,aa1, u11,v11, u21,v21, u31,v31;
 	int				xe2,ye2,z2, mr2,mg2,mb2,ma2, ar2,ag2,ab2,aa2, u12,v12, u22,v22, u32,v32;
 	int				xe3,ye3,z3, mr3,mg3,mb3,ma3, ar3,ag3,ab3,aa3, u13,v13, u23,v23, u33,v33;
@@ -132,13 +132,13 @@ private:
 	sVertexFix		*v1,*v2,*v3;
 ////////// HiColor //////////
 	eTextureFormat	ScrTextureFormat;
-	unsigned short	rPal16Mem[GRAPH3D_SOFTWARE_TONE_MAX-GRAPH3D_SOFTWARE_TONE_MIN];	// ïåðåâîä TrueColor ðåæèìà â HiColor, ñ çàïàñîì äëÿ àääèòèâíûõ îïåðàöèé
+	unsigned short	rPal16Mem[GRAPH3D_SOFTWARE_TONE_MAX-GRAPH3D_SOFTWARE_TONE_MIN];	// Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´ TrueColor Ñ€ÐµÐ¶Ð¸Ð¼Ð° Ð² HiColor, Ñ Ð·Ð°Ð¿Ð°ÑÐ¾Ð¼ Ð´Ð»Ñ Ð°Ð´Ð´Ð¸Ñ‚Ð¸Ð²Ð½Ñ‹Ñ… Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¹
 	unsigned short	gPal16Mem[GRAPH3D_SOFTWARE_TONE_MAX-GRAPH3D_SOFTWARE_TONE_MIN];
 	unsigned short	bPal16Mem[GRAPH3D_SOFTWARE_TONE_MAX-GRAPH3D_SOFTWARE_TONE_MIN];	
-	unsigned short	*rPal16,*gPal16,*bPal16;	// ïåðåâîä TrueColor ðåæèìà â HiColor, ñ çàïàñîì äëÿ àääèòèâíûõ îïåðàöèé
+	unsigned short	*rPal16,*gPal16,*bPal16;	// Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´ TrueColor Ñ€ÐµÐ¶Ð¸Ð¼Ð° Ð² HiColor, Ñ Ð·Ð°Ð¿Ð°ÑÐ¾Ð¼ Ð´Ð»Ñ Ð°Ð´Ð´Ð¸Ñ‚Ð¸Ð²Ð½Ñ‹Ñ… Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ð¹
 
 	void InitColor16();
-	// ôóíêöèè âûâîäà ñàìîãî íèçêîãî óðîâíÿ
+	// Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð²Ñ‹Ð²Ð¾Ð´Ð° ÑÐ°Ð¼Ð¾Ð³Ð¾ Ð½Ð¸Ð·ÐºÐ¾Ð³Ð¾ ÑƒÑ€Ð¾Ð²Ð½Ñ
 	// Right, 16 bit color (hi color), Zbuffer - Test, Write, Color = Diffuse
 	void R16_ZTW_CMD(void *pscr,void *pzBuffer);		
 	void L16_ZTW_CMD(void *pscr,void *pzBuffer);		

@@ -37,7 +37,7 @@ public:
 	virtual int CreateTexture(int x,int y,eTextureFormat TextureFormat);
 	virtual int DeleteTexture(int hTexture);
 
-	// начало прочие функции
+	// РЅР°С‡Р°Р»Рѕ РїСЂРѕС‡РёРµ С„СѓРЅРєС†РёРё
 	virtual int CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat, 
 							  DWORD dwFlags,DWORD* lpdwHandle );
 	virtual int CreateChildSprite(DWORD dwParentHandle,DWORD dwLeft,DWORD dwTop, 
@@ -71,7 +71,7 @@ public:
 
 	virtual int ScreenShot(VOID *lpBuffer,DWORD dwSize);
 	virtual int GetWindowHandle( HWND *hWnd );
-	// конец прочие функции
+	// РєРѕРЅРµС† РїСЂРѕС‡РёРµ С„СѓРЅРєС†РёРё
 	virtual int SetViewColor(int r,int g,int b,int alfa);
 
 	virtual int	GetSizeX()											{ return xScr; }

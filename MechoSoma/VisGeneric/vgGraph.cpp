@@ -4,7 +4,7 @@
 #include "XGR.h"
 #include "Md3d.h"
 
-// ������� ��� ������ � ����� ������
+// функции для работы с окном вывода
 cUnknownClass* cVisGeneric::CreateGraph(int xScr,int yScr,int GraphMode,int FullScr,int ColorBit)
 {
 	assert(P3D);

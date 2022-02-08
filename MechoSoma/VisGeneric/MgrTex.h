@@ -7,20 +7,20 @@
 class cManagerTexture : public cInterfaceTexture
 {
 public:
-	// объявления cInterfaceTexture 
+	// РѕР±СЉСЏРІР»РµРЅРёСЏ cInterfaceTexture 
 	cManagerTexture();
 	~cManagerTexture();
 	virtual int Release();
-	virtual void Delete(cUnknownClass* Texture);								// удаление любой текстуры
+	virtual void Delete(cUnknownClass* Texture);								// СѓРґР°Р»РµРЅРёРµ Р»СЋР±РѕР№ С‚РµРєСЃС‚СѓСЂС‹
 
-	virtual cUnknownClass* Get(char *NameTexture,char *NameOpacity=0);			// загрузка анимированной текстуры cTextureAnimation
-	virtual void Free();														// освобождение неиспользуемых текстур
+	virtual cUnknownClass* Get(char *NameTexture,char *NameOpacity=0);			// Р·Р°РіСЂСѓР·РєР° Р°РЅРёРјРёСЂРѕРІР°РЅРЅРѕР№ С‚РµРєСЃС‚СѓСЂС‹ cTextureAnimation
+	virtual void Free();														// РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹С… С‚РµРєСЃС‚СѓСЂ
 
 protected:
 	cUnknownLibrary			TextureLibrary;
-	// функции для работы с библиотекой текстур
-	cUnknownClass* GetTextureAnimation(char *NameTexture,char *NameOpacity=0);	// возвращает cTextureAnimation
-	void DeleteTexture(cUnknownClass *Texture);									// для удаления текстур, выделенных библиотекой
+	// С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р±РёР±Р»РёРѕС‚РµРєРѕР№ С‚РµРєСЃС‚СѓСЂ
+	cUnknownClass* GetTextureAnimation(char *NameTexture,char *NameOpacity=0);	// РІРѕР·РІСЂР°С‰Р°РµС‚ cTextureAnimation
+	void DeleteTexture(cUnknownClass *Texture);									// РґР»СЏ СѓРґР°Р»РµРЅРёСЏ С‚РµРєСЃС‚СѓСЂ, РІС‹РґРµР»РµРЅРЅС‹С… Р±РёР±Р»РёРѕС‚РµРєРѕР№
 };
 
 #endif //__MANAGERTEXTURE_H__

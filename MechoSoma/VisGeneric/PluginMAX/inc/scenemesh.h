@@ -48,8 +48,8 @@ struct sChannelMapping
 {
 	unsigned int		ID;
 	unsigned int		ChannelNumber;			// 0-ColorVertex, 1-TexelVertex, 2..-Add TexelVertex
-	sTexVertexMesh		TexVertex;				// массив текстурных uvw-координат вершин
-	sTexFaceMesh		TexFace;				// массив текстурных вершин полигонов
+	sTexVertexMesh		TexVertex;				// РјР°СЃСЃРёРІ С‚РµРєСЃС‚СѓСЂРЅС‹С… uvw-РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ
+	sTexFaceMesh		TexFace;				// РјР°СЃСЃРёРІ С‚РµРєСЃС‚СѓСЂРЅС‹С… РІРµСЂС€РёРЅ РїРѕР»РёРіРѕРЅРѕРІ
 
 	sChannelMapping()						{ ID=0; }
 	~sChannelMapping()						{ Release(); }
@@ -63,13 +63,13 @@ typedef cBaseMeshPointerLibrary <sChannelMapping> sChannelMappingLibrary;
 struct sAnimationMesh
 {
 	unsigned int			ID;
-	int						time;			// время
-	sVertexMesh				Vertex;			// массив xyz-координат вершин
-	sFaceMesh				Face;			// массив вершин полигонов
-	sVertexNormalMesh		VertexNormal;	// нормали для каждой вершиины полигона
-	sFaceNormalMesh			FaceNormal;		// нормали для каждого полигона
+	int						time;			// РІСЂРµРјСЏ
+	sVertexMesh				Vertex;			// РјР°СЃСЃРёРІ xyz-РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ
+	sFaceMesh				Face;			// РјР°СЃСЃРёРІ РІРµСЂС€РёРЅ РїРѕР»РёРіРѕРЅРѕРІ
+	sVertexNormalMesh		VertexNormal;	// РЅРѕСЂРјР°Р»Рё РґР»СЏ РєР°Р¶РґРѕР№ РІРµСЂС€РёРёРЅС‹ РїРѕР»РёРіРѕРЅР°
+	sFaceNormalMesh			FaceNormal;		// РЅРѕСЂРјР°Р»Рё РґР»СЏ РєР°Р¶РґРѕРіРѕ РїРѕР»РёРіРѕРЅР°
 	sChannelMappingLibrary	ChannelMappingLibrary;
-	float					Box[6];		// характерный размер
+	float					Box[6];		// С…Р°СЂР°РєС‚РµСЂРЅС‹Р№ СЂР°Р·РјРµСЂ
 
 	sAnimationMesh()						{ ID=0; time=0; }
 	~sAnimationMesh()						{ Release(); }
@@ -126,9 +126,9 @@ struct sHelperObject : public sNodeObject
 
 struct sSubTexmap
 {
-	unsigned int		ID;							// идентификатор текстуры 
-	cString				name;						// имя текстуры 
-	int					ChannelNumber;				// номер канала текстурной генерации
+	unsigned int		ID;							// РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‚РµРєСЃС‚СѓСЂС‹ 
+	cString				name;						// РёРјСЏ С‚РµРєСЃС‚СѓСЂС‹ 
+	int					ChannelNumber;				// РЅРѕРјРµСЂ РєР°РЅР°Р»Р° С‚РµРєСЃС‚СѓСЂРЅРѕР№ РіРµРЅРµСЂР°С†РёРё
 	sSubTexmap()									{ memset(this,0,sizeof(sSubTexmap)); }
 	~sSubTexmap()									{ Release(); }
 	void Release()						
@@ -145,14 +145,14 @@ typedef cBaseMeshPointerLibrary <sSubTexmap> cSubTexmapArray;
 struct sAnimationMaterial
 {
 	unsigned int			ID;
-	int						time;				// время
+	int						time;				// РІСЂРµРјСЏ
 	float					AmbientColor[3];
 	float					DiffuseColor[3];
 	float					SpecularColor[3];
 	float					Shininess;
 	float					ShinStrength;
 	float					Transparency;
-	cSubTexmapArray			SubTexmap;			// список SubTexmap
+	cSubTexmapArray			SubTexmap;			// СЃРїРёСЃРѕРє SubTexmap
 
 	sAnimationMaterial()						{ memset(this,0,sizeof(sAnimationMaterial)); }
 	~sAnimationMaterial()						{ Release(); }
@@ -166,10 +166,10 @@ typedef cBaseMeshPointerLibrary <sAnimationMaterial> cAnimationMaterialLibrary;
 struct sMaterialObject
 {
 public:
-	unsigned int			ID;					// порядковый номер в библиотеке
-	cString					name;				// имя материала
-	cString					parent;				// родитель, тот который содержит этот материал (MultiSubObjectMaterial)
-	int						NumberSubObject;	// число материалов в данном, которые будут ссылаться через parent на данный
+	unsigned int			ID;					// РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РІ Р±РёР±Р»РёРѕС‚РµРєРµ
+	cString					name;				// РёРјСЏ РјР°С‚РµСЂРёР°Р»Р°
+	cString					parent;				// СЂРѕРґРёС‚РµР»СЊ, С‚РѕС‚ РєРѕС‚РѕСЂС‹Р№ СЃРѕРґРµСЂР¶РёС‚ СЌС‚РѕС‚ РјР°С‚РµСЂРёР°Р» (MultiSubObjectMaterial)
+	int						NumberSubObject;	// С‡РёСЃР»Рѕ РјР°С‚РµСЂРёР°Р»РѕРІ РІ РґР°РЅРЅРѕРј, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ СЃСЃС‹Р»Р°С‚СЊСЃСЏ С‡РµСЂРµР· parent РЅР° РґР°РЅРЅС‹Р№
 	int						Shading;
 	cAnimationMaterialLibrary	AnimationMaterialLibrary;
 	
@@ -210,7 +210,7 @@ struct sChannelAnimation
 	int							LastFrame;
 	int							FrameSpeed;
 	int							TicksPerFrame;
-	int							NumberFrame;	// временная переменная только для *.m3d с чтением морфинга
+	int							NumberFrame;	// РІСЂРµРјРµРЅРЅР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ С‚РѕР»СЊРєРѕ РґР»СЏ *.m3d СЃ С‡С‚РµРЅРёРµРј РјРѕСЂС„РёРЅРіР°
 	cLodObjectLibrary			LodLibrary;
 
 	sChannelAnimation()						{ ID=1; name=(char*)0; TicksPerFrame=FrameSpeed=LastFrame=FirstFrame=NumberFrame=0; }

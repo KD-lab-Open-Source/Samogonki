@@ -1,18 +1,18 @@
 #ifndef	__BASE_H__
 #define __BASE_H__
 
-//  Типы объектов
+//  РўРёРїС‹ РѕР±СЉРµРєС‚РѕРІ
 #include "M3d_id.h"
 
-// Тип объекта
+// РўРёРї РѕР±СЉРµРєС‚Р°
 #define M3D_TYPE(type)		((unsigned)(type) & 0xffff)
-// Разновидность объекта
+// Р Р°Р·РЅРѕРІРёРґРЅРѕСЃС‚СЊ РѕР±СЉРµРєС‚Р°
 #define M3D_KIND(type)		((unsigned)(type) >> 16)
-// Полный тип объекта
+// РџРѕР»РЅС‹Р№ С‚РёРї РѕР±СЉРµРєС‚Р°
 #define M3D_TOTAL_TYPE(part_kind, part_type)	(((unsigned)(part_kind) << 16) | (part_type))
-// Статический объект
+// РЎС‚Р°С‚РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚
 #define IS_STATIC(type)	(M3D_TYPE(type) & (M3D_STATIC_COLLIDING | M3D_STATIC_NON_COLLIDING))
-// Тип родителя
+// РўРёРї СЂРѕРґРёС‚РµР»СЏ
 inline int M3D_PARENT(int childType)
 {
 	switch(childType)
@@ -29,17 +29,17 @@ inline int M3D_PARENT(int childType)
 	}
 	return 0;
 }
-// Имена деталей
+// РРјРµРЅР° РґРµС‚Р°Р»РµР№
 #define M3D_BOUND_STRING		"bound"
 
-// Динамические объекты
+// Р”РёРЅР°РјРёС‡РµСЃРєРёРµ РѕР±СЉРµРєС‚С‹
 #define M3D_MOUSE3D				M3D_TOTAL_TYPE(M3D_MOUSE3D_KIND, M3D_MECHOSOMA)
 #define M3D_CONTROL_POINT		M3D_TOTAL_TYPE(M3D_CONTROL_POINT_KIND, M3D_MECHOSOMA)
 
 #define MAX_SIZE_OBJECT			113
 #define MAX_SIZE_NORMAL_BIT		7	
-#define COLOR_GRADATION_BIT		3			/* ъюышўхёЄтю юЄЄхэъют ЎтхЄр <= MAX_SIZE_NORMAL_BIT */
-#define COS_DEGREE				9			/* ёЄхяхэ№ cos яЁш чхЁъры№эюь юЄЁрцхэшш */
+#define COLOR_GRADATION_BIT		3			/* СЉСЋС‹С€СћС…С‘Р„С‚СЋ СЋР„Р„С…СЌСЉСЋС‚ РЋС‚С…Р„СЂ <= MAX_SIZE_NORMAL_BIT */
+#define COS_DEGREE				9			/* С‘Р„С…СЏС…СЌв„– cos СЏРЃС€ С‡С…РЃСЉСЂС‹в„–СЌСЋСЊ СЋР„РЃСЂС†С…СЌС€С€ */
 #define PALETTE_MAX_SIZE		6			/* for dos palette 0..63, for win palette 0..255 */
 #define Z_SHADE_MAX				40
 #define	TEXTURE_COORD			11

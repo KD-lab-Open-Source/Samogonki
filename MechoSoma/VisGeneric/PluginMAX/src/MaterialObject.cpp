@@ -21,7 +21,7 @@ int sMaterialObject::Read(cMeshFile &f)
 			case MF_TYPE_NUMBERSUBOBJECT:
 				f.ReadField(&NumberSubObject);
 				break;
-			// для совместимости версий с анимацией материала и без анимации материала
+			// РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё РІРµСЂСЃРёР№ СЃ Р°РЅРёРјР°С†РёРµР№ РјР°С‚РµСЂРёР°Р»Р° Рё Р±РµР· Р°РЅРёРјР°С†РёРё РјР°С‚РµСЂРёР°Р»Р°
 			case MF_TYPE_AMBIENTCOLOR:
 				if(CurrentAnimationMaterial==0) 
 					CurrentAnimationMaterial=AnimationMaterialLibrary.Append();
@@ -92,16 +92,16 @@ int sMaterialObject::Write(cMeshFile &f)
 sMaterialObject& sMaterialObject::operator = (const sMaterialObject &Material)
 {
 	Release();
-	ID=Material.ID;					// порядковый номер в библиотеке
-	name=Material.name;				// имя материала
-	parent=Material.parent;			// родитель, тот который содержит этот материал (MultiSubObjectMaterial)
+	ID=Material.ID;					// РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РІ Р±РёР±Р»РёРѕС‚РµРєРµ
+	name=Material.name;				// РёРјСЏ РјР°С‚РµСЂРёР°Р»Р°
+	parent=Material.parent;			// СЂРѕРґРёС‚РµР»СЊ, С‚РѕС‚ РєРѕС‚РѕСЂС‹Р№ СЃРѕРґРµСЂР¶РёС‚ СЌС‚РѕС‚ РјР°С‚РµСЂРёР°Р» (MultiSubObjectMaterial)
 	MEMCPY(AmbientColor,Material.AmbientColor,3*sizeof(float));
 	MEMCPY(DiffuseColor,Material.DiffuseColor,3*sizeof(float));
 	MEMCPY(SpecularColor,Material.SpecularColor,3*sizeof(float));
 	Shininess=Material.Shininess;
 	ShinStrength=Material.ShinStrength;
 	Transparency=Material.Transparency;
-	NumberSubObject=Material.NumberSubObject;	// число материалов в данном, которые будут ссылаться через parent на данный
+	NumberSubObject=Material.NumberSubObject;	// С‡РёСЃР»Рѕ РјР°С‚РµСЂРёР°Р»РѕРІ РІ РґР°РЅРЅРѕРј, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ СЃСЃС‹Р»Р°С‚СЊСЃСЏ С‡РµСЂРµР· parent РЅР° РґР°РЅРЅС‹Р№
 	SubTexmap=Material.SubTexmap;
 	return *this;
 }

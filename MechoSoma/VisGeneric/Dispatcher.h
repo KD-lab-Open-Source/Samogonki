@@ -58,14 +58,14 @@ public:
 	unsigned int		NumberID;
 	cM3D()													{ MeshList=new cList(); NumberID=0; Window=0; prev_global_time = 0; }
 	~cM3D()													{ Release(0); }
-	// ��������
+	// загрузка
 	void LoadLib(const std::filesystem::path &path);
 	void LoadMap(char *fname,int LoadNumberTrack=0xFFFFFFFF);
 	void SaveMap(char *fname,char Version='O');
-	// �����
+	// вывод
 	void TestVisible(cUnknownClass *UCameraList);
 	void Draw(cUnknownClass *UCameraList);
-	// �������� �������� � �.�.
+	// создание объектов и т.д.
 	cMesh* CreateObject(unsigned int *vType,int number);	// Constructor objects
 	cMesh* CreateObject(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
 	cMesh* CreateObject(unsigned int Type,float x,float y,float z,float ax,float ay,float az);
@@ -87,10 +87,10 @@ public:
 	cMesh* FindUnique(unsigned int unique);
 
 	cList* AttachEnd(cMesh *Mesh);
-	cList* Attach(cMesh *Mesh);	// ����������� ������� � ������
-	void   Detach(cMesh *Mesh);	// ������������ ������� �� ������
-	void   Delete(cMesh *Mesh); // �������� ������� � ������
-	void   Release(unsigned int Type=M3D_STATIC); // �������� �������� �� ������ �� ����
+	cList* Attach(cMesh *Mesh);	// присоединие объекта к списку
+	void   Detach(cMesh *Mesh);	// отсоединение объекта от списка
+	void   Delete(cMesh *Mesh); // удаление объекта в списке
+	void   Release(unsigned int Type=M3D_STATIC); // удаление объектов из списка по типу
 #ifdef _MECHOSOMA_
 	void  SetArcane(void (*FunctionSetArcane)(mchArcaneData*));
 #endif

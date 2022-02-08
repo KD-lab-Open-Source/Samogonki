@@ -11,7 +11,7 @@
 #include "TexMgr.h"
 
 #include "Scene.h"
-#include "scenemesh.h"	// ��� ������ ��������������� ������
+#include "scenemesh.h"	// для чтения импортированных файлов
 #include "Frame.h"
 
 #ifdef _MECHOSOMA_
@@ -121,7 +121,7 @@ cMesh* cMeshLibrary::CopyObject(cMesh *Mesh,unsigned int Type)
 }
 
 inline sObjectMesh *GetObjectByName(sLodObject *LodObject,char *name)
-{ // ������� ���� � LOD'� ������ ������� � ������� ��������
+{ // функция ищет в LOD'е объект поимени и времени анимации
 	for(int nNodeObject=0;nNodeObject<LodObject->NodeObjectLibrary.length();nNodeObject++)
 	{ 
 		sNodeObject *NodeObject=LodObject->NodeObjectLibrary[nNodeObject];
@@ -141,8 +141,8 @@ void GetMatrix(cMatrix &Matrix,sNodeObject *StartNodeObject,sLodObject *LodObjec
 {
 	for(sNodeObject *NodeObject=StartNodeObject;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get((char*)NodeObject->parent))
 	{
-		cMatrix AnimationMatrix; // ������� ��������� ������� �������������� ��������
-		AnimationMatrix.NewMatrix(); // ��������� ������� ��������
+		cMatrix AnimationMatrix; // матрица положения объекта относительного родителя
+		AnimationMatrix.NewMatrix(); // установка матрицы анимации
 		sAnimationPosition &AnimationPosition=NodeObject->AnimationPosition;
 		sAnimationRotation &AnimationRotation=NodeObject->AnimationRotation;
 		sAnimationScale &AnimationScale=NodeObject->AnimationScale;
@@ -200,19 +200,19 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 	Tile->GetName()=ObjectMesh->name;
 	sVertexMesh	&Vertex=AnimationMesh->Vertex;
 	sFaceMesh &Face=AnimationMesh->Face;
-	assert(Face.length()); // ���� �� ����������� ������
+	assert(Face.length()); // тест на ликвидность модели
 	assert(Vertex.length());
 	assert(Face[0][3]<LodObject->MaterialLibrary.length());
 	int nMapping=AnimationMesh->ChannelMappingLibrary.length();
 	sChannelMapping *ChannelMapping=0;
 	if(nMapping) ChannelMapping=AnimationMesh->ChannelMappingLibrary[0];
-	if((nMapping==0)||(ChannelMapping->ChannelNumber==0)) // ������ �� �������� ���������� ��������� (��� ��������)
+	if((nMapping==0)||(ChannelMapping->ChannelNumber==0)) // объект не содержит текстурных координат (нет текстуры)
 		if(IsStatic) Tile->NewTri(Face.length(),Vertex.length(),0,0);
 		else 
 			((sObjTri*)Tile)->NewTri(Vertex.length(),0);
 //			Tile->NewTri(Face.length(),Vertex.length(),0,0);
 	else
-	{ // ������ ���������� ���������
+	{ // импорт текстурных координат
 		sTexFaceMesh &TexFace=ChannelMapping->TexFace;
 		sTexVertexMesh &TexVertex=ChannelMapping->TexVertex;
 		assert(TexFace.length()==Face.length());
@@ -242,7 +242,7 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 		for(k=0;k<Tile->GetNumberPolygon();k++)
 			pPolygon[k].set(Face[k][0],Face[k][1],Face[k][2]);
 	}
-	// ������ ������� ��������� �������
+	// импорт свойств материала объекта
 	if((LodObject->MaterialLibrary.length()==0)||(Face[0][3]<0))
 	{ XBuffer buf; buf<"Error: ReadAnimationMesh()\r\nNot found material by object <"<ObjectMesh->name<"> in file <"<fname<">\r\n"; ErrH.Abort(buf.address()); }
 	sMaterialObject *Material=LodObject->MaterialLibrary[Face[0][3]];
@@ -250,7 +250,7 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 	int dt=0x0FFFFFFF;
 	for(int nAnimationMaterial=0;nAnimationMaterial<Material->AnimationMaterialLibrary.length();nAnimationMaterial++)
 		if(abs(Material->AnimationMaterialLibrary[nAnimationMaterial]->time-time)<dt)
-		{ // ����� ���������� �� ������� ��������� 
+		{ // поиск ближайшего по времени материала 
 			AnimationMaterial=Material->AnimationMaterialLibrary[nAnimationMaterial];
 			dt=abs(Material->AnimationMaterialLibrary[nAnimationMaterial]->time-time);
 		}
@@ -281,15 +281,15 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 			break;
 	}
 	Tile->GetMaterial()->SetTexture(Texture,Opacity);
-	// ������ �������� ��������� ������� ..
+	// импорт анимации корневого объекта ..
 	
-	// .. ���� �� �����������
-	// !!! � ��� ����� �������� ���������� SCALEAXIS ��� � ASCII !!!
+	// .. пока не реализовано
+	// !!! и еще нужно добавить кватернион SCALEAXIS как в ASCII !!!
 	cMatrix Matrix; Matrix.NewMatrix();
 	for(sNodeObject *NodeObject=ObjectMesh;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get((char*)NodeObject->parent))
 	{
-		cMatrix AnimationMatrix; // ������� ��������� ������� �������������� ��������
-		AnimationMatrix.NewMatrix(); // ��������� ������� ��������
+		cMatrix AnimationMatrix; // матрица положения объекта относительного родителя
+		AnimationMatrix.NewMatrix(); // установка матрицы анимации
 		sAnimationPosition &AnimationPosition=NodeObject->AnimationPosition;
 		sAnimationRotation &AnimationRotation=NodeObject->AnimationRotation;
 		sAnimationScale &AnimationScale=NodeObject->AnimationScale;
@@ -431,7 +431,7 @@ inline int IsAnimate(cMaterialObjectLibrary &MaterialLibrary,sObjectMesh *Object
 cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,float SizeObject)
 {
 	cMeshScene MeshScene;
-	// �������� MeshScene ����� �� �����
+	// загрузка MeshScene сцены из файла
 	cMeshFile f;
 	int	size=0;
 	void *buf=0;
@@ -440,11 +440,11 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 	f.ReadHeaderFile();
 	MeshScene.Read(f);
 	f.Close();
-	// �������� ������� �� ��������� � �����
+	// создание объекта по описаннию в сцене
 	cMesh *tmpMesh=0,*BaseMesh=0,*Bound=0;
 	int UseAnimation=0;
 	cFrame *Frame=new cFrame;
-	// ����� � ��������� ������ ������ �������� � ������ "main"
+	// поиск и установка первым канала анимации с именем "main"
 	int nChannelMain=-1;
 	int nChannel;
 	for(nChannel=0;nChannel<MeshScene.ChannelLibrary.length();nChannel++)
@@ -457,17 +457,17 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 		MeshScene.ChannelLibrary[nChannelMain]=tmp;
 	}
 	for(nChannel=0;nChannel<MeshScene.ChannelLibrary.length();nChannel++)
-	{ // ������ ������ ��������
+	{ // импорт канала анимации
 		sChannelAnimation *Channel=MeshScene.ChannelLibrary[nChannel];
 		AnimChain=Frame->AddAnimChain();
 		float FirstFrame=Channel->FirstFrame*Channel->TicksPerFrame;
 		AnimChain->GetName()=_strlwr(Channel->name);
 		AnimChain->SetTimeChain((Channel->LastFrame-Channel->FirstFrame)*Channel->TicksPerFrame);
 		for(int LevelDetail=0;LevelDetail<Channel->LodLibrary.length();LevelDetail++)
-		{ // ������ ������ �����������
+		{ // импорт уровня детализации
 			sLodObject *LodObject=Channel->LodLibrary[LevelDetail];
 			for(int nNodeObject=0;nNodeObject<LodObject->NodeObjectLibrary.length();nNodeObject++)
-			{ // ������ ��������� �������
+			{ // импорт корневого объекта
 				sNodeObject *NodeObject=LodObject->NodeObjectLibrary[nNodeObject];
 				char NameMesh[256],NameParent[256];
 				strcpy(NameMesh,NodeObject->name); 
@@ -475,12 +475,12 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 				switch(NodeObject->type)
 				{
 					case NODEOBJECT_MESH:
-						{ // ������ 3d-�������
+						{ // импорт 3d-объекта
 							sObjectMesh *ObjectMesh=(sObjectMesh*)NodeObject;
 							if((ObjectMesh->name)&&(TestFirstName(ObjectMesh->name,"Bip")))
-								continue; // ���������� "Bip" �� CharacterStudio
+								continue; // пропустить "Bip" из CharacterStudio
 							if(nChannel==0)
-							{ // ������ ������������ �������
+							{ // импорт статического объекта
 								sColor4f Diffuse,Specular;
 								void *Pointer=0;
 								float Shininess=0;
@@ -489,13 +489,13 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 								sTile *Tile=ReadAnimationMesh(fname,LodObject,ObjectMesh,ObjectMesh->AnimationMeshLibrary[0],FirstFrame,TexturePath,1);
 								Tile->GetID()=gb_TileID++;
 								if(strcmp(NameMesh,M3D_BOUND_STRING)==0)
-								{ // ������ �������� ��������
+								{ // объект является границей
 									Bound=new cMesh();
 									Bound->SetName(NameMesh);
 									Bound->AddTile(Tile);
 								}
 								else if((BaseMesh==0)||((tmpMesh=BaseMesh->FindMesh(NameParent))==0))
-								{ // ������ ������� ��������
+								{ // объект главный родитель
 									if(BaseMesh==0)
 									{
 										BaseMesh=tmpMesh=AddMesh(NameMesh);
@@ -505,11 +505,11 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 									}
 									BaseMesh->AddTile(Tile);
 								}
-								else // ������ - ����������� �����
+								else // объект - неподвижная часть
 									tmpMesh->AddTile(Tile);
 							}
 //							if((ObjectMesh->AnimationMeshLibrary.length()>1)||(MeshScene.ChannelLibrary.length()>1))
-							{ // ������ �������� �������
+							{ // импорт морфинга объекта
 								UseAnimation=1;
 								for(int nFrame=0;nFrame<Channel->NumberFrame;nFrame++)
 								{
@@ -562,24 +562,24 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 		}
 	}
 	for(nChannel=0;nChannel<MeshScene.ChannelLibrary.length()&&nChannel<1;nChannel++)
-	{ // ������ �����
+	{ // импорт дамми
 		sChannelAnimation *Channel=MeshScene.ChannelLibrary[nChannel];
 		for(int LevelDetail=0;LevelDetail<Channel->LodLibrary.length();LevelDetail++)
-		{ // ������ ������ �����������
+		{ // импорт уровня детализации
 			sLodObject *LodObject=Channel->LodLibrary[LevelDetail];
 			for(int nNodeObject=0;nNodeObject<LodObject->NodeObjectLibrary.length();nNodeObject++)
-			{ // ������ ��������� �������
+			{ // импорт корневого объекта
 				sNodeObject *NodeObject=LodObject->NodeObjectLibrary[nNodeObject];
 				switch(NodeObject->type)
 				{
 					case NODEOBJECT_MESH:
 						break;
 					case NODEOBJECT_HELPER:
-						if(nChannel==0) // ������ ������ ����������� ��������������� ��������
-						{ // ������ ����������������-�������
+						if(nChannel==0) // импорт только статических вспомогательных объектов
+						{ // импорт вспомогательного-объекта
 							sHelperObject *HelperObject=(sHelperObject*)NodeObject;
 							if(stricmp(HelperObject->HelperName,"Dummy")==0)
-							{ // ������ ���������������� ������� - �����
+							{ // импорт вспомогательного объекта - дамми
 								Vect3f v(gb_sign.x*HelperObject->matrix[9],
 									gb_sign.y*HelperObject->matrix[10],
 									gb_sign.z*HelperObject->matrix[11]);
@@ -623,7 +623,7 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 	if(f.Open(fname)==0) return 0;
 	char TextureName[17],NameMesh[22],Shading,OpacityName[17];
 	int NumberObject3ds=f.OpenBaseMesh(),nPoint,nPolygon;
-	if(SizeObject!=0) f.MaxSizeMesh(NumberObject3ds,SizeObject);	// ��������� �𸰪��� ���������� ������
+	if(SizeObject!=0) f.MaxSizeMesh(NumberObject3ds,SizeObject);	// єёЄрэютър ьрё°Єрср чруЁєцрхьюую юс·хъЄр
 	int NumberKeyFrame=f.OpenBaseKeyFrame();
 	cMesh *tmpMesh=0,*BaseMesh=0,*Bound=0;
 	int i;
@@ -691,13 +691,13 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 			pPoint[k].pos-=vPivot;
 
 		if(strcmp(NameMesh,M3D_BOUND_STRING)==0) 
-		{	// ������������ ��������
+		{	// шэшЎшрышчрЎш  ЁрчьхЁют
 			Bound=new cMesh();
 			Bound->SetName(NameMesh);
 			Bound->AddTile(Tile);
 		}
 		else if((BaseMesh==0)||((tmpMesh=BaseMesh->FindMesh(NameParent))==0))
-		{	// ������������ �������� ��������
+		{	// шэшЎшрышчрЎш  срчютюую ЁюфшЄхы 
 			if(BaseMesh==0)
 			{
 				BaseMesh=tmpMesh=AddMesh(NameMesh);
@@ -708,10 +708,10 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 			BaseMesh->AddTile(Tile);
 		}
 		else if((NumberPos<=1)&&(NumberRot<=1)&&(NumberScale<=1)&&!strstr(NameMesh, "#"))
-		// ���������� �������� �������
+		// фюсртыхэшх ярёёштэюую яюЄюьър
 			tmpMesh->AddTile(Tile);
 		else
-		{	// �������� � ������������� ��������� �������
+		{	// ёючфрэшх ш яЁшёюхфшэхэшх ръЄштэюую яюЄюьър
 			cMesh *ParentMesh=BaseMesh->FindMesh(NameParent);
 			tmpMesh=new cMesh();
 			tmpMesh->SetName(NameMesh);
@@ -900,7 +900,7 @@ cMesh* cM3D::RebuildObject(cMesh *Mesh,unsigned int OldType,unsigned int NewType
 	cMesh *OldMesh=Mesh->FindMesh(OldType),*tmp;
 	if(OldMesh==0) { XBuffer buf; buf<"Error: cM3D::RebuildObject()\r\nMesh not found type = "<=OldType; ErrAbort(buf.address()); }
 	
-	OldMesh->Type=0; // ������� �������
+	OldMesh->Type=0; // очистка объекта
 	while((tmp=OldMesh->FindMesh(OldType))!=0)
 	{ tmp->DetachChild(); delete tmp; }
 	if(OldMesh->Frame) { delete OldMesh->Frame; OldMesh->Frame=0; }
@@ -974,7 +974,7 @@ void cM3D::TraceStaticObjectMechos(cUnknownClass *UCameraList)
 #endif
 
 void cM3D::Animate(cUnknownClass *UCameraList,int CurrentTime,int PreviousTime)
-{ // ����������� �������� � ���������� �������
+{ // выставление анимации с пересчетом матрицы
 	float dTime=CurrentTime-PreviousTime;
 	for(cList *start=MeshList->next;start;start=start->next) 
 		start->Mesh->Animate(dTime);
@@ -993,25 +993,25 @@ void cM3D::TestVisible(cUnknownClass *UCameraList)
 {
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
 	for(cList *start=MeshList->next;start;start=start->next) 
-	{ // ���� �� ��������� �������
+	{ // тест на видимость объекта
 		cMesh &Mesh=*start->Mesh;
 		if(Mesh.isVisibleTotal(UCameraList)&CONST_VISIBLE_SHOW)
 			Mesh.TestVisible(UCameraList);
 	}
 }
 void cM3D::Draw(cUnknownClass *UScene)
-{ // ��������� �������������� �������� 
+{ // отрисовка закэшированных объектов 
 	assert(UScene->GetKind(KIND_SCENE));
 	cScene *Scene=(cScene*)UScene;
 	cUnknownClass *UCameraList=Scene->GetCameraList();
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
-	// ��������� ���� �� ���������� ��������
+	// отрисовка всех не прозрачных объектов
 	cList *start;
 	for(start=MeshList->next;start;start=start->next)
 		if(start->Mesh->GetAttribute(MESH_USE_OPACITY|MESH_NOT_WRITEZBUFFER)==0)
 			if(start->Mesh->isVisibleTotal(UCameraList)&CONST_VISIBLE_FRUSTUM)
 				start->Mesh->Draw(UScene,UCameraList);
-	// ��������� ���� ���������� ��������
+	// отрисовка всех прозрачных объектов
 	for(start=MeshList->next;start;start=start->next)
 		if(start->Mesh->GetAttribute(MESH_USE_OPACITY|MESH_NOT_WRITEZBUFFER))
 			if(start->Mesh->isVisibleTotal(UCameraList)&CONST_VISIBLE_FRUSTUM)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Основа для управляемых точками объектов
+// РћСЃРЅРѕРІР° РґР»СЏ СѓРїСЂР°РІР»СЏРµРјС‹С… С‚РѕС‡РєР°РјРё РѕР±СЉРµРєС‚РѕРІ
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef __POINT_CONTROLLED_OBJECT__
 #define __POINT_CONTROLLED_OBJECT__
@@ -14,19 +14,19 @@ protected:
 	ControlPointList control_points;
 
 	unsigned int back_moving_enabled : 1;
-	unsigned int stopping : 1;  // Не могу пройти 
-	unsigned int set_traction_by_distance : 1;  // Дальше семя - быстрее ехать
-	unsigned int enable_control : 1; // Разрешает управление
+	unsigned int stopping : 1;  // РќРµ РјРѕРіСѓ РїСЂРѕР№С‚Рё 
+	unsigned int set_traction_by_distance : 1;  // Р”Р°Р»СЊС€Рµ СЃРµРјСЏ - Р±С‹СЃС‚СЂРµРµ РµС…Р°С‚СЊ
+	unsigned int enable_control : 1; // Р Р°Р·СЂРµС€Р°РµС‚ СѓРїСЂР°РІР»РµРЅРёРµ
 	unsigned int enable_joystick_control : 1; 
-	unsigned int controled_only_by_point: 1; // Управляется только точками - для hotseat
-	unsigned int do_brake : 1; // Включает тормоз
-	unsigned int AI_controlled : 1; // Управляется АИ
-	unsigned int check_points_only_controlled_ : 1; // Управляется только чек-пойтами (без промежуточных контрол-пойнтов)
-	unsigned int disable_traction_modulation : 1; // Как расстоянием от семени до семени, так и внешним АИ
-	unsigned int ignore_point_control : 1; // Для лягушки, которая прыгает по кувшинкам
+	unsigned int controled_only_by_point: 1; // РЈРїСЂР°РІР»СЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ С‚РѕС‡РєР°РјРё - РґР»СЏ hotseat
+	unsigned int do_brake : 1; // Р’РєР»СЋС‡Р°РµС‚ С‚РѕСЂРјРѕР·
+	unsigned int AI_controlled : 1; // РЈРїСЂР°РІР»СЏРµС‚СЃСЏ РђР
+	unsigned int check_points_only_controlled_ : 1; // РЈРїСЂР°РІР»СЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ С‡РµРє-РїРѕР№С‚Р°РјРё (Р±РµР· РїСЂРѕРјРµР¶СѓС‚РѕС‡РЅС‹С… РєРѕРЅС‚СЂРѕР»-РїРѕР№РЅС‚РѕРІ)
+	unsigned int disable_traction_modulation : 1; // РљР°Рє СЂР°СЃСЃС‚РѕСЏРЅРёРµРј РѕС‚ СЃРµРјРµРЅРё РґРѕ СЃРµРјРµРЅРё, С‚Р°Рє Рё РІРЅРµС€РЅРёРј РђР
+	unsigned int ignore_point_control : 1; // Р”Р»СЏ Р»СЏРіСѓС€РєРё, РєРѕС‚РѕСЂР°СЏ РїСЂС‹РіР°РµС‚ РїРѕ РєСѓРІС€РёРЅРєР°Рј
 
 	// Control points ///////
-	float traction_modulation; // 0..2, по умолчанию 1  
+	float traction_modulation; // 0..2, РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 1  
 	float curr_traction;
 	float dist_to_control_point;
 	AverageConditionTimer control_point_approach_timer;

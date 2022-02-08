@@ -36,7 +36,7 @@ struct mchControlPoint
 	void createObj(void);
 	void deleteObj(void);
 
-	operator Vect3f () const { return Vect3f(PosX, PosY, PosZ); } // хотя лучше наследовать от Vect3f
+	operator Vect3f () const { return Vect3f(PosX, PosY, PosZ); } // С…РѕС‚СЏ Р»СѓС‡С€Рµ РЅР°СЃР»РµРґРѕРІР°С‚СЊ РѕС‚ Vect3f
 
 	void save(XBuffer& xb);
 	void load(XBuffer& xb);

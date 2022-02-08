@@ -652,7 +652,7 @@ void _scvtcc_16( VOID *lpDest, VOID *lpSrc, DWORD dwPixelCount, WORD wColorKey )
 #endif
 
 
-////////////////////////////////////24/32 бита
+////////////////////////////////////24/32 Р±РёС‚Р°
 #pragma pack(1)
 struct RGB24
 {

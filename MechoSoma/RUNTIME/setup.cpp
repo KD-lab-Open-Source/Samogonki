@@ -128,7 +128,7 @@ void mchA_d3dSetGamma(float v);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-// HotSeat ���������
+// HotSeat параметры
 int hsStartAssembled = 1;
 int hsTurnSeedsMax = 5;
 int hsWaitTurnTime = 100;

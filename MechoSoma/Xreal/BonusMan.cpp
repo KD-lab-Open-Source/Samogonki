@@ -152,7 +152,7 @@ void BonusMan::body_overlap_reaction(Body& body)
 			if(((state == Running || state == Swimming) && body.averageSpeed() > bonus_man_mechos_hit_velocity || state == Paratrooper) && dynamic_cast<Mechos&>(body).CheckBonusSlot(bonusID)){
 				dynamic_cast<Mechos&>(body).AddBonus(bonusID);
 				fxlabTakeBonus(bonusID, R());
-				// ���������� �����
+				// Выкидываем снова
 				setPosition(Vect3f(random(2048), random(2048), frnd(M_PI)));
 				return;
 				}				

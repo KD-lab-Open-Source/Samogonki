@@ -233,15 +233,15 @@ void Mechos::createBound()
 	float zmin = geometry -> zminTotal();
 	float zmax = geometry -> zmaxTotal()*mechos_zsize_scale;
 
-	// �������� ��� ����������, ������������� �� X
+	// Поправка для персонажей, ассиметричных по X
 	float delta_x = -(part_by_index(RBWheel) -> GlobalMatrix.trans().x + part_by_index(LBWheel) -> GlobalMatrix.trans().x)/2;
 
-	// �������� ������ ��
+	// Сдвигаем вперед ЦМ
 	float delta_y = -(ymax + ymin)/2;
 	ymin += delta_y;
 	ymax += delta_y;
 
-	// �������� ��
+	// Опускаем ЦМ
 	float z_axles = 0;
 	for(w = RFWheel; w <= LBWheel; w++)
 		z_axles += part_by_index(w) -> GlobalMatrix.trans().z;
@@ -749,7 +749,7 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 
 	control();
 	
-	// ��������� �� ������
+	// Установка на колеса
 	if(theta() > M_PI/3)
 		applyLocalTurnTorque(Zlocal(), Vect3f::K);
 
@@ -773,7 +773,7 @@ void Mechos::calc_forces_and_drags_of_normal_mechos()
 			applyLocalForce( traction*speed_increment_factor*k_traction_water, Y_AXIS);
 			applyLocalTorque( rudder*k_rudder_water*SIGN(Vlocal().y + traction*5), Z_AXIS);
 			}
-		// �����������
+		// Покачивание
 		if(!ground_colliding){
 			swing_phase += evolve_time_step*(1. + speed_avr/20);
 			applyGlobalForce(mechos_swing_lift_force*sin(swing_phase), Z_AXIS);
@@ -902,13 +902,13 @@ void Mechos::calc_forces_and_drags_of_moving_personage()
 
 void Mechos::calc_forces_and_drags_of_assembling_personage()
 {
-	// ������ ������� ��������
+	// Ручной поворот сущности
 	if(active() && (mchKeyPressed(MCH_KEY_TURN_LEFT, control_config) || mchKeyPressed(MCH_KEY_TURN_RIGHT, control_config))){
 		manual_essence_turn = 1;
 		setGlobalAngularVelocity((mchKeyPressed(MCH_KEY_TURN_RIGHT, control_config) ? 1 : -1)*standing_personage_manual_rudder, Z_AXIS);
 		}
 
-	// ������� �� ����
+	// Поворот на семя
 	if(!manual_essence_turn){
 		Vect3f r;
 		Alg().invXform(assembling_direction, r);
@@ -1292,7 +1292,7 @@ void Mechos::hide()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		������� �������� ����� ��� PointControl
+//		Система обратной связи для PointControl
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Mechos::target_achieved()
 {
@@ -1366,8 +1366,8 @@ void Mechos::control()
 
 void Mechos::keyboard_control()
 {
-	float traction_incr = 1.; // �������� ������ ��������
-	float traction_decr = 1; // �������� ������ (��������������� ������� - ��������� + ������)
+	float traction_incr = 1.; // скорость набора мощности
+	float traction_decr = 1; // скорость сброса (противоположная стрелка - мгновенно + тормоз)
 
 	XJoystick* joystick = enable_joystick_control ? XJoystickGetJoystick() : 0;
 	  
@@ -1444,7 +1444,7 @@ void Mechos::keyboard_control()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		����������
+//		Муравейник
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Mechos::formicTransport(const Vect3f& target, const Vect3f& next_point_for_direction)
 {

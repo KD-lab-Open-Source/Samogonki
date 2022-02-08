@@ -95,7 +95,7 @@ void BaseObject_SurfaceReflection_Draw(cUnknownClass *UCamera)
 	ArrayCamera(0)=UCamera;
 	cSurfaceReflectionMultiMaterial *SurfaceReflection=(cSurfaceReflectionMultiMaterial*)start->Base;
 //	Graph3d->BeginScene();
-	// обновление волнового процесса
+	// РѕР±РЅРѕРІР»РµРЅРёРµ РІРѕР»РЅРѕРІРѕРіРѕ РїСЂРѕС†РµСЃСЃР°
 	SurfaceReflection->uofs+=SurfaceReflection->du; SurfaceReflection->vofs+=SurfaceReflection->dv;
 	sBaseWarpWave *Warp=(sBaseWarpWave*)SurfaceReflection->pStructWarp;
 	int p1=-1-SurfaceReflection->xsize,p2=-SurfaceReflection->xsize,p3=1-SurfaceReflection->xsize,
@@ -122,7 +122,7 @@ void BaseObject_SurfaceReflection_Draw(cUnknownClass *UCamera)
 			if(ofs>255) ofs=255; else if(ofs<0) ofs=0;
 			SurfaceReflection->pColor[l].Set(ofs,ofs,ofs);
 		}
-	// собственно отрисовка
+	// СЃРѕР±СЃС‚РІРµРЅРЅРѕ РѕС‚СЂРёСЃРѕРІРєР°
 	P3D->Draw(&ArrayCamera,(cSurfaceReflectionMultiMaterial*)start->Base);
 	ArrayCamera(0)=0;
 	ArrayCamera.Delete();

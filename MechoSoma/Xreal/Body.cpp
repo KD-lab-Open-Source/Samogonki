@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////
-//	���� - ������� ����� 
-//	������������ ��������
+//	Òåëî - áàçîâûé êëàññ 
+//	äèíàìè÷åñêèõ îáúåêòîâ
 //////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "BodyDispatcher.h"
@@ -235,18 +235,18 @@ void Body::make_non_colliding()
 	const int D = 16;
 	float dz = D/2;
 
-	// ��������� ������������
+	// начальное выравнивание
   	float h = tri_map -> H(R().xi(), R().yi(), R().z + mesh_offset.z + 20);
 	if(R().z + mesh_offset.z < h)
 		setTrans(h - mesh_offset.z, Z_AXIS);
 
-	// ������ ������, Go Up
+	// грубый проход, Go Up
 	do{
 		if((Xlg.trans().z += D) > max_height_threshould)
 			break;
 		} while(test_collision(0));
 
-	// �������� �����
+	// бинарный поиск
 	do{
 		Xlg.trans().z -= dz;
 		if(test_collision(0))
@@ -264,12 +264,12 @@ void Body::place_on_the_ground()
 	const int D = 16;
 	float dz = D/2;
 
-	// ��������� ������������
+	// начальное выравнивание
   	float h = tri_map -> H(R().xi(), R().yi(), R().z + mesh_offset.z + 20);
 	if(R().z + mesh_offset.z < h)
 		Xlg.trans().z = h - mesh_offset.z;
 
-	// ������ ������
+	// грубый проход
 	if(test_collision(0)){ // Go Up
 		do{
 			if((Xlg.trans().z += D) > max_height_threshould)
@@ -287,7 +287,7 @@ void Body::place_on_the_ground()
 		Xlg.trans().z += D;
 		}
 
-	// �������� �����
+	// бинарный поиск
 	do{
 		Xlg.trans().z -= dz;
 		if(test_collision(0))
@@ -351,7 +351,7 @@ void Body::setPositionInit()
 
 
 //////////////////////////////////////////////////////////////////
-//	����� ��������
+//	Общие свойства
 //////////////////////////////////////////////////////////////////
 void Body::calc_forces_and_drags()
 {

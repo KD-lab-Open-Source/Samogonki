@@ -1788,12 +1788,12 @@ void acsExtSetCamera(int zbuf_flag)
 	Vect2f v4((float)acsCameraFocus/XGR_MAXX,(float)acsCameraFocus/XGR_MAXX);
 	Vect2f v5(10.0f,3000.0f);
 	Vect2f v6(0.0f,z);
-	gb_IVisGeneric->SetCameraFrustum(iCamera,	// ��������������� �������� ���������
-		&v3,						// ����� ������
-		&r1,	// ������� ������� ������
-		&v4,// ����� ������
-		&v5,					// ��������� � ������� z-��������� ���������
-		&v6);						// zNear � zFar ��� ����������� � zBuffer
+	gb_IVisGeneric->SetCameraFrustum(iCamera,	// \F3\F1\F2\E0\ED\E0\E2\EB\E8\E2\E0\E5\F2\F1\FF \EF\E8\F0\E0\EC\E8\E4\E0 \E2\E8\E4\E8\EC\EE\F1\F2\E8
+		&v3,						// \F6\E5\ED\F2\F0 \EA\E0\EC\E5\F0\FB
+		&r1,	// \E2\E8\E4\E8\EC\E0\FF \EE\E1\EB\E0\F1\F2\FC \EA\E0\EC\E5\F0\FB
+		&v4,// \F4\EE\EA\F3\F1 \EA\E0\EC\E5\F0\FB
+		&v5,					// \E1\EB\E8\E6\E0\E9\F8\E8\E9 \E8 \E4\E0\EB\FC\ED\E8\E9 z-\EF\EB\EE\F1\EA\EE\F1\F2\E8 \EE\F2\F1\E5\F7\E5\ED\E8\FF
+		&v6);						// zNear \E8 zFar \E4\EB\FF \EC\E0\EF\E8\F0\EE\E2\E0\ED\E8\FF \E2 zBuffer
 	if(acsCameraPerspective) gb_IVisGeneric->SetCameraAttribute(iCamera,ATTRIBUTE_CAMERA_PERSPECTIVE);
 	else gb_IVisGeneric->ClearCameraAttribute(iCamera,ATTRIBUTE_CAMERA_PERSPECTIVE);
 }

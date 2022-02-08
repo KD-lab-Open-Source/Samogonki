@@ -36,7 +36,7 @@ inline void SetPoint4(sPointPolyGrid &pl,sPointPolyGrid &pr,sPointPolyGrid &pu,s
 	pl.a=pr.a=pu.a=pd.a=(pl.a+pr.a+pu.a+pd.a)>>2; 
 }
 void cPolyGrid::PreDraw(cLight *LightObject)
-{ // производится зацикливание
+{ // РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ Р·Р°С†РёРєР»РёРІР°РЅРёРµ
 	if(attribute&POLYGRID_NOT_GURO) return;
 	sPointPolyGrid pNull;
 	int xend=xsize-1,yend=ysize-1;

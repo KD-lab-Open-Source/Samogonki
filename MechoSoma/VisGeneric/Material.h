@@ -35,21 +35,21 @@ enum eAttributeTexture
 	ATTRTEX_RGB888								=	1<<3,
 	ATTRTEX_RGBA8888							=	1<<4,
 
-	STATUS_TEXTURE_CREATE						=	1<<16,	// òåêñòóðà ñîçäàíà íà óñòðîéñòâå âûâîäà
-	STATUS_TEXTURE_CACHE						=	1<<17,	// òåêñòóðà çàêýøèðîâàíà
-	STATUS_TEXTURE_LOCK							=	1<<18,	// òåêñòóðà çàëîêèðîâàíà
-	STATUS_TEXTURE_LOAD							=	1<<19,	// òåêñòóðó çàãðóçèòü èç ôàéëà
-	STATUS_TEXTURE_RESET						=	1<<20,	// òåêñòóðà áûëà ïåðåãðóæåíà íåîáõîäèìî îáíîâèòü
-	STATUS_TEXTURE_SHADOW						=	1<<21,	// òîëüêî äëÿ ShadowMap 
+	STATUS_TEXTURE_CREATE						=	1<<16,	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° ÑÐ¾Ð·Ð´Ð°Ð½Ð° Ð½Ð° ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ðµ Ð²Ñ‹Ð²Ð¾Ð´Ð°
+	STATUS_TEXTURE_CACHE						=	1<<17,	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð·Ð°ÐºÑÑˆÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð°
+	STATUS_TEXTURE_LOCK							=	1<<18,	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð·Ð°Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð°
+	STATUS_TEXTURE_LOAD							=	1<<19,	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð°
+	STATUS_TEXTURE_RESET						=	1<<20,	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð±Ñ‹Ð»Ð° Ð¿ÐµÑ€ÐµÐ³Ñ€ÑƒÐ¶ÐµÐ½Ð° Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ
+	STATUS_TEXTURE_SHADOW						=	1<<21,	// Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ ShadowMap 
 };
 
 struct sTexture : public sAttribute, public sPointerCount
 {
-	unsigned char	*texture;					// óêàçàòåëü íà òåêñòóðó
-	short			_x,_y;						// áèòîâûé ðàçìåð òåêñòóðû
-	short			nTexture;					// íîìåð òåêñòóðû â òåêñòóðàõ PolyDispathcer'à
-	short			bpl;						// ðàçìåð òåêñòóðû â áàéòàõ íà óòðîéñòâå âûâîäà
-	cString			name;						// èìÿ òåêñòóðû
+	unsigned char	*texture;					// ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ
+	short			_x,_y;						// Ð±Ð¸Ñ‚Ð¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
+	short			nTexture;					// Ð½Ð¾Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ Ð² Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð°Ñ… PolyDispathcer'Ð°
+	short			bpl;						// Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹ Ð² Ð±Ð°Ð¹Ñ‚Ð°Ñ… Ð½Ð° ÑƒÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ðµ Ð²Ñ‹Ð²Ð¾Ð´Ð°
+	cString			name;						// Ð¸Ð¼Ñ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
 
 	sTexture()											{ texture=0; _x=_y=0; nTexture=bpl=0; }
 	~sTexture();
@@ -64,8 +64,8 @@ struct sTexture : public sAttribute, public sPointerCount
 
 struct sAnimMaterial : public sAttribute // eAttributeMaterial
 {
-	sColor4f		MulCol;			// ìóëüòèïëèêàòèâíàÿ êîìïîíåíòà öâåòà
-	sColor4f		AddCol;			// àääèòèâíàÿ êîìïîíåíòà öâåòà
+	sColor4f		MulCol;			// Ð¼ÑƒÐ»ÑŒÑ‚Ð¸Ð¿Ð»Ð¸ÐºÐ°Ñ‚Ð¸Ð²Ð½Ð°Ñ ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð° Ñ†Ð²ÐµÑ‚Ð°
+	sColor4f		AddCol;			// Ð°Ð´Ð´Ð¸Ñ‚Ð¸Ð²Ð½Ð°Ñ ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð° Ñ†Ð²ÐµÑ‚Ð°
 	sColor4f& GetDiffuse()								{ return MulCol; }
 	sColor4f& GetSpecular()								{ return AddCol; }
 	inline void interpolate(sAnimMaterial &a,sAnimMaterial &b,float f)

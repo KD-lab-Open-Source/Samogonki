@@ -30,7 +30,7 @@ public:
 	void	*f;
 	char	type;
 	int		error;
-	int		ofs;						// �������� � ��������� �������
+	int		ofs;						// смещение в текстовом формате
 
 	cMeshFile();
 	~cMeshFile();

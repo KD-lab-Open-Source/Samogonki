@@ -4,7 +4,7 @@
 #include "FieldSource.h"
 
 /////////////////////////////////////////////////////////////////////
-//	�������� ��� ������� �������
+//	Источник для задания свойств
 class CircleMapSource : public FieldSource, public virtual ArcaneStatisticsService 
 {
 	float z_up;
@@ -14,11 +14,11 @@ public:
 		: FieldSource(Vect3f(x_, y_, z_down_), r_, owner_ID)
 		{ type_ = type__; z_up = z_up_; }
 
-	void affect(Body& b) const; // ������� + ground collision
+	void affect(Body& b) const; // цилиндр + ground collision
 };
 
 /////////////////////////////////////////////////////////////////////
-//	�������� ������� ������
+//	Источник красных следов
 #pragma warning( disable : 4250 )  
 class RedTrackSource : public CircleMapSource, public BaseObjectTTL
 {
@@ -28,7 +28,7 @@ public:
 #pragma warning( default : 4250 )  
 
 ////////////////////////////////////////////////////////////////
-//	����� �������� ��� �������
+//	Общий источник для арканов
 class GeneralFieldSource : public FieldSource, protected ArcaneStatisticsService
 {
 protected:	
@@ -42,7 +42,7 @@ public:
 		const Vect3f& vortical_force_, const Vect3f& torque_, int owner_ID_ = 0);
 };
 
-// �����
+// Вихрь
 class VortexFieldSource : public GeneralFieldSource 
 {
 public:
@@ -50,7 +50,7 @@ public:
 	void affect(Body& b) const;
 };
 
-// ��������� ����
+// Магнитное поле
 class MagneticFieldSource : public GeneralFieldSource 
 {
 public:
@@ -58,7 +58,7 @@ public:
 	void affect(Body& b) const;
 };
 
-// ����������
+// Притяжение
 class AttractionFieldSource : public GeneralFieldSource 
 {
 public:
@@ -66,7 +66,7 @@ public:
 	void affect(Body& b) const;
 };
 
-// ����������, �����
+// Притяжение, сфера
 class BubbleFieldSource : public GeneralFieldSource 
 {
 	mutable ShareHandle<Body> victim;
@@ -76,7 +76,7 @@ public:
 	int catch_victim() const { return victim ? 1 : 0; }
 };
 
-// ���������� ����
+// Однородное поле
 class UniformFieldSource : public FieldSource 
 {
 	Vect3f force;
@@ -86,7 +86,7 @@ public:
 	void setForce(const Vect3f& force_) { force = force_; }
 };
 
-// ������� (������� �� ���������� � ����)
+// Течение (условие на погружение в воду)
 class StreamFieldSource : public UniformFieldSource 
 {
 public:
@@ -94,7 +94,7 @@ public:
 	void affect(Body& b) const;
 };
 
-//  ����� 
+//  Ветер 
 class WindFieldSource : public UniformFieldSource
 {
 public:
@@ -103,7 +103,7 @@ public:
 };
 
 
-// ��� ������������ ������������ � �������
+// Для отслеживания столкновений с местами
 class SensorFieldSource : public FieldSource 
 {
 	int ID_;

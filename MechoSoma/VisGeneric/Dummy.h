@@ -1,7 +1,9 @@
 #ifndef __DUUMY_H__
 #define __DUUMY_H__
 
+#include <cstring>
 #include <vector>
+
 #include "xmath.h"
 
 #ifndef FOR_EACH

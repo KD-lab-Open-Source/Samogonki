@@ -48,8 +48,8 @@ DDPIXELFORMAT		 g_ddpfPrimary;
 DWORD				 g_dwSceneStamp;	 // Incremented on every EndScene and used 
 										 // by texture manager
 
-BOOL g_bActive=FALSE;//������� �� ���������� � ������ ������
-BOOL g_bSleepIfNonActive=TRUE;//������� �� ���������� � ������ ������
+BOOL g_bActive=FALSE;//Активно ли приложение в данный момент
+BOOL g_bSleepIfNonActive=TRUE;//Активно ли приложение в данный момент
 HCURSOR hStandartCursor=NULL;
 
 static HINSTANCE hInstance=0;

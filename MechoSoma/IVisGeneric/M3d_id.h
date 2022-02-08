@@ -1,4 +1,4 @@
-//  Типы объектов
+//  РўРёРїС‹ РѕР±СЉРµРєС‚РѕРІ
 #define M3D_ENGINE					1
 #define M3D_FRONT					2
 #define M3D_RF_WHEEL				4
@@ -7,14 +7,14 @@
 #define M3D_LF_WHEEL				16
 #define M3D_LB_WHEEL				32
 
-// Объекты "bound"
+// РћР±СЉРµРєС‚С‹ "bound"
 #define M3D_BOUND					128
 
 // Steeler
 #define M3D_MECHOSOMA				256
 // Kron
 #define M3D_EFFECT					512
-// Шура
+// РЁСѓСЂР°
 #define M3D_XREAL					1024
 
 #define M3D_STATIC_NON_COLLIDING	(1<<11)
@@ -24,15 +24,15 @@
 #define M3D_iSCREEN					16384
 #define M3D_ONLYSCENE				(1<<15)
 
-// Всего деталей
+// Р’СЃРµРіРѕ РґРµС‚Р°Р»РµР№
 #define NUM_PARTS					6
-// Активных (расположены в начале массива)
+// РђРєС‚РёРІРЅС‹С… (СЂР°СЃРїРѕР»РѕР¶РµРЅС‹ РІ РЅР°С‡Р°Р»Рµ РјР°СЃСЃРёРІР°)
 #define NUM_ACTIVE_PARTS			4
 
-// Мехос в сборе
+// РњРµС…РѕСЃ РІ СЃР±РѕСЂРµ
 #define M3D_TOTAL_MECHOS (M3D_ENGINE | M3D_FRONT | M3D_RF_WHEEL | M3D_RB_WHEEL | M3D_LF_WHEEL | M3D_LB_WHEEL)
 
-// Объекты M3D_MECHOSOMA
+// РћР±СЉРµРєС‚С‹ M3D_MECHOSOMA
 #define M3D_MOUSE3D_KIND		1
 #define M3D_CONTROL_POINT_KIND		2
 #define M3D_NITRO_BONUS_KIND		3
@@ -43,7 +43,7 @@
 #define M3D_STAR_BONUS_KIND		8
 #define M3D_ROBOT_KIND				9
 
-// Объекты M3D_iSCREEN
+// РћР±СЉРµРєС‚С‹ M3D_iSCREEN
 #define M3D_CHAR0_KIND			1
 #define M3D_WORLD0_KIND			300
 

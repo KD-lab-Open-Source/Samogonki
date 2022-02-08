@@ -66,11 +66,11 @@ struct Grid2DConfig {
 	static int masked_prep_x(int x) { return mask_x(x >> shift_x); }
 	static int masked_prep_y(int y) { return mask_y(y >> shift_y); }
 
-	// Смещения для зацикливания/расцикливания 
+	// РЎРјРµС‰РµРЅРёСЏ РґР»СЏ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ/СЂР°СЃС†РёРєР»РёРІР°РЅРёСЏ 
 	static short cycling_dx(int x) { return x < 0 ? map_sx : (x > mask_x_ ? -map_sx : 0); }
 	static short cycling_dy(int y) { return y < 0 ? map_sy : (y > mask_y_ ? -map_sy : 0); }
 	
-	// Подготовка области для сканирования
+	// РџРѕРґРіРѕС‚РѕРІРєР° РѕР±Р»Р°СЃС‚Рё РґР»СЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ
 	static void prep_rectangle(iRectangle& rectangle) 
 	{
 		rectangle.x0 >>= shift_x;

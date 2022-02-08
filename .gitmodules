@@ -1,0 +1,3 @@
+[submodule "MechoSoma/ThirdParty/sokol"]
+	path = MechoSoma/ThirdParty/sokol
+	url = git@github.com:floooh/sokol.git

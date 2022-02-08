@@ -21,9 +21,7 @@ char edgeName[2 * VF_NAME_SZ];	// space for 2 Vertex names, :, and \0.
 // Output a Plane
 ostream& Plane::print(ostream &os) const
 {
-  int oldFlags;
-
-  oldFlags = os.setf(ios::showpos);
+  auto oldFlags = os.setf(ios::showpos);
   os << normal_.x << " x " << normal_.y << " y  "
      << normal_.z << " z " << offset_ << " >= 0";
   os.flags(oldFlags);

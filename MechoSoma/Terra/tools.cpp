@@ -364,7 +364,7 @@ void S3Dload(char* name,int x, int y)
 
 void S3Danalyze(void)
 {
-	//�������� �� �������������� ���������
+	//\CF\F0\EE\E2\E5\F0\EA\E0 \ED\E0 \EF\EE\E4\EE\E7\F0\E8\F2\E5\EB\FC\ED\FB\E9 \FD\EA\F1\F6\E5\EF\F8\E8\ED
 	if((upper_buffer==0)||(lower_buffer==0)) ErrH.Abort("Shape Buf is NULL");
 	//unsigned char** lt = vMap -> lineT;
 	int x = shape_x;

@@ -7,7 +7,7 @@
 #include "AnimalArcansPrm.h"
 #include "Params.h"
 #include "controls.h"
-#include "mechoSoma.h"
+#include "mechosoma.h"
 
 void fxlabClownProcess(Vect3f& v);
 void fxlabBubbleSource(Vect3f& pos,DurationTimer& timer);

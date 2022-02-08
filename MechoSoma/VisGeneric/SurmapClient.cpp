@@ -41,19 +41,19 @@ void initM3D(int xScr,int yScr,int FullScr)
 	gb_UScene=gb_IVisGeneric->CreateScene();
 	gb_IVisGeneric->SetScene(gb_UScene);
 	gb_UCamera=gb_IVisGeneric->CreateCamera();
-	gb_IVisGeneric->AttachCamera(gb_UCamera);		// ������������� �����v � �������� �����
-	gb_IVisGeneric->SetCameraAttribute(gb_UCamera,ATTRIBUTE_CAMERA_WORLD_CUTTING); // ����������� �v���� � �����������
+	gb_IVisGeneric->AttachCamera(gb_UCamera);		// яЁшёюхфшэхэшх ърьхЁv ъ ръЄштэющ ёЎхэх
+	gb_IVisGeneric->SetCameraAttribute(gb_UCamera,ATTRIBUTE_CAMERA_WORLD_CUTTING); // ёЇхЁшўэюёЄ№ тvтюфр ш яхЁёяхъЄштр
 	gb_IVisGeneric->SetCameraPosition(gb_UCamera,&Vect3f(0,0,512),&Vect3f(0,0,0));
-	gb_IVisGeneric->SetCameraFrustum(gb_UCamera,	// ��������������� �������� ���������
-		&Vect2f(0.5f,0.5f),						// ����� �����v
-		&sRectangle4f(-0.49f,-0.49f,0.49f,0.49f),		// ������ ���𸪹 �����v
-		&Vect2f(1.0f,1.0f),						// ����� �����v
-		&Vect2f(10.0f,3000.0f),					// ��������� � ������� z-��������� ���������
-		&Vect2f(0.2f,0.90f));						// zNear � zFar ��� ����������� � zBuffer
+	gb_IVisGeneric->SetCameraFrustum(gb_UCamera,	// єёЄрэртыштрхЄё  яшЁрьшфр тшфшьюёЄш
+		&Vect2f(0.5f,0.5f),						// ЎхэЄЁ ърьхЁv
+		&sRectangle4f(-0.49f,-0.49f,0.49f,0.49f),		// тшфшьр  юсырёЄ№ ърьхЁv
+		&Vect2f(1.0f,1.0f),						// Їюъєё ърьхЁv
+		&Vect2f(10.0f,3000.0f),					// сышцрщ°шщ ш фры№эшщ z-яыюёъюёЄш юЄёхўхэш 
+		&Vect2f(0.2f,0.90f));						// zNear ш zFar фы  ьряшЁютрэш  т zBuffer
 	gb_IVisGeneric->AttachCameraViewPort(gb_UCamera,gb_URenderDevice);
 	gb_IVisGeneric->SetRenderObjectSwitch(RENDER_TUNING_OBJECT_LIGHTING_CONST);
 	gb_UArrayCamera(0)=gb_UCamera;
-	//������ ������� START POINTOW
+	//¦руЁєчър ъєЁёюЁр START POINTOW
 	cM3D *M3D=(cM3D*)gb_IVisGeneric->GetM3D();
 	assert(M3D);
 	if(MeshPoint) delete MeshPoint; 
@@ -66,11 +66,11 @@ void doneM3D()
 {
 	gb_UArrayCamera(0)=0;
 	gb_UArrayCamera.Delete();
-	gb_IVisGeneric->ReleaseWorld(); // �������� ����
-	if(gb_UCamera)	gb_IVisGeneric->ReleaseCamera(gb_UCamera); // �������� �������� ������
-	if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // �������� �����
-	gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // �������� ���� ������
-	gb_IVisGeneric->Release();	// �������� ����������
+	gb_IVisGeneric->ReleaseWorld(); // выгрузка мира
+	if(gb_UCamera)	gb_IVisGeneric->ReleaseCamera(gb_UCamera); // удаление ненужной камеры
+	if(gb_UScene) gb_IVisGeneric->ReleaseScene(gb_UScene); // удаление сцены
+	gb_IVisGeneric->ReleaseGraph(gb_URenderDevice); // закрытие окна вывода
+	gb_IVisGeneric->Release();	// закрытие библиотеки
 	gb_UCamera=0; gb_UScene=0; gb_URenderDevice=0; gb_IGraph3d=0; gb_IVisGeneric=0;
 }
 void setCamera(float x,float y,float z,int xCenter,int yCenter,int xSize,int ySize,float ax,float ay,float az,int focus,char perspective)
@@ -226,7 +226,7 @@ int  loadM3D(char* name,char flCollision,float x,float y,float z,float ax,float 
 		Mesh->NumberTrack=MESH_GLOBAL_TRACK;
 		editM3D=Mesh->ID;
 		extern void RenderShadovM3D(int number,float y);
-		RenderShadovM3D(editM3D,Mesh->y()); 	//+�������� ����
+		RenderShadovM3D(editM3D,Mesh->y()); 	//+ЄЁшёютър Єхэш
 		if(flCollision) Mesh->Type=M3D_TOTAL_TYPE(M3D_KIND(Mesh->Type),M3D_STATIC_COLLIDING);
 		else Mesh->Type=M3D_TOTAL_TYPE(M3D_KIND(Mesh->Type),M3D_STATIC_NON_COLLIDING);
 		return Mesh->ID;

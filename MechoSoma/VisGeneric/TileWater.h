@@ -12,15 +12,15 @@ class cPolyGrid;
 class cTileWater : public cUnknownClass
 {
 	cPolyGrid	**PolyGrid;
-	int			xTile,yTile;							// число тайлов по осям
-	int			_xTile,_yTile;							// битовый размер тайла
+	int			xTile,yTile;							// С‡РёСЃР»Рѕ С‚Р°Р№Р»РѕРІ РїРѕ РѕСЃСЏРј
+	int			_xTile,_yTile;							// Р±РёС‚РѕРІС‹Р№ СЂР°Р·РјРµСЂ С‚Р°Р№Р»Р°
 	int			Attribute;
-	int			LevelWater;								// уровень воды
+	int			LevelWater;								// СѓСЂРѕРІРµРЅСЊ РІРѕРґС‹
 	
-	Vect2f		OfsTex;									// смещение текстуры 
+	Vect2f		OfsTex;									// СЃРјРµС‰РµРЅРёРµ С‚РµРєСЃС‚СѓСЂС‹ 
 	Vect2f		dOfsTex;	
-	Vect2f		ScaleTex;								// масштаб текстуры PolyGrid
-	cTileMap	*Map;									// вода принадлежит карте мира
+	Vect2f		ScaleTex;								// РјР°СЃС€С‚Р°Р± С‚РµРєСЃС‚СѓСЂС‹ PolyGrid
+	cTileMap	*Map;									// РІРѕРґР° РїСЂРёРЅР°РґР»РµР¶РёС‚ РєР°СЂС‚Рµ РјРёСЂР°
 public:
 	cTileWater();
 	~cTileWater();

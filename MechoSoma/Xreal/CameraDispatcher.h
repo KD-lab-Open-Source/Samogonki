@@ -49,8 +49,8 @@ struct CameraCoords
 {
 	Vect3f position;
 	Vect3f angles;
-	float cameraDistance; // расстояние от камеры до плоскости объекта (z-distance)
-	float CenteringDelta; // смещение точки наблюдения от центра экрана: крайняя нижняя точка 0.5
+	float cameraDistance; // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РєР°РјРµСЂС‹ РґРѕ РїР»РѕСЃРєРѕСЃС‚Рё РѕР±СЉРµРєС‚Р° (z-distance)
+	float CenteringDelta; // СЃРјРµС‰РµРЅРёРµ С‚РѕС‡РєРё РЅР°Р±Р»СЋРґРµРЅРёСЏ РѕС‚ С†РµРЅС‚СЂР° СЌРєСЂР°РЅР°: РєСЂР°Р№РЅСЏСЏ РЅРёР¶РЅСЏСЏ С‚РѕС‡РєР° 0.5
 	float time; 
 
 	CameraCoords(float f = 0) :
@@ -118,14 +118,14 @@ class CameraDispatcher
 		};
 		
 	enum Flags {
-		EnableControl = 1, // разрешен ручной zoom & slope
+		EnableControl = 1, // СЂР°Р·СЂРµС€РµРЅ СЂСѓС‡РЅРѕР№ zoom & slope
 
 		Perspective = 64,
 		EnableRotate = 128,
 		EnableSlope = 256,
 		EnableRoll = 512,
 
-		Centering = 1024, // точка наблюдения будет находиться в центре
+		Centering = 1024, // С‚РѕС‡РєР° РЅР°Р±Р»СЋРґРµРЅРёСЏ Р±СѓРґРµС‚ РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ С†РµРЅС‚СЂРµ
 		};
 	
 	enum ClipMode {
@@ -227,10 +227,10 @@ public:
 	void setMode(int m, int interpolate = 0);
 	void quant();
 
-	void setObserver(const Body* observer, int interpolate = 0); // Устанавливает динамич. наблюдателя, центровка согласно текущему режиму, 0 восстанавливает пред. наблюдателя
-	void setStaticObserver(const Vect3f& point, const Vect3f& angles, float distance, float centering_delta, int interpolation_time); // Устанавливает стат. точку набл.
-	void setStaticObserver(); // Останавливает камеру.
-	void setTrackObserver(mchTrackElement* el, float slope, float distance, float centering_delta); // el == 0 - берется CP(1)
+	void setObserver(const Body* observer, int interpolate = 0); // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РґРёРЅР°РјРёС‡. РЅР°Р±Р»СЋРґР°С‚РµР»СЏ, С†РµРЅС‚СЂРѕРІРєР° СЃРѕРіР»Р°СЃРЅРѕ С‚РµРєСѓС‰РµРјСѓ СЂРµР¶РёРјСѓ, 0 РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїСЂРµРґ. РЅР°Р±Р»СЋРґР°С‚РµР»СЏ
+	void setStaticObserver(const Vect3f& point, const Vect3f& angles, float distance, float centering_delta, int interpolation_time); // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃС‚Р°С‚. С‚РѕС‡РєСѓ РЅР°Р±Р».
+	void setStaticObserver(); // РћСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РєР°РјРµСЂСѓ.
+	void setTrackObserver(mchTrackElement* el, float slope, float distance, float centering_delta); // el == 0 - Р±РµСЂРµС‚СЃСЏ CP(1)
 	void setCoords(const Vect3f& vCamera, const Vect3f& vTarget);
 	void setStopTime();
 	void setMakeTurnInvitation();
@@ -262,8 +262,8 @@ public:
 	float getScale(const Vect3f& vw);
 	Vect3f Screen2World(int xs, int ys);
 
-	void saveControls(XBuffer& buf); // Записывает и читает zoom & slope 
-	void loadControls(XBuffer& buf); // для всех режимов камеры
+	void saveControls(XBuffer& buf); // Р—Р°РїРёСЃС‹РІР°РµС‚ Рё С‡РёС‚Р°РµС‚ zoom & slope 
+	void loadControls(XBuffer& buf); // РґР»СЏ РІСЃРµС… СЂРµР¶РёРјРѕРІ РєР°РјРµСЂС‹
 
 	void setTimeSpeed(float speed){ time_speed = speed; }
 

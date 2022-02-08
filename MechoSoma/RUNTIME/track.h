@@ -54,7 +54,7 @@ public:
 
 	int is_removed(void) const { return (flags & TRACK_EL_REMOVE); }
 
-	operator Vect3f () const { return Vect3f(Cx, Cy, Cz); } // хотя лучше наследовать от Vect3f
+	operator Vect3f () const { return Vect3f(Cx, Cy, Cz); } // С…РѕС‚СЏ Р»СѓС‡С€Рµ РЅР°СЃР»РµРґРѕРІР°С‚СЊ РѕС‚ Vect3f
 
 	mchTrackElement(void){ list = NULL; flags = 0; }
 };

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////
-//	Тело - базовый класс 
-//	динамических объектов
+//	РўРµР»Рѕ - Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ 
+//	РґРёРЅР°РјРёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 //////////////////////////////////////////////////////////////////
 #ifndef __BODY_H__
 #define __BODY_H__
@@ -252,18 +252,18 @@ public:
 	float height()	const { return bbox_.z ; }
 	float radius() const { return radius_; }
 
-	// Масштабирование: (1,1,1) - единичное
+	// РњР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ: (1,1,1) - РµРґРёРЅРёС‡РЅРѕРµ
 	void setScale(const Vect3f& scale);
 	void setScale(float scale){ setScale(Vect3f(scale, scale, scale)); }
 
-	// Установка координат
+	// РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРѕСЂРґРёРЅР°С‚
 	virtual void setPosition(const Vect3f& pose, float psi = 0);
 	void setPosition(const Vect3f& pose, const Vect3f& target);
 
 	// Global velocity
-	float averageSpeed() const { return speed_avr; } // усредненная норма скорости
+	float averageSpeed() const { return speed_avr; } // СѓСЃСЂРµРґРЅРµРЅРЅР°СЏ РЅРѕСЂРјР° СЃРєРѕСЂРѕСЃС‚Рё
 
-	// Верхняя высота по полигональной карте
+	// Р’РµСЂС…РЅСЏСЏ РІС‹СЃРѕС‚Р° РїРѕ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ РєР°СЂС‚Рµ
 	float H() const;
 	// Max height
 	float maxHeight() const; 
@@ -273,14 +273,14 @@ public:
 	// Energy - damage 	
 	float Energy() { return energy; }	
 	virtual void damage(float decr,int damage_style = 0){ if((energy -= decr) <= 0){ energy = 0; kill(); } }
-	virtual float damage_ability(const class Body& b) const { return damage_ability_; } // вызывается  при любом контакте
-	virtual float hit_damage_ability(const class Body& b, float velocity) const; // вызывается при ударе дин. тел, модулируется импульсом
+	virtual float damage_ability(const class Body& b) const { return damage_ability_; } // РІС‹Р·С‹РІР°РµС‚СЃСЏ  РїСЂРё Р»СЋР±РѕРј РєРѕРЅС‚Р°РєС‚Рµ
+	virtual float hit_damage_ability(const class Body& b, float velocity) const; // РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СѓРґР°СЂРµ РґРёРЅ. С‚РµР», РјРѕРґСѓР»РёСЂСѓРµС‚СЃСЏ РёРјРїСѓР»СЊСЃРѕРј
 	
 	// Some physical props ////
 	int is_floating() const { return k_archimedean > 1e-12f; }
 	float submersion() const { return submersion_; }
 	int completed() const { return completed_; }
-	int visible() const { return visible_; } // доступен для searchBody
+	int visible() const { return visible_; } // РґРѕСЃС‚СѓРїРµРЅ РґР»СЏ searchBody
 
 	// Life time
 	time_type life_time() const { return life_time_(); }
@@ -295,7 +295,7 @@ public:
 	void setAlpha(float alpha);
 	void setColor(float r, float g, float b);
 
-	// Действующие на тело поля
+	// Р”РµР№СЃС‚РІСѓСЋС‰РёРµ РЅР° С‚РµР»Рѕ РїРѕР»СЏ
 	int affecting_fields() const { return affecting_fields_; }
 	virtual void field_affection(const FieldSource* sensor){}
 
@@ -376,7 +376,7 @@ protected:
 	friend class TriangleClipOp;
 
 	// Forces //////
-	float speed_avr; // усредненная норма скорости
+	float speed_avr; // СѓСЃСЂРµРґРЅРµРЅРЅР°СЏ РЅРѕСЂРјР° СЃРєРѕСЂРѕСЃС‚Рё
 	
 	// Water
 	float k_archimedean;
@@ -401,10 +401,10 @@ protected:
 	void updateSound(int id);    
 	void stopSound(int id);
 
-	// Поворот на вектор norm = [0..M_PI]
+	// РџРѕРІРѕСЂРѕС‚ РЅР° РІРµРєС‚РѕСЂ norm = [0..M_PI]
 	Vect3f turn_cross(const Vect3f& target, const Vect3f& current) const;
 
-	// Общие свойства
+	// РћР±С‰РёРµ СЃРІРѕР№СЃС‚РІР°
 	virtual void calc_forces_and_drags();
 	virtual void body_overlap_reaction(Body& body) {} 
 	virtual int is_colliding_with(const Body& body) { return 1; }

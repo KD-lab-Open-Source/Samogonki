@@ -618,7 +618,7 @@ float Triangle::area() const
 
 MatXf TriangleMap::getPlacementPose(const Vect3f& center, int disabled_triangles_mask)
 {
-	const float dz = 0; //������������ ��� ������������
+	const float dz = 0; //\EF\F0\E8\EF\EE\E4\ED\E8\EC\E0\E5\F2 \ED\E0\E4 \EF\EE\E2\E5\F0\F5\ED\EE\F1\F2\FC\FE
 	const Triangle* tri = 0;
 	float s, smax = 0;
 	SList& list = (*this)(center.xi(), center.yi());
@@ -675,8 +675,8 @@ public:
 
 MatXf getPlacementPose(const Vect3f& center)
 {
-	const float dz = 3; //������������ ��� ������������
-	float radius = 20; // ������ ����������� ��� ������ (��� ������ - ��� ���������)
+	const float dz = 3; //\EF\F0\E8\EF\EE\E4\ED\E8\EC\E0\E5\F2 \ED\E0\E4 \EF\EE\E2\E5\F0\F5\ED\EE\F1\F2\FC\FE
+	float radius = 20; // \F0\E0\E4\E8\F3\F1 \EE\EA\F0\E5\F1\F2\ED\EE\F1\F2\E8 \E4\EB\FF \EF\EE\E8\F1\EA\E0 (\F7\E5\EC \E1\EE\EB\FC\F8\E5 - \F2\E5\EC \EC\E5\E4\EB\E5\ED\ED\E5\E9)
 	const Triangle* tri;
 	while(1){
 		ClosetNonVerticalTriangleSearchOp op(center);

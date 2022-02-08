@@ -51,7 +51,7 @@ struct sBasePoint2c
 	}
 	inline sBasePoint2c& operator += (sBasePoint2c &p)				{ x+=p.x; y+=p.y; return *this; }
 };
-// структуры описывающие возмущение
+// СЃС‚СЂСѓРєС‚СѓСЂС‹ РѕРїРёСЃС‹РІР°СЋС‰РёРµ РІРѕР·РјСѓС‰РµРЅРёРµ
 struct sBaseWarpTime
 {
 	float time;
@@ -63,16 +63,16 @@ struct sBaseWarpWave
 };
 
 class cBasePolyGrid : public cBaseObject, public cBaseDrawObject
-{	// двухмерная полигональная сетка
+{	// РґРІСѓС…РјРµСЂРЅР°СЏ РїРѕР»РёРіРѕРЅР°Р»СЊРЅР°СЏ СЃРµС‚РєР°
 public:	
 	cMatrix				Matrix;
-	sBaseColor4c		*pColor;							// цвет вершины полигональной сетки
-	sBasePoint2c		*pUVWarp;							// возмущение текстурных координат вершин полигональной сетки
-	sBasePoint3c		*pXYZWarp;							// возмущение пространственных координат вершин полигональной сетки
-	void				*pStructWarp;						// структура описывающая возмущение
-	int					xsize,ysize;						// размерность полигональной сетки	
-	float				xstep,ystep;						// шаг регулярной сетки
-	float				u,v,du,dv,uofs,vofs;				// текстурные координаты на сетке uofs+du .. u+uofs+du , vofs+dv .. v+vofs+dv (du и dv - динамическое смещение)
+	sBaseColor4c		*pColor;							// С†РІРµС‚ РІРµСЂС€РёРЅС‹ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ СЃРµС‚РєРё
+	sBasePoint2c		*pUVWarp;							// РІРѕР·РјСѓС‰РµРЅРёРµ С‚РµРєСЃС‚СѓСЂРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ СЃРµС‚РєРё
+	sBasePoint3c		*pXYZWarp;							// РІРѕР·РјСѓС‰РµРЅРёРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµРЅРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІРµСЂС€РёРЅ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ СЃРµС‚РєРё
+	void				*pStructWarp;						// СЃС‚СЂСѓРєС‚СѓСЂР° РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ РІРѕР·РјСѓС‰РµРЅРёРµ
+	int					xsize,ysize;						// СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РїРѕР»РёРіРѕРЅР°Р»СЊРЅРѕР№ СЃРµС‚РєРё	
+	float				xstep,ystep;						// С€Р°Рі СЂРµРіСѓР»СЏСЂРЅРѕР№ СЃРµС‚РєРё
+	float				u,v,du,dv,uofs,vofs;				// С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР° СЃРµС‚РєРµ uofs+du .. u+uofs+du , vofs+dv .. v+vofs+dv (du Рё dv - РґРёРЅР°РјРёС‡РµСЃРєРѕРµ СЃРјРµС‰РµРЅРёРµ)
 	int					Attribute;
 
 	cBasePolyGrid(unsigned int type,unsigned int kind) : cBaseObject(type,kind)	{ pColor=0; pXYZWarp=0; pUVWarp=0; pStructWarp=0; Matrix.NewMatrix(); }
@@ -108,7 +108,7 @@ public:
 extern void BaseObject_WorldPolyGrid_Draw(cCamera *Camera);
 
 inline void ShareMapping1(cCamera *Camera,float &xPos,float &yPos,float &zw,float RadiusWorldShare,float SqrRadiusWorldShare,float SqrRadiusWorldShare2,float RadiusWorldShare2)
-{// из пересечения двух сфер
+{// РёР· РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґРІСѓС… СЃС„РµСЂ
 	if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)!=(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE))
 		return;
    	float l2=round(xPos*xPos+yPos*yPos);
@@ -120,7 +120,7 @@ inline void ShareMapping1(cCamera *Camera,float &xPos,float &yPos,float &zw,floa
 	zw+=dz;
 }
 __forceinline void ShareMapping2(cCamera *Camera,Vect3f &pos,float RadiusWorldShare,float DivRadiusWorldShare)
-{// из длины дуги
+{// РёР· РґР»РёРЅС‹ РґСѓРіРё
 	if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)!=(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE))
 		return;
    	float l2=pos.x*pos.x+pos.y*pos.y;
@@ -135,12 +135,12 @@ __forceinline void ShareMapping2(cCamera *Camera,Vect3f &pos,float RadiusWorldSh
 }
 
 class cBaseWaveProcess : public cBaseObject
-{	// когда время жизни Time=0 или Amplitude<=0, процесс прекращает жизнь и должен быть удален
+{	// РєРѕРіРґР° РІСЂРµРјСЏ Р¶РёР·РЅРё Time=0 РёР»Рё Amplitude<=0, РїСЂРѕС†РµСЃСЃ РїСЂРµРєСЂР°С‰Р°РµС‚ Р¶РёР·РЅСЊ Рё РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СѓРґР°Р»РµРЅ
 public:
-	Vect3f			Pos;					// место положение 
-	float			Time,dTime;				// текущее время жизни, декремент времени жизни
-	float			Amplitude,dAmplitude;	// текущая амплитуда колебания, и декремент амплитуды (затухание)
-	float			Phase,dPhase;			// текущая фаза и инкремент фазы
+	Vect3f			Pos;					// РјРµСЃС‚Рѕ РїРѕР»РѕР¶РµРЅРёРµ 
+	float			Time,dTime;				// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ Р¶РёР·РЅРё, РґРµРєСЂРµРјРµРЅС‚ РІСЂРµРјРµРЅРё Р¶РёР·РЅРё
+	float			Amplitude,dAmplitude;	// С‚РµРєСѓС‰Р°СЏ Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёСЏ, Рё РґРµРєСЂРµРјРµРЅС‚ Р°РјРїР»РёС‚СѓРґС‹ (Р·Р°С‚СѓС…Р°РЅРёРµ)
+	float			Phase,dPhase;			// С‚РµРєСѓС‰Р°СЏ С„Р°Р·Р° Рё РёРЅРєСЂРµРјРµРЅС‚ С„Р°Р·С‹
 
 	cBaseWaveProcess(unsigned int type=BASEOBJECT_TYPE_BASEWAVEPROCESS,unsigned int kind=BASEOBJECT_KIND_PHYSICPROCESS) : cBaseObject(type,kind) { Pos.set(0,0,0); Time=1.f; dTime=0.01f; Amplitude=1.f; dAmplitude=0.01f; Phase=0.f; dPhase=0.01f; }
 	int Update()							{ Time-=dTime; Amplitude-=dAmplitude; Phase+=dPhase; if(Time>0) return 1; BaseObject()->Type|=BASEOBJECT_TYPE_DELETE; return 0; }

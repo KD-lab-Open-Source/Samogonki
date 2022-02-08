@@ -106,7 +106,7 @@ struct MD3DMODE
 
 // Function prototypes -------------------------------------------- //
 
-//////array ����� ������������� ���������� ���������� ��� ������ delete[] pArray;
+//////array после использования необходимо уничтожать при помощи delete[] pArray;
 MD3DERROR d3dEnumVideoMode(int* pnumvideomode,MD3DMODE** ppArray);
 MD3DERROR d3dGetAvailableVidMem (DWORD* allvideomem);
 
@@ -118,7 +118,7 @@ MD3DERROR d3dQueryCaps( MD3DCAPS Caps, DWORD *dwData );
 MD3DERROR d3dGetWindowHandle( HWND *hWnd );
 MD3DERROR d3dClear(DWORD);
 MD3DERROR d3dFlip(bool WaitVerticalBlank=true);
-MD3DERROR d3dFlipToGdiSurface();///�������� ����� �������������� �������� � �.�.
+MD3DERROR d3dFlipToGdiSurface();///Вызывать перед использованием диалогов и т.д.
 
 
 MD3DERROR d3dCreateBackBuffer();
@@ -243,25 +243,25 @@ MD3DERROR d3dSetFocusLossBehavior( BOOL bSleep );
 
 #define MD3D_OK 0
 
-// Generic (����� ������ ����)
+// Generic (облом общего вида)
 #define MD3DERR_GENERIC				0x83000001	
 
-#define MD3DERR_NODIRECTDRAW		0x83000002	// �� ������� ������� DirectDraw-������ (DX �� ���������� ��� ���������� �����)
-#define MD3DERR_NODIRECT3D			0x83000003	// ���� 3D-������ ��� ��������
-#define MD3DERR_ENUMERATIONFAILED	0x83000004	// �� ������� �������� ���������� � DirectDraw-��������� (DX �� ���������� ��� ���������� �����)
-#define MD3DERR_NOCOMPATIBLEDEVICES 0x83000005	// �� ���� �� ��������� ������������� �� ������������� ����� �����������
+#define MD3DERR_NODIRECTDRAW		0x83000002	// Не удалось создать DirectDraw-объект (DX не установлен или установлен криво)
+#define MD3DERR_NODIRECT3D			0x83000003	// Нету 3D-железа или драйвера
+#define MD3DERR_ENUMERATIONFAILED	0x83000004	// Не удалось получить информацию о DirectDraw-драйверах (DX не установлен или установлен криво)
+#define MD3DERR_NOCOMPATIBLEDEVICES 0x83000005	// Ни один из найденных акселераторов не удовлетворяет нашим требованиям
 #define MD3DERR_OUTOFMEMORY			0x83000006
-#define MD3DERR_OUTOFVIDEOMEMORY	0x83000007	// ������������ �����������
+#define MD3DERR_OUTOFVIDEOMEMORY	0x83000007	// Недостаточно видеопамяти
 #define MD3DERR_VMCACHEFULL			0x83000008	// Videomemory texture cache is full
-#define MD3DERR_BADDISPLAYMODE		0x83000009	// ������� ����� ������� �� ��������� ��������� � ����
-#define MD3DERR_INVALIDMODE			0x8300000a	// ��������� ����� ������� �� ��������������
-#define MD3DERR_NOZBUFFER			0x8300000b	// �� ������� ������� Z-����� (�������� �� ������� �����������)
-#define MD3DERR_NOTINITIALIZED		0x8300000c	// md3d �� ���������������
-#define MD3DERR_ILLEGALCALL			0x8300000d	// ������� ������ �������� � ���� ���������
-#define MD3DERR_NOEXCLUSIVEMODE		0x8300000e	// ���-�� ������ ������� exclusive-������ � ����������
-#define MD3DERR_INVALIDPARAM		0x8300000f	// ������ � ���������� ������
+#define MD3DERR_BADDISPLAYMODE		0x83000009	// Текущий режим дисплея не позволяет рендерить в окно
+#define MD3DERR_INVALIDMODE			0x8300000a	// Указанный режим дисплея не поддерживается
+#define MD3DERR_NOZBUFFER			0x8300000b	// Не удалось создать Z-буфер (возможно не хватает видеопамяти)
+#define MD3DERR_NOTINITIALIZED		0x8300000c	// md3d не инициализирован
+#define MD3DERR_ILLEGALCALL			0x8300000d	// Функцию нельзя вызывать в этом контексте
+#define MD3DERR_NOEXCLUSIVEMODE		0x8300000e	// Кто-то другой получил exclusive-доступ к устройству
+#define MD3DERR_INVALIDPARAM		0x8300000f	// Ошибка в параметрах вызова
 
-#define MD3DERR_UNSUPPORTED			0x83000010	// ����������� �������� �� �������������� �������
+#define MD3DERR_UNSUPPORTED			0x83000010	// Запрошенная операция не поддерживается железом
 
 // Debugging stuff -------------------------------------------------- //
 
@@ -319,32 +319,32 @@ void __d3dLogMessage( DWORD dwLevel, TCHAR *szFormat, ... );
 
 TCHAR* __d3dBinaryDump( LPVOID, DWORD );
 
-BOOL d3dIsActive();//������� �� ���������� � ������ ������
+BOOL d3dIsActive();//Активно ли приложение в данный момент
 
-//������� ��������� ������
+//Текущие установки экрана
 MD3DERROR d3dGetDisplayMode(DWORD& width,DWORD& height,DWORD& bpp);
 
 /*
-	�������, ����������� �������� �� BackBuffer
-	� ������� ����������� �������
+	Функции, позволяющии рисовать на BackBuffer
+	с помощью стандартных функций
 
-	GetBackBufferDC - �������� hdc � ������ ��������
-	ReleaseBackBufferDC ������� hdc ���������� � ������� GetBackBufferDC 
+	GetBackBufferDC - Получить hdc и начать рисовать
+	ReleaseBackBufferDC удалить hdc полученный с помощью GetBackBufferDC 
 
-	hdc �� ������ ����� ��������� �����������, ��� ���
-	��� ��������� handle, ������� ����� ������ ���� ����.
+	hdc не должен нигде глобально сохраняться, так как
+	это временный handle, имеющий смысл только один кадр.
 */
 MD3DERROR GetBackBufferDC(HDC* hdc);
 MD3DERROR ReleaseBackBufferDC(HDC hdc);
 
 /*
-	�������� ��� ������ � ���������������������
+	Операции для работы с мультитекстуированием
 */
-//����� �� �������� ������������ ��������������������
+//Может ли карточка поддерживать мультитекстуирование
 BOOL IsMultiTextureSupport();
 
-//dwVertexTypeDesc ����������� ������ ����� ������ ���� ����� ���������� ���������
-//��� ������� �������� ���� � ������ IsMultiTextureSupport()==FALSE
+//dwVertexTypeDesc обязательно должен иметь хотябы один набор текстурных координат
+//Эта функция работает даже в случае IsMultiTextureSupport()==FALSE
 MD3DERROR d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, 
 							  LPVOID lpvVertices, DWORD dwVertexCount, 
 							  LPWORD lpwIndices, DWORD dwIndexCount,
