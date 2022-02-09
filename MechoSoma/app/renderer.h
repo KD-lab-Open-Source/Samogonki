@@ -10,6 +10,7 @@
 
 #include "renderer_interface.h"
 #include "texture_manager.h"
+#include "render_state.h"
 
 namespace graphics {
 
@@ -49,11 +50,48 @@ class Renderer final : public RendererInterface {
  private:
   void setup_depth_states();
   void setup_pipeline_states();
+  void prepare_render_state(size_t index_count);
+  void add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index);
 
   const size_t _vertex_count = 35000;
+
+  std::unique_ptr<float> _position_buffer;
+  std::unique_ptr<float> _color_buffer;
+  std::unique_ptr<float> _uv_buffer;
+  std::unique_ptr<uint32_t> _index_buffer;
+
   std::unique_ptr<TextureManager> _texture_manager;
+
+  sg_pass_action defaultPassAction = {};
   sg_pipeline defaultPipeline;
   sg_pipeline blendingPipeline;
+
+  d3d::RenderState _render_state;
+
+  struct BufferView
+  {
+    size_t length;
+    size_t offset;
+
+    size_t end() const
+    {
+      return length + offset;
+    }
+
+    BufferView next() const
+    {
+      return BufferView{0, end()};
+    }
+  };
+
+  struct DrawCommand
+  {
+    d3d::RenderState render_state;
+    BufferView vertex_buffer_view;
+    BufferView index_buffer_view;
+  };
+
+  std::vector<DrawCommand> _commands;
 };
 
 }  // namespace graphics

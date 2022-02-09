@@ -57,7 +57,6 @@ class TextureManager final : public TextureManagerInterface
   std::vector<TextureEntryPtr> _textures;
 
   std::vector<char> _argb_buffer;
-  std::vector<char> _bgra_buffer;
 };
 
 }

@@ -129,7 +129,7 @@ void hbm_Image::free(void)
 		for(i = 0; i < numFrames; i ++){
 			frameTable[i] -> free();
 		}
-		delete frameTable;
+		delete[] frameTable;
 		frameTable = NULL;
 	}
 
@@ -170,7 +170,7 @@ void hbm_Frame::save(XStream& fh)
 
 void hbm_Frame::free(void)
 {
-	if(dataPtr) delete dataPtr;
+	if(dataPtr) delete[] dataPtr;
 	dataPtr = NULL;
 	dataSize = 0;
 }

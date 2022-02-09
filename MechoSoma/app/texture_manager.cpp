@@ -225,15 +225,18 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
     return MD3DERR_ILLEGALCALL;
   }
 
-  sg_image_desc description;
+  auto dataSize = dwWidth * dwHeight * (p->bPalette8 ? 1 : 4);
+  auto data = std::vector<char>(dataSize);
+  sg_image_desc description = {};
   description.width = dwWidth;
   description.height = dwHeight;
-  description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_BGRA8;
+  description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
+  description.usage = SG_USAGE_DYNAMIC;
   auto texture = sg_make_image(description);
 
   *lpdwHandle = _textures.size();
 
-  const DWORD pitch = dwHeight * (p->dwRGBBitCount / 8);
+  const DWORD pitch = dwWidth * (p->dwRGBBitCount / 8);
   _textures.push_back(std::make_unique<TextureEntry>(
       TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false}));
 
@@ -316,11 +319,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
     }
 
     case D3DTEXFMT_ARGB4444: {
-      abort();
-      /*
       const auto input = reinterpret_cast<const uint16_t*>(entry.lock_buffer.data());
 
-      _argb_buffer.resize(4 * image_width * image_height);
+      _argb_buffer.resize(size);
       auto output = reinterpret_cast<uint32_t*>(_argb_buffer.data());
 
       const uint16_t alpha_mask = 0b1111000000000000;
@@ -347,7 +348,6 @@ void TextureManager::update_texture(TextureEntry& entry) {
         }
         output[i] = result;
       }
-       */
       break;
     }
 
@@ -377,33 +377,24 @@ void TextureManager::update_texture(TextureEntry& entry) {
       break;
   }
 
-  _bgra_buffer.resize(4 * image_width * image_height);
-  /*
-
-  vImage_Buffer source;
-  source.data = _argb_buffer.data();
-  source.height = image_height;
-  source.width = image_width;
-  source.rowBytes = 4 * image_width;
-
-  vImage_Buffer target;
-  target.data = _bgra_buffer.data();
-  target.height = image_height;
-  target.width = image_width;
-  target.rowBytes = 4 * image_width;
-
-  // from ARGB (0, 1, 2, 3) to BGRA
-  const uint8_t permute_map[4] = {3, 2, 1, 0};
-  vImagePermuteChannels_ARGB8888(&source, &target, permute_map, kvImageNoFlags);
-
-  MTLRegion region = MTLRegionMake2D(0, 0, image_width, image_height);
-  const void* pixel_bytes = _bgra_buffer.data();
-  [t replaceRegion:region mipmapLevel:0 withBytes:pixel_bytes bytesPerRow:4 * image_width];
-   */
+  char* bgra_buffer = _argb_buffer.data();
+  for (int y = 0; y < image_height; ++y) {
+    for (int x = 0; x < image_width; ++x) {
+      auto offset = y * image_width * 4;
+      auto a = bgra_buffer[offset + 0];
+      auto r = bgra_buffer[offset + 1];
+      auto g = bgra_buffer[offset + 2];
+      auto b = bgra_buffer[offset + 3];
+      bgra_buffer[offset + 0] = r;
+      bgra_buffer[offset + 1] = g;
+      bgra_buffer[offset + 2] = b;
+      bgra_buffer[offset + 3] = a;
+    }
+  }
 
   sg_image_data imageData;
   imageData.subimage[0][0] = {
-      .ptr = _bgra_buffer.data(),
+      .ptr = bgra_buffer,
       .size = size,
   };
   sg_update_image(entry.texture, imageData);

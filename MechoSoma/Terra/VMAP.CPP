@@ -185,7 +185,7 @@ struct PrmFile {
 
 	void init(char* name);
 	char* getAtom(void);
-	void finit(void){ delete buf; }
+	void finit(void){ delete[] buf; }
 	};
 /* --------------------------- DEFINITION SECTION -------------------------- */
 unsigned int V_SIZE_POWER;

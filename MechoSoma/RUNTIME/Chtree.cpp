@@ -185,8 +185,8 @@ void aciCHTree::load(XStream& fh)
 	rootEl -> load(XBuf);
 
 	delete XBuf;
-	delete p;
-	delete p1;
+	delete[] p;
+	delete[] p1;
 }
 
 void aciCHTree::decode(char* fname)
