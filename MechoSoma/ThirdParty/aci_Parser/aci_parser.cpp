@@ -317,7 +317,7 @@ scrDataBlock* loadScript(XStream& fh)
 		p1 = new char[sz1];
 		ZIP_expand(p1,sz1,p0,sz0);
 
-		delete p0;
+		delete[] p0;
 	}
 
 	XBuffer buf(p1,sz1);
@@ -326,7 +326,7 @@ scrDataBlock* loadScript(XStream& fh)
 	p -> loadData(buf);
 
 	fh.close();
-	delete p1;
+	delete[] p1;
 
 	return p;
 }

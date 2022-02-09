@@ -8,10 +8,6 @@
 
 using namespace graphics;
 
-std::unique_ptr<graphics::Renderer> Renderer::shared;
-
-RendererInterface& graphics::get_renderer() { return *Renderer::shared; }
-
 Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
   setup_depth_states();
   setup_pipeline_states();
@@ -37,11 +33,11 @@ void Renderer::setup_pipeline_states() {
   pipeline.layout.buffers[0].stride = 12;
   pipeline.layout.buffers[0].step_func = SG_VERTEXSTEP_PER_VERTEX;
 
-  pipeline.layout.buffers[0].stride = 16;
-  pipeline.layout.buffers[0].step_func = SG_VERTEXSTEP_PER_VERTEX;
+  pipeline.layout.buffers[1].stride = 16;
+  pipeline.layout.buffers[1].step_func = SG_VERTEXSTEP_PER_VERTEX;
 
-  pipeline.layout.buffers[0].stride = 8;
-  pipeline.layout.buffers[0].step_func = SG_VERTEXSTEP_PER_VERTEX;
+  pipeline.layout.buffers[2].stride = 8;
+  pipeline.layout.buffers[2].step_func = SG_VERTEXSTEP_PER_VERTEX;
 
   {
     pipeline.colors[0].pixel_format = SG_PIXELFORMAT_BGRA8;

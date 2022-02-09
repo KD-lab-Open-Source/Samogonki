@@ -48,7 +48,9 @@ MD3DERROR d3dQueryCaps(MD3DCAPS Caps, DWORD *dwData) { return MD3D_OK; }
 
 MD3DERROR d3dGetWindowHandle(HWND *hWnd) { return MD3D_OK; }
 
-MD3DERROR d3dClear(DWORD dwColor) { return graphics::get_renderer().d3dClear(dwColor); }
+MD3DERROR d3dClear(DWORD dwColor) {
+  return graphics::get_renderer().d3dClear(dwColor);
+}
 
 MD3DERROR d3dFlip(bool WaitVerticalBlank) { return MD3D_OK; }
 

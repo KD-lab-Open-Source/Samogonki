@@ -4,7 +4,10 @@
 
 #include <sokol_app.h>
 
+#include <memory>
+
 #include "KEYS.H"
+#include "renderer.h"
 #include "xgraph.h"
 #include "xtool.h"
 
@@ -12,7 +15,14 @@ int _id;
 int _previous_id;
 XRuntimeObject* _current_rto;
 
+std::unique_ptr<graphics::Renderer> graphics::Renderer::shared;
+
+graphics::RendererInterface& graphics::get_renderer() { return *Renderer::shared; }
+
 void onInit() {
+  sg_setup(sg_desc {});
+  graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
+
   _previous_id = 0;
   _id = xtInitApplication();
   _current_rto = xtGetRuntimeObject(_id);

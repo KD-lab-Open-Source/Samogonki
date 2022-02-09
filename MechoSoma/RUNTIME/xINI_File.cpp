@@ -391,8 +391,8 @@ void xINI_File::pack(void)
 	fh.write(buf1,sz1);
 	fh.close();
 
-	delete buf0;
-	delete buf1;
+	delete[] buf0;
+	delete[] buf1;
 }
 
 void xINI_File::unpack(void)
@@ -426,8 +426,8 @@ void xINI_File::unpack(void)
 	fh.write(buf1,sz1);
 	fh.close();
 
-	delete buf0;
-	delete buf1;
+	delete[] buf0;
+	delete[] buf1;
 }
 
 void xINI_File::put_key(const char* section,const char* key,const char* value)

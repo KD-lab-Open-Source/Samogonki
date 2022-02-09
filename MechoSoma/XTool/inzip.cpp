@@ -368,7 +368,7 @@ void lm_free(void)
 #ifdef DYN_ALLOC
 	if(window != NULL){
 //		  free(window);
-		delete window;
+		delete[] window;
 		window = NULL;
 	}
 	if(prev != NULL){
@@ -376,8 +376,8 @@ void lm_free(void)
 		free((unsigned char*)prev);
 		free((unsigned char*)head);
 */
-		delete prev;
-		delete head;
+		delete[] prev;
+		delete[] head;
 		prev = head = NULL;
 	}
 #endif

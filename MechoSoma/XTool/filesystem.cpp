@@ -20,15 +20,18 @@ std::filesystem::path file::normalize_path(const char* input) {
   }
   fs::path input_path{t};
 
-  auto result_path = fs::current_path();
-  auto result_path_item = result_path.begin();
+  auto current_path = fs::current_path();
+  auto current_path_part = current_path.begin();
+  auto result_path = current_path;
 
   for (const auto& part : input_path) {
     const auto part_name = part.filename().string();
-    const auto name = result_path_item->filename().string();
-    if (std::equal(part_name.cbegin(), part_name.cend(), name.cbegin(), comparator)) {
-      result_path_item++;
-      continue;
+    if (current_path_part != current_path.end()) {
+      const auto name = current_path_part->filename().string();
+      if (std::equal(part_name.cbegin(), part_name.cend(), name.cbegin(), comparator)) {
+        current_path_part++;
+        continue;
+      }
     }
 
     bool is_found = false;
