@@ -91,7 +91,7 @@ Dummy& Dummy::operator = (const Dummy& d)
 Dummy::~Dummy()
 {
 	if(name)
-		delete name;
+		delete[] name;
 }
 	
 //////////////////////////////////////////////////

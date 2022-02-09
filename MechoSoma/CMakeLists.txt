@@ -14,8 +14,8 @@ add_compile_options(-Werror=return-type)
 # add_compile_options(-Werror=write-strings)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-Werror=mismatched-new-delete )
-endif()
+    add_compile_options(-Werror=mismatched-new-delete)
+endif ()
 
 set(GAME_SOURCES
         # FX
@@ -557,7 +557,7 @@ if (APPLE)
     set_source_files_properties(${METAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 else ()
     if (LINUX)
-        add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp)
+        add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp -D_DEBUG)
     endif (LINUX)
 
     include_directories(ThirdParty/sokol)
@@ -575,6 +575,11 @@ else ()
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
 
     if (LINUX)
+        add_custom_target(sokol-shaders
+                COMMAND "${CMAKE_CURRENT_LIST_DIR}/ThirdParty/sokol-tools-bin/bin/linux/sokol-shdc"
+                    --input "${CMAKE_CURRENT_LIST_DIR}/app/sokol/shader.glsl"
+                    --output "${CMAKE_CURRENT_LIST_DIR}/app/sokol-shader.h"
+                    --slang glsl330)
         target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
                 X11 Xi Xcursor GL dl pthread)
     endif (LINUX)

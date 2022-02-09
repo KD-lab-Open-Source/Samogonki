@@ -1416,8 +1416,12 @@ int cMesh::AssertValid()
 				assert(tile->GetNumberPoint()>0);
 				assert(tile->GetNumberPolygon()>0);
 				assert(tile->GetNumberTexel()>=0);
-			}
-		}
+                                sPoint* point = &(tile->GetPoint()[0]);
+                                assert(!std::isnan(point->pos.x));
+                                assert(!std::isnan(point->pos.y));
+                                assert(!std::isnan(point->pos.z));
+                        }
+                }
 	for(cList *start=Child; start; start=start->next) 
 		start->Mesh->AssertValid(); 
 	return 1; 

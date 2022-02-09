@@ -6,6 +6,7 @@
 #ifndef __XMATH_H__
 #define __XMATH_H__
 
+#include <cassert>
 #include <math.h>
 
 #ifndef _XMATH_NO_IOSTREAM
@@ -448,14 +449,30 @@ public:
 
   float x, y, z;
 
-  virtual ~Vect3f() = default;
   // constructors //////////////////////////////////////////////////////////////
 
-  xm_inline Vect3f() {}
-  xm_inline Vect3f(float x_, float y_, float z_) {x = x_; y = y_; z = z_;}
+  xm_inline void assertValid() {
+#ifdef _DEBUG
+    assert(!std::isnan(x));
+    assert(!std::isnan(y));
+    assert(!std::isnan(z));
+#endif
+  }
+
+  xm_inline Vect3f(): x(0), y(0), z(0) {}
+  xm_inline Vect3f(float x_, float y_, float z_) {
+    x = x_; y = y_; z = z_;
+    assertValid();
+  }
   typedef float float3[3];
-  xm_inline Vect3f(const float3& v) {x = v[0]; y = v[1]; z = v[2];}
-  xm_inline Vect3f(const float v) {x = v; y = v; z = v;}
+  xm_inline Vect3f(const float3& v) {
+    x = v[0]; y = v[1]; z = v[2];
+    assertValid();
+  }
+  xm_inline Vect3f(const float v) {
+    x = v; y = v; z = v;
+    assertValid();
+  }
 
   xm_inline operator Vect3d () const;
 
@@ -464,10 +481,24 @@ public:
 
   // setters / accessors / translators /////////////////////////////////////////
 
-  xm_inline Vect3f& set(float x_, float y_, float z_) { x = x_; y = y_; z = z_; return *this; }
+  xm_inline Vect3f& set(float x_, float y_, float z_) {
+      x = x_;
+      y = y_;
+      z = z_;
+      assertValid();
+      return *this;
+  }
 
-  xm_inline Vect3f& set(const float v[3]) {x = v[0]; y = v[1]; z = v[2]; return *this; }
-  xm_inline Vect3f& set(const float v) {x = v; y = v; z = v; return *this; }
+  xm_inline Vect3f& set(const float v[3]) {
+    x = v[0]; y = v[1]; z = v[2];
+    assertValid();
+    return *this;
+  }
+  xm_inline Vect3f& set(const float v) {
+    x = v; y = v; z = v;
+    assertValid();
+    return *this;
+  }
 
   xm_inline Vect3f& setSpherical(float psi,float theta,float radius);
 

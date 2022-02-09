@@ -267,7 +267,12 @@ public:
 	inline void Clear()								{ CurrentSize=0; }
 	inline int& length()							{ return CurrentSize; }
 	inline void Pack()								{ if(CurrentSize<MaxSize) Resize(CurrentSize,CurrentSize); }
-	inline cBase& operator [] (int number)			{ /*assert(number<MaxSize);*/ return Base[number]; }
+	inline cBase& operator [] (int number)			{
+#ifdef _DEBUG
+          assert(number<MaxSize);
+#endif
+          return Base[number];
+        }
 	inline cBase& operator () (int number)			{ if(number>=MaxSize) Resize(MaxSize,number+dSize); if(number>=CurrentSize) CurrentSize=number+1; return Base[number]; }
 	inline void SetArray(cBaseArray *Array)			{ Delete(); dSize=Array->dSize;	Base=new cBase[MaxSize=Array->MaxSize];	for(CurrentSize=0;CurrentSize<Array->CurrentSize;CurrentSize++) Base[CurrentSize]=Array->Base[CurrentSize]; }
 	inline int AddBase(cBase *base,char test=0);
@@ -454,7 +459,7 @@ public:
 		for(int i=0;i<length();i++)
 			if(Base[i]) 
 				delete Base[i];
-		if(Base) delete Base; 
+		if(Base) delete[] Base;
 		Base=0; size=0;
 //		memset(this,0,sizeof(cBaseDynArrayPointer)); 
 	}

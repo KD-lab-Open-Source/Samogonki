@@ -371,7 +371,10 @@ public:
 		} 
 		cMesh::Tile->AddTile(Tile); 
 		if(Tile->GetAttribute(ATTRMAT_TRANSPARENCY|ATTRMAT_OPACITY)) 
-			GetGeneralParent()->SetAttribute(MESH_USE_OPACITY); 
+			GetGeneralParent()->SetAttribute(MESH_USE_OPACITY);
+#ifdef _DEBUG
+                AssertValid();
+#endif
 		return Tile; 
 	}
 	cMesh* FindMesh(char *Name);

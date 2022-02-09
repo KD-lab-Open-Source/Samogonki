@@ -47,7 +47,7 @@ inline float CubicInterpolate(float v0,float v1,float v2,float v3,float x) // v0
 	return ((p*x+q)*x+r)*x+s;
 }
 inline float TriangleArea(float x1,float y1,float x2,float y2,float x3,float y3)
-{ // формула Герона
+{ // С„РѕСЂРјСѓР»Р° Р“РµСЂРѕРЅР°
 	float a=(x2-x1)*(x2-x1)+(y2-y1)*(y2-y1);
 	if(a<0) return 0;
 	a=sqrtf(a);
@@ -193,7 +193,7 @@ struct sPlane4f
 
 	sPlane4f()											{ }
 	sPlane4f(const Vect3f &a,const Vect3f &b,const Vect3f &c)
-	{ // инициализация плоскости по трем точкам
+	{ // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР»РѕСЃРєРѕСЃС‚Рё РїРѕ С‚СЂРµРј С‚РѕС‡РєР°Рј
 		A=(b.y-a.y)*(c.z-a.z)-(c.y-a.y)*(b.z-a.z);
 		B=(b.x-a.x)*(c.z-a.z)-(c.x-a.x)*(b.z-a.z);
 		C=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y);
@@ -201,7 +201,7 @@ struct sPlane4f
 		D=-A*a.x-B*a.y-C*a.z;
 	}
 	void Set(const Vect3f &a,const Vect3f &b,const Vect3f &c)
-	{ // инициализация плоскости по трем точкам
+	{ // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР»РѕСЃРєРѕСЃС‚Рё РїРѕ С‚СЂРµРј С‚РѕС‡РєР°Рј
 		A=(b.y-a.y)*(c.z-a.z)-(c.y-a.y)*(b.z-a.z);
 		B=(b.x-a.x)*(c.z-a.z)-(c.x-a.x)*(b.z-a.z);
 		C=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y);
@@ -209,15 +209,15 @@ struct sPlane4f
 		D=-A*a.x-B*a.y-C*a.z;
 	}
 	float GetDistance(const Vect3f &a)
-	{ // расстояние от точки до плоскости
+	{ // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ С‚РѕС‡РєРё РґРѕ РїР»РѕСЃРєРѕСЃС‚Рё
 		float t=A*a.x+B*a.y+C*a.y+D;
 		return t;
 	}
 	float GetCross(const Vect3f &a,const Vect3f &b)
-	{ // поиск пересечения данной плоскости с прямой заданной двумя точками a и b
+	{ // РїРѕРёСЃРє РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґР°РЅРЅРѕР№ РїР»РѕСЃРєРѕСЃС‚Рё СЃ РїСЂСЏРјРѕР№ Р·Р°РґР°РЅРЅРѕР№ РґРІСѓРјСЏ С‚РѕС‡РєР°РјРё a Рё b
 		Vect3f v=a-b;
 		float t=A*v.x+B*v.y+C*v.z;
-		if(t==0) return 0;			// прямая и плоскость параллельны
+		if(t==0) return 0;			// РїСЂСЏРјР°СЏ Рё РїР»РѕСЃРєРѕСЃС‚СЊ РїР°СЂР°Р»Р»РµР»СЊРЅС‹
 		t=(A*a.x+B*a.y+C*a.z+D)/t;
 		return t;
 	}
