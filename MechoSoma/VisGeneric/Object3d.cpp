@@ -89,7 +89,7 @@ void sTile::CalcNormal()
 			Point[i].SetNormal(Normal3f[i].x,Normal3f[i].y,Normal3f[i].z);
 		}
 		else Point[i].SetNormal(0,0,0);
-	delete Normal3f;
+	delete[] Normal3f;
 }
 void sTile::GetCopy(sTile *Tile)
 { 

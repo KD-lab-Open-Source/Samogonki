@@ -616,14 +616,14 @@ void mchOptionData::Update(void)
 			}
 			break;
 		case ACS_OPT_COLOR_DEPTH:
-			if(!xgrInitModeSelected)
+			if(!xgrInitModeSelected) {
 				if(mchA_d3dCheckMode(xgrGameMode,Value * 16 + 16)){
 					xgrColorDepth = Value * 16 + 16;
-				}
-				else {
+				} else {
 					Value = (xgrColorDepth - 16) >> 4;
 					SetObjectValue();
 				}
+            }
 			break;
 		case ACS_OPT_FULLSCREEN:
 			if(!xgrInitModeSelected)

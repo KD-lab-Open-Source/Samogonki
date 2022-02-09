@@ -1256,7 +1256,7 @@ void acsTextureMosaicElement::dump(void)
 	fh < (short)Size < (short)Size;
 	fh.write(p,Size * Size);
 	fh.close();
-	delete p;
+	delete[] p;
 }
 
 void acsTextureMosaic::dump(void)

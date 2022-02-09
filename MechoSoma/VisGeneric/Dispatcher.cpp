@@ -734,7 +734,8 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 		if(Pos) delete Pos; 
 		if(Rot) delete Rot;
 		if(Scale) delete Scale; 
-		delete Vertex; delete Face;
+		delete[] Vertex; 
+        delete[] Face;
 		f.CloseMesh();
 	}
 	for(i=NumberObject3ds;i<NumberKeyFrame;i++)
@@ -830,7 +831,7 @@ cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,cha
 		mesh->z()=Mesh->z();
 	}
 	Mesh->Frame->SetMKFrame(Morph,time,NumberMorph);
-	delete Morph;
+	delete[] Morph;
 	return Mesh;
 }
 cMesh* cMeshLibrary::AddMesh(char *NameMesh)

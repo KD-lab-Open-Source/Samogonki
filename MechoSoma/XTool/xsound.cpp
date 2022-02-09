@@ -19,6 +19,7 @@ void SoundStop(int channel)
 
 void* GetSound(int channel)
 {
+    return nullptr;
 }
 
 void SoundLoad(char *filename, void **lpDSB)

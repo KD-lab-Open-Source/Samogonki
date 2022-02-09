@@ -37,7 +37,7 @@ class MemoryHeapBlock
 public:
 
 	MemoryHeapBlock(int sz = 0) { allocBlock(sz); }
-	~MemoryHeapBlock(){ freeBlock(); }
+	virtual ~MemoryHeapBlock(){ freeBlock(); }
 	
 	MemoryHeapBlock(const MemoryHeapBlock& block){
 		*this = block;

@@ -23,6 +23,7 @@ void XErrorHandler::ClearFlags(unsigned f)
 
 unsigned XErrorHandler::InfoFlags(unsigned f)
 {
+    return 0;
 }
 
 void XErrorHandler::SetPrefix(const char* s)

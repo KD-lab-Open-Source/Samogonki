@@ -17,8 +17,6 @@ struct RendererInterface {
   virtual MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, DWORD dwRenderState) = 0;
   virtual MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, DWORD* lpdwRenderState) = 0;
   virtual MD3DERROR d3dSetTextureStageState(DWORD dwStage, D3DTEXTURESTAGESTATETYPE dwState, DWORD dwValue) = 0;
-  virtual MD3DERROR d3dTriangles(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) = 0;
-  virtual MD3DERROR d3dTriangleStrip(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) = 0;
   virtual MD3DERROR d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) = 0;
   virtual MD3DERROR d3dTrianglesIndexed(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount,
                                         LPWORD lpwIndices, DWORD dwIndexCount) = 0;

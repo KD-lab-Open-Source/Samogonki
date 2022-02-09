@@ -95,7 +95,9 @@ void cSpline::CalcKoofQuadSpline(int number,float *x,float *y)
 	KoofQuadSpline[number]=z[number]/p[number];
 	for(i=number-1;i>=0;i--)
 		KoofQuadSpline[i]=(z[i]-(1-KoofQuadSpline[i])*KoofQuadSpline[i+1])/p[i];	
-	delete f;delete p;delete z;
+	delete[] f;
+    delete[] p;
+    delete[] z;
 }
 float cSpline::CalcFunction(int number,float *x,float *y,float xu)
 {

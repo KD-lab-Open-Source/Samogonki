@@ -93,6 +93,7 @@ protected:
   Type type_;
 
 public:
+  virtual ~Feature() = default;
   Type type() const {return type_;}
   virtual const char *name() const = 0;
   virtual void clip(class PolyhedronClipOp& data) const = 0;

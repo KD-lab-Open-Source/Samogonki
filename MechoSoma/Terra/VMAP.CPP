@@ -1906,7 +1906,7 @@ int vrtMap::loadClBufForRender(int X,int Y,int num_track)
 		}
 	}
 	ss.close();
-	delete line;
+	delete[] line;
 	return 1;
 }
 
@@ -1950,7 +1950,7 @@ int vrtMap::loadClBuf(int X,int Y,int num_track)
 		}
 	}
 	ss.close();
-	delete line;
+	delete[] line;
 	return 1;
 
 /*  //�������� � ���������� �� ����� ������.

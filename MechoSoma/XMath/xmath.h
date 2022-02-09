@@ -448,6 +448,7 @@ public:
 
   float x, y, z;
 
+  virtual ~Vect3f() = default;
   // constructors //////////////////////////////////////////////////////////////
 
   xm_inline Vect3f() {}

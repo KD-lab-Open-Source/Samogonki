@@ -13,7 +13,8 @@ class ResourceUser
 	int ID;
 	static int IDs;
 public:
-	ResourceUser(time_type period) { dtime = period; time = 0; ID = ++IDs; }
+	explicit ResourceUser(time_type period) { dtime = period; time = 0; ID = ++IDs; }
+        virtual ~ResourceUser() = default;
 	virtual int quant() { return 1; } 
 
 protected:

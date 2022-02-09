@@ -452,6 +452,7 @@ void XGR_Screen::setpixel(int x,int y,int col)
 
 int XGR_Screen::getpixel(int x,int y)
 {
+    return 0;
 }
 
 void XGR_Screen::flush(int x,int y,int sx,int sy)
@@ -484,6 +485,7 @@ void XGR_Screen::lineto(int x,int y,int len,int dir,int col)
 
 int XGR_Screen::init(int x,int y,int flags,void *hWnd)
 {
+    return 0;
 }
 
 void XGR_Screen::close(void)

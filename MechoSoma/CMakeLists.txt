@@ -6,6 +6,17 @@ if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif ()
 
+# add_compile_options(-Werror=shift-negative-value)
+# add_compile_options(-Werror=dangling-else)
+# add_compile_options(-Werror=parentheses)
+add_compile_options(-Werror=delete-non-virtual-dtor)
+add_compile_options(-Werror=return-type)
+# add_compile_options(-Werror=write-strings)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-Werror=mismatched-new-delete )
+endif()
+
 set(GAME_SOURCES
         # FX
         FX/Hermit.h
