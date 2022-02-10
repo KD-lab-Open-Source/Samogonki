@@ -231,6 +231,7 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
   description.width = dwWidth;
   description.height = dwHeight;
   description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
+  assert(p->bPalette8 == false);
   description.usage = SG_USAGE_DYNAMIC;
   auto texture = sg_make_image(description);
 
@@ -377,24 +378,24 @@ void TextureManager::update_texture(TextureEntry& entry) {
       break;
   }
 
-  char* bgra_buffer = _argb_buffer.data();
+  char* rgba_buffer = _argb_buffer.data();
   for (int y = 0; y < image_height; ++y) {
     for (int x = 0; x < image_width; ++x) {
-      auto offset = y * image_width * 4;
-      auto a = bgra_buffer[offset + 0];
-      auto r = bgra_buffer[offset + 1];
-      auto g = bgra_buffer[offset + 2];
-      auto b = bgra_buffer[offset + 3];
-      bgra_buffer[offset + 0] = r;
-      bgra_buffer[offset + 1] = g;
-      bgra_buffer[offset + 2] = b;
-      bgra_buffer[offset + 3] = a;
+      auto offset = (y * image_width + x) * 4;
+      auto a = rgba_buffer[offset + 0];
+      auto r = rgba_buffer[offset + 1];
+      auto g = rgba_buffer[offset + 2];
+      auto b = rgba_buffer[offset + 3];
+      rgba_buffer[offset + 0] = r;
+      rgba_buffer[offset + 1] = g;
+      rgba_buffer[offset + 2] = b;
+      rgba_buffer[offset + 3] = a;
     }
   }
 
   sg_image_data imageData;
   imageData.subimage[0][0] = {
-      .ptr = bgra_buffer,
+      .ptr = rgba_buffer,
       .size = size,
   };
   sg_update_image(entry.texture, imageData);

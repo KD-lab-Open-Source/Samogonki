@@ -20,7 +20,13 @@ std::unique_ptr<graphics::Renderer> graphics::Renderer::shared;
 graphics::RendererInterface& graphics::get_renderer() { return *Renderer::shared; }
 
 void onInit() {
-  sg_setup(sg_desc {});
+  auto context = sg_context_desc {
+      .color_format = SG_PIXELFORMAT_RGBA8,
+      .depth_format = SG_PIXELFORMAT_DEPTH,
+  };
+  sg_setup(sg_desc {
+      .context = context,
+  });
   graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
 
   _previous_id = 0;

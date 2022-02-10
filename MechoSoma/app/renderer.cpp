@@ -119,10 +119,16 @@ MD3DERROR Renderer::d3dEndScene() {
   }
 
   static sg_shader shader = sg_make_shader(samogonki_shader_desc(sg_query_backend()));
+  static sg_range nullData = {
+      .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f},
+      .size = 4,
+  };
   static sg_image nullTexture = sg_make_image(sg_image_desc {
       .width = 1,
       .height = 1,
-      .usage = SG_USAGE_DYNAMIC,
+      .usage = SG_USAGE_IMMUTABLE,
+      .pixel_format = SG_PIXELFORMAT_RGBA8,
+      .data = nullData,
   });
 
   auto projection_matrix = make_ortho_projection(0, 800, 600, 0, -1, 1);
@@ -166,6 +172,7 @@ MD3DERROR Renderer::d3dEndScene() {
     sg_bindings bindings = {};
 
     pipeline.shader = shader;
+    pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
 
     switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {
       case D3DCULL_CW: {
@@ -209,8 +216,8 @@ MD3DERROR Renderer::d3dEndScene() {
 
     auto parameters = command.render_state.get_fragment_shader_parameters();
     auto fs_params = fs_params_t{
-        .color_operation_1 = (int)parameters.color_operation_1,
-        .color_operation_2 = (int)parameters.color_operation_2,
+        .color_operation_1 = (int) parameters.color_operation_1,
+        .color_operation_2 = (int) parameters.color_operation_2,
     };
 
     pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
@@ -226,9 +233,12 @@ MD3DERROR Renderer::d3dEndScene() {
     bindings.vertex_buffers[1] = sg_color_buffer;
     bindings.vertex_buffers[2] = sg_uv_buffer;
 
-    const auto count = command.vertex_buffer_view.length;
     if (command.index_buffer_view.length == 0) {
-      bindings.vertex_buffer_offsets[0] = command.vertex_buffer_view.offset;
+      const auto count = command.vertex_buffer_view.length;
+      const auto offset = command.vertex_buffer_view.offset;
+      assert(count > 0);
+
+      bindings.vertex_buffer_offsets[0] = 0;
 
       auto pip = sg_make_pipeline(pipeline);
       sg_apply_pipeline(pip);
@@ -236,12 +246,16 @@ MD3DERROR Renderer::d3dEndScene() {
       sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
       sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
 
-      sg_draw(SG_PRIMITIVETYPE_TRIANGLES, count, 1);
+      sg_draw(offset, count, 1);
       sg_destroy_pipeline(pip);
     } else {
+      const auto count = command.index_buffer_view.length;
+      const auto offset = command.index_buffer_view.offset; // * sizeof(uint32_t);
+      assert(count > 0);
+
       pipeline.index_type = SG_INDEXTYPE_UINT32;
       bindings.index_buffer = sg_index_buffer;
-      bindings.index_buffer_offset = command.index_buffer_view.offset * sizeof(uint32_t);
+      bindings.index_buffer_offset = 0;
 
       auto pip = sg_make_pipeline(pipeline);
       sg_apply_pipeline(pip);
@@ -249,7 +263,7 @@ MD3DERROR Renderer::d3dEndScene() {
       sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
       sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
 
-      sg_draw(SG_PRIMITIVETYPE_TRIANGLES, count, 1);
+      sg_draw(offset, count, 1);
       sg_destroy_pipeline(pip);
     }
   }
@@ -420,10 +434,14 @@ void Renderer::add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index) {
     const auto argb = p[0];
 
     auto color = _color_buffer.get();
-    color[4 * i] = static_cast<float>((argb >> 16) & 0xFF) / 255.0f;
-    color[4 * i + 1] = static_cast<float>((argb >> 8) & 0xFF) / 255.0f;
-    color[4 * i + 2] = static_cast<float>(argb & 0xFF) / 255.0f;
-    color[4 * i + 3] = static_cast<float>((argb >> 24) & 0xFF) / 255.0f;
+    auto a = static_cast<float>((argb >> 24) & 0xFF) / 255.0f;
+    auto r = static_cast<float>((argb >> 16) & 0xFF) / 255.0f;
+    auto g = static_cast<float>((argb >> 8) & 0xFF) / 255.0f;
+    auto b = static_cast<float>(argb & 0xFF) / 255.0f;
+    color[4 * i] = r;
+    color[4 * i + 1] = g;
+    color[4 * i + 2] = b;
+    color[4 * i + 3] = a;
 
     vertex_offset += type.get_offset(D3DFVF_DIFFUSE);
   }
