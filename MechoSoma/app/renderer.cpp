@@ -12,6 +12,8 @@
 
 using namespace graphics;
 
+float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far);
+
 Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
   setup_depth_states();
   setup_pipeline_states();
@@ -19,37 +21,55 @@ Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
   {
     const auto length = _vertex_count * 3 * sizeof(float);
     _position_buffer.reset(new float[length]);
+    sg_position_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = length,
+        .type = SG_BUFFERTYPE_VERTEXBUFFER,
+        .usage = SG_USAGE_DYNAMIC,
+    });
   }
 
   {
     const auto length = _vertex_count * 4 * sizeof(float);
     _color_buffer.reset(new float[length]);
+    sg_color_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = length,
+        .type = SG_BUFFERTYPE_VERTEXBUFFER,
+        .usage = SG_USAGE_DYNAMIC,
+    });
   }
 
   {
     const auto length = _vertex_count * 2 * sizeof(float);
     _uv_buffer.reset(new float[length]);
+    sg_uv_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = length,
+        .type = SG_BUFFERTYPE_VERTEXBUFFER,
+        .usage = SG_USAGE_DYNAMIC,
+    });
   }
 
   {
     const auto length = _vertex_count * 3 * sizeof(uint32_t);
     _index_buffer.reset(new uint32_t[length]);
+    sg_index_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = length,
+        .type = SG_BUFFERTYPE_INDEXBUFFER,
+        .usage = SG_USAGE_DYNAMIC,
+    });
   }
 }
 
 void Renderer::setup_depth_states() {}
 
 void Renderer::setup_pipeline_states() {
-  sg_shader shader = sg_make_shader(samogonki_shader_desc(sg_query_backend()));
-
-  sg_pipeline_desc pipeline = {};
-
-  pipeline.shader = shader;
-  pipeline.layout.attrs[ATTR_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
-  pipeline.layout.attrs[ATTR_vs_pos].offset = 0;
-  pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
-
-  defaultPipeline = sg_make_pipeline(pipeline);
+  //  sg_pipeline_desc pipeline = {};
+  //
+  //  pipeline.shader = shader;
+  //  pipeline.layout.attrs[ATTR_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
+  //  pipeline.layout.attrs[ATTR_vs_pos].offset = 0;
+  //  pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
+  //
+  //  defaultPipeline = sg_make_pipeline(pipeline);
 
   //  pipeline.layout.attrs[1].format = SG_VERTEXFORMAT_FLOAT4;
   //  pipeline.layout.attrs[1].offset = 0;
@@ -90,12 +110,150 @@ void Renderer::setup_pipeline_states() {
 
 MD3DERROR Renderer::d3dBeginScene() {
   _commands.clear();
-  // TODO: set actual screen size
-  sg_begin_default_pass(defaultPassAction, 800, 600);
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::d3dEndScene() {
+  if (_commands.empty()) {
+    return MD3D_OK;
+  }
+
+  static sg_shader shader = sg_make_shader(samogonki_shader_desc(sg_query_backend()));
+  static sg_image nullTexture = sg_make_image(sg_image_desc {
+      .width = 1,
+      .height = 1,
+      .usage = SG_USAGE_DYNAMIC,
+  });
+
+  auto projection_matrix = make_ortho_projection(0, 800, 600, 0, -1, 1);
+  auto vs_params = vs_params_t {};
+  for (int i = 0; i < 16; ++i) {
+    vs_params.projection_matrix[i] = projection_matrix[i];
+  }
+  delete[] projection_matrix;
+
+  // TODO: set actual screen size
+  sg_begin_default_pass(defaultPassAction, 800, 600);
+
+  // prepare pipeline
+  //  [render_encoder setVertexBuffer:_position_buffer.get() offset:0 atIndex:0];
+  //  [render_encoder setVertexBuffer:_color_buffer.get() offset:0 atIndex:1];
+  //  [render_encoder setVertexBuffer:_uv_buffer.get() offset:0 atIndex:2];
+  //
+  //  [render_encoder setVertexBytes:&_uniforms length:sizeof(BasicUniforms) atIndex:3];
+
+  sg_update_buffer(sg_position_buffer, sg_range{
+                                           .ptr = _position_buffer.get(),
+                                           .size = _vertex_count * 3 * sizeof(float),
+                                       });
+  sg_update_buffer(sg_color_buffer, sg_range{
+                                        .ptr = _color_buffer.get(),
+                                        .size = _vertex_count * 4 * sizeof(float),
+                                    });
+
+  sg_update_buffer(sg_uv_buffer, sg_range{
+                                     .ptr = _uv_buffer.get(),
+                                     .size = _vertex_count * 2 * sizeof(float),
+                                 });
+
+  sg_update_buffer(sg_index_buffer, sg_range{
+                                        .ptr = _position_buffer.get(),
+                                        .size = _vertex_count * 3 * sizeof(uint32_t),
+                                    });
+
+  for (const auto& command : _commands) {
+    sg_pipeline_desc pipeline = {};
+    sg_bindings bindings = {};
+
+    pipeline.shader = shader;
+
+    switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {
+      case D3DCULL_CW: {
+        pipeline.cull_mode = SG_CULLMODE_BACK;
+        pipeline.face_winding = SG_FACEWINDING_CCW;
+        break;
+      }
+
+      case D3DCULL_NONE: {
+        pipeline.cull_mode = SG_CULLMODE_NONE;
+        pipeline.face_winding = SG_FACEWINDING_CCW;
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    pipeline.depth.write_enabled = command.render_state.get_option(D3DRENDERSTATE_ZWRITEENABLE);
+
+    if (command.render_state.get_option(D3DRENDERSTATE_ALPHABLENDENABLE)) {
+      pipeline.colors[0].blend.enabled = true;
+      pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+      pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+
+      pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
+      pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+    }
+
+    for (DWORD i = 0; i < 2; i++) {
+      bindings.fs_images[i] = nullTexture;
+
+      auto texture_handle = command.render_state.get_texture(i);
+      if (texture_handle) {
+        auto texture = _texture_manager->get(*texture_handle);
+        if (texture != nullptr) {
+          bindings.fs_images[i] = *texture;
+        }
+      }
+    }
+
+    auto parameters = command.render_state.get_fragment_shader_parameters();
+    auto fs_params = fs_params_t{
+        .color_operation_1 = (int)parameters.color_operation_1,
+        .color_operation_2 = (int)parameters.color_operation_2,
+    };
+
+    pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
+    pipeline.layout.attrs[ATTR_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
+
+    pipeline.layout.attrs[ATTR_vs_color0].buffer_index = 1;
+    pipeline.layout.attrs[ATTR_vs_color0].format = SG_VERTEXFORMAT_FLOAT4;
+
+    pipeline.layout.attrs[ATTR_vs_uv0].buffer_index = 2;
+    pipeline.layout.attrs[ATTR_vs_uv0].format = SG_VERTEXFORMAT_FLOAT2;
+
+    bindings.vertex_buffers[0] = sg_position_buffer;
+    bindings.vertex_buffers[1] = sg_color_buffer;
+    bindings.vertex_buffers[2] = sg_uv_buffer;
+
+    const auto count = command.vertex_buffer_view.length;
+    if (command.index_buffer_view.length == 0) {
+      bindings.vertex_buffer_offsets[0] = command.vertex_buffer_view.offset;
+
+      auto pip = sg_make_pipeline(pipeline);
+      sg_apply_pipeline(pip);
+      sg_apply_bindings(bindings);
+      sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
+      sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
+
+      sg_draw(SG_PRIMITIVETYPE_TRIANGLES, count, 1);
+      sg_destroy_pipeline(pip);
+    } else {
+      pipeline.index_type = SG_INDEXTYPE_UINT32;
+      bindings.index_buffer = sg_index_buffer;
+      bindings.index_buffer_offset = command.index_buffer_view.offset * sizeof(uint32_t);
+
+      auto pip = sg_make_pipeline(pipeline);
+      sg_apply_pipeline(pip);
+      sg_apply_bindings(bindings);
+      sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
+      sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
+
+      sg_draw(SG_PRIMITIVETYPE_TRIANGLES, count, 1);
+      sg_destroy_pipeline(pip);
+    }
+  }
+
   sg_end_pass();
   sg_commit();
   return MD3D_OK;
@@ -284,4 +442,28 @@ void Renderer::add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index) {
 
   last_command.vertex_buffer_view.length += 1;
 }
+
 TextureManagerInterface& Renderer::get_texture_manager() { return *_texture_manager; }
+
+float* matrix_make_rows(float m00, float m10, float m20, float m30, float m01, float m11, float m21, float m31,
+                        float m02, float m12, float m22, float m32, float m03, float m13, float m23, float m33) {
+  // clang-format off
+  return new float[16] {
+           m00, m01, m02, m03 ,
+           m10, m11, m12, m13 ,
+           m20, m21, m22, m23 ,
+           m30, m31, m32, m33
+  };
+  // clang-format on
+}
+
+float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far) {
+  // clang-format off
+  return matrix_make_rows(
+      2.0f / (right - left), 0, 0, (left + right) / (left - right),
+      0, 2.0f / (top - bottom), 0, (top + bottom) / (bottom - top),
+      0, 0, 1.0f / (far - near), near / (near - far),
+      0, 0, 0, 1.0f
+  );
+  // clang-format on
+}

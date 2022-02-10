@@ -399,3 +399,10 @@ void TextureManager::update_texture(TextureEntry& entry) {
   };
   sg_update_image(entry.texture, imageData);
 }
+
+sg_image* TextureManager::get(DWORD dwHandle) {
+  if (dwHandle >= _textures.size()) {
+    return nullptr;
+  }
+  return &_textures[dwHandle]->texture;
+}

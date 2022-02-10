@@ -60,6 +60,11 @@ class Renderer final : public RendererInterface {
   std::unique_ptr<float> _uv_buffer;
   std::unique_ptr<uint32_t> _index_buffer;
 
+  sg_buffer sg_position_buffer;
+  sg_buffer sg_color_buffer;
+  sg_buffer sg_uv_buffer;
+  sg_buffer sg_index_buffer;
+
   std::unique_ptr<TextureManager> _texture_manager;
 
   sg_pass_action defaultPassAction = {};
