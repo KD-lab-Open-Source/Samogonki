@@ -192,6 +192,7 @@ MD3DERROR Renderer::d3dEndScene() {
     }
 
     pipeline.depth.write_enabled = command.render_state.get_option(D3DRENDERSTATE_ZWRITEENABLE);
+    pipeline.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
 
     if (command.render_state.get_option(D3DRENDERSTATE_ALPHABLENDENABLE)) {
       pipeline.colors[0].blend.enabled = true;
