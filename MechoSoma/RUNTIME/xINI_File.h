@@ -27,7 +27,10 @@ public:
 	xINI_FileKey(const char* nm){ size = 0; string = NULL; name = NULL; list = NULL; setName(nm); }
 	xINI_FileKey(const char* nm,const char* v){ size = 0; string = NULL; name = NULL; list = NULL; putValue(v); setName(nm); }
 
-	~xINI_FileKey(void){ if(string) delete string; if(name) free(name); }
+	~xINI_FileKey(void){
+          if(string) delete[] string;
+          if(name) free(name);
+        }
 
 	friend class xINI_FileSection;
 };

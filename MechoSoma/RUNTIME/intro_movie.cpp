@@ -169,7 +169,7 @@ void mchIntroMovieImage::load_image(int sl)
 
 void mchIntroMovieImage::free_image(void)
 {
-	if(buf) delete buf;
+	if(buf) delete[] buf;
 	buf = NULL;
 	SX = SY = 0;
 }
@@ -705,7 +705,7 @@ mchIntroMovieText::mchIntroMovieText(void)
 
 mchIntroMovieText::~mchIntroMovieText(void)
 {
-	if(buf) delete buf;
+	if(buf) delete[] buf;
 }
 
 void mchIntroMovieText::set_text(const char* txt,int txt_len)

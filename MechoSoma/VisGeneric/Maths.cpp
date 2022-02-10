@@ -54,7 +54,7 @@ void InitArray()
 }
 void InitArrayShare(int RadiusShare)
 {
-	if(ShareFloat) delete ShareFloat;
+	if(ShareFloat) delete[] ShareFloat;
 	ShareFloat=new float[SIZE_SHARE_FLOAT];
 	for(int i=0;i<SIZE_SHARE_FLOAT;i++)
 	{

@@ -114,7 +114,7 @@ protected:
 	static int IDs;
 
 	void allocBlock(int sz) { ID = IDs++; freeBlock(); heap = sz ? new char[sz] : 0; size = sz; initBlock(); }
-	void freeBlock(){ if(size){delete heap; size = 0; } }
+	void freeBlock(){ if(size){delete[] heap; size = 0; } }
 
 	void initBlock(){ last_sz = offset = 0; last_p = heap; }
 	int storeBlock() const { return offset; }
