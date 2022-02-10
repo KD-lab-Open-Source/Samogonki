@@ -2632,7 +2632,7 @@ void ShowImageRTO::Init(int id)
 			x = (XGR_MAXX - sx)/2;
 			y = (XGR_MAXY - sy)/2;
 			XGR_Obj.putspr16(x,y,sx,sy,ptr,XGR_BLACK_FON);
-			delete ptr;
+			delete[] ptr;
 		}
 		else
 			XGR_Obj.fill(0);

@@ -75,7 +75,7 @@ sTextureChild* cTextureBuffer::AttachChild(char *fname,int id)
 	for(int j=0;j<y;j++,texture+=4<<MultiTexture->_x)
 		for(int i=0;i<4*x;i++,tmp++)
 			texture[i]=*tmp;
-	if(buf) delete buf;
+	if(buf) delete[] buf;
 	assert(0<=id&&id<255);
 	sTextureChild &TextureChild=TextureChildArray(id);
 	TextureChild.Texture=MultiTexture; MultiTexture->IncRef();
