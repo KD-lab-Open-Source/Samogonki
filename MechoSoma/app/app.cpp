@@ -25,6 +25,10 @@ void onInit() {
       .depth_format = SG_PIXELFORMAT_DEPTH,
   };
   sg_setup(sg_desc {
+      .buffer_pool_size = 8,
+      .image_pool_size = 1024,
+      .shader_pool_size = 1,
+      .pipeline_pool_size = 1,
       .context = context,
   });
   graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
@@ -50,4 +54,49 @@ void onFrame() {
 
 void onCleanup() {}
 
-void onEvent(const sapp_event* event) {}
+void onEvent(const sapp_event* event) {
+  switch (event->type) {
+    case SAPP_EVENTTYPE_KEY_DOWN: {
+      XKey.PressFnc(VK_SPACE, 1);
+      KeyBuf->put(VK_SPACE, KBD_CUR_KEY_PRESSED);
+    } break;
+    case SAPP_EVENTTYPE_KEY_UP: {
+      XKey.UnPressFnc(VK_SPACE, 1);
+      KeyBuf->put(VK_SPACE, KBD_CUR_KEY_UNPRESSED);
+    } break;
+    case SAPP_EVENTTYPE_MOUSE_MOVE: {
+      auto x = event->mouse_x;
+      auto y = event->mouse_y;
+
+      const int x1 = XGR_MouseObj.PosX;
+      const int y1 = XGR_MouseObj.PosY;
+
+      XGR_MouseObj.InitPos(x, y);
+
+      XGR_MouseObj.MovementX = x - x1;
+      XGR_MouseObj.MovementY = y - y1;
+
+      XGR_MouseObj.Move(0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+      if (XGR_MouseVisible())
+      {
+        XGR_MouseRedraw();
+      }
+    } break;
+    case SAPP_EVENTTYPE_MOUSE_DOWN: {
+      auto x = event->mouse_x;
+      auto y = event->mouse_y;
+      auto button = event->mouse_button == SAPP_MOUSEBUTTON_LEFT ? XGM_LEFT_BUTTON : XGM_RIGHT_BUTTON;
+
+      XGR_MouseInitPos(x, y);
+      XGR_MousePress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+    } break;
+    case SAPP_EVENTTYPE_MOUSE_UP: {
+      auto x = event->mouse_x;
+      auto y = event->mouse_y;
+      auto button = event->mouse_button == SAPP_MOUSEBUTTON_LEFT ? XGM_LEFT_BUTTON : XGM_RIGHT_BUTTON;
+
+      XGR_MouseInitPos(x, y);
+      XGR_MouseUnPress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+    }
+  }
+}

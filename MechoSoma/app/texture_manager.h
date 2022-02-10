@@ -56,7 +56,7 @@ class TextureManager final : public TextureManagerInterface
   using TextureEntryPtr = std::unique_ptr<TextureEntry>;
   std::vector<TextureEntryPtr> _textures;
 
-  std::vector<char> _argb_buffer;
+  std::vector<char> _rgba_buffer;
 };
 
 }

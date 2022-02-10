@@ -163,7 +163,7 @@ MD3DERROR Renderer::d3dEndScene() {
                                  });
 
   sg_update_buffer(sg_index_buffer, sg_range{
-                                        .ptr = _position_buffer.get(),
+                                        .ptr = _index_buffer.get(),
                                         .size = _vertex_count * 3 * sizeof(uint32_t),
                                     });
 
@@ -235,7 +235,7 @@ MD3DERROR Renderer::d3dEndScene() {
 
     if (command.index_buffer_view.length == 0) {
       const auto count = command.vertex_buffer_view.length;
-      const auto offset = command.vertex_buffer_view.offset;
+      const auto base_element = command.vertex_buffer_view.offset;
       assert(count > 0);
 
       bindings.vertex_buffer_offsets[0] = 0;
@@ -246,11 +246,11 @@ MD3DERROR Renderer::d3dEndScene() {
       sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
       sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
 
-      sg_draw(offset, count, 1);
+      sg_draw(base_element, count, 1);
       sg_destroy_pipeline(pip);
     } else {
       const auto count = command.index_buffer_view.length;
-      const auto offset = command.index_buffer_view.offset; // * sizeof(uint32_t);
+      const auto base_element = command.index_buffer_view.offset; // * sizeof(uint32_t);
       assert(count > 0);
 
       pipeline.index_type = SG_INDEXTYPE_UINT32;
@@ -263,7 +263,7 @@ MD3DERROR Renderer::d3dEndScene() {
       sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, SG_RANGE(vs_params));
       sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_fs_params, SG_RANGE(fs_params));
 
-      sg_draw(offset, count, 1);
+      sg_draw(base_element, count, 1);
       sg_destroy_pipeline(pip);
     }
   }
