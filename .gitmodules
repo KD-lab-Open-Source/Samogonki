@@ -1,6 +1,6 @@
 [submodule "MechoSoma/ThirdParty/sokol"]
 	path = MechoSoma/ThirdParty/sokol
-	url = git@github.com:floooh/sokol.git
+	url = https://github.com/floooh/sokol.git
 [submodule "MechoSoma/sokol-tools-bin"]
 	path = MechoSoma/ThirdParty/sokol-tools-bin
-	url = git@github.com:floooh/sokol-tools-bin.git
+	url = https://github.com/floooh/sokol-tools-bin.git

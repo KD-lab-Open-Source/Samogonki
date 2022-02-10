@@ -332,6 +332,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
       auto output = reinterpret_cast<uint32_t*>(_rgba_buffer.data());
 
       // clang-format off
+      const uint16_t alpha_mask = 0b1000000000000000;
       const uint16_t red_mask =   0b0000000000011111;
       const uint16_t green_mask = 0b0000001111100000;
       const uint16_t blue_mask =  0b0111110000000000;
@@ -341,6 +342,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
       for (size_t i = 0; i < count; i++) {
         const auto color = input[i];
 
+        uint8_t a = (color & alpha_mask) > 0 || entry.original_format_id == D3DTEXFMT_RGB555 ? 255 : 0;
         uint8_t r = color & red_mask;
         uint8_t g = (color & green_mask) >> 5;
         uint8_t b = (color & blue_mask) >> 10;
@@ -349,7 +351,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
         result[0] = (r * 527 + 23) >> 6;
         result[1] = (g * 527 + 23) >> 6;
         result[2] = (b * 527 + 23) >> 6;
-        result[3] = 255;
+        result[3] =1;
       }
     } break;
 
