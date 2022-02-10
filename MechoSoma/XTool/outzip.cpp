@@ -105,8 +105,8 @@ void ZIP_expand(char* trg,ulong trgsize,char* src,ulong srcsize)
 			break;
 	}
 
-	delete outbuf;
-	delete slide;
+	delete[] outbuf;
+	delete[] slide;
 }
 
 int FlushOutput(void)
@@ -352,7 +352,7 @@ int huft_free(struct huft* t)
 	while(p != (struct huft*)NULL){
 		q = (--p)->v.t;
 //		  free(p);
-		delete p;
+		delete[] p;
 		p = q;
 	}
 	return 0;

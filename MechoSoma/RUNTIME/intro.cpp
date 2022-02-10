@@ -98,9 +98,9 @@ void mchInitIntro(void)
 	mch_introD = new mchIntroDispatcher;
 	mch_introD -> Init(bp -> SizeX,bp -> SizeY,tp,bp -> frameTable[0] -> dataPtr,mask);
 
-	delete tp;
+	delete[] tp;
 	delete bp;
-	delete mask;
+	delete[] mask;
 
 	mchLoadIntroSound();
 }

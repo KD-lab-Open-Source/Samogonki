@@ -4901,6 +4901,7 @@ int mchRaceDispatcher::online_checkEndGame(void)
 
 	return 0;
 #endif
+    return 0;
 }
 
 void mchRaceDispatcher::InitReplay(int all_flag)

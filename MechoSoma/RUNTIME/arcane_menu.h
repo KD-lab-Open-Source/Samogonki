@@ -308,7 +308,7 @@ struct mchArcaneScreenElement
 	int Active(void){ return !(flags & (AE_HIDDEN | AE_DISABLED | AE_FREE)); }
 
 	mchArcaneScreenElement(void);
-	~mchArcaneScreenElement(void);
+	virtual ~mchArcaneScreenElement(void);
 };
 
 enum arcStatEvents {

@@ -194,6 +194,7 @@ std::string win32_get_path_from_regkey(int key_id,char* subkey_name,char* value_
 
 int win32_GetKeybLayoutID(void)
 {
+    return 0;
 }
 
 void win32_InitLocale(void)

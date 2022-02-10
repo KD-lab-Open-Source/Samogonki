@@ -18,7 +18,7 @@ class TextureManager final : public TextureManagerInterface
 {
  public:
   explicit TextureManager();
-  uint64_t get(DWORD dwHandle);
+  sg_image* get(DWORD dwHandle);
 
   TextureManager(const TextureManager&) = delete;
   TextureManager(TextureManager&&) = delete;
@@ -56,8 +56,7 @@ class TextureManager final : public TextureManagerInterface
   using TextureEntryPtr = std::unique_ptr<TextureEntry>;
   std::vector<TextureEntryPtr> _textures;
 
-  std::vector<char> _argb_buffer;
-  std::vector<char> _bgra_buffer;
+  std::vector<char> _rgba_buffer;
 };
 
 }

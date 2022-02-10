@@ -236,6 +236,14 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 	int k;
 	for(k=0;k<Tile->GetNumberPoint();k++)
 		pPoint[k].pos.set(Vertex[k][0],Vertex[k][1],Vertex[k][2]);
+#ifdef _DEBUG
+        {
+          sPoint *point = &(Tile->GetPoint()[0]);
+          assert(!std::isnan(point->pos.x));
+          assert(!std::isnan(point->pos.y));
+          assert(!std::isnan(point->pos.z));
+        }
+#endif
 	if(IsStatic)
 	{
 		sPolygon *pPolygon=Tile->GetPolygon();
@@ -331,13 +339,29 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 	Matrix(0,0)*=gb_sign.x; Matrix(0,1)*=gb_sign.x; Matrix(0,2)*=gb_sign.x; Matrix(0,3)*=gb_sign.x;
 	Matrix(1,0)*=gb_sign.y; Matrix(1,1)*=gb_sign.y; Matrix(1,2)*=gb_sign.y; Matrix(1,3)*=gb_sign.y;
 	Matrix(2,0)*=gb_sign.z; Matrix(2,1)*=gb_sign.z; Matrix(2,2)*=gb_sign.z; Matrix(2,3)*=gb_sign.z;
+#ifdef _DEBUG
+        {
+          sPoint *point = &(Tile->GetPoint()[0]);
+          assert(!std::isnan(point->pos.x));
+          assert(!std::isnan(point->pos.y));
+          assert(!std::isnan(point->pos.z));
+        }
+#endif
 	for(int i=0;i<Tile->GetNumberPoint();i++)
 		pPoint[i].pos=Matrix.xformPoint(pPoint[i].pos);
-	return Tile;
+#ifdef _DEBUG
+        {
+          sPoint *point = &(Tile->GetPoint()[0]);
+          assert(!std::isnan(point->pos.x));
+          assert(!std::isnan(point->pos.y));
+          assert(!std::isnan(point->pos.z));
+        }
+#endif
+  return Tile;
 }
 inline int TestFirstName(char *name,char *string)
 {
-	if(name==0||string==0) return 0;
+  if(name==0||string==0) return 0;
 	int LengthName=strlen(name),LengthString=strlen(string);
 	if(LengthName<LengthString) return 0;
 	for(int i=0;i<LengthString;i++)
@@ -601,7 +625,11 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 		BaseMesh->Frame=Frame;
 		Frame->SetCurrentChain("main");
 	}
-	if(BaseMesh) { BaseMesh->Alignment(); BaseMesh->ReCalcTotalBound(); BaseMesh->SetFrame(); } 
+	if(BaseMesh) {
+          BaseMesh->Alignment();
+          BaseMesh->ReCalcTotalBound();
+          BaseMesh->SetFrame();
+        }
 	else { XBuffer buf; buf<"Error: cMeshLibrary::Loadm3d/r/nObject not found "<fname; ErrAbort(buf.address());  return 0; }
 	if(Bound) 
 	{ 
@@ -731,10 +759,11 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 			ParentMesh->AddChild(tmpMesh);
 		}
 		
-		if(Pos) delete Pos; 
-		if(Rot) delete Rot;
-		if(Scale) delete Scale; 
-		delete Vertex; delete Face;
+		if(Pos) delete[] Pos;
+		if(Rot) delete[] Rot;
+		if(Scale) delete[] Scale;
+		delete[] Vertex; 
+        delete[] Face;
 		f.CloseMesh();
 	}
 	for(i=NumberObject3ds;i<NumberKeyFrame;i++)
@@ -830,7 +859,7 @@ cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,cha
 		mesh->z()=Mesh->z();
 	}
 	Mesh->Frame->SetMKFrame(Morph,time,NumberMorph);
-	delete Morph;
+	delete[] Morph;
 	return Mesh;
 }
 cMesh* cMeshLibrary::AddMesh(char *NameMesh)

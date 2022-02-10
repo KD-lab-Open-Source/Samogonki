@@ -122,7 +122,7 @@ int cStream::open(void *buf,int size,int attribute)
 void cStream::close()			
 { 
 	Attribute=0;
-	if(lpBuffer) delete lpBuffer; lpBuffer=0;
+	if(lpBuffer) delete[] lpBuffer; lpBuffer=0;
 	CurrentPos=CurrentSize=MaxSize=0;
 }
 int cStream::eof()

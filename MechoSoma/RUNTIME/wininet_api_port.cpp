@@ -93,6 +93,7 @@ int wiDispatcher::get_request_status(void)
 
 char* wiDispatcher::get_request_status_str(void)
 {
+    return nullptr;
 }
 
 wiCriticalSection::wiCriticalSection(void* section)

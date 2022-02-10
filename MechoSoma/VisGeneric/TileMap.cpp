@@ -211,7 +211,8 @@ int cTileMap::Load3ds(char *fname)
 			}
 		}
 		PointTmp.Delete();
-		delete Vertex; delete Face;
+		delete[] Vertex; 
+        delete[] Face;
 		Point.Resize(NumberPoint); Polygon.Resize(NumberPolygon); AttrPolygon.Resize(NumberPolygon); 
 		PointReflection.Resize(NumberPointReflection); PolygonReflection.Resize(NumberPolygonReflection); AttrPolygonReflection.Resize(NumberPolygonReflection);
 		f.CloseMesh();

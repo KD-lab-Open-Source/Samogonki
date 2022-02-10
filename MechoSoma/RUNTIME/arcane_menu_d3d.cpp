@@ -250,7 +250,7 @@ void mchA_d3dInit(void)
 #endif
 	mchA_d3dSpriteParent = mchA_d3dSprParent[idx];
 
-	delete buf;
+	delete[] buf;
 }
 
 void mchA_d3dOutSprite(int x,int y,float sx,float sy,int idx,int col,int alpha,float rotate,int center_flag)

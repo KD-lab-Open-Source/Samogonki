@@ -16,7 +16,7 @@ struct FirePoint : Vect3f {
 		direction.normalize();
 	}
 
-	~FirePoint(void)
+	virtual ~FirePoint(void)
 	{
 	}
 

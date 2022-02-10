@@ -7,12 +7,12 @@
 #include <sokol_gfx.h>
 
 sapp_desc sokol_main(int argc, char* argv[]) {
-  return (sapp_desc){
+  return sapp_desc {
       .init_cb = onInit,
       .frame_cb = onFrame,
       .cleanup_cb = onCleanup,
       .event_cb = onEvent,
-      .width = 1024,
-      .height = 768,
+      .width = 800,
+      .height = 600,
   };
 }

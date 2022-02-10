@@ -125,7 +125,7 @@ public:
 
 	cSpline()								{ KoofQuadSpline=0; }
 	cSpline(cSpline *Spline,int number)		{ KoofQuadSpline=new float[number]; for(int i=0;i<number;i++) KoofQuadSpline[i]=Spline->KoofQuadSpline[i]; }
-	~cSpline()								{ if(KoofQuadSpline) delete KoofQuadSpline; }
+	~cSpline()								{ if(KoofQuadSpline) delete[] KoofQuadSpline; }
 	void CalcKoofQuadSpline(int number,float *x,float *y);
 	float CalcFunction(int number,float *x,float *y,float xu);
 };

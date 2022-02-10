@@ -7,6 +7,7 @@
 
 BOOL g_bInitialized = FALSE;
 BOOL g_bInScene = FALSE;  // TRUE when in BeginScene/EndScene bracket
+
 BOOL g_bActive = FALSE;
 
 extern MD3DERROR __d3dInitSpriteManager();
@@ -107,13 +108,9 @@ MD3DERROR d3dSetTextureStageState(DWORD dwStage, D3DTEXTURESTAGESTATETYPE dwStat
   return graphics::get_renderer().d3dSetTextureStageState(dwStage, dwState, dwValue);
 }
 
-MD3DERROR d3dTriangles(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) {
-  return graphics::get_renderer().d3dTriangles(dwVertexTypeDesc, lpvVertices, dwVertexCount);
-}
+MD3DERROR d3dTriangles(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) { return MD3D_OK; }
 
-MD3DERROR d3dTriangleStrip(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) {
-  return graphics::get_renderer().d3dTriangleStrip(dwVertexTypeDesc, lpvVertices, dwVertexCount);
-}
+MD3DERROR d3dTriangleStrip(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) { return MD3D_OK; }
 
 MD3DERROR d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) {
   return graphics::get_renderer().d3dTriangleFan(dwVertexTypeDesc, lpvVertices, dwVertexCount);

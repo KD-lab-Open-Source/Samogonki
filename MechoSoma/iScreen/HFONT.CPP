@@ -124,7 +124,7 @@ void HFont::load(char* fname)
 	if(strcmp(HFntSign,str)){
 		ErrH.Abort("Bad HFont signature...");
 	}
-	delete str;
+	delete[] str;
 
 	fh > SizeX > SizeY > StartChar > EndChar;
 	alloc_mem();

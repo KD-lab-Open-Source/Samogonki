@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
+#include <iostream>
 
 using namespace graphics;
 
@@ -225,15 +226,19 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
     return MD3DERR_ILLEGALCALL;
   }
 
-  sg_image_desc description;
+  auto dataSize = dwWidth * dwHeight * (p->bPalette8 ? 1 : 4);
+  auto data = std::vector<char>(dataSize);
+  sg_image_desc description = {};
   description.width = dwWidth;
   description.height = dwHeight;
-  description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_BGRA8;
+  description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
+  assert(p->bPalette8 == false);
+  description.usage = SG_USAGE_DYNAMIC;
   auto texture = sg_make_image(description);
 
   *lpdwHandle = _textures.size();
 
-  const DWORD pitch = dwHeight * (p->dwRGBBitCount / 8);
+  const DWORD pitch = dwWidth * (p->dwRGBBitCount / 8);
   _textures.push_back(std::make_unique<TextureEntry>(
       TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false}));
 
@@ -292,119 +297,107 @@ void TextureManager::update_texture(TextureEntry& entry) {
   const auto image_height = info.height;
   const auto image_width = info.width;
   const size_t size = 4 * image_width * image_height;
+  _rgba_buffer.resize(size);
 
   switch (entry.original_format_id) {
     case D3DTEXFMT_RGB565: {
-      abort();
-      /*
-      vImage_Buffer source;
-      source.data = entry.lock_buffer.data();
-      source.height = image_height;
-      source.width = image_width;
-      source.rowBytes = entry.pitch;
-
-      vImage_Buffer target;
-      _argb_buffer.resize(4 * image_width * image_height);
-      target.data = _argb_buffer.data();
-      target.height = image_height;
-      target.width = image_width;
-      target.rowBytes = 4 * image_width;
-
-      vImageConvert_RGB565toARGB8888(255, &source, &target, kvImageNoFlags);
-       */
-      break;
-    }
-
-    case D3DTEXFMT_ARGB4444: {
-      abort();
-      /*
       const auto input = reinterpret_cast<const uint16_t*>(entry.lock_buffer.data());
+      auto output = reinterpret_cast<uint32_t*>(_rgba_buffer.data());
 
-      _argb_buffer.resize(4 * image_width * image_height);
-      auto output = reinterpret_cast<uint32_t*>(_argb_buffer.data());
-
-      const uint16_t alpha_mask = 0b1111000000000000;
-      const uint16_t red_mask = 0b0000000000001111;
-      const uint16_t green_mask = 0b0000000011110000;
-      const uint16_t blue_mask = 0b0000111100000000;
+      // clang-format off
+      const uint16_t red_mask =   0b0000000000011111;
+      const uint16_t green_mask = 0b0000011111100000;
+      const uint16_t blue_mask =  0b1111100000000000;
+      // clang-format on
 
       const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
-      std::array<uint8_t, 4> channels{0};
       for (size_t i = 0; i < count; i++) {
         const auto color = input[i];
 
-        channels[0] = (color & alpha_mask) >> 12;
-        channels[1] = color & red_mask;
-        channels[2] = (color & green_mask) >> 4;
-        channels[3] = (color & blue_mask) >> 8;
+        uint8_t r = color & red_mask;
+        uint8_t g = (color & green_mask) >> 5;
+        uint8_t b = (color & blue_mask) >> 11;
 
-        uint32_t result = 0;
-        int shift = 0;
-        for (auto c8 : channels) {
-          uint32_t c32 = (c8 * 255 + 7) / 15;
-          result |= c32 << shift;
-          shift += 8;
-        }
-        output[i] = result;
+        auto result = (uint8_t*)(output + i);
+        result[0] = (r * 527 + 23) >> 6;
+        result[1] = (g * 259 + 33) >> 6;
+        result[2] = (b * 527 + 23) >> 6;
+        result[3] = 255;
       }
-       */
-      break;
-    }
+    } break;
 
-    case D3DTEXFMT_RGB555:
-    case D3DTEXFMT_ARGB1555: {
-      /*
-      vImage_Buffer source;
-      source.data = entry.lock_buffer.data();
-      source.height = image_height;
-      source.width = image_width;
-      source.rowBytes = entry.pitch;
+    case D3DTEXFMT_ARGB1555:
+    case D3DTEXFMT_RGB555: {
+      const auto input = reinterpret_cast<const uint16_t*>(entry.lock_buffer.data());
+      auto output = reinterpret_cast<uint32_t*>(_rgba_buffer.data());
 
-      vImage_Buffer target;
-      _argb_buffer.resize(4 * image_width * image_height);
-      target.data = _argb_buffer.data();
-      target.height = image_height;
-      target.width = image_width;
-      target.rowBytes = 4 * image_width;
+      // clang-format off
+      const uint16_t red_mask =   0b0000000000011111;
+      const uint16_t green_mask = 0b0000001111100000;
+      const uint16_t blue_mask =  0b0111110000000000;
+      // clang-format on
 
-      vImageConvert_ARGB1555toARGB8888(&source, &target, kvImageNoFlags);
-       */
+      const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
+      for (size_t i = 0; i < count; i++) {
+        const auto color = input[i];
+
+        uint8_t r = color & red_mask;
+        uint8_t g = (color & green_mask) >> 5;
+        uint8_t b = (color & blue_mask) >> 10;
+
+        auto result = (uint8_t*)(output + i);
+        result[0] = (r * 527 + 23) >> 6;
+        result[1] = (g * 527 + 23) >> 6;
+        result[2] = (b * 527 + 23) >> 6;
+        result[3] = 255;
+      }
+    } break;
+
+    case D3DTEXFMT_ARGB4444: {
+      const auto input = reinterpret_cast<const uint16_t*>(entry.lock_buffer.data());
+      auto output = reinterpret_cast<uint32_t*>(_rgba_buffer.data());
+
+      // clang-format off
+      const uint16_t alpha_mask = 0b1111000000000000;
+      const uint16_t blue_mask =  0b0000111100000000;
+      const uint16_t green_mask = 0b0000000011110000;
+      const uint16_t red_mask =   0b0000000000001111;
+      // clang-format on
+
+      const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
+      for (size_t i = 0; i < count; i++) {
+        const uint16_t color = input[i];
+
+        uint8_t a = (color & alpha_mask) >> 12;
+        uint8_t r = (color & red_mask);
+        uint8_t g = (color & green_mask) >> 4;
+        uint8_t b = (color & blue_mask) >> 8;
+
+        auto rgba = (uint8_t*)(output + i);
+        rgba[0] = (r * 255 + 7) / 15;
+        rgba[1] = (g * 255 + 7) / 15;
+        rgba[2] = (b * 255 + 7) / 15;
+        rgba[3] = (a * 255 + 7) / 15;
+      }
+    } break;
+
+    default: {
+      std::cout << "Not supported texture format" << std::endl;
       abort();
-      break;
-    }
-
-    default:
-      break;
+    } break;
   }
-
-  _bgra_buffer.resize(4 * image_width * image_height);
-  /*
-
-  vImage_Buffer source;
-  source.data = _argb_buffer.data();
-  source.height = image_height;
-  source.width = image_width;
-  source.rowBytes = 4 * image_width;
-
-  vImage_Buffer target;
-  target.data = _bgra_buffer.data();
-  target.height = image_height;
-  target.width = image_width;
-  target.rowBytes = 4 * image_width;
-
-  // from ARGB (0, 1, 2, 3) to BGRA
-  const uint8_t permute_map[4] = {3, 2, 1, 0};
-  vImagePermuteChannels_ARGB8888(&source, &target, permute_map, kvImageNoFlags);
-
-  MTLRegion region = MTLRegionMake2D(0, 0, image_width, image_height);
-  const void* pixel_bytes = _bgra_buffer.data();
-  [t replaceRegion:region mipmapLevel:0 withBytes:pixel_bytes bytesPerRow:4 * image_width];
-   */
 
   sg_image_data imageData;
   imageData.subimage[0][0] = {
-      .ptr = _bgra_buffer.data(),
+      .ptr = _rgba_buffer.data(),
       .size = size,
   };
   sg_update_image(entry.texture, imageData);
+}
+
+sg_image* TextureManager::get(DWORD dwHandle) {
+  if (dwHandle >= _textures.size()) {
+    return nullptr;
+  }
+  return &_textures[dwHandle]->texture;
 }

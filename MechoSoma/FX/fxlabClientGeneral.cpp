@@ -49,7 +49,7 @@ void fxlabClientKeyObjectType::CalcKeyTime(void)
 
 void fxlabClientKeyObjectType::Close(void)
 {
-	if(KeyData) delete KeyData;
+	if(KeyData) delete[] KeyData;
 	fxlabClientSpaceType::Close();
 };
 

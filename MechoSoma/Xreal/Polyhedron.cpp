@@ -7,7 +7,7 @@
 #include "mechosoma.h"
 
 template<>
-struct hash<const Vertex*> {
+struct std::hash<const Vertex*> {
   size_t operator()(const Vertex* __x) const { return size_t(__x); }
 };
 

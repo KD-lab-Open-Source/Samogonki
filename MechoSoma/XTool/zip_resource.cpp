@@ -67,7 +67,7 @@ XZIP_FileHeader::~XZIP_FileHeader(void)
 	if(fileName) free(fileName);
 
 	if(extData)
-		delete extData;
+		delete[] extData;
 }
 
 void XZIP_FileHeader::SetName(char* p)

@@ -112,7 +112,7 @@ struct XGR_Pal64K
 	unsigned& operator[](int ind){ return data[ind]; }
 
 	XGR_Pal64K(void){ ID = 0; data = new unsigned[256]; }
-	~XGR_Pal64K(void){ delete data; }
+	~XGR_Pal64K(void){ delete[] data; }
 };
 
 struct XGR_Screen

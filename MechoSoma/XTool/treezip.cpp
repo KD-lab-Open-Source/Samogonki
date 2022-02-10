@@ -702,8 +702,8 @@ static void set_file_type()
 void free_data(void)
 {
 #ifdef DYN_ALLOC
-	delete l_buf;
-	delete d_buf;
+	delete[] l_buf;
+	delete[] d_buf;
 	lm_free();
 #endif
 }

@@ -163,7 +163,8 @@ int s_sur_scr::load_scr(char* fname)
 
 	}
 	strcpy(name_scr,fname);
-	delete world; delete buft;
+	delete[] world;
+        delete[] buft;
 	f.close();
 	return 1;
 }
@@ -208,7 +209,7 @@ void s_sur_scr::load_data()
 			}
 		}
 	}
-	delete world;
+	delete[] world;
 	f.close();
 }
 

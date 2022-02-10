@@ -223,7 +223,7 @@ class cInterfaceGraph3d
 {
 public:
 	cInterfaceGraph3d();
-	~cInterfaceGraph3d();
+	virtual ~cInterfaceGraph3d();
 
 	virtual int Init(int xScr,int yScr,int mode,HINSTANCE hInst,TCHAR *szTitle,HICON hIcon=NULL)=0;
 	virtual int ReInit(int xScr,int yScr,int mode,HINSTANCE hInst,TCHAR *szTitle,HICON hIcon=NULL)=0;

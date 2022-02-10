@@ -742,8 +742,8 @@ void aciScreenResourcePAL::free(void)
 {
 	aciScreenResource::free();
 
-	if(data) delete data;
-	if(data16) delete data16;
+	if(data) delete[] data;
+	if(data16) delete[] data16;
 
 	data = NULL;
 	data16 = NULL;

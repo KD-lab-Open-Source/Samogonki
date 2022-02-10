@@ -3504,7 +3504,7 @@ void mchArcaneBMP::Crop(void)
 		frameData[i] = ptr + sx * sy * i;
 	}
 
-	delete data;
+	delete[] data;
 	data = ptr;
 	SizeX = sx;
 	SizeY = sy;
@@ -3572,7 +3572,7 @@ void mchArcaneBMP::Scale(int sx,int sy)
 	for(i = 0; i < numFrames; i ++)
 		frameData[i] = p + i * sx * sy;
 
-	delete data;
+	delete[] data;
 	data = p;
 
 	SizeX = sx;
@@ -7060,7 +7060,7 @@ void mchA_PrepareLoadingImage(int wrld,int tr)
 			XGR_Obj.putspr16(x,y,img_sx,img_sy,img_ptr,XGR_BLACK_FON);
 			mchA_d3dUnlockBackBuffer();
 
-			delete img_ptr;
+			delete[] img_ptr;
 		}
 	}
 	else {

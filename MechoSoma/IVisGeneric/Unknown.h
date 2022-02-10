@@ -67,7 +67,7 @@ public:
 		Unique=++GlobalUniqueCounter; 
 		UNKNOWN_ASSERT(Unique); 
 	}
-	~cUnknownClass()								
+	virtual ~cUnknownClass()
 	{ 
 		UNKNOWN_ASSERT(GetType(TYPE_DELETE)); 
 		if(GetType(TYPE_POINTER))
@@ -98,8 +98,8 @@ public:
 class cUnknownInterface : public cUnknownClass
 {
 public:
-	cUnknownInterface(int kind,int type=TYPE_POINTER) : cUnknownClass(kind,type)	{ }
-	~cUnknownInterface()										
+	explicit cUnknownInterface(int kind,int type=TYPE_POINTER) : cUnknownClass(kind,type)	{ }
+	virtual ~cUnknownInterface()
 	{ 
 		cUnknownClass::Release(); 
 	}

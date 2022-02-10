@@ -20,7 +20,7 @@ TGA_Image::TGA_Image(void)
 TGA_Image::~TGA_Image(void)
 {
 	delete header;
-	if(imageData) delete imageData;
+	if(imageData) delete[] imageData;
 };
 
 int TGA_Image::Load(char* fname)

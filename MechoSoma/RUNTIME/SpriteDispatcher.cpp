@@ -158,7 +158,7 @@ void mchA_Sprite::load(void)
 	data = new char[SizeX * SizeY * 2];
 
 	mchA_d3dConvertSprite(SizeX,SizeY,p,data,colors);
-	delete p;
+	delete[] p;
 
 	calc_bound();
 }

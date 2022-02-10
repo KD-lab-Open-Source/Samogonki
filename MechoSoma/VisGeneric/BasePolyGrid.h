@@ -78,10 +78,10 @@ public:
 	cBasePolyGrid(unsigned int type,unsigned int kind) : cBaseObject(type,kind)	{ pColor=0; pXYZWarp=0; pUVWarp=0; pStructWarp=0; Matrix.NewMatrix(); }
 	~cBasePolyGrid()												
 	{ 
-		FREE_MEM(pColor); 
-		FREE_MEM(pXYZWarp); 
+		delete[] pColor;
+		delete[] pXYZWarp;
 		FREE_MEM(pUVWarp); 
-		FREE_MEM(pStructWarp); 
+		delete[] pStructWarp;
 	}
 	void New(int xSize,int ySize,float xStep,float yStep);
 //	int Draw(cCamera *Camera);

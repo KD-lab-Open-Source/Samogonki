@@ -279,8 +279,8 @@ void acsSaveSlot::pack(void)
 
 	fh.close();
 
-	delete buf;
-	delete buf1;
+	delete[] buf;
+	delete[] buf1;
 }
 
 void acsSaveSlot::unpack(void)

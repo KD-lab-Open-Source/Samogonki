@@ -477,12 +477,14 @@ XStream& XStream::operator> (unsigned& v)
 
 XStream& XStream::operator> (long& v)
 {
+        v = 0;
 	read(&v,(unsigned)sizeof(int32_t));
 	return *this;
 }
 
 XStream& XStream::operator> (unsigned long& v)
 {
+        v = 0;
 	read(&v,(unsigned)sizeof(uint32_t));
 	return *this;
 }
