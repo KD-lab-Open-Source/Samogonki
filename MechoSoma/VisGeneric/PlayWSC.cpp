@@ -323,7 +323,7 @@ void cWorldScriptPlay::Free()
 	fxlabMovieDestroy();
 	MusicTrack=0;
 }
-int cWorldScriptPlay::OpenWorldScript(const std::filesystem::path &path)
+int cWorldScriptPlay::OpenWorldScript(const std::string &path)
 {
 	if(IVisGeneric==0) return 1;
 	if(root) delete root;

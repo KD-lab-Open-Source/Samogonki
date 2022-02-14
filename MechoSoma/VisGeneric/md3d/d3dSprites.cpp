@@ -8,9 +8,6 @@
 //*******************************************************************
 
 #include "Md3d.h"
-#ifdef _WIN32
-#include <crtdbg.h>
-#else
 #include <cassert>
 #include <cstring>
 #define _ASSERTE assert
@@ -19,9 +16,8 @@
 #define _CRT_ERROR 0
 #define _RPT0(X, Y)
 #define _RPTF0(X, Y)
-#endif
 #include <math.h>
- 
+
  
 struct TVertex
 {

@@ -4,11 +4,9 @@
 #endif //__forceinline 
 #endif //_MSC_VER
 
-#ifndef _WIN32
 #define __forceinline inline
-#endif
 
-//@caiiiycuk can't find defined of SHIFT_FRACTION_VX
+//@caiiiycuk can't find defininition of SHIFT_FRACTION_VX
 #define SHIFT_FRACTION_VX 6
 #define VX_FRACTION 6 // from LAND.CPP
 #define MAX_VX_HEIGHT 255 // from LAND>CPP

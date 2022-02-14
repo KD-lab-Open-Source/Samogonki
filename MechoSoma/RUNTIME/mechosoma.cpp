@@ -44,10 +44,6 @@
 
 #include "mechosoma.h"
 
-#ifdef _WIN32
-#include "win32f.h"
-#endif
-
 #include "ResourceDispatcher.h"
 #include "Xreal_utl.h"
 #include "TexMgr.h"
@@ -65,7 +61,6 @@
 
 #include "mch_common.h" // For far target
 
-#ifndef _WIN32
 #define TRUE 1
 #define FALSE 0
 #define MAX_PATH 1024
@@ -76,8 +71,6 @@
 #define DBGCHECK
 
 #include "Md3d.h"
-
-#endif
 
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 
@@ -448,12 +441,7 @@ int xtInitApplication(void)
 
 	if(mchPBEM_Game)
 		wiInit();
-#ifdef _WIN32
-	if(inHighPriority)
-		win32_SetPriorityProcess(HIGH_PRIORITY_CLASS);
-	else
-		win32_SetPriorityProcess(NORMAL_PRIORITY_CLASS);
-#endif
+
 //	XCon < "MMX support ";
 //	if(xt_mmxUse) XCon < "detected";
 //	else XCon < "is absent";
@@ -563,12 +551,6 @@ int xtInitApplication(void)
 		gb_IVisGeneric->SetGraphClipping(gb_URenderDevice,&r1);
 	}
 	
-
-#ifndef _DEBUG
-#ifdef _WIN32
-	FreeConsole();
-#endif
-#endif
 
 	allocation_tracking("xgrInit");
 
@@ -687,24 +669,6 @@ void xtDoneApplication(void)
 	}
 	if(!mchMusicMute) sndMusicStop();
 	mchFinitSound();
-
-#ifdef _WIN32
-#ifdef _FINAL_VERSION_
-	if(mchFeedbackFlag)
-		win32_shell_execute(iGetText(iTXT_MAILTO));
-#endif
-	if(mchPBEM_Game){
-		wiFinit();
-
-		if(!mchPBEM_DisableReturnFlag && og_inP.return_url())
-			win32_shell_execute(og_inP.return_url());
-	}
-
-	if(mchLaunchOnlineFlag){
-		if(strlen(iGetText(iTXT_ONLINE_URL)))
-			win32_shell_execute(iGetText(iTXT_ONLINE_URL));
-	}
-#endif
 }
 
 void GameQuantRTO::Init(int id)
@@ -1221,7 +1185,8 @@ void MainMenuRTO::Finit(void)
 
 void mchComline(void)
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk uncomment this
+#ifdef CMD_LINE
 	int i,num = __argc;
 	char** p = __argv;
 
@@ -2979,14 +2944,6 @@ void XrealEvolveQuant()
 
 	if(!mchFreezeTime){
 		global_time.next_frame();
-		#ifndef _FINAL_VERSION_
-		if(xreal_log){
-#ifdef _WIN32
-			bout < "controlfp: " <= _controlfp( 0, 0 ) < "\n";
-			bout < "XrealEvolveQuant: " <= global_time() < "\n";
-#endif
-			}
-		#endif
 		Mdisp -> evolve_quant();
 		}
 
@@ -3478,7 +3435,8 @@ void LoadingRTO::Init(int id)
 	mchA_PrepareLoadingImage(mchCurrentWorld,mchCurrentTrack);
 	startTimer = clocki();
 
-#ifdef _WIN32
+// TODO: @caiiiycuk uncomment this
+#ifdef NETWORK
 	if(mchPBEM_DataFlag){
 		wi_D.connect(wiServerName,wiServerPort);
 
@@ -3522,7 +3480,8 @@ int LoadingRTO::Quant(void)
 	if(d3dIsActive())
 		mchA_d3dFlushBackBuffer(0,0,XGR_MAXX,XGR_MAXY);
 
-#ifdef _WIN32
+// TODO: @caiiiycuk invesitigate this
+#ifdef WTF
 	if(mchPBEM_DataFlag){
 		ogQuant();
 

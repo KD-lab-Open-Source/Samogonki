@@ -20,15 +20,16 @@
 #include "Base.h"
 #include "Mesh3ds.h"
 
-#ifdef _WIN32
+// TODO: @caiiiycuk netowkr game
+#ifdef NETWORK
 #include "wininet_api.h"
 #include "online_game.h"
-#else
+#endif
+
 #define _MAX_PATH 1024
 #define MAX_PATH 1024
 #include "filesystem.h"
 #include "port.h"
-#endif
 
 #include "CameraDispatcher.h"
 #include "Xreal_utl.h"
@@ -212,7 +213,8 @@ char* getIniKey(char* fname,char* section,char* key)
 			*buf = 0;
 	}
 
-#ifdef _WIN32
+// TODO: @caiiiycuk invesitgate this
+#ifdef WTF
 	if(!p){
 		if(!GetPrivateProfileString(section,key,NULL,buf,256,path))
 			*buf = 0;
@@ -246,7 +248,8 @@ void putIniKey(char* fname,char* section,char* key,char* val)
 	if(xINI_Enable)
 		flag = xINI_PutKey(path,section,key,val);
 
-#ifdef _WIN32
+// TODO: @caiiiycuk invesitgate this
+#ifdef WTF
 	if(!flag)
 		WritePrivateProfileString(section,key,val,path);
 #endif
@@ -268,7 +271,7 @@ void mchSetup(void)
 		xgrColorDepth = 16 + 16 * flag;
 	}
 
-#ifdef _WIN32
+#ifdef NETWORK
 	wiServerPort = atoi(getIniKey(mch_mainINI,"online","server_port"));
 	wiServerName = strdup(getIniKey(mch_mainINI,"online","server"));
 	wiGameURL = strdup(getIniKey(mch_mainINI,"online","url"));
@@ -699,7 +702,7 @@ void mchOptionData::Update(void)
 
 void hsOnlineSetup(void)
 {
-#ifdef _WIN32
+#ifdef NETWORK
 	int i;
 	ogPlayerInfo* p;
 
@@ -756,7 +759,7 @@ void hsOnlineSetup(void)
 
 void cdCheck(char* f0,char* f1)
 {
-#ifdef _WIN32
+#ifdef CD_CHECK
 	char* str = new char[MAX_PATH];
 	char* label = new char[64];
 	char* system = new char[64];

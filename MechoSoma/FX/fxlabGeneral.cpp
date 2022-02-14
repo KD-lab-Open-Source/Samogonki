@@ -1,9 +1,6 @@
 #include "StdAfx.h"
 
 #include "aci_parser.h"
-#ifdef _WIN32
-#include "win32f.h"
-#endif
 
 #include "Handle.h"
 #include "BodyDispatcher.h"

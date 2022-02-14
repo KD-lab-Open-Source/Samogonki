@@ -120,17 +120,17 @@ void Polyhedron::save(const char* fname)
 	out < vol_< mov1_< mov2_ < pov_< rad_ < rmax_;
 
 	int counter = 0;
-	out < verts().size();
+	out < (int) verts().size();
 	list<Vertex>::iterator vi;
 	FOR_EACH(verts_, vi){
 		out < vi -> coords_;
 		vi -> index = counter++;
 		}
 	
-	out < faces().size();
+	out < (int) faces().size();
 	list<Face>::const_iterator fi;
 	FOR_EACH(faces(), fi){
-		out < fi -> cone.size();
+		out < (int) fi -> cone.size();
 		list<FaceConeNode>::const_iterator fcn;
 		FOR_EACH(fi -> cone, fcn){
 			const Edge* e = fcn -> nbr;

@@ -118,7 +118,8 @@ void cAnimChainNode::GetMatrix(float phase,int &visible,MatXf &Matrix)
 		VISASSERT(a);
 		visible=a->visible;
 	}
-#ifdef _WIN32	
+// TODO: @caiiiycuk investigate this
+#ifdef WTF
 	VISASSERT(_finite(Matrix.rot()(1,1))&&_finite(Matrix.trans().x));
 #endif
 }

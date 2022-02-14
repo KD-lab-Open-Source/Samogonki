@@ -5,14 +5,12 @@
 
 //#include "dsound.h"
 
-#ifndef _WIN32
 #include <cstdint>
 typedef const char *LPCSTR;
 typedef void *LPVOID;
 typedef uint32_t DWORD;
 #define WINAPI
 #define NULL 0
-#endif
 
 #define MPP_STAT
 #ifdef MPP_STAT

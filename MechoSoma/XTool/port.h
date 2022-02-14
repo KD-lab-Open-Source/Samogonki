@@ -31,9 +31,11 @@ inline int BitSR(int x) {
 	return 0;
 }
 
+#ifndef _WIN32
 char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
 
 char *strlwr(char *str);
+#endif
 
 uint32_t GetPrivateProfileString(
 	const char* lpAppName,

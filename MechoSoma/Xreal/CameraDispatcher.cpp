@@ -1402,7 +1402,8 @@ CameraCoords CameraDispatcher::stopTimeInput()
 	else{
 		Vect3f pv, pe, pe0(XGR_MouseObj.PosX, XGR_MouseObj.PosY, 0);
 
-#ifdef _WIN32		
+                // TODO: @caiiiycuk investigate this
+#ifdef WTF
 		_controlfp(_PC_53, _MCW_PC); 
 #endif
 		if(hCamera > stop_time_hCamera){

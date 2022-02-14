@@ -9,9 +9,6 @@
 #include "IVisGeneric.h"
 #include "Dispatcher.h"
 #include "mechosoma.h"
-#ifdef _WIN32
-#include "d3dtypes.h"
-#endif
 #include "Xreal_utl.h"
 #include "FieldGrid.h"
 #include "XGR.h"
@@ -45,7 +42,8 @@ int mechos_default_config_counter = 0;
 
 int Xreal_key_active = 0;
 
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef WTF
 int controlfp_flags = _PC_24;
 int controlfp_mask = _MCW_PC;
 #endif
@@ -322,7 +320,8 @@ void BodyDispatcher::draw_handler()
 
 void draw_text(char* text)
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk invetigate this
+#ifdef WTF
 	HDC hdc;
 	RECT rect = { gameWnd -> PosX, gameWnd -> PosY, gameWnd -> PosX + gameWnd -> SizeX , gameWnd -> PosY +  + gameWnd -> SizeY };
 	GetBackBufferDC(&hdc);
@@ -343,7 +342,8 @@ void draw_text(char* text)
 
 const char* check_command_line(const char* switch_str)
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef COMMAND_LINE
 	for(int i = 1; i < __argc; i ++){
 		const char* s = strstr(__argv[i], switch_str);
 		if(s){

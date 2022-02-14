@@ -1,5 +1,6 @@
 #include "PolyMgr.h"
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef SOFTWARE_RENDER
 #include "Software16.h"
 #endif
 #include "Object3d.h"

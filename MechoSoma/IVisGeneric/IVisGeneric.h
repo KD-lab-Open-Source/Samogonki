@@ -47,7 +47,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int GetGraphInfo(cUnknownClass *URenderDevice,int *xScr,int *yScr,int *GraphMode=0,int *FullScr=0,int *ColorBit=0) );
 	UI_IMPORT( cInterfaceGraph3d* GetIGraph3d(cUnknownClass *URenderDevice=0) );
 	// функции для работы с объектами
-	UI_IMPORT( int LoadObjectLibrary(const std::filesystem::path &path) );
+	UI_IMPORT( int LoadObjectLibrary(const std::string &path) );
 	UI_IMPORT( int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF) );
 	UI_IMPORT( int ReleaseObject(int kind,int type) );
 	UI_IMPORT( cUnknownClass* CreateObject(char *fname,char *TexturePath,int Kind=0,int Type=0) );
@@ -129,7 +129,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( cUnknownClass* CreateTangentTrail(const Vect3f *pos,const sColor4f *c1,const Vect3f *dpos,const sColor4f *c2,float Time=10000.f,float dAnimTime=1.e30f,float Width=2.f) );
 	UI_IMPORT( int ReleaseTangentTrail(cUnknownClass* UTangentTrail) );
 	// создание мира, по информации в скрипте fname, number - номер мира
-	UI_IMPORT( cUnknownClass* CreateWorld(const std::filesystem::path &path,int number=0,int track=0,int LoadTerra=0) );
+	UI_IMPORT( cUnknownClass* CreateWorld(const std::string &path,int number=0,int track=0,int LoadTerra=0) );
 	UI_IMPORT( int ReleaseWorld(cUnknownClass *UWorld=0) );
 	UI_IMPORT( int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3) );
 	UI_IMPORT( cUnknownClass* FindObject(char *name) ); // поиск объекта на миру по имени объекта

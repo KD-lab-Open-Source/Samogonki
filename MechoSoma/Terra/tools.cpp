@@ -20,12 +20,11 @@
 //#include "moveland.h"
 //#include "all.h"
 
-#ifndef _WIN32
+// TODO: @caiiiycuk implement this
 char *itoa(int number, char *dest, size_t dest_size)
 {
 	return nullptr;
 }
-#endif
 
 /* ----------------------------- EXTERN SECTION ---------------------------- */
 //extern int LayerStatus;

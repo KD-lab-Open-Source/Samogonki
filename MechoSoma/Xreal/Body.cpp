@@ -404,7 +404,7 @@ void Body::write_state(XBuffer& buf)
 	buf < " ; H: " <= H() < "\n";
 	buf < "m: " <= mass < "; I: " <= I;
 	buf < "Radius: " <= radius() < "; Box: " <= bbox_/2;
-	buf < "N contacts: " <= contacts.size() < "\n";
+	buf < "N contacts: " <= (int) contacts.size() < "\n";
 	buf < "speed_avr: " <= averageSpeed() < "\n";
 	buf < "colliding: " <= colliding() < "\n";
 	buf < "submersion: " <= submersion() < "\n";

@@ -34,7 +34,7 @@ public:
 	cWorldScriptPlay();
 	~cWorldScriptPlay();
 	void Free();
-	int OpenWorldScript(const std::filesystem::path &path);
+	int OpenWorldScript(const std::string &path);
 	int LoadNextWorldScript();
 	void CloseWorldScript();
 	void Animate();

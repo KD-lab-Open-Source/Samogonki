@@ -37,9 +37,7 @@ extern int 	ShowFog;
 #define SESSION
 #endif
 
-#ifndef _WIN32
 #include "port.h"
-#endif
 
 /* ----------------------------- EXTERN SECTION ---------------------------- */
 //extern int* SI;
@@ -358,29 +356,6 @@ void vrtMap::saveTrPal(void)
 	vMap->pmap.close();
 }
 
-#ifdef _WIN32
-int getTick(void)
-#define CPUID __asm _emit 0xf __asm _emit 0xa2
-#define RDTSC __asm _emit 0xf __asm _emit 0x31
-{
-	int time;
-	__asm {
-		push ebx
-		push ecx
-		push edx
-		xor eax,eax
-		CPUID
-		RDTSC
-		mov [time],eax
-		xor eax,eax
-		CPUID
-		pop edx
-		pop ecx
-		pop ebx
-	}
-	return time;
-}
-#endif
 void vrtMap::calcH2Ocolor(int terr)
 {
 #ifdef _USE_NOT_XGRAPH_

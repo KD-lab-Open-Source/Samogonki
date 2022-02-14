@@ -15,10 +15,6 @@
 #include "TileWater.h"
 #endif //_USE_TILEMAP_
 
-#ifndef _WIN32
-
-#endif
-
 float gb_LodValue=0.01f;
 #define LOD_VALUE						0.01f
 //#define LOD_VALUE						gb_LodValue

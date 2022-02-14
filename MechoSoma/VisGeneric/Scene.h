@@ -65,7 +65,7 @@ public:
 	void Attach(cMeshLibrary *pMeshLibrary)						{ MeshLibrary=pMeshLibrary; }
 	void Detach(cMeshLibrary *pMeshLibrary)						{ if(MeshLibrary) MeshLibrary=0; }
 	// инициализация
-	void LoadWorld(const std::filesystem::path &path,int number=0,int track=0);		// загрузка скрипта описывающего инициализацию мира
+	void LoadWorld(const std::string &path,int number=0,int track=0);		// загрузка скрипта описывающего инициализацию мира
 	void ReleaseWorld();										// выгрузка скрипта описывающего инициализацию мира
 	void AddOmniLight(const Vect3f &pos,float radius,const sColor4f &ambient,const sColor4f &diffuse,const sColor4f &illumination);// добавляет точечный источник
 private:

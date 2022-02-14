@@ -54,13 +54,6 @@
 
 #include "online_game.h"
 
-#ifdef _WIN32
-#include "win32f.h"
-#endif
-
-#pragma warning( disable : 4244 )
-#pragma warning( disable : 4305 )
-
 #include "mch_common.h" // For far target
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */

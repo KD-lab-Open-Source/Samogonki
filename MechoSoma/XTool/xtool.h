@@ -523,11 +523,6 @@ int DiagAssert(unsigned long dwOverrideOpts, const char* szMsg, const char* szFi
 
 #endif  //  ...
 
-#ifdef _WIN32
-#undef assert
-#define assert(x)	xassert(x)
-#endif
-
 #endif /* _ERRH_H */
 
 #ifndef __XRECORDER_H
