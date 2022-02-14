@@ -123,13 +123,14 @@ MD3DERROR Renderer::d3dEndScene() {
       .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f},
       .size = 4,
   };
-  static sg_image nullTexture = sg_make_image(sg_image_desc {
-      .width = 1,
-      .height = 1,
-      .usage = SG_USAGE_IMMUTABLE,
-      .pixel_format = SG_PIXELFORMAT_RGBA8,
-      .data = nullData,
-  });
+  static sg_image_desc nullImageDesc = {
+    .width = 1,
+    .height = 1,
+    .usage = SG_USAGE_IMMUTABLE,
+    .pixel_format = SG_PIXELFORMAT_RGBA8,
+  };
+  nullImageDesc.data.subimage[0][0] = nullData;
+  static sg_image nullTexture = sg_make_image(nullImageDesc);
 
   auto projection_matrix = make_ortho_projection(0, 800, 600, 0, -1, 1);
   auto vs_params = vs_params_t {};

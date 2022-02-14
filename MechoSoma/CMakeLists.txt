@@ -568,6 +568,7 @@ else ()
             app/md3d.cpp
             app/texture_manager.cpp
             app/renderer.cpp
+            app/keyboard_codes.cpp
             )
 
     set(APPLICATION_NAME moonshine-runners)
