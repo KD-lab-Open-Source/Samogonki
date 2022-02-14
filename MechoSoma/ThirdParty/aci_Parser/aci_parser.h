@@ -74,7 +74,7 @@ void scrSetInputDir(char* p);
 void scrSetOutputDir(char* p);
 void scrSetOutputFile(char* p);
 
-scrDataBlock* loadScript(const std::filesystem::path &path);
+scrDataBlock* loadScript(const std::string &path);
 scrDataBlock* loadScript(XStream& fh);
 scrDataBlock* parseScript(char* fname,char *set_name);
 void saveScript(char* fname,scrDataBlock* p);

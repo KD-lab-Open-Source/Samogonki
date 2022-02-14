@@ -331,7 +331,8 @@ void ZBuffer::reset(float z_max)
 
 void ZBuffer::draw()
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk inevstigate this
+#ifdef WTF
 	HDC hdc;
 	GetBackBufferDC(&hdc);
 	int y;

@@ -4,7 +4,8 @@
 //////////////////////////////////////////////
 //	Control defines
 //////////////////////////////////////////////
-#ifdef _WIN32
+// TODO: @caiiiycuk inevstigate this
+#ifdef WTF
 #define TNT_MEM_HEAP  200000
 #define TNT_NO_BOUNDS_CHECK
 #endif

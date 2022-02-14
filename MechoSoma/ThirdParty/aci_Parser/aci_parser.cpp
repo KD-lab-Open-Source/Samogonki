@@ -285,7 +285,7 @@ void scrSetOutputFile(char* p)
 	scrOutputFILE = strdup(p);
 }
 
-scrDataBlock* loadScript(const std::filesystem::path &path)
+scrDataBlock* loadScript(const std::string &path)
 {
 	XStream fh(path.c_str(),XS_IN);
 	return loadScript(fh);

@@ -8,12 +8,11 @@
 
 #include "sur_scr.h"
 
-#ifndef _WIN32
+// TODO: @caiiiycuk implement this
 char *itoa(int number, char *dest, size_t dest_size)
 {
 	return nullptr;
 }
-#endif
 
 s_sur_scr sur_scr;
 

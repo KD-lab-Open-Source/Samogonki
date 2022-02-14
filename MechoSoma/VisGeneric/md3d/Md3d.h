@@ -11,12 +11,7 @@
 #define STRICT 1
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#include <d3d.h>
-#else
 #include "d3d_port.h"
-#endif
 
 //#define _PROFILE_D3D
 
@@ -24,9 +19,7 @@
 
 typedef DWORD MD3DERROR;
 
-#ifndef _WIN32
 #define FAILED(hr) (((MD3DERROR)(hr)) < 0)
-#endif
 
 typedef struct {
 	DWORD dwTotalBitCount;

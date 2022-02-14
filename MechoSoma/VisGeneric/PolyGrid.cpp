@@ -1,6 +1,7 @@
 #include "float.h"
 #include "PolyGrid.h"
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef SOFTWARE_RENDER
 #include "SoftWare16.h"
 #endif
 

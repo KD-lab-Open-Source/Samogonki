@@ -5,9 +5,6 @@
 
 #include "HFONT.H"
 #include "mechosoma.h"
-#ifdef _WIN32
-#include "win32f.h"
-#endif
 
 #include "arcane_menu.h"
 
@@ -35,9 +32,7 @@
 #include "mch_common.h" // For far target
 #include "IGraph3d.h" // For far target
 
-#ifndef _WIN32
 #define MK_LBUTTON 0x0001
-#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 
@@ -2795,6 +2790,7 @@ void mchControlKey::ResetCode(int cfg)
 	code[cfg] = default_code[cfg]; 
 }
 
+#ifdef UNUSED
 void acsSaveScreenState(XBuffer* xb,aciScreen* scr)
 {
 	int sz = 0;
@@ -2894,6 +2890,7 @@ void acsRestoreScreenState(XBuffer* xb,aciScreen* scr)
 		}
 	}
 }
+#endif
 
 mchControlKey::mchControlKey(int id,int c)
 { 

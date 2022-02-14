@@ -3,7 +3,8 @@
 #include "PolyMgr.h"
 
 #include "Math3d.h"
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef SOFTWARE_RENDER
 #include "SoftWare16.h"
 #endif
 #include "Dispatcher.h"
@@ -15,13 +16,9 @@
 #include "TexMgr.h"
 #include "GameClient.h"
 #include "GameClient.h"
-#ifdef _WIN32
-#include "Win32f.h"
-#include "my_STL.h"
-#else
+
 #include "TERRA.H"
 #define DBGCHECK
-#endif
 
 #ifdef _MECHOSOMA_
 #include "mch_common.h" // For far target

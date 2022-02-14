@@ -4,9 +4,7 @@
 #include "Body.h"
 #include "Mesh3ds.h"
 
-#ifndef _WIN32
 #include "port.h"
-#endif
 
 class MechosForSale : Body {
 	// Индекс для обращения к массиву деталей (0-engine, front, back, rfw, rbw, lfw, lbw)

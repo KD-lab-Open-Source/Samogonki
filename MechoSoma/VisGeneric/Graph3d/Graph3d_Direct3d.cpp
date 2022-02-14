@@ -9,9 +9,7 @@
 fstream fxx("graph.txt",ios::out);
 #endif //_TEST_DIRECT3D_
 
-#ifndef _WIN32
 #include "port.h"
-#endif
 
 int sVertexD3D::fmt	=	D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
 
@@ -186,7 +184,8 @@ int cGraph3dDirect3D::EndScene()
 }
 int cGraph3dDirect3D::NullClipRect()
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef WTF
 	extern LPDIRECT3DDEVICE7    g_pd3dDevice;       // The D3D device
 	D3DVIEWPORT7 vp={xScrMin,yScrMin,xScrMax-xScrMin,yScrMax-yScrMin,0,1};
 	g_pd3dDevice->SetViewport(&vp);
@@ -719,7 +718,8 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 }
 int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 {
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef WTF
 	HDC hdc;
 	RECT rect = { x, y, xScr, yScr};
 	GetBackBufferDC(&hdc);

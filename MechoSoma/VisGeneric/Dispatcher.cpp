@@ -21,12 +21,11 @@
 extern MemoryHeap MemoryHeapDynamicShade;
 #endif
 
-#ifndef _WIN32
+// TODO: @caiiiycuk implement this correctly
 char *_strlwr(char *str)
 {
 	return str;
 }
-#endif
 
 cAnimChain *AnimChain=0;
 cMesh *tmpMesh;
@@ -1150,7 +1149,7 @@ cMesh* cM3D::CreateObject(unsigned int Type,float x,float y,float z,float ax,flo
 	SetPosition(Mesh,x,y,z,ax,ay,az);
 	return Mesh;
 }
-void cM3D::LoadLib(const std::filesystem::path &path)
+void cM3D::LoadLib(const std::string &path)
 {
 //	allocation_tracking("Begin Load Lib");
 	int kind, type, eff_id;

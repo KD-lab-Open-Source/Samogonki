@@ -18,9 +18,7 @@
 
 #include "mch_common.h" // For far target
 
-#ifndef _WIN32
 #define MAX_PATH 1024
-#endif
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */

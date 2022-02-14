@@ -1,10 +1,11 @@
 #include "filesystem.h"
 
+#include <filesystem>
 #include <algorithm>
 #include <locale>
 #include <stdexcept>
 
-std::filesystem::path file::normalize_path(const char* input) {
+std::string file::normalize_path(const char* input) {
   namespace fs = std::filesystem;
 
   const auto current_locale = std::locale();
@@ -45,7 +46,7 @@ std::filesystem::path file::normalize_path(const char* input) {
     }
 
     if (!is_found) {
-      return input_path;
+      return input_path.string();
     }
   }
 

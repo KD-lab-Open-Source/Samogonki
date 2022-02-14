@@ -43,7 +43,8 @@
 
 #include "Statistics.h"
 
-#ifdef _WIN32
+// TODO: @caiiiycuk network support
+#ifdef NETWORK
 #include "online_game.h"
 #endif
 
@@ -1889,7 +1890,7 @@ void mchRacerStats::save(XStream* fh)
 	*fh < Lap < Checkpoint < Turn < NStar;
 	fh -> write(partFlags,ARCANE_MAX);
 
-	*fh < strlen(name);
+	*fh < (int) strlen(name);
 	fh -> write(name,strlen(name));
 
 	fh -> write(mechos_config,30);
@@ -1911,7 +1912,7 @@ void mchRacerStats::save(XBuffer* fh)
 	*fh < Lap < Checkpoint < Turn < NStar;
 	fh -> write(partFlags,ARCANE_MAX);
 
-	*fh < strlen(name);
+	*fh < (int) strlen(name);
 	fh -> write(name,strlen(name));
 
 	fh -> write(mechos_config,30);
@@ -4249,7 +4250,8 @@ void mchRaceDispatcher::KeyTrap(void)
 		if(mch_trkRec)
 			mch_trkRec -> KeyTrap(k);
 
-#ifdef _WIN32
+// TODO: @caiiiycuk invesitgate this
+#ifdef WTF
 		if(k == VK_SPACE){
 			if(mchGameMode == MCH_ENTIRE_CONTROL_HS && mchPBEM_Game){
 				if(mchTimeMode == MCH_TIME_WAITING_TURN && !(activeRacer -> flags & MCH_FINISHED) && mchPBEM_CheckFlag(PBEM_DATA_SENT) && og_inP.express_game()){
@@ -4325,8 +4327,9 @@ void mchRaceDispatcher::KeyTrap(void)
 					break;
 				case MCH_KEY_START_TIME:
 					if(!mchTurnBasedGame) break;
-					if(mchGameMode == MCH_ENTIRE_CONTROL_HS && mchPBEM_Game){ 
-#ifdef _WIN32
+					if(mchGameMode == MCH_ENTIRE_CONTROL_HS && mchPBEM_Game){
+// TODO: @caiiiycuk invesitgate this
+#ifdef WTF
 						if(mchPBEM_GameMode == MCH_PBEM_REPLAY_TURN && (mchTimeMode == MCH_TIME_RUNNING || mchPBEM_Pause)){
 							if(!mchPBEM_Pause){
 								mchGameFlags |= MCH_STOP_TIME_FLAG | MCH_TOGGLE_PAUSE_FLAG;
@@ -4834,7 +4837,7 @@ void mchRacer::SetPointControl(void)
 
 int mchRaceDispatcher::online_checkEndGame(void)
 {
-#ifdef _WIN32
+#ifdef NETWORK
 	int num_not_finished_humans;
 	mchRacer* p;
 	ogPlayerInfo* pl;

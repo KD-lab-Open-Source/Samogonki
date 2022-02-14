@@ -134,7 +134,7 @@ void cScene::ReleaseWorld()
 	if(BaseObjectMgr) BaseObjectMgr->Release();
 	GetLibTex()->Release(1); 
 }
-void cScene::LoadWorld(const std::filesystem::path &path,int number,int track)
+void cScene::LoadWorld(const std::string &path,int number,int track)
 {
 	ReleaseWorld();
 	UNKNOWN_ASSERT(!path.empty());

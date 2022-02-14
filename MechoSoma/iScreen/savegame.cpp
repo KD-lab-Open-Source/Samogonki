@@ -20,20 +20,19 @@
 
 #include "demo_dispatcher.h"
 
-#ifdef _WIN32
-#include "win32f.h"
-#else
 #define DBGCHECK
+
+// TODO: @caiiiycuk implement
 char *_strtime(char *timestr)
 {
 	return nullptr;
 }
 
+// TODO: @caiiiycuk implement
 char *_strdate(char *timestr)
 {
 	return nullptr;
 }
-#endif
 
 #include "mch_common.h" // For far target
 
@@ -214,7 +213,7 @@ void acsSaveSlot::save(void)
 	fh < acsSaveVersion;
 	fh.write(playerName,HS_NAME_LEN + 1);
 
-	fh < strlen(timeString) + 1 < timeVal;
+	fh < (int) strlen(timeString) + 1 < timeVal;
 	fh.write(timeString,strlen(timeString) + 1);
 
 	fh < numStarlets < figureID < lastWorld < lastTrack;
@@ -271,7 +270,7 @@ void acsSaveSlot::pack(void)
 	fh < acsSaveVersion;
 	fh.write(playerName,HS_NAME_LEN + 1);
 
-	fh < strlen(timeString) + 1 < timeVal;
+	fh < (int) strlen(timeString) + 1 < timeVal;
 	fh.write(timeString,strlen(timeString) + 1);
 
 	fh < numStarlets < figureID < lastWorld < lastTrack;

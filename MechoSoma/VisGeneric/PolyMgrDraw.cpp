@@ -15,10 +15,6 @@
 #include "TileWater.h"
 #endif //_USE_TILEMAP_
 
-#ifndef _WIN32
-
-#endif
-
 float gb_LodValue=0.01f;
 #define LOD_VALUE						0.01f
 //#define LOD_VALUE						gb_LodValue
@@ -1133,6 +1129,9 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		int j=(int)(TangentTrail->Pos.y/(1<<TileMap->_SizeTileY()));
 		if((TileMap->GetTile(i,j)->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)==0)
 			continue;
+                if (TangentTrail->MaterialArray.length() == 0) {
+                   continue;
+                }
 		cMaterial *Material=&TangentTrail->MaterialArray[0];
 		sColor4f &Diffuse1=TangentTrail->Diffuse1,&Diffuse2=TangentTrail->Diffuse2;
 		float Phase=TangentTrail->Timer()/TangentTrail->Duration,Intensity=255.f;

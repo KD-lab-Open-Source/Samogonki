@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include <filesystem>
 #include "filesystem.h"
 #include "xtool.h"
 #include "xINI_File.h"
@@ -98,6 +99,7 @@ char* port_ultoa( unsigned long value, char* result, int base ) {
 	return result;
 }
 
+#ifndef _WIN32
 char *_fullpath(char *absPath, const char *relPath, size_t maxLength)
 {
 	return realpath(relPath, absPath);
@@ -107,6 +109,7 @@ char *strlwr(char *str)
 {
 	return str;
 }
+#endif
 
 struct PrivateProfile
 {
@@ -144,7 +147,7 @@ uint32_t GetPrivateProfileString(
 	if (p == private_profiles.cend())
 	{
 		const auto path = file::normalize_path(lpFileName);
-		if (!exists(path))
+		if (!std::filesystem::exists(path))
 		{
 			return 0;
 		}

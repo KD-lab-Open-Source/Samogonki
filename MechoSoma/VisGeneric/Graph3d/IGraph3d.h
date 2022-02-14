@@ -1,12 +1,7 @@
 #ifndef __IGRAPH3D_H__
 #define __IGRAPH3D_H__
 
-#ifdef _WIN32
-#include <windows.h>
-#include <ddraw.h>
-#else
 #define NULL 0
-#endif
 #include <Md3d.h>
 
 #define GET_INT_RGBA(r,g,b,a)		(((a)<<24)|((r)<<16)|((g)<<8)|(b))

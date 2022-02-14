@@ -59,7 +59,7 @@ public:
 	cM3D()													{ MeshList=new cList(); NumberID=0; Window=0; prev_global_time = 0; }
 	~cM3D()													{ Release(0); }
 	// загрузка
-	void LoadLib(const std::filesystem::path &path);
+	void LoadLib(const std::string &path);
 	void LoadMap(char *fname,int LoadNumberTrack=0xFFFFFFFF);
 	void SaveMap(char *fname,char Version='O');
 	// вывод

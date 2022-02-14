@@ -8,16 +8,15 @@
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-#ifdef _WIN32
+// TODO: @caiiiycuk investigate this
+#ifdef WTF
 #define _xINI_BINARY_ONLY_
 #endif
 
-#ifndef _WIN32
 #define _MAX_PATH 1024
 #include "filesystem.h"
 #include "iniparser.h"
 #include "port.h"
-#endif
 
 void xINI_FileKey::putValue(const char* p)
 {
@@ -207,7 +206,8 @@ void xINI_File::load_binary(void)
 
 void xINI_File::load_text(void)
 {
-#ifdef _WIN32
+  // TODO: @caiiiycuk invesitgate this
+#ifdef WTF
 	int sz;
 	char* buf,*vbuf,*p;
 
@@ -294,7 +294,7 @@ void xINI_FileSection::save(XStream& fh,int binary)
 	}
 	else {
 		fh < keyList.size();
-		fh < strlen(name) < name;
+		fh < (int) strlen(name) < name;
 		while(p){
 			p -> save(fh,binary);
 			p = p -> next;
@@ -341,7 +341,7 @@ void xINI_FileKey::save(XStream& fh,int binary)
 			fh < name < "=" < string < "\r\n";
 	}
 	else {
-		fh < strlen(name) < name < strlen(string) < string;
+		fh < (int) strlen(name) < name < (int) strlen(string) < string;
 	}
 }
 

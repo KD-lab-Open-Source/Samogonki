@@ -2,7 +2,7 @@
 #include "Dispatcher.h"
 #include "Frame.h"
 
-int cVisGeneric::LoadObjectLibrary(const std::filesystem::path &path)
+int cVisGeneric::LoadObjectLibrary(const std::string &path)
 {
 	assert(Scene);
 	Scene->GetM3D()->LoadLib(path);

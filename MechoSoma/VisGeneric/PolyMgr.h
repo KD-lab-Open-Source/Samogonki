@@ -7,9 +7,7 @@
 #include "UMATH.H"
 #include "DrawPolygonShade.h"
 
-#ifndef _WIN32
 #define __forceinline inline
-#endif
 
 #define POINT_SCALE_W				0.9f
 

@@ -10,9 +10,7 @@
 #include "CameraPrm.h"
 #include "QuatMath.h"
 
-#ifndef _WIN32
 #include "port.h"
-#endif
 
 class SoundTable : std::unordered_map<string, int>
 {

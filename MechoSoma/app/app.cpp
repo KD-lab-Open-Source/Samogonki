@@ -9,7 +9,7 @@
 #include "KEYS.H"
 #include "renderer.h"
 #include "xgraph.h"
-#include "xtool.h"
+#include "keyboard_codes.h"
 
 int _id;
 int _previous_id;
@@ -57,12 +57,14 @@ void onCleanup() {}
 void onEvent(const sapp_event* event) {
   switch (event->type) {
     case SAPP_EVENTTYPE_KEY_DOWN: {
-      XKey.PressFnc(VK_SPACE, 1);
-      KeyBuf->put(VK_SPACE, KBD_CUR_KEY_PRESSED);
+      auto key = platform::keyFromSappKeyCode(event->key_code);
+      XKey.PressFnc(key, 1);
+      KeyBuf->put(key, KBD_CUR_KEY_PRESSED);
     } break;
     case SAPP_EVENTTYPE_KEY_UP: {
-      XKey.UnPressFnc(VK_SPACE, 1);
-      KeyBuf->put(VK_SPACE, KBD_CUR_KEY_UNPRESSED);
+      auto key = platform::keyFromSappKeyCode(event->key_code);
+      XKey.UnPressFnc(key, 1);
+      KeyBuf->put(key, KBD_CUR_KEY_UNPRESSED);
     } break;
     case SAPP_EVENTTYPE_MOUSE_MOVE: {
       auto x = event->mouse_x;
