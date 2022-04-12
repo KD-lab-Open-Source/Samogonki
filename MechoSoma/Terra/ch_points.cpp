@@ -94,6 +94,8 @@ void sCh_points::set2(int MapX,int MapY,int ScX,int ScY)
 #endif
 }
 
+int vmapOpenResource(char* fname,XStream& fh);
+
 // For workins the FILES
 XStream Cmap(0);
 void sCh_points::load(char* fname,int number_track)
@@ -106,7 +108,11 @@ void sCh_points::load(char* fname,int number_track)
 	int i;
 	xb < fname < port_itoa(number_track,tmpstr,10);
 	currient_track=number_track;
+#ifdef _WIN32
 	if(!Cmap.open(xb,XS_IN)) return;
+#else
+	if(!vmapOpenResource(xb, Cmap)) return;
+#endif
 	long s = Cmap.size();
 	char temp[7];
 	Cmap.read(temp,sizeof(temp));
@@ -114,7 +120,6 @@ void sCh_points::load(char* fname,int number_track)
 	Cmap.read(&max_number,sizeof(max_number));
 	Cmap.read(&St,sizeof(St));
 	Cmap.read(&max_start,sizeof(max_start));
-	Cmap.read(&Link,sizeof(Link));
 	Cmap.close();
 	for (i=0;i<max_number;i++) 
 		for (int j=0;j<max_number;j++) 
