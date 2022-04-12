@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <fstream>
 #include <iostream>
 
 #include "filesystem.h"
@@ -37,18 +36,17 @@ void xsSetWriteHandler(void (*fp)(unsigned),unsigned res)
 	xsWriteBytes = 0;
 }
 
-std::fstream *open_file(const char* name, unsigned f)
+FILE* open_file(const char* name, unsigned f)
 {
-	std::ios::openmode mode;
-	mode = std::ios::binary;
+	const char* mode;
 	if (f & XS_IN)
-		mode |= std::ios::in;
+		mode = "r";
 	if (f & XS_OUT)
-		mode |= std::ios::out;
+		mode = "w";
 	if (f & XS_APPEND)
-		mode |= std::ios::app;
+		mode = "a";
 
-	return new std::fstream(name, mode);
+	return fopen(name, mode);
 }
 
 XStream::XStream(int err)
@@ -87,11 +85,11 @@ int XStream::open(const char* name, unsigned f)
 
 	const auto file_path = file::normalize_path(name);
 
-	std::fstream *file = open_file(file_path.c_str(), f);
+	FILE* file = open_file(file_path.c_str(), f);
 	handler = file;
-	if (file->is_open()) {
+	if (file != nullptr) {
 		fname = name;
-		pos = file->tellg();
+		pos = ftell(file);
 		eofFlag = 0;
 	} else {
 		#ifdef XSTREAM_DEBUG
@@ -139,11 +137,10 @@ void XStream::close(void)
 	//	ErrH.Abort(closeMSG,XERR_USER,GetLastError(),fname);
 
 	if(extSize == -1){
-		auto internal_handler = reinterpret_cast<std::fstream*>(handler);
+		auto internal_handler = reinterpret_cast<FILE*>(handler);
 
-		if (internal_handler->is_open())
-			internal_handler->close();
-		delete internal_handler;
+		if (internal_handler != nullptr)
+			fclose(internal_handler);
 	}
 
 	handler = NULL;
@@ -157,14 +154,12 @@ void XStream::close(void)
 unsigned long XStream::read(void* buf, unsigned long len)
 {
 	unsigned long ret;
-	auto internal_handler = reinterpret_cast<std::fstream*>(handler);
+	auto internal_handler = reinterpret_cast<FILE*>(handler);
 	/*if(!ReadFile(handler,buf,len,&ret,0))
 		if(ErrHUsed) ErrH.Abort(readMSG,XERR_USER,GetLastError(),fname);
 		else return 0U;
 	if(ret < len) eofFlag = 1;*/
-	internal_handler->read((char *)buf, len);
-	len = internal_handler->gcount();
-	ret = len;
+	ret = fread((char *)buf, 1, len, internal_handler);
 	pos += ret;
 	if(extSize != -1 && pos >= extSize) eofFlag = 1;
 	
@@ -195,7 +190,7 @@ unsigned long XStream::write(const void* buf, unsigned long len)
 	debug.close();
 	*/
 	unsigned long ret;
-	auto internal_handler = reinterpret_cast<std::fstream*>(handler);
+	auto internal_handler = reinterpret_cast<FILE*>(handler);
 	/*std::cout<<"Start write to:"<<fname
 			<<" len:"<<len
 			<<" "<<((std::fstream *)handler)->fail()
@@ -204,7 +199,7 @@ unsigned long XStream::write(const void* buf, unsigned long len)
 			<<" "<<((std::fstream *)handler)->bad()
 			<<" open:"<<((std::fstream *)handler)->is_open()
 			<<" tellp:"<<((std::fstream *)handler)->tellp()<<std::endl;*/
-	internal_handler->write((char *)buf, len);
+	fwrite((const char *)buf, 1, len, internal_handler);
 	/*
 		std::cout<<"END write to:"<<fname
 			<<" len:"<<len
@@ -238,42 +233,26 @@ long XStream::seek(long offset, int dir)
 		<<" addr:"<<handler<<" curo:"<<offset<<std::endl;
 	debug.close();*/
 
-	auto internal_handler = reinterpret_cast<std::fstream*>(handler);
+	auto internal_handler = reinterpret_cast<FILE*>(handler);
 	long ret=0;
 	if(extSize != -1){
 		switch(dir){
 			case XS_BEG:
 				//ret = SetFilePointer(handler,extPos + offset,0,dir) - extPos;
-				if (internal_handler->flags() & std::ios::out) {
-					internal_handler->seekp(extPos + offset, std::ios_base::beg);
-				}
-				else {
-					internal_handler->seekg(extPos + offset, std::ios_base::beg);
-				}
+				fseek(internal_handler, extPos + offset, SEEK_SET);
 				break;
 			case XS_END:
 				//ret = SetFilePointer(handler,extPos + extSize - offset - 1,0,XS_BEG) - extPos;
-				if (internal_handler->flags() & std::ios::out) {
-					internal_handler->seekp(extPos + extSize - offset - 1, std::ios_base::beg);
-				} else {
-					internal_handler->seekg(extPos + extSize - offset - 1, std::ios_base::beg);
-				}
+				fseek(internal_handler, extPos + extSize - offset - 1, SEEK_SET);
 				break;
 			case XS_CUR:
 				//ret = SetFilePointer(handler,extPos + pos + offset,0,XS_BEG) - extPos;
 				//((std::fstream *)handler)->clear();
-				if (internal_handler->flags() & std::ios::out) {
-					internal_handler->seekp(extPos + pos + offset, std::ios_base::beg);
-				} else {
-					internal_handler->seekg(extPos + pos + offset, std::ios_base::beg);
-				}
+				fseek(internal_handler, extPos + pos + offset, SEEK_SET);
 				break;
 		}
 
-		if (internal_handler->flags() & std::ios::out)
-			ret = internal_handler->tellp() - (std::streamoff)extPos;
-		else
-			ret = internal_handler->tellg() - (std::streamoff)extPos;
+		ret = ftell(internal_handler) - extPos;
 	}
 	else
 	{
@@ -281,28 +260,16 @@ long XStream::seek(long offset, int dir)
 		//std::cout<<"SEEK:"<<fname<<std::endl;
 		switch(dir){
 			case XS_BEG:
-				if (internal_handler->flags() & std::ios::out)
-					internal_handler->seekp(offset, std::ios_base::beg);
-				else
-					internal_handler->seekg(offset, std::ios_base::beg);
+				fseek(internal_handler, offset, SEEK_SET);
 				break;
 			case XS_END:
-				if (internal_handler->flags() & std::ios::out)
-					internal_handler->seekp(offset, std::ios_base::end);
-				else
-					internal_handler->seekg(offset, std::ios_base::end);
+				fseek(internal_handler, offset, SEEK_END);
 				break;
 			case XS_CUR:
-				if (internal_handler->flags() & std::ios::out)
-					internal_handler->seekp(offset, std::ios_base::cur);
-				else
-					internal_handler->seekg(offset, std::ios_base::cur);
+				fseek(internal_handler, offset, SEEK_CUR);
 				break;
 		}
-		if (internal_handler->flags() & std::ios::out)
-			ret = internal_handler->tellp();
-		else
-			ret = internal_handler->tellg();
+		ret = ftell(internal_handler);
 
 	}
 	/* Full stream debug*/
@@ -312,7 +279,7 @@ long XStream::seek(long offset, int dir)
 		<<" extSize:"<<extSize<<" pos:"<<pos<<" extPos:"<<extPos
 		<<" ret:"<<ret<<std::endl;
 	debug.close();*/
-	if (internal_handler->fail()) {
+	if (ferror(internal_handler)) {
 		std::cout<<"Warning: Bad seek in file."<<std::endl;
 		}
 	if (ret == -1L)
@@ -329,22 +296,15 @@ long XStream::seek(long offset, int dir)
 long XStream::size()
 {
 //std::cout<<"XStream::size()"<<std::endl;
-	auto internal_handler = reinterpret_cast<std::fstream*>(handler);
 	long tmp = extSize;
 	long int tmp2;
 	if(tmp == -1){
 		//tmp=GetFileSize(handler,0);
-		if (internal_handler->flags() & std::ios::in) {
-			tmp2 = internal_handler->tellg();
-			internal_handler->seekp(0, std::ios_base::end);
-			tmp = internal_handler->tellg();
-			internal_handler->seekp(tmp2);
-		} else {
-			tmp2 = internal_handler->tellp();
-			internal_handler->seekg(0, std::ios_base::end);
-			tmp = internal_handler->tellp();
-			internal_handler->seekg(tmp2);
-		}
+		auto internal_handler = reinterpret_cast<FILE*>(handler);
+		tmp2 = ftell(internal_handler);
+		fseek(internal_handler, 0, SEEK_END);
+		tmp = ftell(internal_handler);
+		fseek(internal_handler, tmp2, SEEK_SET);
 		if (tmp == -1L) {
 			if (ErrHUsed)
 				ErrH.Abort(sizeMSG,XERR_USER,0,"");

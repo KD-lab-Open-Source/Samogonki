@@ -1125,7 +1125,7 @@ void fxlabFieldLinkType::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabFieldLinkType");
 };
 
-void fxlabFieldLinkType::SetPosition(Vect3f& v)
+void fxlabFieldLinkType::SetPosition(const Vect3f& v)
 {
 	fxlabServerKeyObjectType::SetPosition(v);
 	if(FieldPoint) 

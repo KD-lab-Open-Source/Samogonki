@@ -52,7 +52,7 @@ struct fxlabServerSpaceType : fxlabServerEvolutionType
 		fxlabServerEvolutionType::Open();
 		Position = Vect3f::ZERO;
 	};
-	void SetPosition(Vect3f& v){ Position = v; };
+	void SetPosition(const Vect3f& v) override { Position = v; };
 };
 
 //----------------------------------------------------

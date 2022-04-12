@@ -195,8 +195,8 @@ struct fxlabClientRemoteSwitcher : fxlabClientRemoteCotrol
 	void Close(void);
 	void KeyCheck(void);
 	void SetRemoteID(int id);
-	void SetVelocity(Vect3f& v);
-	void SetPosition(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
+	void SetPosition(const Vect3f& v) override;
 
 	virtual void CreateObject(void);
 	virtual void DestroyObject(void);

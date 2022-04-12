@@ -69,13 +69,13 @@ void fxlabColorModel::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabColorModel");
 };
 
-void fxlabColorModel::SetMatrix(class MatXf& m)
+void fxlabColorModel::SetMatrix(const class MatXf& m)
 { 
 	Matrix = m;
 	Position = Matrix.trans();
 };
 
-void fxlabColorModel::SetPosition(class Vect3f& v)
+void fxlabColorModel::SetPosition(const class Vect3f& v)
 {
 	fxlabClientKeyObjectType::SetPosition(v);
 	Matrix.trans() = v;
@@ -757,9 +757,10 @@ void fxlabClientWaterWaveModel::CalcColor(sColor4f& color)
 	color.a = Alpha * KeyData[FXLAB_COLOR_MODEL_DATA_ALPHA];
 };
 
-void fxlabClientWaterWaveModel::SetPosition(class Vect3f& v)
+void fxlabClientWaterWaveModel::SetPosition(const class Vect3f& v)
 {
-	v.z += 1.0f;
-	fxlabClientKeyObjectType::SetPosition(v);
-	Matrix.trans() = v;
+	Vect3f t = v;
+	t.z += 1.0f;
+	fxlabClientKeyObjectType::SetPosition(t);
+	Matrix.trans() = t;
 };

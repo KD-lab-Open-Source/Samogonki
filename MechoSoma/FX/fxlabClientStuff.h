@@ -168,7 +168,7 @@ struct fxlabClientStreamFountain : fxlabStreamCluster
 
 	void Open(void);
 	void Start(void);
-	void SetDirectionMatrix(class Mat3f& m){ StreamMatrix = m; };
+	void SetDirectionMatrix(const class Mat3f& m) override { StreamMatrix = m; };
 	void Quant(void);
 };
 

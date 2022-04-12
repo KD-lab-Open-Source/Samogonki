@@ -321,7 +321,7 @@ struct fxlabFieldLinkType : fxlabServerKeyObjectType
 	void Quant(void);
 	void KeyCheck(void);
 	virtual void Generate(void){};
-	void SetPosition(Vect3f& v);
+	void SetPosition(const Vect3f& v) override;
 };
 
 struct fxlabVortexField : fxlabFieldLinkType
