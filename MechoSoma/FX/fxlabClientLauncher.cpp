@@ -526,14 +526,14 @@ void fxlabClientRemoteSwitcher::Open(void)
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientRemoteSwitcher::SetVelocity(Vect3f& v)
+void fxlabClientRemoteSwitcher::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 	if(ObjectPoint.Process)
 		ObjectPoint.Process->SetVelocity(v);
 };
 
-void fxlabClientRemoteSwitcher::SetPosition(Vect3f& v)
+void fxlabClientRemoteSwitcher::SetPosition(const Vect3f& v)
 {
 	fxlabClientRemoteCotrol::SetPosition(v);
 	if(ObjectPoint.Process)

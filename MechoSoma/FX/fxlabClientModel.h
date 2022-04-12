@@ -20,8 +20,8 @@ struct fxlabColorModel : fxlabClientKeyObjectType
 	void Close(void);
 	void KeyCheck(void);
 	void Quant(void);
-	void SetMatrix(class MatXf& m);
-	void SetPosition(class Vect3f& v);
+	void SetMatrix(const class MatXf& m) override;
+	void SetPosition(const class Vect3f& v) override;
 
 	virtual int CreateObjectID(void);
 
@@ -277,7 +277,7 @@ struct fxlabClientWaterWaveModel : fxlabControlModel
 	void CalcColor(sColor4f& color);
 	void SetColorVector(Vect3f& v){ Red = v.x; Green = v.y; Blue = v.z; };
 	void SetTransparency(float a){ Alpha = a; };
-	void SetPosition(class Vect3f& v);
+	void SetPosition(const class Vect3f& v);
 };
 
 

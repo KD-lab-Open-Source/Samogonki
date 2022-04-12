@@ -16,8 +16,8 @@ struct fxlabClientSpaceType : fxlabClientEvolutionType
 		Position = Vect3f::ZERO;
 	};
 	
-	void SetPosition(class Vect3f& v){ Position = v; };
-	void GetPosition(class Vect3f& v){ v = Position; };
+	void SetPosition(const class Vect3f& v) override { Position = v; };
+	void GetPosition(class Vect3f& v) override { v = Position; };
 };
 
 struct fxlabClientKeyObjectType : fxlabClientSpaceType
