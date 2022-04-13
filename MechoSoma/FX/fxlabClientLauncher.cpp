@@ -141,7 +141,7 @@ void fxlabClientSetObjectType::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxClientSetObject");
 };
 
-void fxlabClientSetObjectType::SetVelocity(Vect3f& v)
+void fxlabClientSetObjectType::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };

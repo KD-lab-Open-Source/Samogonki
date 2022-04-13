@@ -93,7 +93,7 @@ void fxlabLightningLine::CalcVelocity(Vect3f& v)
 	v = Velocity;
 };
 
-void fxlabLightningLine::SetVelocity(Vect3f& v)
+void fxlabLightningLine::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 	Velocity.normalize();
@@ -107,7 +107,7 @@ void fxlabLightningRadius::Open(void)
 	Radius = 0;
 };
 
-void fxlabLightningRadius::SetVelocity(Vect3f& v)
+void fxlabLightningRadius::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 	Radius = Velocity.norm();

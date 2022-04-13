@@ -96,7 +96,9 @@ void sCh_points::set2(int MapX,int MapY,int ScX,int ScY)
 #endif
 }
 
+#ifndef _WIN32
 int vmapOpenResource(char* fname,XStream& fh);
+#endif
 
 // For workins the FILES
 XStream Cmap(0);

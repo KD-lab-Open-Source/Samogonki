@@ -208,7 +208,7 @@ struct fxlabCrazyTail : fxlabFearSpring
 	void CoreProcess(void);
 	void KeyUpdate(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 };
 
 //-------------------------------------------------------------
@@ -231,7 +231,7 @@ struct fxlabCrazyDust : fxlabFearSpring
 	void KeyUpdate(void);
 	void KeyCheck(void);
 
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 };
 
 //------------------------------------------
@@ -263,7 +263,7 @@ struct fxlabFearFire : fxlabFearSpring
 	void CoreProcess(void);
 	void KeyUpdate(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 };
 
 //------------------------------------------------------------
@@ -299,7 +299,7 @@ struct fxlabFearStream : fxlabFearSpring
 	void CoreGenerate(void);
 	void KeyCheck(void);
 	void KeyUpdate(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 	void SetScale(float scale);
 };
 
@@ -335,7 +335,7 @@ struct fxlabSparkWind : fxlabSparkGenerator
 	void Open(void);
 	void CoreGenerate(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 struct fxlabSparkWindWaterClip : fxlabSparkWind
@@ -349,7 +349,7 @@ struct fxlabSparkLine : fxlabSparkGenerator
 
 	void Open(void);
 	void CoreGenerate(void);
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 //----------------------------------

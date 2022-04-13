@@ -12,7 +12,7 @@ struct fxlabGeneralObjectType
 	float CurrentTime; // Relativity Time
 	float StartTime,FinishTime; // Absolute Time
 
-	fxlabGeneralObjectType(void)
+	fxlabGeneralObjectType()
 	{ 
 		ID = 0;
 		Type = -1; 
@@ -23,21 +23,21 @@ struct fxlabGeneralObjectType
 
 	virtual ~fxlabGeneralObjectType(){};
 
-	virtual void Open(void){};
-	virtual void Close(void){};
-	virtual void Quant(void){};
-	virtual void Start(void){};
-	virtual void StopQuant(void){};
+	virtual void Open(){};
+	virtual void Close(){};
+	virtual void Quant(){};
+	virtual void Start(){};
+	virtual void StopQuant(){};
 
-	virtual void Show(void){};
+	virtual void Show(){};
 
-	virtual int GetID(void){ return ID; };
+	virtual int GetID(){ return ID; };
 	virtual void SetID(int id){ ID = id; };
 
-	virtual int GetType(void){ return Type; };
+	virtual int GetType(){ return Type; };
 	virtual void SetType(int type){ Type = type; };
 
-	virtual int GetAlive(void){ return Alive; }; 
+	virtual int GetAlive(){ return Alive; };
 	virtual void SetAlive(int alive){ Alive = alive; }; 
 
 	virtual void SetProcessInterface(struct fxlabProcessInterface* p){};
@@ -85,7 +85,7 @@ struct fxlabGeneralObjectType
 	virtual void SetAliveObject(int type,int id){};
 	virtual void SetDestroyObject(int type,int id){};
 
-	virtual void ArcaneAction(void){};
+	virtual void ArcaneAction(){};
 	virtual void SetArcaneLink(struct mchArcaneData* p){};
 	virtual void SetArcaneOwner(class mchMechosRacer* p){};
 	virtual void SetArcaneInterruptNum(int num){};
@@ -95,8 +95,8 @@ struct fxlabGeneralObjectType
 	virtual void SetArcaneTime(int time){};
 	virtual void SetArcaneLifeTime(float time){};
 
-	virtual int GetStatisticOwnerID(void){ return 0; };
-	virtual class ArcaneStatisticsInfo* GetStatistic(void){ return NULL; };
+	virtual int GetStatisticOwnerID(){ return 0; };
+	virtual class ArcaneStatisticsInfo* GetStatistic(){ return NULL; };
 
 	virtual void SetGridPoint(void* pTileMap,void* pPolyGrid){};
 //	virtual void SetGridPoint(void* p){};
@@ -157,13 +157,13 @@ struct fxlabGeneralObjectDispatcher
 	list<fxlabGeneralObjectType*> ObjectList;
 	list<fxlabGeneralObjectType*> CreateList;
 
-	virtual void Open(void);
-	virtual void Close(void);
-	virtual void Quant(void);
-	virtual void Start(void){};
+	virtual void Open();
+	virtual void Close();
+	virtual void Quant();
+	virtual void Start(){};
 
 	virtual fxlabGeneralObjectType* CreateObject(int type);
-	virtual void CreateQuant(void);
+	virtual void CreateQuant();
 	fxlabGeneralObjectType* SearchObject(int type);
 };
 
@@ -174,7 +174,7 @@ struct fxlabGeneralActionType
 	int ID;
 	fxlabGeneralObjectType* Point;
 
-	fxlabGeneralActionType(void){ Point = NULL; ID = -83; };
+	fxlabGeneralActionType(){ Point = NULL; ID = -83; };
 	fxlabGeneralActionType(fxlabGeneralObjectType* p,int id){ Point = p; ID = id; };
 };
 
@@ -185,18 +185,18 @@ struct fxlabServerObjectDispatcher : fxlabGeneralObjectDispatcher
 	int LockList;
 	int RootID;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Quant(void);
-	void CreateQuant(void);
-	fxlabGeneralObjectType* CreateObject(int type);
-	float GetTime(void){ return Time; };
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Quant() override;
+	void CreateQuant() override;
+	fxlabGeneralObjectType* CreateObject(int type) override;
+	float GetTime(){ return Time; };
 
 	void AddAction(fxlabGeneralObjectType* p,int id);
-	void ActionQuant(void);
-	void ActionOpen(void);
-	void ActionClose(void);
+	void ActionQuant();
+	void ActionOpen();
+	void ActionClose();
 	void StopArcane(int id,int owner_id);
 };
 
@@ -208,14 +208,14 @@ struct fxlabClientObjectDispatcher : fxlabGeneralObjectDispatcher
 	float DeltaTime;
 	MeasurementTimer DeltaTimer;
 
-	void Start(void);
-	void Quant(void);
-	void Show(void);
-	void Kill(void);
-	fxlabGeneralObjectType* CreateObject(int type);
+	void Start() override;
+	void Quant() override;
+	void Show();
+	void Kill();
+	fxlabGeneralObjectType* CreateObject(int type) override;
 
-	float GetTime(void){ return Time; };
-	float GetDeltaTime(void){ return DeltaTime; };
+	float GetTime(){ return Time; };
+	float GetDeltaTime(){ return DeltaTime; };
 };
 
 extern fxlabClientObjectDispatcher* fxlabClientD;
@@ -234,7 +234,7 @@ struct fxlabRndGenerator
 {
 	unsigned fxlabRNDVAL;
 
-	void Open(void);
+	void Open();
 
 	unsigned RND(unsigned m)
 	{
@@ -245,7 +245,7 @@ struct fxlabRndGenerator
 		return fxlabRNDVAL%m;
 	};
 
-	float UnitRND(void)
+	float UnitRND()
 	{
 		return ((float)(RND(FXLAB_RND_BASE)) * FXLAB_RND_BASE_INV);
 	};

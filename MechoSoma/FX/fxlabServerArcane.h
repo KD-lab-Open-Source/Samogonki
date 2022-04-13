@@ -23,33 +23,33 @@ struct fxlabGeneralArcaneType : fxlabServerSpaceType
 
 	DurationTimer CurrentProtectionTimer;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 
-	void ProtectionQuant(void){};
+	void ProtectionQuant() override {};
 
-	virtual void PowerUse(void);
-	virtual void ArcaneFatality(void);
+	virtual void PowerUse();
+	virtual void ArcaneFatality();
 
-	virtual void Condition(void){};
-	virtual void LinkPowerZero(void);
-	virtual void PowerZero(void){ };
-	virtual void ActionZero(void){ };
+	virtual void Condition(){};
+	virtual void LinkPowerZero();
+	virtual void PowerZero(){ };
+	virtual void ActionZero(){ };
 
-	virtual void InterruptAction(void){};
-	virtual void InterruptUse(void);
+	virtual void InterruptAction(){};
+	virtual void InterruptUse();
 
-	void SetArcaneLink(struct mchArcaneData* p){ LinkPoint = p; };
-	void SetArcaneOwner(class mchMechosRacer* p){ Owner = p; };
-	void SetArcaneInterruptNum(int num){ InterruptNum = num; };
-	void SetArcaneActionPoint(int num){ ActionPoint = num; };
-	void SetArcaneActionDelay(int time){ ActionDelay = time; };
-	void SetArcaneLifeTime(float time){ LifeTime = time; };
-	void SetArcaneAlive(int arcane_id,int owner_id);
+	void SetArcaneLink(struct mchArcaneData* p) override { LinkPoint = p; };
+	void SetArcaneOwner(class mchMechosRacer* p) override { Owner = p; };
+	void SetArcaneInterruptNum(int num) override { InterruptNum = num; };
+	void SetArcaneActionPoint(int num) override { ActionPoint = num; };
+	void SetArcaneActionDelay(int time) override { ActionDelay = time; };
+	void SetArcaneLifeTime(float time) override { LifeTime = time; };
+	void SetArcaneAlive(int arcane_id,int owner_id) override;
 
-	virtual void ArcaneAction(void);
+	virtual void ArcaneAction() override;
 };
 
 //----------------------------------------------------
@@ -58,77 +58,77 @@ struct fxlabGeneralArcaneType : fxlabServerSpaceType
 
 struct fxlabInternalArcane : fxlabGeneralArcaneType
 {
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 
-	void Condition(void);
-	void LinkPowerZero(void);
-	void ActionZero(void);
+	void Condition() override;
+	void LinkPowerZero() override;
+	void ActionZero() override;
 };
 
 struct fxlabArcaneDragonWind : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneDirigibleWind : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneButterflyWind : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneFrogWind : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneHelicopterWind : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcanePlasmaClaw : fxlabInternalArcane
 {
 	fxlabProcessInterface ServerPoint;
 
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabArcaneBowMachine : fxlabInternalArcane
 {
 	fxlabProcessInterface ServerPoint;
 
-	void Start(void);
-	void Quant(void);
-	void Close(void);
-	void ArcaneAction(void){};
+	void Start() override;
+	void Quant() override;
+	void Close() override;
+	void ArcaneAction() override {};
 };
 
 struct fxlabArcaneShaftMachine : fxlabInternalArcane
 {
 	fxlabProcessInterface ClientPoint;
 	fxlabProcessInterface ServerPoint;
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabArcaneIronSide : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneBallWind : fxlabInternalArcane
@@ -137,27 +137,27 @@ struct fxlabArcaneBallWind : fxlabInternalArcane
 	fxlabProcessInterface RightPoint;
 	fxlabProcessInterface SoundPoint;
 
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabRevoltSpace : fxlabInternalArcane
 {
 	fxlabProcessInterface ClientPoint;
 
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneFireBall : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneLightningBolt : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction() override;
 };
 
 /*struct fxlabArcaneJumpBall : fxlabInternalArcane
@@ -167,17 +167,17 @@ struct fxlabArcaneLightningBolt : fxlabInternalArcane
 
 struct fxlabArcaneSpiderSpawn : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneCaterpillarSpawn : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneBubbleRush : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction() override;
 };
 
 const int FXLAB_VOOODOO_MASTER_OBJECT_NUM = 5;
@@ -186,74 +186,74 @@ struct fxlabArcaneVoodooMaster : fxlabInternalArcane
 {
 	fxlabProcessInterface ServerPoint[FXLAB_VOOODOO_MASTER_OBJECT_NUM];
 
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabArcaneRedTrack : fxlabInternalArcane
 {
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 //ImpulseArcane
 
 struct fxlabImpulseArcane : fxlabGeneralArcaneType
 {
-	void Quant(void);
-	void Close(void);
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabArcaneFormicaryWind : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneSuicideWarrior : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneClownWarrior : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneEyeWarrior : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneTomatoWarrior : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneKineticHit : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneMassShifter : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabArcaneJumpBall : fxlabImpulseArcane
 {
-	void Start(void);
+	void Start() override;
 };
 
 //-----------------------
 
 struct fxlabExternalPowerArcane : fxlabGeneralArcaneType
 {
-	void Start(void);
-	void PowerUse(void);
-	void LinkPowerZero(void);
-	void ActionZero(void);
-	void PowerZero(void);
+	void Start() override;
+	void PowerUse() override;
+	void LinkPowerZero() override;
+	void ActionZero() override;
+	void PowerZero() override;
 };
 
 struct fxlabArcaneFireStone : fxlabExternalPowerArcane
@@ -263,9 +263,9 @@ struct fxlabArcaneFireStone : fxlabExternalPowerArcane
 	fxlabProcessInterface BulletPoint;
 	fxlabProcessInterface CloudPoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 //	void InterruptAction(void);
 };
 
@@ -277,9 +277,9 @@ struct fxlabArcaneSnowFall : fxlabExternalPowerArcane
 	fxlabProcessInterface CloudPoint;
 	fxlabProcessInterface SoundPoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 };
 
 struct fxlabArcaneElecricStorm : fxlabExternalPowerArcane
@@ -287,9 +287,9 @@ struct fxlabArcaneElecricStorm : fxlabExternalPowerArcane
 	fxlabProcessInterface CloudPoint;
 	fxlabProcessInterface MarkerPoint;
 
-	void Start(void);
-	void Close(void);
-	void InterruptAction(void);
+	void Start() override;
+	void Close() override;
+	void InterruptAction() override;
 };
 
 const int FXLAB_FIRE_GARDEN_ROSE_NUM = 5;
@@ -300,8 +300,8 @@ struct fxlabArcaneFireGarden : fxlabExternalPowerArcane
 	fxlabProcessInterface ClientPoint[FXLAB_FIRE_GARDEN_ROSE_NUM];
 	fxlabProcessInterface SoundPoint;
 
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 struct fxlabArcaneRageSlime : fxlabExternalPowerArcane
@@ -312,9 +312,9 @@ struct fxlabArcaneRageSlime : fxlabExternalPowerArcane
 	fxlabProcessInterface SoundPoint;
 	DurationTimer WaitTimer;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 };
 
 const int FXLAB_FURY_FUNGUS_NUM = 17;
@@ -328,11 +328,11 @@ struct fxlabArcaneFuryFungus : fxlabExternalPowerArcane
 	DurationTimer LifeTimer;
 	int CheckLife;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void ArcaneAction(void);
-	void Quant(void);
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void ArcaneAction() override;
+	void Quant() override;
 };
 
 struct fxlabArcaneShiftTrap : fxlabExternalPowerArcane
@@ -341,8 +341,8 @@ struct fxlabArcaneShiftTrap : fxlabExternalPowerArcane
 	fxlabProcessInterface ClientPoint;
 	fxlabProcessInterface SoundPoint;
 
-	void Start(void);
-	void Close(void);
+	void Start() override;
+	void Close() override;
 };
 
 //---------------------------------------
@@ -353,38 +353,38 @@ struct fxlabExternalMindArcane : fxlabGeneralArcaneType
 	int InterruptEnable;
 	int ExternalTime;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Condition(void);
-	void InterruptUse(void);
-	void PowerUse(void);
-	void LinkPowerZero(void);
-	void ActionZero(void);
-	void PowerZero(void);
-	void SetArcaneTime(int time){ ExternalTime = time; };
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Condition() override;
+	void InterruptUse() override;
+	void PowerUse() override;
+	void LinkPowerZero() override;
+	void ActionZero() override;
+	void PowerZero() override;
+	void SetArcaneTime(int time) override { ExternalTime = time; };
 };
 
 struct fxlabArcaneLightningSeed : fxlabExternalMindArcane
 {
 	fxlabProcessInterface* ServerPoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void Condition(void);
-	void InterruptAction(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void Condition() override;
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneCrystalSpike : fxlabExternalMindArcane
 {
 	vector<ShareHandle<Body> > SpikePoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void Condition(void);
-	void InterruptAction(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void Condition() override;
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneMortarMine : fxlabExternalMindArcane
@@ -392,11 +392,11 @@ struct fxlabArcaneMortarMine : fxlabExternalMindArcane
 	vector<ShareHandle<Body> > MortarPoint;
 	fxlabProcessInterface* ClientPoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void Condition(void);
-	void InterruptAction(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void Condition() override;
+	void InterruptAction() override;
 };
 
 const int FXLAB_PETARD_BONUS_NUM = 5;
@@ -409,11 +409,11 @@ struct fxlabArcanePetard : fxlabExternalMindArcane
 	Vect3f ExplodePosition;
 	Vect3f Velocity;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void Condition(void);
-	void InterruptAction(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void Condition() override;
+	void InterruptAction() override;
 };
 
 struct fxlabArcaneScarletTrack : fxlabExternalMindArcane
@@ -422,9 +422,9 @@ struct fxlabArcaneScarletTrack : fxlabExternalMindArcane
 	fxlabProcessInterface* ClientPoint;
 	Vect3f LastPosition;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void InterruptUse(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void InterruptUse() override;
 };
 

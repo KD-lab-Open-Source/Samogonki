@@ -15,18 +15,18 @@ struct fxlabColorModel : fxlabClientKeyObjectType
 	class cMesh* ModelPoint;
 	MatXf Matrix;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void KeyCheck(void);
-	void Quant(void);
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void KeyCheck() override;
+	void Quant() override;
 	void SetMatrix(const class MatXf& m) override;
 	void SetPosition(const class Vect3f& v) override;
 
-	virtual int CreateObjectID(void);
+	virtual int CreateObjectID();
 
 	virtual void CalcColor(sColor4f& color);
-	virtual int CalcAttribute(void);
+	virtual int CalcAttribute();
 };
 
 //---------------------------------------------
@@ -46,12 +46,12 @@ struct fxlabControlModel : fxlabColorModel
 	Vect3f ModelAngle;
 	float ModelRadius;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void KeyCheck(void);
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void KeyCheck() override;
 	virtual void CalcSize(Vect3f& size);
-	virtual void CalcMatrix(void);
+	virtual void CalcMatrix();
 };
 
 //----------------------------------------------
@@ -64,8 +64,8 @@ enum fxlabAnimationModelDataField
 
 struct fxlabAnimationModel : fxlabControlModel
 {
-	void Quant(void);
-	void KeyCheck(void);
+	void Quant() override;
+	void KeyCheck() override;
 	virtual void CalcDeltaPhase(float& delta);
 };
 
@@ -84,28 +84,28 @@ struct fxlabControlOmni : fxlabClientKeyObjectType
 {
 	class cOmni* OmniPoint;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void KeyCheck(void);
-	void SetVisible(int v);
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void KeyCheck() override;
+	void SetVisible(int v) override;
 };
 
 //----------------------------------------------
 
 struct fxlabBonusModel : fxlabControlModel
 {
-	void Start(void);
+	void Start() override;
 };
 
 struct fxlabBonusPart : fxlabBonusModel
 {
 	int BonusPartID;
 
-	void Open(void);
-	int CreateObjectID(void){ return BonusPartID; };
-	void SetBonusPartID(int id){ BonusPartID = id; };
+	void Open() override;
+	int CreateObjectID() override { return BonusPartID; };
+	void SetBonusPartID(int id) override { BonusPartID = id; };
 
 };
 
@@ -115,12 +115,12 @@ struct fxlabSlimeModel : fxlabAnimationModel
 {
 	float Phase;
 
-	void Start(void);
-	void Quant(void);
-	void CalcColor(sColor4f& color);
-	void CalcSize(Vect3f& size);
-	int GetAlive(void);
-	void CalcMatrix(void){};
+	void Start() override;
+	void Quant() override;
+	void CalcColor(sColor4f& color) override;
+	void CalcSize(Vect3f& size) override;
+	int GetAlive() override;
+	void CalcMatrix() override {};
 };
 
 //---------------------------------------
@@ -135,14 +135,14 @@ struct fxlabLashModel : fxlabAnimationModel
 	DurationTimer ScaleTimer;
 	float DeltaPhase;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void CalcColor(sColor4f& color);
-	void CalcDeltaPhase(float& delta);
-	int GetAlive(void);
-	void CalcSize(Vect3f& size);
-	void SetScaleAnimation(float start_scale,float end_scale,int time);
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void CalcColor(sColor4f& color) override;
+	void CalcDeltaPhase(float& delta) override;
+	int GetAlive() override;
+	void CalcSize(Vect3f& size) override;
+	void SetScaleAnimation(float start_scale,float end_scale,int time) override;
 };
 
 //---------------------------------------
@@ -151,12 +151,12 @@ struct fxlabVoodooHeadModel : fxlabControlModel
 {
 	float Phase;
 
-	void Start(void);
-	void Quant(void);
-	void CalcColor(sColor4f& color);
-	void CalcSize(Vect3f& size);
-	void CalcMatrix(void){};
-	int GetAlive(void);
+	void Start() override;
+	void Quant() override;
+	void CalcColor(sColor4f& color) override;
+	void CalcSize(Vect3f& size) override;
+	void CalcMatrix() override {};
+	int GetAlive() override;
 };
 
 //-----------------------------------------
@@ -172,31 +172,31 @@ struct fxlabPressureModel : fxlabControlModel
 {
 	Vect3f PressureSize;
 
-	void Open(void);
-	void CalcSize(Vect3f& size);
-	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
-	void CalcMatrix(void){};
+	void Open() override;
+	void CalcSize(Vect3f& size) override;
+	void KeyCheck() override;
+	void SetVelocity(const Vect3f& v) override;
+	void CalcMatrix() override {};
 };
 
 struct fxlabRevoltSpaceModel : fxlabPressureModel
 {
 	float Phase;
 
-	void Start(void);
-	void Quant(void);
-	void CalcColor(sColor4f& color);
-	void CalcSize(Vect3f& size);
-	int GetAlive(void);
+	void Start() override;
+	void Quant() override;
+	void CalcColor(sColor4f& color) override;
+	void CalcSize(Vect3f& size) override;
+	int GetAlive() override;
 };
 
 //----------------------------------------------
 
 struct fxlabMassShifterModel : fxlabControlModel
 {
-	void Quant(void);
-	void CalcMatrix(void){};
-	void CalcSize(Vect3f& size);
+	void Quant() override;
+	void CalcMatrix() override {};
+	void CalcSize(Vect3f& size) override;
 };
 
 //----------------------------------------------
@@ -205,12 +205,12 @@ struct fxlabTrapGroundModel : fxlabControlModel
 {
 	float Phase;
 
-	void Start(void);
-	void Quant(void);
-	void CalcColor(sColor4f& color);
-	void CalcSize(Vect3f& size);
-	int GetAlive(void);
-	void CalcMatrix(void);
+	void Start() override;
+	void Quant() override;
+	void CalcColor(sColor4f& color) override;
+	void CalcSize(Vect3f& size) override;
+	int GetAlive() override;
+	void CalcMatrix() override;
 };
 
 //----------------------------------------------
@@ -221,36 +221,36 @@ struct fxlabBulletModel : fxlabControlModel
 	Vect3f NormVelocity;
 	Vect3f SourcePosition;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void SetVelocity(Vect3f& v);
-	void CalcMatrix(void);
-	int CalcAttribute(void);
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void SetVelocity(const Vect3f& v) override;
+	void CalcMatrix() override;
+	int CalcAttribute() override;
 };
 
 struct fxlabPetardModel : fxlabBulletModel
 {
 	fxlabProcessInterface TailPoint;
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabSnowBulletModel : fxlabBulletModel
 {
 	fxlabProcessInterface TailPoint;
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 struct fxlabFireBulletModel : fxlabBulletModel
 {
 	fxlabProcessInterface TailPoint;
-	void Start(void);
-	void Quant(void);
-	void Close(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
 };
 
 //---------------------------------------------
@@ -260,10 +260,10 @@ struct fxlabClientJumpActionModel : fxlabControlModel
 	Vect3f Velocity;
 	Vect3f LocalPosition;
 
-	void Open(void);
-	void Quant(void);
-	void CalcMatrix(void){};
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void Open() override;
+	void Quant() override;
+	void CalcMatrix() override {};
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 
@@ -273,11 +273,11 @@ struct fxlabClientWaterWaveModel : fxlabControlModel
 {
 	float Red,Green,Blue,Alpha;
 
-	void Open(void);
-	void CalcColor(sColor4f& color);
-	void SetColorVector(Vect3f& v){ Red = v.x; Green = v.y; Blue = v.z; };
-	void SetTransparency(float a){ Alpha = a; };
-	void SetPosition(const class Vect3f& v);
+	void Open() override;
+	void CalcColor(sColor4f& color) override;
+	void SetColorVector(const Vect3f& v) override { Red = v.x; Green = v.y; Blue = v.z; };
+	void SetTransparency(float a) override { Alpha = a; };
+	void SetPosition(const class Vect3f& v) override;
 };
 
 

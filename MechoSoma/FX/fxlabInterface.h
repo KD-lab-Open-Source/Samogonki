@@ -7,22 +7,22 @@
 #include "ArcaneDefine.h"
 #include "ArcaneStatistics.h"
 
-void fxlabOpen(void);
-void fxlabClose(void);
+void fxlabOpen();
+void fxlabClose();
 
-void fxlabInit(void);
-void fxlabFinit(void);
+void fxlabInit();
+void fxlabFinit();
 
-void fxlabServerQuant(void);
-void fxlabClientQuant(void);
+void fxlabServerQuant();
+void fxlabClientQuant();
 
 struct fxlabProcessInterface
 {
 	struct fxlabGeneralObjectType* Process;
 
-	fxlabProcessInterface(void){ Process = NULL; };
-	void Init(void){ Process = NULL; };
-	fxlabGeneralObjectType* Get(void){ return Process; };
+	fxlabProcessInterface(){ Process = NULL; };
+	void Init(){ Process = NULL; };
+	fxlabGeneralObjectType* Get(){ return Process; };
 	void Set(struct fxlabGeneralObjectType* p){ Process = p; };
 };
 
@@ -52,23 +52,23 @@ void fxlabArcaneStart(const class ArcaneStatisticsInfo* p);
 void fxlabArcaneStop(const class ArcaneStatisticsInfo* p);
 //void fxlabArcaneAction(const class ArcaneStatisticsInfo* p);
 void fxlabArcaneAction(const class ArcaneStatisticsInfo* p,int id);
-void fxlabArcaneStatisticInit(void);
+void fxlabArcaneStatisticInit();
 
 int fxlabLine2SphereDist(const class Vect3f& r1,const class Vect3f& c,float rad);
 
-int fxlabGetWorldReflectionEnable(void);
-int fxlabGetWaterRed(void);
-int fxlabGetWaterRedDelta(void);
-int fxlabGetWaterGreen(void);
-int fxlabGetWaterGreenDelta(void);
-int fxlabGetWaterBlue(void);
-int fxlabGetWaterBlueDelta(void);
-int fxlabGetWaterAlpha(void);
-int fxlabGetWaterDeltaAlpha(void);
-int fxlabGetWaterDeltaHeight(void);
-float fxlabGetWaterDeltaUV(void);
+int fxlabGetWorldReflectionEnable();
+int fxlabGetWaterRed();
+int fxlabGetWaterRedDelta();
+int fxlabGetWaterGreen();
+int fxlabGetWaterGreenDelta();
+int fxlabGetWaterBlue();
+int fxlabGetWaterBlueDelta();
+int fxlabGetWaterAlpha();
+int fxlabGetWaterDeltaAlpha();
+int fxlabGetWaterDeltaHeight();
+float fxlabGetWaterDeltaUV();
 
-void fxlabClearDeltaPolygon(void);
+void fxlabClearDeltaPolygon();
 
 extern int fxlabPolyGridAlpha;
 
@@ -90,7 +90,7 @@ struct fxlabFirePointInterface
 	fxlabProcessInterface ClientPoint;
 
 	void Open(int id);
-	void Close(void);
+	void Close();
 	void Update(const class Vect3f& pos,const class Vect3f& vel);
 	void Update(const class Vect3f& pos,const class Mat3f& vel);
 };
@@ -107,7 +107,7 @@ struct fxlabMechosColorInformation
 	float Red,Green,Blue,Alpha;
 	sColor4f Color0,Color1;
 
-	fxlabMechosColorInformation(void);
+	fxlabMechosColorInformation();
 };
 
 struct fxlabMechosProcessInformation
@@ -128,8 +128,8 @@ struct fxlabMechosProcessInformation
 	class DurationTimer& JumpTimer;
 	class DurationTimer& NitroTimer;
 
-	fxlabMechosProcessInformation(void);
-	~fxlabMechosProcessInformation(void);
+	fxlabMechosProcessInformation();
+	~fxlabMechosProcessInformation();
 };
 
 
@@ -276,10 +276,10 @@ struct fxlabTeleportInterface
 	fxlabProcessInterface ClientPoint2;
 	fxlabProcessInterface ServerPoint;
 
-	fxlabTeleportInterface(void);
+	fxlabTeleportInterface();
 	void Init(class Vect3f& p,int status,int world_id,int track_id);
-	void Open(void);
-	void Close(void);
+	void Open();
+	void Close();
 	void SetStatus(int status);
 };
 
@@ -290,10 +290,10 @@ struct fxlabTeleportDispatcher
 	int QuantEnable;
 	fxlabTeleportListType fxlabTeleportList;
 
-	void Init(void);
-	void Finit(void);
-	void Open(void);
-	void Close(void);
+	void Init();
+	void Finit();
+	void Open();
+	void Close();
 	void Add(int world_id,int track_id,class Vect3f& p,int status);
 	void SetState(int world_id,int track_id,int status);
 	fxlabTeleportInterface* Search(int world_id,int tarck_id);
@@ -325,9 +325,9 @@ struct fxlabMovieDispacther
 {
 	std::unordered_map<std::string,fxlabMovieDataType> MovieList;
 
-	void Open(void);
-	void Close(void);
-	void Clear(void);
+	void Open();
+	void Close();
+	void Clear();
 	void RegisterName(const char* name,int type,int key_id);
 	void UpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status);
 };
@@ -335,7 +335,7 @@ struct fxlabMovieDispacther
 extern fxlabMovieDispacther* fxlabMovieD;
 
 void fxlabMovieUpdateProcess(const char* name,const Vect3f& position,const Vect3f& velocity,int status);
-void fxlabMovieDestroy(void);
+void fxlabMovieDestroy();
 
 enum fxlabBigBossWorldType
 {

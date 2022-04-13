@@ -737,7 +737,7 @@ void fxlabCrazyTail::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabCrazyTail::SetVelocity(Vect3f& v)
+void fxlabCrazyTail::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };
@@ -834,7 +834,7 @@ void fxlabCrazyDust::CoreGenerate(void)
 	};	
 };
 
-void fxlabCrazyDust::SetVelocity(Vect3f& v)
+void fxlabCrazyDust::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };
@@ -891,7 +891,7 @@ void fxlabFearFire::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabFearFire::SetVelocity(Vect3f& v)
+void fxlabFearFire::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };
@@ -1052,7 +1052,7 @@ void fxlabFearStream::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabFearStream::SetVelocity(Vect3f& v)
+void fxlabFearStream::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };
