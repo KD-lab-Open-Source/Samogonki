@@ -18,13 +18,13 @@ struct fxlabSpriteType : fxlabResourceObject
 
 	struct sSpriteFX* SpriteData;
 
-	void Open(scrDataBlock* data);
-	void Close(void);
-	void Link(void);
+	void Open(scrDataBlock* data) override;
+	void Close() override;
+	void Link() override;
 
-	float GetScale(void){ return Scale; };
-	float GetInvScale(void){ return InvScale; };
+	float GetScale(){ return Scale; };
+	float GetInvScale(){ return InvScale; };
 
-	int GetSpriteID(void){ return TextureID; };
-	sSpriteFX* GetSpriteData(float phase);
+	int GetSpriteID() override { return TextureID; };
+	sSpriteFX* GetSpriteData(float phase) override;
 };

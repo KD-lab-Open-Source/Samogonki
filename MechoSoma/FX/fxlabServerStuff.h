@@ -12,11 +12,11 @@ struct fxlabDamageSensorType : fxlabServerKeyObjectType
 	float Power;
 	float Radius;
 
-	void Open(void);
-	void Quant(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
-	virtual void Action(void);
+	void Open() override;
+	void Quant() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
+	virtual void Action();
 };
 
 //--------------------------------------------------
@@ -31,10 +31,10 @@ struct fxlabDamageLineType : fxlabDamageSensorType
 {
 	Vect3f Velocity;
 
-	void Open(void);
-	void Action(void);
-	void KeyCheck(void);
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void Open() override;
+	void Action() override;
+	void KeyCheck() override;
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 //--------------------------------------------------
@@ -51,9 +51,9 @@ struct fxlabDamageCircleType : fxlabDamageSensorType
 	float MinRadius;
 	float Height;
 
-	void KeyUpdate(void);
-	void KeyCheck(void);
-	void Action(void);
+	void KeyUpdate() override;
+	void KeyCheck() override;
+	void Action() override;
 };
 
 //--------------------------------------------------
@@ -69,11 +69,11 @@ struct fxlabServerBodyLinkType : fxlabServerKeyObjectType
 {
 	ShareHandle<Body> Core;
 
-	void Quant(void);
-	void KeyCheck(void);
-	void SetBody(class Body* p);
+	void Quant() override;
+	void KeyCheck() override;
+	void SetBody(class Body* p) override;
 
-	virtual void Destroy(void);
+	virtual void Destroy();
 };
 
 //-----------------------------------------------------
@@ -143,18 +143,18 @@ struct fxlabServerDragonFire : fxlabDamageLineType
 	DurationTimer FireTimer;
 	fxlabProcessInterface RemotePoint;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Action(void);
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Action() override;
 
-	void KeyCheck(void);
-	void SetRemoteObject(fxlabGeneralObjectType* p);
+	void KeyCheck() override;
+	void SetRemoteObject(fxlabGeneralObjectType* p) override;
 };
 
 struct fxlabServerDragonHeadFire : fxlabServerDragonFire
 {
-	void Action(void);
+	void Action() override;
 };
 
 //----------------------------------------------------------------
@@ -177,20 +177,20 @@ struct fxlabServerSuckDamage : fxlabServerKeyObjectType
 	struct mchRacer* Target;
 	fxlabProcessInterface RemotePoint;
 
-	void Open(void);
-	void Close(void);
-	void Quant(void);
+	void Open() override;
+	void Close() override;
+	void Quant() override;
 
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void KeyCheck() override;
+	void KeyUpdate() override;
 
-	void SetRemoteObject(fxlabGeneralObjectType* p);
+	void SetRemoteObject(fxlabGeneralObjectType* p) override;
 
-	virtual void Action(void);
-	virtual void CheckTarget(void);
-	virtual void CheckAlive(void);
-	virtual void TargetDestruction(void);
-	virtual void TargetLost(void);
+	virtual void Action();
+	virtual void CheckTarget();
+	virtual void CheckAlive();
+	virtual void TargetDestruction();
+	virtual void TargetLost();
 	virtual void AssignTarget(struct mchRacer* Target);
 };
 
@@ -207,9 +207,9 @@ struct fxlabServerWildClaw : fxlabServerSuckDamage
 {
 	DurationTimer ErectionTimer;
 
-	void Action(void);
-	void AssignTarget(struct mchRacer* target);
-	void KeyCheck(void);
+	void Action() override;
+	void AssignTarget(struct mchRacer* target) override;
+	void KeyCheck() override;
 };
 
 //AI-Info
@@ -217,19 +217,19 @@ struct fxlabServerPlasmaClaw : fxlabServerWildClaw
 {
 	class mchMechosRacer* OwnerPoint;
 
-	void Open(void);
-	void SetMechosPoint(class mchMechosRacer* p)
+	void Open() override;
+	void SetMechosPoint(class mchMechosRacer* p) override
 	{
 		OwnerPoint = p;
 	};
-	void Action(void);
+	void Action() override;
 };
 
 
 //AI-Info
 struct fxlabServerPerestroykaClaw : fxlabServerWildClaw
 {
-	void CheckTarget(void);
+	void CheckTarget() override;
 
 };
 
@@ -238,7 +238,7 @@ struct fxlabServerPerestroykaClaw : fxlabServerWildClaw
 //AI-Info
 struct fxlabServerBombExplosion : fxlabDamageSensorType
 {
-	void Start(void);
+	void Start() override;
 };
 
 //-----------------------------------------
@@ -251,11 +251,11 @@ enum fxlabServerStoneLauncherDataField
 
 struct fxlabServerStoneLauncher : fxlabServerKeyObjectType
 {
-	void Quant(void);
-	void KeyCheck(void);
+	void Quant() override;
+	void KeyCheck() override;
 
-	virtual void Action(void);
-	virtual void Generate(void){};
+	virtual void Action();
+	virtual void Generate(){};
 };
 
 //-----------------------------------------
@@ -271,8 +271,8 @@ enum fxlabServerVolcanoLauncherDataField
 
 struct fxlabServerVolcanoLauncher : fxlabServerStoneLauncher
 {
-	void Generate(void);
-	void KeyCheck(void);
+	void Generate() override;
+	void KeyCheck() override;
 };
 
 //--------------------------------------------
@@ -292,13 +292,13 @@ struct fxlabServerDragonRose : fxlabDamageSensorType
 	DurationTimer FireTimer;
 	fxlabProcessInterface RemotePoint;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Action(void);
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Action() override;
 
-	void KeyCheck(void);
-	void SetRemoteObject(fxlabGeneralObjectType* p);
+	void KeyCheck() override;
+	void SetRemoteObject(fxlabGeneralObjectType* p) override;
 };
 
 //------------------------------------------------
@@ -315,44 +315,44 @@ struct fxlabFieldLinkType : fxlabServerKeyObjectType
 {
 	class FieldSource* FieldPoint;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Quant(void);
-	void KeyCheck(void);
-	virtual void Generate(void){};
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Quant() override;
+	void KeyCheck() override;
+	virtual void Generate(){};
 	void SetPosition(const Vect3f& v) override;
 };
 
 struct fxlabVortexField : fxlabFieldLinkType
 {
-	void Generate(void);
+	void Generate() override;
 };
 
 struct fxlabMagneticField : fxlabFieldLinkType
 {
-	void Generate(void);
+	void Generate() override;
 };
 
 struct fxlabStreamField : fxlabFieldLinkType
 {
 	Vect3f Velocity;
 
-	void Open(void);
-	void Quant(void);
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void Open() override;
+	void Quant() override;
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 struct fxlabFluxField : fxlabStreamField
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 struct fxlabWindField : fxlabStreamField
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 //--------------------------------------
@@ -366,49 +366,49 @@ enum fxlabCircleLinkDataField
 
 struct fxlabCircleLinkType : fxlabFieldLinkType
 {
-	void KeyCheck(void);
+	void KeyCheck() override;
 };
 
 struct fxlabWildThicketCircle : fxlabCircleLinkType
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 struct fxlabRageSlimeCircle : fxlabCircleLinkType
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 struct fxlabRedTrackCircle : fxlabCircleLinkType
 {
-	void Generate(void);
+	void Generate() override;
 };
 
 struct fxlabGreenSlimeCircle : fxlabCircleLinkType
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 struct fxlabYellowSlimeCircle : fxlabCircleLinkType
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 struct fxlabBlueSlimeCircle : fxlabCircleLinkType
 {
-	void Generate(void);
-	void Quant(void);
+	void Generate() override;
+	void Quant() override;
 };
 
 //-------------------------------------------
 
 struct fxlabServerBowMachineDamage : fxlabServerSuckDamage
 {
-	void TargetDestruction(void);
+	void TargetDestruction() override;
 };
 
 struct fxlabServerLightningSeedDamage : fxlabServerBowMachineDamage
@@ -416,9 +416,9 @@ struct fxlabServerLightningSeedDamage : fxlabServerBowMachineDamage
 	int SauroneFlag;
 	DurationTimer LifeTimer;
 
-	void Action(void);
-	void AssignTarget(struct mchRacer* target);
-	void TargetLost(void);
+	void Action() override;
+	void AssignTarget(struct mchRacer* target) override;
+	void TargetLost() override;
 };
 
 //--------------------------------------------
@@ -430,13 +430,13 @@ struct fxlabServerMassShifter : fxlabServerSpaceType
 	Vect3f Target;
 	Vect3f Direction;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
-	virtual void CalcBranch(void);
-	virtual void Generate(void);
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
+	virtual void CalcBranch();
+	virtual void Generate();
 };
 
 //---------------------------------------------
@@ -448,38 +448,38 @@ struct fxlabServerChargeType : fxlabServerEvolutionType
 	float DeltaValue;
 	float ChargeTime;
 
-	void Open(void);
-	void Start(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
-	void SetChargeValue(float v){ Value = v; };
-	void SetChargeTime(float t);
+	void Open() override;
+	void Start() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
+	void SetChargeValue(float v) override { Value = v; };
+	void SetChargeTime(float t) override;
 };
 
 struct fxlabServerChargeEnergy : fxlabServerChargeType
 {
 	fxlabProcessInterface ChargePoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 };
 
 struct fxlabServerChargeMana : fxlabServerChargeType
 {
 	fxlabProcessInterface ChargePoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 };
 
 struct fxlabServerMechosFire : fxlabServerChargeType
 {
 	fxlabProcessInterface FirePoint;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
 };
 
 //------------------------------------
@@ -496,17 +496,17 @@ struct fxlabServerTrapSphere : fxlabServerKeyObjectType
 	float Radius;
 	float Height;
 
-	void Quant(void);
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void Quant() override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
 	virtual void Action(struct mchRacer* p);
 };
 
 struct fxlabServerTrapProcess : fxlabServerMassShifter
 {
-	void Start(void);
-	void Generate(void);
-	void CalcBranch(void);
+	void Start() override;
+	void Generate() override;
+	void CalcBranch() override;
 };
 
 //----------------------------------------------------------
@@ -527,17 +527,17 @@ struct fxlabServerStaticTeleport : fxlabServerSuckDamage
 	fxlabProcessInterface OmniPoint;
 	fxlabProcessInterface ColorPoint;
 
-	void Open(void);
-	void Close(void);
+	void Open() override;
+	void Close() override;
 
-	void Action(void);
-	void TargetDestruction(void);
-	void TargetLost(void);
-	void AssignTarget(struct mchRacer* Target);
-	void CheckTarget(void);
+	void Action() override;
+	void TargetDestruction() override;
+	void TargetLost() override;
+	void AssignTarget(struct mchRacer* Target) override;
+	void CheckTarget() override;
 
-	void SetMenuTeleportStatus(int id){ TeleportStatus = id; };
-	void SetMenuTeleportInfo(int world_id,int track_id){ WorldID = world_id; TrackID = track_id; };
+	void SetMenuTeleportStatus(int id) override { TeleportStatus = id; };
+	void SetMenuTeleportInfo(int world_id,int track_id) override { WorldID = world_id; TrackID = track_id; };
 };
 
 //----------------------------------------------------------
@@ -546,33 +546,33 @@ struct fxlabServerSkinProtection : fxlabServerEvolutionType
 {
 	class mchMechosRacer* Owner;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void Close(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void Close() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 
 struct fxlabServerIsolationProtection : fxlabServerEvolutionType
 {
 	class mchMechosRacer* Owner;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
-	void Close(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Start() override;
+	void Quant() override;
+	void Close() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 
 struct fxlabServerArmorProtection : fxlabServerEvolutionType
 {
 	class mchMechosRacer* Owner;
 
-	void Open(void);
-	void Quant(void);
-	void Start(void);
-	void Close(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Quant() override;
+	void Start() override;
+	void Close() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 
 struct fxlabServerBioProtection : fxlabServerEvolutionType
@@ -580,11 +580,11 @@ struct fxlabServerBioProtection : fxlabServerEvolutionType
 	class mchMechosRacer* Owner;
 	fxlabProcessInterface SoundPoint;
 
-	void Open(void);
-	void Quant(void);
-	void Start(void);
-	void Close(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Quant() override;
+	void Start() override;
+	void Close() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 
 //-----------------------------
@@ -609,14 +609,14 @@ struct fxlabServerVoodooHead : fxlabServerKeyObjectType
 	DurationTimer FireTimer;
 	class mchMechosRacer* TargetPoint;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void KeyCheck(void);
-	void KeyUpdate(void);
-	void SetAngle(float angle){ Angle = angle; };
-	void SetMechosPoint(class mchMechosRacer* p)
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
+	void SetAngle(float angle) override { Angle = angle; };
+	void SetMechosPoint(class mchMechosRacer* p) override
 	{
 		OwnerPoint = p;
 	};
@@ -631,10 +631,10 @@ struct fxlabServerFrozenType : fxlabServerEvolutionType
 	fxlabProcessInterface ColorPoint;
 	DurationTimer ColorTimer;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 

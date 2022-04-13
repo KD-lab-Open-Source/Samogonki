@@ -42,7 +42,7 @@ struct fxlabLightningLine : fxlabLightningSphere
 
 	void Open(void);
 	void CalcVelocity(Vect3f& v);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 };
 
 struct fxlabLightningRadius : fxlabLightningLine
@@ -50,6 +50,6 @@ struct fxlabLightningRadius : fxlabLightningLine
 	float Radius;
 	void Open(void);
 	void Show(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 };
 

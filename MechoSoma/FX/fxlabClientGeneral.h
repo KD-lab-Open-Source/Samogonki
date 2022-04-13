@@ -2,15 +2,15 @@ struct fxlabClientEvolutionType : fxlabApplicationObjectType
 {
 	float DeltaTime;
 
-	void Start(void);
-	void Quant(void);
+	void Start() override;
+	void Quant() override;
 };
 
 struct fxlabClientSpaceType : fxlabClientEvolutionType
 {
 	Vect3f Position;
 
-	void Open(void)
+	void Open() override
 	{
 		fxlabClientEvolutionType::Open();
 		Position = Vect3f::ZERO;
@@ -27,7 +27,7 @@ struct fxlabClientKeyObjectType : fxlabClientSpaceType
 	fxlabResourceObject* KeyPoint;
 	float KeyTime;
 
-	void Open(void)
+	void Open() override
 	{
 		fxlabClientSpaceType::Open();
 		KeyData = NULL;
@@ -36,15 +36,15 @@ struct fxlabClientKeyObjectType : fxlabClientSpaceType
 		KeyTime = 0;
 	};
 
-	void Close(void);
-	void Start(void);
-	void Quant(void);
+	void Close() override;
+	void Start() override;
+	void Quant() override;
 
-	void SetKeyID(int id){ KeyID = id; };
+	void SetKeyID(int id) override { KeyID = id; };
 
-	virtual void KeyCheck(void){};
-	virtual void KeyUpdate(void);
-	virtual void CalcKeyTime(void);
+	virtual void KeyCheck(){};
+	virtual void KeyUpdate();
+	virtual void CalcKeyTime();
 };
 
 //-------------------------------------------------------
@@ -53,20 +53,20 @@ struct fxlabClientRemoteCotrol : fxlabClientKeyObjectType
 {
 	fxlabProcessInterface* RemoteLink;
 
-	void Open(void)
+	void Open() override
 	{
 		fxlabClientKeyObjectType::Open();
 		RemoteLink = NULL;
 	};
 
-	void Close(void)
+	void Close() override
 	{
 		if(RemoteLink)
 			RemoteLink->Init();
 		fxlabClientKeyObjectType::Close();
 	};
 
-	void SetAlive(int alive)
+	void SetAlive(int alive) override
 	{
 		if(!alive && RemoteLink){
 			RemoteLink->Init();
@@ -75,7 +75,7 @@ struct fxlabClientRemoteCotrol : fxlabClientKeyObjectType
 		fxlabClientKeyObjectType::SetAlive(alive);
 	};
 
-	void SetRemoteInterface(fxlabProcessInterface* link)
+	void SetRemoteInterface(fxlabProcessInterface* link) override
 	{ 
 		if(!RemoteLink){
 			RemoteLink = link;
@@ -108,7 +108,7 @@ struct fxlabParticleType
 	fxlabParticleType* prev;
 	fxlabParticleType* next;
 
-	fxlabParticleType(void){ next = prev = NULL; Cluster = NULL; };
+	fxlabParticleType(){ next = prev = NULL; Cluster = NULL; };
 };
 
 struct fxlabParticleToolType
@@ -116,12 +116,12 @@ struct fxlabParticleToolType
 	XTList<fxlabParticleType> ParticleList;
 	fxlabParticleType* ParticlePoint;
 
-	void OpenParticleTool(void);
-	void CloseParticleTool(void);
+	void OpenParticleTool();
+	void CloseParticleTool();
 
-	fxlabParticleType* AddParticle(void);
+	fxlabParticleType* AddParticle();
 	void DeleteParticle(fxlabParticleType* p);
-	void DeleteAllParticle(void);
+	void DeleteAllParticle();
 };
 
 //--------------------------------------
@@ -145,24 +145,24 @@ struct fxlabParticleCore : fxlabClientKeyObjectType , fxlabParticleToolType
 
 	int Summoning;
 
-	void Open(void);
-	void Quant(void);
-	void StopQuant(void);
-	void Close(void);
-	void Start(void);
+	void Open() override;
+	void Quant() override;
+	void StopQuant() override;
+	void Close() override;
+	void Start() override;
 
-	int GetAlive(void); 
+	int GetAlive() override;
 
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void KeyCheck() override;
+	void KeyUpdate() override;
 
-	void ReCall(void){	RecallTime = MaxRecallTime;	};
+	void ReCall(){	RecallTime = MaxRecallTime;	};
 
-	virtual void ConvertPosition(void);
-	virtual void CoreProcess(void){};
-	virtual void CoreGenerate(void){};
-	virtual void CheckVisibility(void);
-	virtual void StopTimeCheckVisibility(void);
+	virtual void ConvertPosition();
+	virtual void CoreProcess(){};
+	virtual void CoreGenerate(){};
+	virtual void CheckVisibility();
+	virtual void StopTimeCheckVisibility();
 };
 
 #define FXLAB_FEAR_BORDER_DEFINE	\

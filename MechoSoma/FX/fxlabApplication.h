@@ -2,20 +2,20 @@ struct fxlabApplicationObjectType : fxlabGeneralObjectType
 {
 	fxlabProcessInterface* ProcessPoint;
 
-	void Open(void)
+	void Open() override
 	{ 
 		fxlabGeneralObjectType::Open();
 		ProcessPoint = NULL; 
 	};
 
-	void Close(void)
+	void Close() override
 	{
 		if(ProcessPoint)
 			ProcessPoint->Init();
 		fxlabGeneralObjectType::Close();
 	};
 
-	void SetAlive(int alive)
+	void SetAlive(int alive) override
 	{
 		Alive = alive; 
 		if(!Alive && ProcessPoint){
@@ -24,7 +24,7 @@ struct fxlabApplicationObjectType : fxlabGeneralObjectType
 		};
 	};
 
-	void SetProcessInterface(struct fxlabProcessInterface* p)
+	void SetProcessInterface(struct fxlabProcessInterface* p) override
 	{
 		if(!ProcessPoint){
 			ProcessPoint = p;

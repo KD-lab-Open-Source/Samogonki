@@ -4,8 +4,8 @@ struct fxlabProtectionType
 	int ProtectionTime;
 	DurationTimer ProtectionTimer;
 
-	fxlabProtectionType(void);
-	virtual void ProtectionQuant(void);
+	fxlabProtectionType();
+	virtual void ProtectionQuant();
 	void SetProtection(int id,int time)
 	{ 
 		ProtectionID = id;
@@ -33,12 +33,12 @@ const float FXLAB_TRACK_AI_SCALE = 4.0f;
 
 struct fxlabServerEvolutionType : fxlabApplicationObjectType , fxlabProtectionType , public ArcaneStatisticsInfo
 {
-	void Start(void);
-	void Quant(void);
-	void SetProtection(int id,int time);
-	void SetStatistic(int owner_id,int arcane_id,fxlabGeneralObjectType* p,int object_id);
-	int GetStatisticOwnerID(void){ return GetOwnerID(); };
-	class ArcaneStatisticsInfo* GetStatistic(void){ return (dynamic_cast<ArcaneStatisticsInfo*>(this)); };
+	void Start() override;
+	void Quant() override;
+	void SetProtection(int id,int time) override;
+	void SetStatistic(int owner_id,int arcane_id,fxlabGeneralObjectType* p,int object_id) override;
+	int GetStatisticOwnerID() override { return GetOwnerID(); };
+	class ArcaneStatisticsInfo* GetStatistic() override { return (dynamic_cast<ArcaneStatisticsInfo*>(this)); };
 };
 
 //------------------------------------------------
@@ -47,7 +47,7 @@ struct fxlabServerEvolutionType : fxlabApplicationObjectType , fxlabProtectionTy
 struct fxlabServerSpaceType : fxlabServerEvolutionType
 {
 	Vect3f Position;
-	void Open(void)
+	void Open() override
 	{
 		fxlabServerEvolutionType::Open();
 		Position = Vect3f::ZERO;
@@ -64,7 +64,7 @@ struct fxlabServerKeyObjectType : fxlabServerSpaceType
 	fxlabResourceObject* KeyPoint;
 	float KeyTime;
 
-	void Open(void)
+	void Open() override
 	{
 		fxlabServerSpaceType::Open();
 		KeyData = NULL;
@@ -73,14 +73,14 @@ struct fxlabServerKeyObjectType : fxlabServerSpaceType
 		KeyTime = 0;
 	};
 
-	void Close(void);
-	void Start(void);
-	void Quant(void);
+	void Close() override;
+	void Start() override;
+	void Quant() override;
 
-	void SetKeyID(int id){ KeyID = id; };
+	void SetKeyID(int id) override { KeyID = id; };
 
-	virtual void KeyCheck(void){};
-	virtual void KeyUpdate(void);
+	virtual void KeyCheck(){};
+	virtual void KeyUpdate();
 };
 
 //-------------------------------------------------

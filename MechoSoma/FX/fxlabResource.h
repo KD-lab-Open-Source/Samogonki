@@ -3,23 +3,23 @@ struct fxlabResourceObject
 	int Type,ID;
 	float Scale,InvScale;
 
-	fxlabResourceObject(void){ Scale = 0; InvScale = 0; Type = ID = -1; };
+	fxlabResourceObject(){ Scale = 0; InvScale = 0; Type = ID = -1; };
 	virtual ~fxlabResourceObject(){};
 
 	virtual void Open(scrDataBlock* data){};
-	virtual void Close(void){};
-	virtual void Link(void){};
+	virtual void Close(){};
+	virtual void Link(){};
 
-	float GetScale(void){ return Scale; };
-	float GetInvScale(void){ return InvScale; };
+	float GetScale(){ return Scale; };
+	float GetInvScale(){ return InvScale; };
 
-	virtual int GetKeyNum(void){ return 0; };
+	virtual int GetKeyNum(){ return 0; };
 	virtual int GetKey(float* point,float time){ return 0; };
-	virtual int GetKeyAttribute(void){ return 0; };
+	virtual int GetKeyAttribute(){ return 0; };
 	virtual int GetKeyStatus(float time){ return 1; };
 
 	virtual struct sSpriteFX* GetSpriteData(float phase){ return NULL; };
-	virtual int GetSpriteID(void){ return 0; };
+	virtual int GetSpriteID(){ return 0; };
 };
 
 //---------------------------------------------
@@ -41,7 +41,7 @@ struct fxlabTrackInfoType
 	float WaterDeltaUV;
 
 	void Open(scrDataBlock* p);
-	void Close(void);
+	void Close();
 };
 
 const int FXLAB_WORLD_TRACK_NUM = 7;
@@ -50,9 +50,9 @@ struct fxlabWorldDataType
 {
 	fxlabTrackInfoType TrackData[FXLAB_WORLD_TRACK_NUM];
 
-	fxlabWorldDataType(void);
+	fxlabWorldDataType();
 	void Open(struct scrDataBlock* p);
-	void Close(void);
+	void Close();
 };
 
 //--------------------------------------------
@@ -69,8 +69,8 @@ struct fxlabUniverseDataType
 	char* WorldDefinition;
 	char* WorldBody;
 
-	void Open(void);
-	void Close(void);
+	void Open();
+	void Close();
 };
 
 //--------------------------------------------
@@ -90,8 +90,8 @@ struct fxlabCosTableType
 {
 	static int* FXLAB_COS_DATA;
 
-	void Open(void);
-	void Close(void);
+	void Open();
+	void Close();
 };
 
 //-------------------------------------
@@ -107,8 +107,8 @@ struct fxlabResourceDispatcher : fxlabCosTableType , fxlabUniverseDataType
 	int Size[FXLAB_SCRIPT_SECTION_MAX];
 	fxlabResourceObject*** Index;	
 
-	void Open(void);
-	void Close(void);
+	void Open();
+	void Close();
 
 	fxlabResourceObject* CreateResource(int type);
 	fxlabResourceObject* GetResource(int type,int id)

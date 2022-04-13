@@ -432,7 +432,7 @@ void fxlabPressureModel::KeyCheck(void)
 		ErrH.Abort("Bad Key of fxlabPressureModel");
 };
 
-void fxlabPressureModel::SetVelocity(Vect3f& v)
+void fxlabPressureModel::SetVelocity(const Vect3f& v)
 { 
 	PressureSize = v;
 };
@@ -584,7 +584,7 @@ void fxlabBulletModel::Quant(void)
 	fxlabControlModel::Quant();
 };
 
-void fxlabBulletModel::SetVelocity(Vect3f& v)
+void fxlabBulletModel::SetVelocity(const Vect3f& v)
 {
 	Velocity = v;
 };

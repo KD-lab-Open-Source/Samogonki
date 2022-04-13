@@ -39,7 +39,7 @@ struct fxlabClientSetObjectType : fxlabClientKeyObjectType
 	void Quant(void);
 	void KeyUpdate(void);
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v);
+	void SetVelocity(const Vect3f& v) override;
 	int GetAlive(void);
 
 	void ObjectGenerate(void);
@@ -149,7 +149,7 @@ struct fxlabClientObjectLauncher : fxlabClientKeyObjectType
 	void Quant(void);
 
 	void KeyCheck(void);
-	void SetVelocity(Vect3f& v){ Velocity = v; };
+	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 
 	virtual void CreateObject(void);
 };
