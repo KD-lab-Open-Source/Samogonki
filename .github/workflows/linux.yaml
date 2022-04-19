@@ -18,13 +18,13 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install deps
-      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev
+      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build -j2 --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build -j3 --config ${{env.BUILD_TYPE}}
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.0.0
