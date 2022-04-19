@@ -1,9 +1,0 @@
-D/filter_view_iterator////
-D/joint_view_iterator////
-D/single_view_iterator////
-D/transform_view_iterator////
-D/tuple_iterator////
-D/type_sequence_iterator////
-/adapt_deref_traits.hpp/1.2/Sat Feb 21 08:26:29 2004//
-/adapt_value_traits.hpp/1.2/Sat Feb 21 08:26:29 2004//
-/iterator_base.hpp/1.4/Fri Feb 06 16:10:52 2004//
