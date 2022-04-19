@@ -387,7 +387,7 @@ void Null_Rectangle16(int x,int y,int sx,int sy,int outcol,int incol,int mode)
 		default: { XBuffer buf; buf<"Error: unknown render mode = "<=RenderMode; ErrH.Abort(buf.address()); }
 	}
 }
-inline int XGR_Init(int x,int y,int fl)
+int XGR_Init(int x,int y,int fl)
 {
 	switch(RenderMode=GET_RENDERMODE(fl))
 	{
