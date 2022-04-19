@@ -48,8 +48,8 @@ void allocation_tracking(char* title, AllocationAccumulator* state);
 
 #else // _FINAL_VERSION_
 
-void allocation_tracking(char* title){}
-void allocation_tracking(char* title, struct AllocationAccumulator* state){}
+void allocation_tracking(char* title);
+void allocation_tracking(char* title, struct AllocationAccumulator* state);
 
 #endif // _FINAL_VERSION_
 
