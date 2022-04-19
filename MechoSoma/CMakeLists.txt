@@ -1,23 +1,8 @@
-cmake_minimum_required(VERSION 3.12)
-
-project(MOONSHINE_RUNNERS VERSION 1.0.0 LANGUAGES CXX)
-
-if (UNIX AND NOT APPLE)
-    set(LINUX TRUE)
-endif ()
-
-# add_compile_options(-Werror=shift-negative-value)
-# add_compile_options(-Werror=dangling-else)
-# add_compile_options(-Werror=parentheses)
-add_compile_options(-Werror=delete-non-virtual-dtor)
-add_compile_options(-Werror=return-type)
-# add_compile_options(-Werror=write-strings)
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-Werror=mismatched-new-delete)
-endif ()
+project(game CXX)
 
 set(GAME_SOURCES
+        # aciparser
+        aciparser/aci_parser.cpp
         # FX
         FX/Hermit.h
         FX/XTList.h
@@ -469,11 +454,10 @@ set(GAME_SOURCES
         iScreen/iScript.cpp
         iScreen/iText.cpp
         iScreen/savegame.cpp
-        # ThirdParty
-        ThirdParty/aci_Parser/aci_parser.cpp
         )
 set(LIBRARY_NAME game)
 
+include_directories(aciparser)
 include_directories(FX)
 include_directories(IVisGeneric)
 include_directories(Sound)
@@ -487,7 +471,6 @@ include_directories(VisGeneric/Scripts)
 include_directories(VisGeneric/UTIL)
 include_directories(VisGeneric/PluginMAX/inc)
 include_directories(VisGeneric/PluginMAX/src)
-include_directories(ThirdParty/aci_Parser)
 include_directories(XMath)
 include_directories(XTool)
 include_directories(Xreal)
@@ -495,14 +478,6 @@ include_directories(Xreal/Joystick)
 include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
-
-add_subdirectory(ThirdParty/3dsftk3)
-add_subdirectory(ThirdParty/iniparser)
-
-include_directories(ThirdParty/libjpeg-turbo/include)
-link_directories(ThirdParty/libjpeg-turbo/lib)
-
-add_definitions(-D_MECHOSOMA_ -D_USE_TILEMAP_ -D_USE_TERRA_ -DNASSERT -D_FINAL_VERSION_ -D_MPPLUS_SOUNDTRACK_)
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
@@ -536,7 +511,6 @@ if (APPLE)
             macOS/VertexType.h
             macOS/main.mm
             )
-    set(APPLICATION_NAME moonshine-runners)
 
     set(METAL_LIBRARY_AIR ${CMAKE_BINARY_DIR}/default.air)
     set(METAL_LIBRARY ${CMAKE_BINARY_DIR}/default.metallib)
@@ -556,11 +530,7 @@ if (APPLE)
     # target_sources(${APPLICATION_NAME} PRIVATE ${METAL_LIBRARY})
     set_source_files_properties(${METAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 else ()
-    if (LINUX)
-        add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp -D_DEBUG)
-    endif (LINUX)
-
-    include_directories(ThirdParty/sokol)
+    include_directories(../3rdparty/sokol)
 
     set(APPLICATION_SOURCES
             app/main.cpp
@@ -571,24 +541,10 @@ else ()
             app/keyboard_codes.cpp
             )
 
-    set(APPLICATION_NAME moonshine-runners)
-
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
 
     if (LINUX)
-        add_custom_target(sokol-shaders
-                COMMAND "${CMAKE_CURRENT_LIST_DIR}/ThirdParty/sokol-tools-bin/bin/linux/sokol-shdc"
-                    --input "${CMAKE_CURRENT_LIST_DIR}/app/sokol/shader.glsl"
-                    --output "${CMAKE_CURRENT_LIST_DIR}/app/sokol-shader.h"
-                    --slang glsl330)
         target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
                 X11 Xi Xcursor GL dl pthread)
     endif (LINUX)
 endif (APPLE)
-
-set_target_properties(${APPLICATION_NAME}
-        PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
-        )

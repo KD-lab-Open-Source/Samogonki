@@ -1,0 +1,109 @@
+# This make file was built to use Microsoft NMAKE and MSVC 4.x
+#
+########################################################
+#
+#       assumes set MSDEVDIR=<path to compiler stuff>
+#
+
+.SILENT:
+
+#extension for object files
+OXT = obj
+
+LIBDIR = ..\lib
+
+!ifdef DEBUG
+LIBNAME = $(LIBDIR)\ftkvc40d.lib
+!else
+LIBNAME = $(LIBDIR)\ftkvc40.lib
+!endif
+
+INC = ..\inc
+
+CFLAGS_D_LIB32 = /nologo /W4 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS"
+CFLAGS_R_LIB32 = /nologo /W4 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS"
+LFLAGS_D_LIB32 = /nologo 
+LFLAGS_R_LIB32 = /nologo 
+
+!ifdef DEBUG
+CFLAGS = $(CFLAGS_D_LIB32)
+LFLAGS = $(LFLAGS_D_LIB32)
+!else
+CFLAGS = $(CFLAGS_R_LIB32)
+LFLAGS = $(LFLAGS_R_LIB32)
+!endif
+
+CC = cl 
+
+CPF =
+
+.c.obj:
+	set LIB=$(MSDEVDIR)\lib
+	set INCLUDE=$(MSDEVDIR)\include
+	$(CC) $(CFLAGS) /c  $*.c $(CPF)
+
+.c.exe: 
+	set LIB=$(MSDEVDIR)\lib
+	set INCLUDE=$(MSDEVDIR)\include
+	$(CC) $(CFLAGS) $*.c -link $(LFLAGS)
+
+IL = .\\
+AS = 386asmp $(AFLAGS) 
+APF = -NOLIST -TWOCASE -i $(IL) 
+
+.asm.obj:
+	$(AS) $* $(APF)
+
+.obj.lib:
+
+
+
+########################################################
+## End Pretty much standard stuff
+########################################################
+
+all : $(LIBNAME) $(INC)/3dsftk.h
+
+clean :
+   -del *.obj
+   -del *.pdb
+   -del *.ilk
+   -del scanhdr.exe
+   -del makeswap.exe
+   -del swapbyte.c
+
+#################################################
+
+include ftkfiles.inc
+
+$(LIBNAME) : $(3DSOBJS)
+	if exist $@ del $@
+	lib @<< /out:$(LIBNAME)
+$(3DSOBJS)
+<<      
+
+$(INC)/3dsftk.h : $(LIBRARY_HEADERS) ftkhead.h ftktail.h scanhdr.exe
+	copy ftkhead.h $(INC)\3dsftk.h
+	!scanhdr -pub -priv -define @<< >>$(INC)\3dsftk.h
+$**
+<<
+	!scanhdr -pub -priv -typedef @<< >>$(INC)\3dsftk.h
+$**
+<<
+	!scanhdr -pub -priv -consts @<< >>$(INC)\3dsftk.h
+$**
+<<
+	!scanhdr -pub -priv -protos @<< >>$(INC)\3dsftk.h
+$**
+<<
+	type ftktail.h >>$(INC)\3dsftk.h
+ 
+scanhdr.exe: scanhdr.c $(LIBNAME) $(SCANHDR_DEP)
+	set lib=$(MSDEVDIR)\lib
+	set include=$(MSDEVDIR)\include
+	$(CC) $(CFLAGS) scanhdr.c $(LIBNAME) -link $(LFLAGS) 
+
+swapbyte.c:   makeswap.exe 
+   makeswap.exe
+makeswap.exe: makeswap.c $(MAKESWAP_DEP)
+
