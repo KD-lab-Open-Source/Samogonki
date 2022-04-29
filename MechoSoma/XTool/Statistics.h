@@ -2,7 +2,6 @@
 #define __STATISTICS_H__
 
 #ifdef __APPLE__
-#define __forceinline inline
 #define __int64 int64_t
 #endif
 

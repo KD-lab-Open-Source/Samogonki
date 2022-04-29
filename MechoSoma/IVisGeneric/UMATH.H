@@ -1,12 +1,6 @@
 #ifndef __UMATH_H__
 #define __UMATH_H__
 
-#if _MSC_VER == 1100 /* if MSVisual C++ 5.0 */
-#ifndef __forceinline 
-#define __forceinline inline
-#endif //__forceinline 
-#endif //_MSC_VER
-
 #include <math.h>
 #include "xmath.h"
 

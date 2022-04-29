@@ -1,0 +1,36 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+    - name: mingw build
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          base-devel
+          git
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-libjpeg-turbo
+    - shell: msys2 {0}
+      run: |
+        mkdir build-mingw
+        cd build-mingw
+        cmake -G "Unix Makefiles" ..
+        make -j4
+        cd ..
+    - name: publish artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Mechosoma
+        path: build-mingw/src/mechosoma.exe
