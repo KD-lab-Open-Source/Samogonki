@@ -35,4 +35,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Mechosoma
-        path: build-mingw/MechoSoma/moonshine-runners.exe
+        path: |
+          build-mingw/MechoSoma/moonshine-runners.exe
+          build-mingw/MechoSoma/*.dll
