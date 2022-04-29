@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Mechosoma
-        path: build-mingw/src/mechosoma.exe
+        path: build-mingw/MechoSoma/moonshine-runners.exe
