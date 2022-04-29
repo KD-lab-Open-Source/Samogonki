@@ -729,7 +729,7 @@ dictionary * iniparser_load(const char * ininame)
 
     dictionary * dict ;
 
-    if ((in=fopen(ininame, "r"))==NULL) {
+    if ((in=fopen(ininame, "rb"))==NULL) {
         iniparser_error_callback("iniparser: cannot open %s\n", ininame);
         return NULL ;
     }

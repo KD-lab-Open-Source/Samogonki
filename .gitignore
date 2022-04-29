@@ -26,3 +26,5 @@ cmake-build-release
 MechoSoma/ThirdParty/3dsftk3
 MechoSoma/ThirdParty/libjpeg-turbo
 
+/bin
+/build-mingw

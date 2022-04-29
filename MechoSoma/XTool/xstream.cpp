@@ -40,7 +40,7 @@ FILE* open_file(const char* name, unsigned f)
 {
 	const char* mode;
 	if (f & XS_IN)
-		mode = "r";
+		mode = "rb";
 	if (f & XS_OUT)
 		mode = "w";
 	if (f & XS_APPEND)

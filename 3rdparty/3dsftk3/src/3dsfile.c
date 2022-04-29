@@ -102,6 +102,41 @@
 
 #include "3dserr.h"
 
+#include <windows.h>
+#include <share.h>
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+FILE *fmemopen(void *buf, size_t len, const char *type)
+{
+	int fd;
+	FILE *fp;
+	char tp[MAX_PATH - 13];
+	char fn[MAX_PATH + 1];
+	int * pfd = &fd;
+	int retner = -1;
+	char tfname[] = "MemTF_";
+	if (!GetTempPathA(sizeof(tp), tp))
+		return NULL;
+	if (!GetTempFileNameA(tp, tfname, 0, fn))
+		return NULL;
+	retner = _sopen_s(pfd, fn, _O_CREAT | _O_SHORT_LIVED | _O_TEMPORARY | _O_RDWR | _O_BINARY | _O_NOINHERIT, _SH_DENYRW, _S_IREAD | _S_IWRITE);
+	if (retner != 0)
+		return NULL;
+	if (fd == -1)
+		return NULL;
+	fp = _fdopen(fd, "wb+");
+	if (!fp) {
+		_close(fd);
+		return NULL;
+	}
+	/*File descriptors passed into _fdopen are owned by the returned FILE * stream.If _fdopen is successful, do not call _close on the file descriptor.Calling fclose on the returned FILE * also closes the file descriptor.*/
+	fwrite(buf, len, 1, fp);
+	rewind(fp);
+	return fp;
+}
+
 file3ds *FileContext3ds = NULL; /* The current file being read from and/or written to at
 				   any given time by the other file routines.  A trickier
 				   way of doing it, but it keeps me from passing file handles
@@ -391,14 +426,7 @@ file3ds *OpenFile3ds_buf(char3ds *buf, long3ds len)
    new->istempfile = 0;
    new->state = new->state | ReadFromFile;
 
-#ifdef __MINGW32__
-   new->istempfile = 1;
-   new->file = fdopen(mkstemp("3dsXXXXXX"), "rb+");
-   fwrite(buf, 1, len, new->file);
-   fseek(new->file, 0L, SEEK_SET);
-#else
    new->file = fmemopen(buf, len, "rb");
-#endif
 
    return new;
 }

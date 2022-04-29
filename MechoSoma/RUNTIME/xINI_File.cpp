@@ -310,6 +310,9 @@ void xINI_FileSection::load(XStream& fh)
 	char buf[256];
 
 	fh > sz > i;
+	if (i > 255) {
+		i = 255;
+	}
 	fh.read(buf,i);
 	buf[i] = 0;
 
@@ -351,11 +354,17 @@ void xINI_FileKey::load(XStream& fh)
 	static char buf[256];
 
 	fh > sz;
+	if (sz > 255) {
+		sz = 255;
+	}
 	fh.read(buf,sz);
 	buf[sz] = 0;
 	setName(buf);
 
 	fh > sz;
+	if (sz > 255) {
+		sz = 255;
+	}
 	fh.read(buf,sz);
 	buf[sz] = 0;
 	putValue(buf);

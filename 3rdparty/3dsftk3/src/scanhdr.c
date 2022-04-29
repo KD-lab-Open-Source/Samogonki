@@ -138,7 +138,7 @@ void scanfile(char3ds *fn)
    char3ds *buffer;
    long3ds i;
 
-   infile = fopen(fn, "r");
+   infile = fopen(fn, "rb");
    if (infile == NULL) return;
 
    buffer = malloc(16000);
@@ -265,7 +265,7 @@ void main(int argc, char3ds *argv[])
 	    FILE *f;
 	    
 	    c = argv[i]+1;
-	    f = fopen(c, "r");
+	    f = fopen(c, "rb");
 	    if (f == NULL) break;
 	    filename = malloc(16000);
 	    if (filename == NULL) break;

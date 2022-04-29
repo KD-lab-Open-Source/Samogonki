@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 		_splitpath(inname,drive,dir,fname,ext);
 
 		_makepath(rules_name,drive,dir,fname,".rul");
-		FILE* f=fopen(rules_name,"r");
+		FILE* f=fopen(rules_name,"rb");
 		brules=f!=NULL;
 		if(f)fclose(f);
 	}
