@@ -1,10 +1,5 @@
-#if _MSC_VER == 1100 /* if MSVisual C++ 5.0 */
-#ifndef __forceinline 
-#define __forceinline inline
-#endif //__forceinline 
-#endif //_MSC_VER
-
-#define __forceinline inline
+#ifndef _RENDER_H_
+#define _RENDER_H_
 
 //@caiiiycuk can't find defininition of SHIFT_FRACTION_VX
 #define SHIFT_FRACTION_VX 6
@@ -162,3 +157,4 @@ void RenderShadovM3D(int number, float y);
 void WorldRender(void);
 void renderHiBmp(void);
 
+#endif

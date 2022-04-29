@@ -2,9 +2,9 @@ name: Linux
 
 on:
   push:
-    branches: [ cmake ]
+    branches: [ cmake, mingwbuild ]
   pull_request:
-    branches: [ cmake ]
+    branches: [ cmake, mingwbuild ]
   workflow_dispatch:
 
 env:

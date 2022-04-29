@@ -142,7 +142,10 @@ xm_inline float frnd(float x){ return xm_random_generator.frnd(x); }
 xm_inline float fabsRnd(float x){ return xm_random_generator.fabsRnd(x); }
 
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
+
 #undef min
 #undef max
 

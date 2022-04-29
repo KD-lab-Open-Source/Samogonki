@@ -7,8 +7,6 @@
 #include "UMATH.H"
 #include "DrawPolygonShade.h"
 
-#define __forceinline inline
-
 #define POINT_SCALE_W				0.9f
 
 #define GET_FRUSTUM_CLIP(a)							((a)&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))

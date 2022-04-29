@@ -454,8 +454,7 @@ set(GAME_SOURCES
         iScreen/hbm.h
         iScreen/iScript.cpp
         iScreen/iText.cpp
-        iScreen/savegame.cpp
-        )
+        iScreen/savegame.cpp)
 set(LIBRARY_NAME game)
 
 include_directories(aciparser)
@@ -544,8 +543,11 @@ else ()
 
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
 
-    if (LINUX)
+    if (MINGW)
+        target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME})
+        target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
+    elseif (LINUX)
         target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
                 X11 Xi Xcursor GL dl pthread)
-    endif (LINUX)
+    endif(MINGW)
 endif (APPLE)

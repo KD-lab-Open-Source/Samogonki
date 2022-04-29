@@ -1,16 +1,12 @@
-#include "StdAfx.h"
-
 #include <setjmp.h>
-#ifdef _MECHOSOMA_
-#include "mechosoma.h"
-#endif
-
 #include <stdio.h>
-#include "xtool.h"
 #define XMD_H
 extern "C" {
 #include <jpeglib.h>
 }
+
+#include "jpeg_fm.h"
+#include "xtool.h"
 
 
 typedef struct {
@@ -115,11 +111,9 @@ void my_jpeg_stdio_src (j_decompress_ptr cinfo, XStream * Xfile)//char* fname)//
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 
-
-
-extern JSAMPLE * image_buffer;	
-extern int image_height;	
-extern int image_width;		
+extern JSAMPLE * image_buffer;
+extern int image_height;
+extern int image_width;
 
 struct my_error_mgr {
   struct jpeg_error_mgr pub;	
@@ -198,4 +192,54 @@ unsigned short* loadJPG(XStream *Xfile, int &IMGwidth, int &IMGheight)
 	jpeg_destroy_decompress(&cinfo);
 
 	return IMG;
+}
+
+int loadClBufJ(XStream& fileExsistin, short unsigned int (*ClBuf)[2048][2048])
+{
+  int i,j=0;
+  struct jpeg_decompress_struct cinfo;
+  struct my_error_mgr jerr;
+  JSAMPARRAY buffer;
+  int row_stride;
+
+
+  cinfo.err = jpeg_std_error(&jerr.pub);
+  jerr.pub.error_exit = my_error_exit;
+  if (setjmp(jerr.setjmp_buffer)) {
+    jpeg_destroy_decompress(&cinfo);
+    return 0;
+  }
+  jpeg_create_decompress(&cinfo);
+
+  //jpeg_stdio_src(&cinfo, infile);
+  extern void my_jpeg_stdio_src (j_decompress_ptr cinfo, XStream * Xfile);
+  my_jpeg_stdio_src(&cinfo, &fileExsistin);
+
+  (void) jpeg_read_header(&cinfo, TRUE);
+
+  (void) jpeg_start_decompress(&cinfo);
+
+  row_stride = cinfo.output_width * cinfo.output_components;
+  buffer = (*cinfo.mem->alloc_sarray)
+      ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+  while (cinfo.output_scanline < cinfo.output_height) {
+    (void) jpeg_read_scanlines(&cinfo, buffer, 1);
+    unsigned char* p=buffer[0];
+    for (i=0; i< cinfo.output_width; i++){
+      short col;
+      col=(*p++ <<8)&0x0F800;
+      col+=(*p++ <<3)&0x7E0;
+      col+=(*p++ >>3)&0x1F;
+      ClBuf[0][j][i]=col;
+    }
+    j++;
+  }
+
+  (void) jpeg_finish_decompress(&cinfo);
+
+  jpeg_destroy_decompress(&cinfo);
+
+  //fclose(infile);
+  return 1;
 }

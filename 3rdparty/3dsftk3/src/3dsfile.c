@@ -391,7 +391,14 @@ file3ds *OpenFile3ds_buf(char3ds *buf, long3ds len)
    new->istempfile = 0;
    new->state = new->state | ReadFromFile;
 
+#ifdef __MINGW32__
+   new->istempfile = 1;
+   new->file = fdopen(mkstemp("3dsXXXXXX"), "rb+");
+   fwrite(buf, 1, len, new->file);
+   fseek(new->file, 0L, SEEK_SET);
+#else
    new->file = fmemopen(buf, len, "rb");
+#endif
 
    return new;
 }
