@@ -547,8 +547,8 @@ else ()
         target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME})
         target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
         add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
-                COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${RUNTIME_OUTPUT_DIRECTORY}"
-                COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${RUNTIME_OUTPUT_DIRECTORY}")
+                COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${CMAKE_BINARY_DIR}"
+                COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_BINARY_DIR}")
     elseif (LINUX)
         target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
                 X11 Xi Xcursor GL dl pthread)
