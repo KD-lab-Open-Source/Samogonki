@@ -1,6 +1,7 @@
 # Moonshine Runners Community edition
 
 [![Linux](https://github.com/KD-lab-Open-Source/Samogonki/workflows/Linux/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/linux.yaml)
+[![Windows](https://github.com/KD-lab-Open-Source/Samogonki/workflows/Windows/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/windows.yaml)
 
 Original game: Moonshine Runners / Spanking Runners / Самогонки
 
@@ -16,6 +17,7 @@ Community in telegram: https://t.me/SamogonkiGame
 
 Look into buildscripts:
 * [Linux](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/linux.yaml)
+* [Windows](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/windows.yaml)
 
 ## How to run
 
