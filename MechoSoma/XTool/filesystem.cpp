@@ -29,7 +29,7 @@ std::string file::normalize_path(const char* input) {
     const auto part_name = part.filename().string();
     if (current_path_part != current_path.end()) {
       const auto name = current_path_part->filename().string();
-      if (std::equal(part_name.cbegin(), part_name.cend(), name.cbegin(), comparator)) {
+      if (std::equal(part_name.cbegin(), part_name.cend(), name.cbegin(), name.cend(), comparator)) {
         current_path_part++;
         continue;
       }
@@ -38,7 +38,7 @@ std::string file::normalize_path(const char* input) {
     bool is_found = false;
     for (const auto& entry : fs::directory_iterator{result_path}) {
       const auto entry_name = entry.path().filename().string();
-      if (std::equal(part_name.cbegin(), part_name.cend(), entry_name.cbegin(), comparator)) {
+      if (std::equal(part_name.cbegin(), part_name.cend(), entry_name.cbegin(), entry_name.cend(), comparator)) {
         result_path = entry.path();
         is_found = true;
         break;
