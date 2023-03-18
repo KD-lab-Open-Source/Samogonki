@@ -4,6 +4,7 @@
 
 #include "texture_manager.h"
 
+#include <array>
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
