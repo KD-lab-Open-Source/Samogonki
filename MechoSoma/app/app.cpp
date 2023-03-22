@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "xgraph.h"
 #include "keyboard_codes.h"
+#include "xtool.h"
 
 int _id;
 int _previous_id;
@@ -31,6 +32,9 @@ void onInit() {
       .pipeline_pool_size = 1,
       .context = context,
   });
+  if (!sg_isvalid()) {
+    ErrH.Abort("sg_setup", XERR_USER, 0, "");
+  }
   graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
 
   _previous_id = 0;

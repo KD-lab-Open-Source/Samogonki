@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "vertex_type.h"
+#include "xtool.h"
 
 using namespace graphics;
 
@@ -119,6 +120,10 @@ MD3DERROR Renderer::d3dEndScene() {
   }
 
   static sg_shader shader = sg_make_shader(samogonki_shader_desc(sg_query_backend()));
+  if (shader.id == SG_INVALID_ID) {
+    ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
+  }
+
   static sg_range nullData = {
       .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f},
       .size = 4,
