@@ -43,7 +43,7 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,HINSTANCE hInst,TCHAR *szT
 	xScr=xscr; yScr=yscr;
 	assert(GraphMode&GRAPH3D_MODE_Z16);
 
-	extern char* mch_mainINI;
+	extern const char* mch_mainINI;
 
 	SwitchRenderScene=-1; 
 
@@ -101,7 +101,7 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,HINSTANCE hInst,TCHAR *s
 	xScr=xscr; yScr=yscr;
 	assert(GraphMode&GRAPH3D_MODE_Z16);
 
-	extern char* mch_mainINI;
+	extern const char* mch_mainINI;
 
 	SwitchRenderScene=-1; 
 

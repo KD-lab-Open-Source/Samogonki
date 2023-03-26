@@ -36,13 +36,13 @@ fContainer::~fContainer(void)
 	if(index) delete index;
 }
 
-void fContainer::load_idx(char* idx_name)
+void fContainer::load_idx(const char* idx_name)
 {
 	XStream fh(idx_name,XS_IN);
 	load_idx(fh);
 }
 
-void fContainer::save_idx(char* idx_name)
+void fContainer::save_idx(const char* idx_name)
 {
 	int buf_sz,buf_sz0;
 	char* buf;

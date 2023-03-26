@@ -17,8 +17,8 @@ public:
 	xINI_FileKey* prev;
 	void* list;
 
-	char* getValue(void) const { return string; }
-	char* getName(void) const { return name; }
+	const char* getValue(void) const { return string; }
+	const char* getName(void) const { return name; }
 	
 	void putValue(const char* p);
 	void setName(const char* p){ if(name) free(name); name = strdup(p); }
@@ -47,9 +47,9 @@ public:
 	xINI_FileSection* prev;
 	void* list;
 
-	char* getName(void) const { return name; }
+	const char* getName(void) const { return name; }
 
-	char* getKey(const char* key_name);
+	const char* getKey(const char* key_name);
 	void putKey(const char* key_name,const char* key_value);
 
 	void setName(const char* p){ if(name) free(name); name = strdup(p); }
@@ -76,19 +76,19 @@ public:
 	void* list;
 
 	void setName(const char* fname){ free(name); name = strdup(fname); }
-	char* getName(void) const { return name; }
+	const char* getName(void) const { return name; }
 
 	void load(void);
 	void save(void);
 
-	void save_text(char* fname);
-	void save_binary(char* fname);
+	void save_text(const char* fname);
+	void save_binary(const char* fname);
 
 	void pack(void);
 	void unpack(void);
 
 	void put_key(const char* section,const char* key,const char* value);
-	char* get_key(const char* section,const char* key);
+	const char* get_key(const char* section,const char* key);
 
 	xINI_File(const char* nm);
 	~xINI_File(void);

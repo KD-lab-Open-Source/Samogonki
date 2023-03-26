@@ -27,7 +27,7 @@
 #include "XTList.h"
 #include "aci_parser.h"
 #include <list>
-int m3dOpenResource(char* fname,XStream& fh);
+int m3dOpenResource(const char* fname,XStream& fh);
 #endif
 
 unsigned int	CountUnique=1;
@@ -125,7 +125,7 @@ cList* cList::Detach()
 	next=prev=0;
 	return this;
 }
-cMesh* cList::FindMesh(char *Name)
+cMesh* cList::FindMesh(const char *Name)
 {
 	cList *start=this;
 	cMesh *tmp;
@@ -220,7 +220,7 @@ void cMesh::Animate(float dt)
 	for(cList *start=Child; start; start=start->next)
 		start->Mesh->Animate(dt);
 }
-void cMesh::SetFrame(char *name,char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
+void cMesh::SetFrame(const char *name,const char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
 			  float *PosKXYZ,int nPos,float *RotKWXYZ,int nRot,float *ScaleKXYZ,int nScale)
 { 
 	Frame=new cFrame(name,parent,xpivot,ypivot,zpivot,xofs,yofs,zofs);
@@ -539,7 +539,7 @@ void cMesh::DelChild(cMesh *child)
 	if(tmp) delete tmp; 
 	child->Parent=0; 
 }
-cMesh* cMesh::FindMesh(char *Name)
+cMesh* cMesh::FindMesh(const char *Name)
 {
 	AssertValid();
 	if(Name[0]==0) return 0;
@@ -1284,7 +1284,7 @@ void cMesh::GetGlobalGeometry(vector<Vect3f>& verts, vector<int>& faces, int rec
 			startList -> Mesh -> GetGlobalGeometry(verts, faces, recursive);
 }
 
-void cMesh::GetGlobalDummy(char* name_mask, vector<Vect3f>& dummies, int recursive)
+void cMesh::GetGlobalDummy(const char* name_mask, vector<Vect3f>& dummies, int recursive)
 {
 	AssertValid();
 	DummyList::iterator i;
@@ -1310,7 +1310,7 @@ void cMesh::SetArcane(void (*FunctionSetArcane)(mchArcaneData*))
 		startList->Mesh->SetArcane(FunctionSetArcane);
 }
 #endif
-inline sTile* GetTileByName(cTile *Tile,char *name)
+inline sTile* GetTileByName(cTile *Tile,const char *name)
 {
 	for(int  nTile=0;nTile<Tile->GetNumberTile();nTile++)
 		if(Tile->GetTile(nTile)->GetName()==static_cast<const char*>(name))
@@ -1424,7 +1424,7 @@ int cMesh::AssertValid()
 	return 1; 
 }
 #endif
-void cMesh::SetDescription(char *string)						
+void cMesh::SetDescription(const char *string)
 { 
 	if(description) 
 		delete description; 

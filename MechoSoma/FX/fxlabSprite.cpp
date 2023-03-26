@@ -36,7 +36,7 @@ void fxlabSpriteType::Open(scrDataBlock* data)
 	InvScale = 1.0f / Scale;
 };
 
-void fxlabSpriteType::Close(void)
+void fxlabSpriteType::Close()
 {
 	delete SpriteData;
 };
@@ -46,7 +46,7 @@ sSpriteFX* fxlabSpriteType::GetSpriteData(float phase)
 	return SpriteData + int(round(phase * Scale));
 };
 
-void fxlabSpriteType::Link(void)
+void fxlabSpriteType::Link()
 {
 	int i;
 	float t,dt;

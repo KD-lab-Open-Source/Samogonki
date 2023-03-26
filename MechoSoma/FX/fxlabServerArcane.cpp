@@ -38,7 +38,7 @@ void fxlabGetArcanePosition(Mechos* owner,const Vect3f& offset,Vect3f& pos);
 
 extern int mchCurrentWorld;
 
-void fxlabGeneralArcaneType::Open(void)
+void fxlabGeneralArcaneType::Open()
 {
 	fxlabServerSpaceType::Open();
 
@@ -49,7 +49,7 @@ void fxlabGeneralArcaneType::Open(void)
 	LifeTime = 1.0f;
 };
 
-void fxlabGeneralArcaneType::Start(void)
+void fxlabGeneralArcaneType::Start()
 {
 	int i;
 	float time;
@@ -113,7 +113,7 @@ void fxlabGeneralArcaneType::Start(void)
 	CurrentProtectionTimer.start(ProtectionTime);
 };
 
-void fxlabGeneralArcaneType::Close(void)
+void fxlabGeneralArcaneType::Close()
 {
 //	if(mchCurrentWorld == FXLAB_ARCANE_DEMO_WORLD)
 //		LinkPoint->Power = LinkPoint->MaxPower;
@@ -122,7 +122,7 @@ void fxlabGeneralArcaneType::Close(void)
 	fxlabServerSpaceType::Close();
 };
 
-void fxlabGeneralArcaneType::Quant(void)
+void fxlabGeneralArcaneType::Quant()
 {
 	fxlabServerSpaceType::Quant();
 	InterruptUse();
@@ -136,7 +136,7 @@ void fxlabGeneralArcaneType::Quant(void)
 	};
 };
 
-void fxlabGeneralArcaneType::InterruptUse(void)
+void fxlabGeneralArcaneType::InterruptUse()
 {
 	InterruptTime += 1.0f;
 	while(InterruptTime >= InterruptBorder){
@@ -145,7 +145,7 @@ void fxlabGeneralArcaneType::InterruptUse(void)
 	};
 };
 
-void fxlabGeneralArcaneType::PowerUse(void)
+void fxlabGeneralArcaneType::PowerUse()
 {
 	PowerTime -= 1.0f;
 	LinkPoint->Power -= DeltaPower;
@@ -157,7 +157,7 @@ void fxlabGeneralArcaneType::PowerUse(void)
 		PowerZero();
 };
 
-void fxlabGeneralArcaneType::ArcaneAction(void)
+void fxlabGeneralArcaneType::ArcaneAction()
 {
 	if(ActionPoint > 0){
 		ActionStatus = 1;
@@ -165,7 +165,7 @@ void fxlabGeneralArcaneType::ArcaneAction(void)
 	};
 };
 
-void fxlabGeneralArcaneType::ArcaneFatality(void)
+void fxlabGeneralArcaneType::ArcaneFatality()
 {
 	if(ActionPoint > 0){
 		ActionPoint--;
@@ -180,45 +180,45 @@ void fxlabGeneralArcaneType::SetArcaneAlive(int arcane_id,int owner_id)
 		SetAlive(0);
 };
 
-void fxlabGeneralArcaneType::LinkPowerZero(void)
+void fxlabGeneralArcaneType::LinkPowerZero()
 {
 	LinkPoint->Power = 0;
 };
 
 //------------------------------------------------------
 
-void fxlabInternalArcane::Start(void)
+void fxlabInternalArcane::Start()
 {
 	fxlabGeneralArcaneType::Start();
 	Position = Owner->R();
 };
 
-void fxlabInternalArcane::Quant(void)
+void fxlabInternalArcane::Quant()
 {
 	fxlabGeneralArcaneType::Quant();
 	Position = Owner->R();
 };
 
-void fxlabInternalArcane::Close(void)
+void fxlabInternalArcane::Close()
 {
 	LinkPoint->Status = 1;
 	fxlabGeneralArcaneType::Close();
 };
 
-void fxlabInternalArcane::Condition(void)
+void fxlabInternalArcane::Condition()
 {
 	fxlabGeneralArcaneType::Condition();
 	if(!(Owner->completed()))
 		SetAlive(0);
 };
 
-void fxlabInternalArcane::LinkPowerZero(void)
+void fxlabInternalArcane::LinkPowerZero()
 {
 	fxlabGeneralArcaneType::LinkPowerZero();
 	SetAlive(0); 
 };
 
-void fxlabInternalArcane::ActionZero(void)
+void fxlabInternalArcane::ActionZero()
 { 	
 	fxlabGeneralArcaneType::ActionZero();
 	SetAlive(0); 
@@ -226,7 +226,7 @@ void fxlabInternalArcane::ActionZero(void)
 
 //------------------------------------------------------
 
-void fxlabArcaneDragonWind::Start(void)
+void fxlabArcaneDragonWind::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -240,13 +240,13 @@ void fxlabArcaneDragonWind::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneDragonWind::Close(void)
+void fxlabArcaneDragonWind::Close()
 {
 	Owner->reset_feature(Mechos::DRAGON_POWER);
 	fxlabInternalArcane::Close();
 };
 
-void fxlabArcaneDirigibleWind::Start(void)
+void fxlabArcaneDirigibleWind::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -260,14 +260,14 @@ void fxlabArcaneDirigibleWind::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneDirigibleWind::Close(void)
+void fxlabArcaneDirigibleWind::Close()
 {
 	Owner->reset_feature(Mechos::DIRIGIBLE);
 	fxlabInternalArcane::Close();
 };
 
 
-void fxlabArcaneButterflyWind::Start(void)
+void fxlabArcaneButterflyWind::Start()
 {
 	fxlabGeneralObjectType* t;
 	fxlabInternalArcane::Start();
@@ -280,14 +280,14 @@ void fxlabArcaneButterflyWind::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneButterflyWind::Close(void)
+void fxlabArcaneButterflyWind::Close()
 {
 	Owner->reset_feature(Mechos::BUTTERFLY);
 	fxlabInternalArcane::Close();
 };
 
 
-void fxlabArcaneFrogWind::Start(void)
+void fxlabArcaneFrogWind::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -301,20 +301,20 @@ void fxlabArcaneFrogWind::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneFrogWind::Close(void)
+void fxlabArcaneFrogWind::Close()
 {
 	Owner->reset_feature(Mechos::JABASOMA);
 	fxlabInternalArcane::Close();
 };
 
 
-void fxlabArcaneHelicopterWind::Start(void)
+void fxlabArcaneHelicopterWind::Start()
 {
 	fxlabInternalArcane::Start();
 	Owner->set_feature(Mechos::HELICOPTER);
 };
 
-void fxlabArcaneHelicopterWind::Close(void)
+void fxlabArcaneHelicopterWind::Close()
 {
 	Owner->reset_feature(Mechos::HELICOPTER);
 	fxlabInternalArcane::Close();
@@ -322,7 +322,7 @@ void fxlabArcaneHelicopterWind::Close(void)
 
 //-----------------------
 
-void fxlabRevoltSpace::Start(void)
+void fxlabRevoltSpace::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -338,7 +338,7 @@ void fxlabRevoltSpace::Start(void)
 	t->Start();
 };
 
-void fxlabRevoltSpace::Close(void)
+void fxlabRevoltSpace::Close()
 {
 	Owner->reset_feature(Mechos::MAGNETIC_CUSHION);
 	if(ClientPoint.Process)
@@ -348,7 +348,7 @@ void fxlabRevoltSpace::Close(void)
 
 //-----------------------------------
 
-void fxlabArcanePlasmaClaw::Start(void)
+void fxlabArcanePlasmaClaw::Start()
 {
 	fxlabGeneralObjectType* ct;
 	fxlabGeneralObjectType* st;
@@ -384,7 +384,7 @@ void fxlabArcanePlasmaClaw::Start(void)
 	};
 };
 
-void fxlabArcanePlasmaClaw::Quant(void)
+void fxlabArcanePlasmaClaw::Quant()
 {
 	fxlabGeneralArcaneType::Quant();
 
@@ -395,7 +395,7 @@ void fxlabArcanePlasmaClaw::Quant(void)
 	};
 };
 
-void fxlabArcanePlasmaClaw::Close(void)
+void fxlabArcanePlasmaClaw::Close()
 {
 	if(ServerPoint.Process)
 		ServerPoint.Process->SetAlive(0);
@@ -405,7 +405,7 @@ void fxlabArcanePlasmaClaw::Close(void)
 
 //-----------------------------------
 
-void fxlabArcaneBowMachine::Start(void)
+void fxlabArcaneBowMachine::Start()
 {
 	fxlabGeneralObjectType* ct;
 	fxlabGeneralObjectType* st;
@@ -434,7 +434,7 @@ void fxlabArcaneBowMachine::Start(void)
 	};
 };
 
-void fxlabArcaneBowMachine::Quant(void)
+void fxlabArcaneBowMachine::Quant()
 {
 	fxlabGeneralArcaneType::Quant();
 
@@ -446,7 +446,7 @@ void fxlabArcaneBowMachine::Quant(void)
 	}else SetAlive(0);
 };
 
-void fxlabArcaneBowMachine::Close(void)
+void fxlabArcaneBowMachine::Close()
 {
 	if(ServerPoint.Process)
 		ServerPoint.Process->SetAlive(0);
@@ -456,7 +456,7 @@ void fxlabArcaneBowMachine::Close(void)
 
 //---------------------------------------------
 
-void fxlabArcaneShaftMachine::Start(void)
+void fxlabArcaneShaftMachine::Start()
 {
 	fxlabGeneralObjectType* t;
 	Vect3f v;
@@ -491,7 +491,7 @@ void fxlabArcaneShaftMachine::Start(void)
 	};
 };
 
-void fxlabArcaneShaftMachine::Quant(void)
+void fxlabArcaneShaftMachine::Quant()
 {
 	Vect3f v;
 	fxlabGeneralArcaneType::Quant();
@@ -505,7 +505,7 @@ void fxlabArcaneShaftMachine::Quant(void)
 	};
 };
 
-void fxlabArcaneShaftMachine::Close(void)
+void fxlabArcaneShaftMachine::Close()
 {
 	if(ClientPoint.Process)
 		ClientPoint.Process->SetAlive(0);
@@ -517,7 +517,7 @@ void fxlabArcaneShaftMachine::Close(void)
 
 //------------------------------------------
 
-/*void fxlabArcaneVoodooMaster::Start(void)
+/*void fxlabArcaneVoodooMaster::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -545,7 +545,7 @@ void fxlabArcaneShaftMachine::Close(void)
 	};
 };
 
-void fxlabArcaneVoodooMaster::Quant(void)
+void fxlabArcaneVoodooMaster::Quant()
 {
 	fxlabGeneralArcaneType::Quant();
 
@@ -555,7 +555,7 @@ void fxlabArcaneVoodooMaster::Quant(void)
 	};
 };
 
-void fxlabArcaneVoodooMaster::Close(void)
+void fxlabArcaneVoodooMaster::Close()
 {
 	if(ClientPoint.Process)
 		ClientPoint.Process->SetAlive(0);
@@ -566,7 +566,7 @@ void fxlabArcaneVoodooMaster::Close(void)
 };*/
 
 
-void fxlabArcaneVoodooMaster::Start(void)
+void fxlabArcaneVoodooMaster::Start()
 {
 	int i;
 	float a,da;
@@ -594,7 +594,7 @@ void fxlabArcaneVoodooMaster::Start(void)
 	};
 };
 
-void fxlabArcaneVoodooMaster::Quant(void)
+void fxlabArcaneVoodooMaster::Quant()
 {
 	int i,cnt;
 	fxlabGeneralArcaneType::Quant();
@@ -613,7 +613,7 @@ void fxlabArcaneVoodooMaster::Quant(void)
 	};
 };
 
-void fxlabArcaneVoodooMaster::Close(void)
+void fxlabArcaneVoodooMaster::Close()
 {
 	int i;
 	for(i = 0;i < FXLAB_VOOODOO_MASTER_OBJECT_NUM;i++){
@@ -625,13 +625,13 @@ void fxlabArcaneVoodooMaster::Close(void)
 
 //-----------------------------------------
 
-void fxlabArcaneIronSide::Start(void)
+void fxlabArcaneIronSide::Start()
 {
 	fxlabInternalArcane::Start();
 	Owner->set_feature(Mechos::IRON_HIP);
 };
 
-void fxlabArcaneIronSide::Close(void)
+void fxlabArcaneIronSide::Close()
 {
 	Owner->reset_feature(Mechos::IRON_HIP);
 	fxlabInternalArcane::Close();
@@ -639,7 +639,7 @@ void fxlabArcaneIronSide::Close(void)
 
 //--------------------------------------------
 
-void fxlabArcaneBallWind::Start(void)
+void fxlabArcaneBallWind::Start()
 {
 	fxlabGeneralObjectType* t;
 	fxlabInternalArcane::Start();
@@ -676,7 +676,7 @@ void fxlabArcaneBallWind::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneBallWind::Quant(void)
+void fxlabArcaneBallWind::Quant()
 {
 	fxlabInternalArcane::Quant();
 
@@ -684,7 +684,7 @@ void fxlabArcaneBallWind::Quant(void)
 		SoundPoint.Process->SetPosition(Position);
 };
 
-void fxlabArcaneBallWind::Close(void)
+void fxlabArcaneBallWind::Close()
 {
 	if(LeftPoint.Process)
 		LeftPoint.Process->SetAlive(0);
@@ -698,13 +698,13 @@ void fxlabArcaneBallWind::Close(void)
 
 //----------------------
 
-void fxlabImpulseArcane::Quant(void)
+void fxlabImpulseArcane::Quant()
 {
 	fxlabGeneralArcaneType::Quant();
 	SetAlive(0);
 };
 
-void fxlabImpulseArcane::Close(void)
+void fxlabImpulseArcane::Close()
 {
 	LinkPoint->Status = 1;
 	fxlabGeneralArcaneType::Close();
@@ -712,7 +712,7 @@ void fxlabImpulseArcane::Close(void)
 
 //-----------------
 
-void fxlabArcaneFormicaryWind::Start(void)
+void fxlabArcaneFormicaryWind::Start()
 {
 	fxlabImpulseArcane::Start();
 
@@ -753,7 +753,7 @@ void fxlabArcaneFormicaryWind::Start(void)
 
 //-----------------------
 
-void fxlabArcaneSuicideWarrior::Start(void)
+void fxlabArcaneSuicideWarrior::Start()
 {
 	Body *p;
 	OwnerProtection* op;
@@ -792,7 +792,7 @@ void fxlabArcaneSuicideWarrior::Start(void)
 };
 
 
-void fxlabArcaneClownWarrior::Start(void)
+void fxlabArcaneClownWarrior::Start()
 {
 	Vect3f v;
 	float d;
@@ -823,7 +823,7 @@ void fxlabArcaneClownWarrior::Start(void)
 };
 
 
-void fxlabArcaneEyeWarrior::Start(void)
+void fxlabArcaneEyeWarrior::Start()
 {
 	Vect3f v;
 	float d;
@@ -846,7 +846,7 @@ void fxlabArcaneEyeWarrior::Start(void)
 	if(op) op->set_owner(ProtectionID,ProtectionTime);
 };
 
-void fxlabArcaneTomatoWarrior::Start(void)
+void fxlabArcaneTomatoWarrior::Start()
 {
 	Body *p;
 	OwnerProtection* op;
@@ -872,7 +872,7 @@ void fxlabArcaneTomatoWarrior::Start(void)
 
 //--------------------------
 
-void fxlabArcaneKineticHit::Start(void)
+void fxlabArcaneKineticHit::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -908,7 +908,7 @@ void fxlabArcaneKineticHit::Start(void)
 
 //--------------------------------
 
-void fxlabArcaneFireBall::InterruptAction(void)
+void fxlabArcaneFireBall::InterruptAction()
 {
 	Body *n;
 	OwnerProtection* op;
@@ -956,7 +956,7 @@ void fxlabArcaneFireBall::InterruptAction(void)
 
 //--------------------
 
-void fxlabArcaneLightningBolt::InterruptAction(void)
+void fxlabArcaneLightningBolt::InterruptAction()
 {
 	Body *n;
 	OwnerProtection* op;
@@ -1004,7 +1004,7 @@ void fxlabArcaneLightningBolt::InterruptAction(void)
 
 //--------------------
 
-/*void fxlabArcaneJumpBall::InterruptAction(void)
+/*void fxlabArcaneJumpBall::InterruptAction()
 {
 	fxlabGeneralObjectType* t;
 	if(Owner->completed()){
@@ -1019,7 +1019,7 @@ void fxlabArcaneLightningBolt::InterruptAction(void)
 	};
 };*/
 
-void fxlabArcaneJumpBall::Start(void)
+void fxlabArcaneJumpBall::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1041,7 +1041,7 @@ void fxlabArcaneJumpBall::Start(void)
 
 //----------------------
 
-void fxlabArcaneSpiderSpawn::InterruptAction(void)
+void fxlabArcaneSpiderSpawn::InterruptAction()
 {
 	Body* b;
 	OwnerProtection* op;
@@ -1068,7 +1068,7 @@ void fxlabArcaneSpiderSpawn::InterruptAction(void)
 
 //---------------------
 
-void fxlabArcaneCaterpillarSpawn::InterruptAction(void)
+void fxlabArcaneCaterpillarSpawn::InterruptAction()
 {
 	Body* b;
 	OwnerProtection* op;
@@ -1095,7 +1095,7 @@ void fxlabArcaneCaterpillarSpawn::InterruptAction(void)
 
 //-------------------------------------
 
-void fxlabArcaneMassShifter::Start(void)
+void fxlabArcaneMassShifter::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1111,37 +1111,37 @@ void fxlabArcaneMassShifter::Start(void)
 
 //------------------------------
 
-void fxlabExternalPowerArcane::Start(void)
+void fxlabExternalPowerArcane::Start()
 {
 	fxlabGeneralArcaneType::Start();
 	LinkPoint->Power = 0;
 	LinkPoint->Status = 1;
 };
 
-void fxlabExternalPowerArcane::PowerUse(void)
+void fxlabExternalPowerArcane::PowerUse()
 {
 	PowerTime -= 1.0f;
 	if(PowerTime <= 0)
 		PowerZero();
 };
 
-void fxlabExternalPowerArcane::LinkPowerZero(void)
+void fxlabExternalPowerArcane::LinkPowerZero()
 {
 };
 
-void fxlabExternalPowerArcane::ActionZero(void)
+void fxlabExternalPowerArcane::ActionZero()
 {
 	SetAlive(0);
 };
 
-void fxlabExternalPowerArcane::PowerZero(void)
+void fxlabExternalPowerArcane::PowerZero()
 {
 	SetAlive(0);
 };
 
 //------------------------------------------
 
-void fxlabArcaneFireStone::Start(void)
+void fxlabArcaneFireStone::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1170,7 +1170,7 @@ void fxlabArcaneFireStone::Start(void)
 	BulletTimer.start(400);
 };
 
-void fxlabArcaneFireStone::Close(void)
+void fxlabArcaneFireStone::Close()
 {
 	if(CloudPoint.Process)
 		CloudPoint.Process->SetAlive(0);
@@ -1181,7 +1181,7 @@ void fxlabArcaneFireStone::Close(void)
 	fxlabExternalPowerArcane::Close();
 };
 
-/*void fxlabArcaneFireStone::InterruptAction(void)
+/*void fxlabArcaneFireStone::InterruptAction()
 {
 //!!!!
 	if(!BulletTimer()){
@@ -1193,7 +1193,7 @@ void fxlabArcaneFireStone::Close(void)
 
 const float FXLAB_FIRE_STONE_RADIUS = 70.0f;
 
-void fxlabArcaneFireStone::Quant(void)
+void fxlabArcaneFireStone::Quant()
 {
 	float a,r;
 	fxlabGeneralObjectType* t;
@@ -1230,7 +1230,7 @@ void fxlabArcaneFireStone::Quant(void)
 
 const float FXLAB_SNOW_FALL_RADIUS = 70.0f;
 
-void fxlabArcaneSnowFall::Start(void)
+void fxlabArcaneSnowFall::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1259,7 +1259,7 @@ void fxlabArcaneSnowFall::Start(void)
 	BulletTimer.start(400);
 };
 
-void fxlabArcaneSnowFall::Close(void)
+void fxlabArcaneSnowFall::Close()
 {
 	if(CloudPoint.Process)
 		CloudPoint.Process->SetAlive(0);
@@ -1273,7 +1273,7 @@ void fxlabArcaneSnowFall::Close(void)
 	fxlabExternalPowerArcane::Close();
 };
 
-void fxlabArcaneSnowFall::Quant(void)
+void fxlabArcaneSnowFall::Quant()
 {
 	float a,r;
 	fxlabGeneralObjectType* t;
@@ -1315,7 +1315,7 @@ void fxlabArcaneSnowFall::Quant(void)
 
 //--------------------------
 
-void fxlabArcaneElecricStorm::Start(void)
+void fxlabArcaneElecricStorm::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1347,7 +1347,7 @@ void fxlabArcaneElecricStorm::Start(void)
 	t->Start();	
 };
 
-void fxlabArcaneElecricStorm::Close(void)
+void fxlabArcaneElecricStorm::Close()
 {
 	if(CloudPoint.Process)
 		CloudPoint.Process->SetAlive(0);
@@ -1357,7 +1357,7 @@ void fxlabArcaneElecricStorm::Close(void)
 	fxlabExternalPowerArcane::Close();
 };
 
-void fxlabArcaneElecricStorm::InterruptAction(void)
+void fxlabArcaneElecricStorm::InterruptAction()
 {
 	fxlabGeneralObjectType* t;
 	Vect3f v;
@@ -1407,7 +1407,7 @@ void fxlabArcaneElecricStorm::InterruptAction(void)
 const float FXLAB_FIRE_GARDEN_ROSE_LEN = 200.0f;
 const float FXLAB_FIRE_GARDEN_POSITION = 0;
 
-void fxlabArcaneFireGarden::Start(void)
+void fxlabArcaneFireGarden::Start()
 {
 	int i;
 	Vect3f v,dv;
@@ -1460,7 +1460,7 @@ void fxlabArcaneFireGarden::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneFireGarden::Close(void)
+void fxlabArcaneFireGarden::Close()
 {
 	int i;
 	for(i = 0;i < FXLAB_FIRE_GARDEN_ROSE_NUM;i++){	
@@ -1479,7 +1479,7 @@ void fxlabArcaneFireGarden::Close(void)
 //-----------------------------------------
 
 	
-void fxlabArcaneRageSlime::Start(void)
+void fxlabArcaneRageSlime::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1523,7 +1523,7 @@ void fxlabArcaneRageSlime::Start(void)
 };
 
 
-void fxlabArcaneRageSlime::Close(void)
+void fxlabArcaneRageSlime::Close()
 {
 	if(ServerPoint.Process)
 		ServerPoint.Process->SetAlive(0);
@@ -1537,7 +1537,7 @@ void fxlabArcaneRageSlime::Close(void)
 	fxlabExternalPowerArcane::Close();
 };
 
-void fxlabArcaneRageSlime::Quant(void)
+void fxlabArcaneRageSlime::Quant()
 {
 	fxlabExternalPowerArcane::Quant();
 	if(!WaitTimer && (!fxlabGetWorldReflectionEnable()) && Position.z < vMap->LevelH2O && (GetAt(XCYCL(round(Position.x)),YCYCL(round(Position.y))) & At_WATER))
@@ -1548,13 +1548,13 @@ void fxlabArcaneRageSlime::Quant(void)
 
 const float FXLAB_FURY_FUNGUS_RADIUS = 35.0f;
 
-void fxlabArcaneFuryFungus::Open(void)
+void fxlabArcaneFuryFungus::Open()
 {
 	fxlabExternalPowerArcane::Open();
 	CheckLife = 0;
 };
 
-void fxlabArcaneFuryFungus::Start(void)
+void fxlabArcaneFuryFungus::Start()
 {
 	int i;
 	float a,r;
@@ -1631,7 +1631,7 @@ void fxlabArcaneFuryFungus::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneFuryFungus::Close(void)
+void fxlabArcaneFuryFungus::Close()
 {
 	int i;
 	for(i = 0;i < FXLAB_FURY_FUNGUS_NUM;i++){
@@ -1651,7 +1651,7 @@ void fxlabArcaneFuryFungus::Close(void)
 	fxlabExternalPowerArcane::Close();
 };
 
-void fxlabArcaneFuryFungus::ArcaneAction(void)
+void fxlabArcaneFuryFungus::ArcaneAction()
 {
 	int i;
 	if(!CheckLife){
@@ -1665,7 +1665,7 @@ void fxlabArcaneFuryFungus::ArcaneAction(void)
 	};
 };
 
-void fxlabArcaneFuryFungus::Quant(void)
+void fxlabArcaneFuryFungus::Quant()
 {
 //	int i;
 	fxlabExternalPowerArcane::Quant();
@@ -1686,7 +1686,7 @@ void fxlabArcaneFuryFungus::Quant(void)
 
 //-----------------------------------------
 
-void fxlabArcaneShiftTrap::Start(void)
+void fxlabArcaneShiftTrap::Start()
 {
 	fxlabGeneralObjectType* t;
 	fxlabExternalPowerArcane::Start();
@@ -1722,7 +1722,7 @@ void fxlabArcaneShiftTrap::Start(void)
 	t->Start();
 };
 
-void fxlabArcaneShiftTrap::Close(void)
+void fxlabArcaneShiftTrap::Close()
 {
 	if(ServerPoint.Process)
 		ServerPoint.Process->SetAlive(0);
@@ -1735,7 +1735,7 @@ void fxlabArcaneShiftTrap::Close(void)
 
 //------------------------------------
 
-void fxlabExternalMindArcane::Open(void)
+void fxlabExternalMindArcane::Open()
 {
 	fxlabGeneralArcaneType::Open();
 	InterruptCount = 0;
@@ -1743,13 +1743,13 @@ void fxlabExternalMindArcane::Open(void)
 	ExternalTime = 1;
 };
 
-void fxlabExternalMindArcane::Start(void)
+void fxlabExternalMindArcane::Start()
 {
 	fxlabGeneralArcaneType::Start();
 	PowerTime = ExternalTime / fxlabServerQuantPeriod;
 };
 
-void fxlabExternalMindArcane::Condition(void)
+void fxlabExternalMindArcane::Condition()
 {
 	if(!Owner->completed()){
 		if(InterruptEnable){
@@ -1759,7 +1759,7 @@ void fxlabExternalMindArcane::Condition(void)
 	};
 };
 
-void fxlabExternalMindArcane::InterruptUse(void)
+void fxlabExternalMindArcane::InterruptUse()
 {
 	if(InterruptEnable){
 		InterruptTime += 1.0f;
@@ -1776,7 +1776,7 @@ void fxlabExternalMindArcane::InterruptUse(void)
 	};
 };
 
-void fxlabExternalMindArcane::PowerUse(void)
+void fxlabExternalMindArcane::PowerUse()
 {
 	if(InterruptEnable){
 		LinkPoint->Power -= DeltaPower;
@@ -1790,7 +1790,7 @@ void fxlabExternalMindArcane::PowerUse(void)
 };
 
 
-void fxlabExternalMindArcane::LinkPowerZero(void)
+void fxlabExternalMindArcane::LinkPowerZero()
 {
 	if(InterruptEnable){
 		LinkPoint->Power = 0;
@@ -1799,17 +1799,17 @@ void fxlabExternalMindArcane::LinkPowerZero(void)
 	};
 };
 
-void fxlabExternalMindArcane::ActionZero(void)
+void fxlabExternalMindArcane::ActionZero()
 {
 	SetAlive(0);
 };
 
-void fxlabExternalMindArcane::PowerZero(void)
+void fxlabExternalMindArcane::PowerZero()
 {
 	SetAlive(0);
 };
 
-void fxlabExternalMindArcane::Close(void)
+void fxlabExternalMindArcane::Close()
 {
 	if(InterruptEnable){
 		LinkPoint->Status = 1;
@@ -1820,7 +1820,7 @@ void fxlabExternalMindArcane::Close(void)
 
 //-----------------------------------------------------
 
-void fxlabArcaneLightningSeed::Start(void)
+void fxlabArcaneLightningSeed::Start()
 {
 	fxlabExternalMindArcane::Start();
 	if(Owner->completed())
@@ -1828,7 +1828,7 @@ void fxlabArcaneLightningSeed::Start(void)
 	ServerPoint = new fxlabProcessInterface[InterruptNum];
 };
 
-void fxlabArcaneLightningSeed::Close(void)
+void fxlabArcaneLightningSeed::Close()
 {
 	int i;
 	for(i = 0;i < InterruptNum;i++){
@@ -1839,14 +1839,14 @@ void fxlabArcaneLightningSeed::Close(void)
 	fxlabExternalMindArcane::Close();
 };
 
-void fxlabArcaneLightningSeed::Quant(void)
+void fxlabArcaneLightningSeed::Quant()
 {
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_ENGINE);
 	fxlabExternalMindArcane::Quant();
 };
 
-void fxlabArcaneLightningSeed::InterruptAction(void)
+void fxlabArcaneLightningSeed::InterruptAction()
 {
 	fxlabGeneralObjectType* ct;
 	fxlabGeneralObjectType* st;
@@ -1872,7 +1872,7 @@ void fxlabArcaneLightningSeed::InterruptAction(void)
 	st->Start();
 };
 
-void fxlabArcaneLightningSeed::Condition(void)
+void fxlabArcaneLightningSeed::Condition()
 {
 	int i,cnt;
 
@@ -1890,7 +1890,7 @@ void fxlabArcaneLightningSeed::Condition(void)
 
 //---------------------------------------------------------
 
-void fxlabArcaneCrystalSpike::Start(void)
+void fxlabArcaneCrystalSpike::Start()
 {
 	fxlabExternalMindArcane::Start();
 	if(Owner->completed())
@@ -1898,7 +1898,7 @@ void fxlabArcaneCrystalSpike::Start(void)
 	SpikePoint.reserve(InterruptNum);
 };
 
-void fxlabArcaneCrystalSpike::Close(void)
+void fxlabArcaneCrystalSpike::Close()
 {
 	vector<ShareHandle<Body> >::iterator it;
 
@@ -1910,14 +1910,14 @@ void fxlabArcaneCrystalSpike::Close(void)
 	fxlabExternalMindArcane::Close();
 };
 
-void fxlabArcaneCrystalSpike::Quant(void)
+void fxlabArcaneCrystalSpike::Quant()
 {
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_ENGINE);
 	fxlabExternalMindArcane::Quant();
 };
 
-void fxlabArcaneCrystalSpike::InterruptAction(void)
+void fxlabArcaneCrystalSpike::InterruptAction()
 {
 	Body* p;
 	OwnerProtection* op;
@@ -1941,7 +1941,7 @@ void fxlabArcaneCrystalSpike::InterruptAction(void)
 	ct->Start();
 };
 
-void fxlabArcaneCrystalSpike::Condition(void)
+void fxlabArcaneCrystalSpike::Condition()
 {
 	int cnt;
 	vector<ShareHandle<Body> >::iterator it;
@@ -1961,7 +1961,7 @@ void fxlabArcaneCrystalSpike::Condition(void)
 
 //----------------------------
 
-void fxlabArcaneBubbleRush::InterruptAction(void)
+void fxlabArcaneBubbleRush::InterruptAction()
 {
 	Body* p;
 	OwnerProtection* op;
@@ -1985,7 +1985,7 @@ void fxlabArcaneBubbleRush::InterruptAction(void)
 
 //---------------------------------------------------------
 
-void fxlabArcaneMortarMine::Start(void)
+void fxlabArcaneMortarMine::Start()
 {
 	fxlabExternalMindArcane::Start();
 	if(Owner->completed())
@@ -1995,7 +1995,7 @@ void fxlabArcaneMortarMine::Start(void)
 	ClientPoint = new fxlabProcessInterface[InterruptNum];
 };
 
-void fxlabArcaneMortarMine::Close(void)
+void fxlabArcaneMortarMine::Close()
 {
 	int i;
 	vector<ShareHandle<Body> >::iterator it;
@@ -2015,7 +2015,7 @@ void fxlabArcaneMortarMine::Close(void)
 	fxlabExternalMindArcane::Close();
 };
 
-void fxlabArcaneMortarMine::Quant(void)
+void fxlabArcaneMortarMine::Quant()
 {
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_ENGINE);
@@ -2024,7 +2024,7 @@ void fxlabArcaneMortarMine::Quant(void)
 
 #include "Meteorite.h"
 
-void fxlabArcaneMortarMine::InterruptAction(void)
+void fxlabArcaneMortarMine::InterruptAction()
 {
 	Body* p;
 	OwnerProtection* op;
@@ -2055,7 +2055,7 @@ void fxlabArcaneMortarMine::InterruptAction(void)
 	ct->Start();
 };
 
-void fxlabArcaneMortarMine::Condition(void)
+void fxlabArcaneMortarMine::Condition()
 {
 	int cnt;
 	vector<ShareHandle<Body> >::iterator it;
@@ -2074,14 +2074,14 @@ void fxlabArcaneMortarMine::Condition(void)
 
 //---------------------------------
 
-void fxlabArcanePetard::Start(void)
+void fxlabArcanePetard::Start()
 {
 	fxlabExternalMindArcane::Start();
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_FRONT);
 };
 
-void fxlabArcanePetard::Close(void)
+void fxlabArcanePetard::Close()
 {
 	int i;
 	vector<ShareHandle<Body> >::iterator it;
@@ -2103,14 +2103,14 @@ void fxlabArcanePetard::Close(void)
 	fxlabExternalMindArcane::Close();
 };
 
-void fxlabArcanePetard::Quant(void)
+void fxlabArcanePetard::Quant()
 {
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_FRONT);
 	fxlabExternalMindArcane::Quant();
 };
 
-void fxlabArcanePetard::InterruptAction(void)
+void fxlabArcanePetard::InterruptAction()
 {
 	Body* p;
 	OwnerProtection* op;
@@ -2211,7 +2211,7 @@ void fxlabArcanePetard::InterruptAction(void)
 	};
 };
 
-void fxlabArcanePetard::Condition(void)
+void fxlabArcanePetard::Condition()
 {
 	int cnt;
 	vector<ShareHandle<Body> >::iterator it;
@@ -2234,7 +2234,7 @@ void fxlabArcanePetard::Condition(void)
 
 const float FXLAB_SCARLET_TRACK_DENSITY = 20.0f;
 
-void fxlabArcaneScarletTrack::Start(void)
+void fxlabArcaneScarletTrack::Start()
 {
 	fxlabExternalMindArcane::Start();
 	if(Owner->completed())
@@ -2244,7 +2244,7 @@ void fxlabArcaneScarletTrack::Start(void)
 	ClientPoint = new fxlabProcessInterface[InterruptNum];
 };
 
-void fxlabArcaneScarletTrack::Close(void)
+void fxlabArcaneScarletTrack::Close()
 {
 	int i;
 	for(i = 0;i < InterruptNum;i++){
@@ -2258,14 +2258,14 @@ void fxlabArcaneScarletTrack::Close(void)
 	fxlabExternalMindArcane::Close();
 };
 
-void fxlabArcaneScarletTrack::Quant(void)
+void fxlabArcaneScarletTrack::Quant()
 {
 	if(Owner->completed())
 		Position = Owner->part_coords(M3D_ENGINE);
 	fxlabExternalMindArcane::Quant();
 };
 
-void fxlabArcaneScarletTrack::InterruptUse(void)
+void fxlabArcaneScarletTrack::InterruptUse()
 {
 	Vect3f v;
 	fxlabGeneralObjectType* t;
@@ -2308,14 +2308,14 @@ void fxlabArcaneScarletTrack::InterruptUse(void)
 
 //---------------------------------------------------------
 
-void fxlabArcaneRedTrack::Start(void)
+void fxlabArcaneRedTrack::Start()
 {
 	fxlabInternalArcane::Start();
 	ArcaneStatisticsService::setCurrentArcane(*this);
 	Owner->set_feature(Mechos::RED_TRACK_FEATURE);
 };
 
-void fxlabArcaneRedTrack::Close(void)
+void fxlabArcaneRedTrack::Close()
 {
 	Owner->reset_feature(Mechos::RED_TRACK_FEATURE);
 	fxlabInternalArcane::Close();

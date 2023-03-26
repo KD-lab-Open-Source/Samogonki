@@ -69,9 +69,9 @@ extern int mchTrackDemoMode;
 
 extern int mchDebugMode;
 
-extern char* mch_mainINI;
-extern char* mch_hotseatINI;
-extern char* mch_optionsINI;
+extern const char* mch_mainINI;
+extern const char* mch_hotseatINI;
+extern const char* mch_optionsINI;
 
 // Global flags...
 #define MCH_STOP_TIME_FLAG		0x01
@@ -146,7 +146,7 @@ struct hsPlayerData
 	int TSD_Count;
 	char configStr[256];
 
-	void SetName(char* p){ strcpy(name,p); TSD_Count = 0; }
+	void SetName(const char* p){ strcpy(name,p); TSD_Count = 0; }
 
 	hsPlayerData(void){ type = 0; }
 	~hsPlayerData(void){ }
@@ -181,7 +181,7 @@ struct mchOptionData
 	int LimitMax;
 	int Value;
 
-	char* keyName;
+	const char* keyName;
 	void* iScreenObj;
 
 	int GetValue(void){ return Value; }
@@ -193,7 +193,7 @@ struct mchOptionData
 
 	void InitValue(void);
 
-	void SetKey(char* p){ keyName = strdup(p); }
+	void SetKey(const char* p){ keyName = strdup(p); }
 	void Init(void);
 	void Save(void);
 	void Reset(void);
@@ -215,17 +215,17 @@ int mchGetKeyID_Next(void);
 
 int mchKeyPressed(int id,int config = -1);
 
-char* getIniKey(char* fname,char* section,char* key);
-void putIniKey(char* fname,char* section,char* key,char* val);
-void putIniKey(char* fname,char* section,char* key,int val);
+const char* getIniKey(const char* fname,const char* section,const char* key);
+void putIniKey(const char* fname,const char* section,const char* key,const char* val);
+void putIniKey(const char* fname,const char* section,const char* key,int val);
 
 unsigned mch_clock(void);
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
-int m3dOpenResource(char* fname,XStream& fh);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
+int m3dOpenResource(const char* fname,XStream& fh);
 void mchXResourceInit(void);
-int vmapOpenResource(char* fname,XStream& fh);
-int mch_vmapResourceInit(char * Path2World=NULL);
+int vmapOpenResource(const char* fname,XStream& fh);
+int mch_vmapResourceInit(const char * Path2World=NULL);
 
 
 void mchCreateBonusArcane(void* p);

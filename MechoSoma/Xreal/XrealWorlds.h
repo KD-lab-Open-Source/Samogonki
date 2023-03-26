@@ -49,4 +49,4 @@ public:
 
 
 //	Utils
-char* GetTargetName(char* name);
+const char* GetTargetName(const char* name);

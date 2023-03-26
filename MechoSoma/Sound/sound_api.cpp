@@ -52,7 +52,7 @@ extern cInterfaceGraph3d	*gb_IGraph3d;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-void mchA_d3dOutString(int x,int y,float sx,float sy,void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
+void mchA_d3dOutString(int x,int y,float sx,float sy,const void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
@@ -227,7 +227,7 @@ int sndGetFreeChannel2(int x,int y,int& pr)
 	return -1;
 }
 
-char* sndGetTargetName(char* p)
+const char* sndGetTargetName(const char* p)
 {
 	return GetTargetName(p);
 }

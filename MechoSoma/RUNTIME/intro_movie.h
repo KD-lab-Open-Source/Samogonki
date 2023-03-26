@@ -137,7 +137,7 @@ public:
 
 	void init(void);
 	void init_texts(void);
-	void init_text(char* txt);
+	void init_text(const char* txt);
 
 	void set_time(void);
 

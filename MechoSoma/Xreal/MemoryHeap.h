@@ -129,7 +129,7 @@ protected:
 class MemoryHeap : public MemoryHeapBlock 
 {
 public:
-	MemoryHeap(int initial_block_size, int max_blocks_ = 5, char* title_ = "Memory Heap") { allocBlock(initial_block_size); max_blocks = max_blocks_; title = title_; used_memory = allocated_memory = 0; }
+	MemoryHeap(int initial_block_size, int max_blocks_ = 5, const char* title_ = "Memory Heap") { allocBlock(initial_block_size); max_blocks = max_blocks_; title = title_; used_memory = allocated_memory = 0; }
 	~MemoryHeap();
 
 	void init(); // Освобождает все дополнительные блоки и сбрасывает указатель текущего блока
@@ -152,7 +152,7 @@ private:
 		MemoryHeapMark(int blockID_ = 0, int offset_ = 0) { blockID = blockID_; offset = offset_; }
 	};
 
-	char* title;
+	const char* title;
 	int used_memory, allocated_memory;
 	int max_blocks;
 	vector<MemoryHeapBlock> blocks;

@@ -27,7 +27,7 @@ int TGA_Image::Load(char* fname)
 {
 	XStream fh(0);
 #ifdef _MECHOSOMA_
-	extern int m3dOpenResource(char* fname,XStream& fh);
+	extern int m3dOpenResource(const char* fname,XStream& fh);
 	if(!m3dOpenResource(fname,fh)) return 0;
 #else
 	if(!fh.open(fname,XS_IN)) return 0;

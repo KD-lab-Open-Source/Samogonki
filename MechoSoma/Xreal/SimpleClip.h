@@ -173,11 +173,11 @@ class TriangleMap : public std::list<Triangle>, public Grid2D<Triangle, 4>
 public:
 	void clear();
 
-	void load(char* name);
+	void load(const char* name);
 	void load(class cInterfaceVisGeneric* IVG, int disable_Ice); 
 	void load(class cM3D& M3D);
 	void load(class cMesh& mesh);
-	void loadSpots(char* name);
+	void loadSpots(const char* name);
 	void addBrush(class cMesh& mesh);
 
 	float H(int x, int y); // Max height 

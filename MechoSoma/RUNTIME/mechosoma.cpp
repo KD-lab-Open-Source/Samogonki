@@ -298,8 +298,8 @@ mchGameWindow* iWnd;			// fullscreen interface window
 mchGameWindow* iWnd0;			// player1 interface window
 mchGameWindow* iWnd1;			// player2 interface window
 
-char* mapFName = "worlds.prm";
-char* mchWorldPrm = "worlds.prm";
+const char* mapFName = "worlds.prm";
+const char* mchWorldPrm = "worlds.prm";
 
 const int mchFPS_Period = 50;
 static char mchFPS_String[100];
@@ -375,9 +375,9 @@ int mchEnableJoystick = 0;
 int mchDetectJoystick = 0;
 
 int mch_readonlyINI = 0;
-char* mch_mainINI = "game.ini";
-char* mch_hotseatINI = "RESOURCE/hotseat.ini";
-char* mch_optionsINI = "RESOURCE/options.ini";
+const char* mch_mainINI = "game.ini";
+const char* mch_hotseatINI = "RESOURCE/hotseat.ini";
+const char* mch_optionsINI = "RESOURCE/options.ini";
 
 int mchDebugMode = 0;
 int mchDemoMode = 0;
@@ -407,7 +407,7 @@ cUnknownClass			*iCamera=0;			// интерфейсная камера
 XStream __mch_logFile;
 #endif
 
-char* mchWndTitle = " ";
+const char* mchWndTitle = " ";
 
 float mchTimeSpeedCur = 1.0f;
 float mchTimeSpeedMin = 0.33f;
@@ -2873,7 +2873,7 @@ ShowImageRTO::ShowImageRTO(void)
 	memset(fntData,0,sizeof(int) * RTO_SHOW_IMAGE_MAX);
 	memset(spaceData,0,sizeof(int) * RTO_SHOW_IMAGE_MAX);
 
-	textPtr = new char*[RTO_SHOW_IMAGE_MAX];
+	textPtr = new const char*[RTO_SHOW_IMAGE_MAX];
 	fileNames = new char*[RTO_SHOW_IMAGE_MAX];
 	palNames = new char*[RTO_SHOW_IMAGE_MAX];
 	for(i = 0; i < RTO_SHOW_IMAGE_MAX; i ++){
@@ -3220,7 +3220,7 @@ void mchPBEM_LoadingQuant(void)
 	static XBuffer obj_buf;
 
 #ifndef _OFFLINE_DEBUG_
-	char* header,*url;
+	const char* header,*url;
 #endif
 
 	if(!mchPBEM_DataFlag){

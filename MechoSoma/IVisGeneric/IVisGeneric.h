@@ -50,7 +50,7 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int LoadObjectLibrary(const std::string &path) );
 	UI_IMPORT( int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF) );
 	UI_IMPORT( int ReleaseObject(int kind,int type) );
-	UI_IMPORT( cUnknownClass* CreateObject(char *fname,char *TexturePath,int Kind=0,int Type=0) );
+	UI_IMPORT( cUnknownClass* CreateObject(const char *fname,const char *TexturePath,int Kind=0,int Type=0) );
 	UI_IMPORT( cUnknownClass* CreateObject(int kind,int type) );
 	UI_IMPORT( int ReleaseObject(cUnknownClass* UObject) );
 	UI_IMPORT( int SetObjectAttribute(cUnknownClass *UObject,int attribute) );
@@ -70,8 +70,8 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( int SetObjectAnimation(cUnknownClass *UObject,float AnimationPeriod=2000.f,float StartPhase=0.f,float FinishPhase=-1.f,int mask=0xFFFFFFFF) );
 	UI_IMPORT( int IsObjectAnimationPhasePassed(cUnknownClass *UObject,float Phase) );
 	UI_IMPORT( int SetObjectChannel(cUnknownClass *UObject,int NumberChain,float TransitionTime=200.f) );
-	UI_IMPORT( int SetObjectChannel(cUnknownClass *UObject,char *NameChainMask=0,float TransitionTime=200.f,int number=0) );
-	UI_IMPORT( int GetObjectNumberChannel(cUnknownClass *UObject,char *NameChainMask=0) );
+	UI_IMPORT( int SetObjectChannel(cUnknownClass *UObject,const char *NameChainMask=0,float TransitionTime=200.f,int number=0) );
+	UI_IMPORT( int GetObjectNumberChannel(cUnknownClass *UObject,const char *NameChainMask=0) );
 	UI_IMPORT( int SetObjectColor(cUnknownClass *UObject,const sColor4f *diffuse,const sColor4f *specular=0,int mask=0xffffffff) );
 	UI_IMPORT( int GetObjectColor(cUnknownClass *UObject,sColor4f *diffuse,sColor4f *specular=0,int mask=0xffffffff) );
 	UI_IMPORT( int SetObjectVisible(cUnknownClass *UObject,int visible) );
@@ -132,8 +132,8 @@ UI_BEGIN(cInterfaceVisGeneric,KIND_UI_VISGENERIC)
 	UI_IMPORT( cUnknownClass* CreateWorld(const std::string &path,int number=0,int track=0,int LoadTerra=0) );
 	UI_IMPORT( int ReleaseWorld(cUnknownClass *UWorld=0) );
 	UI_IMPORT( int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3) );
-	UI_IMPORT( cUnknownClass* FindObject(char *name) ); // поиск объекта на миру по имени объекта
-	UI_IMPORT( cUnknownClass* FindObjectByFileName(char *fname) ); // поиск объекта на миру по имени файла объекта
+	UI_IMPORT( cUnknownClass* FindObject(const char *name) ); // поиск объекта на миру по имени объекта
+	UI_IMPORT( cUnknownClass* FindObjectByFileName(const char *fname) ); // поиск объекта на миру по имени файла объекта
 	UI_IMPORT( cUnknownClass* GetMeshLibrary(cUnknownClass *UScene=0) );
 	UI_IMPORT( cUnknownClass* GetCameraList(cUnknownClass *UScene=0) );
 	UI_IMPORT( cUnknownClass* GetTileWater(cUnknownClass *UScene=0) );

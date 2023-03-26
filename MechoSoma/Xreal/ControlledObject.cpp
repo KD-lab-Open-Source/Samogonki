@@ -125,7 +125,7 @@ void ControlledObject::write_state(XBuffer& buf)
 	buf < "rudder: " <= rudder < "\n";
 	buf < "brake: " <= brake < "\n";
 	buf < "target: " <= target;
-	char* modes[] = {
+	const char* modes[] = {
 			"NO_TARGET",
 			"STATIC_TARGET",
 			"DYNAMIC_TARGET", 

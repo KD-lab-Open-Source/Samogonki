@@ -188,7 +188,7 @@ void fxlabKeyType::Open(scrDataBlock* data)
 };
 
 
-void fxlabKeyType::Close(void)
+void fxlabKeyType::Close()
 {
 	int i;
 	for(i = 0;i < KeyNum;i++)

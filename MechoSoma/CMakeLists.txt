@@ -479,6 +479,9 @@ include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
+include_directories(ThirdParty/libjpeg-turbo/include)
+link_directories(ThirdParty/libjpeg-turbo/lib)
+
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
 
@@ -516,7 +519,7 @@ if (APPLE)
     set(METAL_LIBRARY ${CMAKE_BINARY_DIR}/default.metallib)
 
     add_custom_command(OUTPUT ${METAL_LIBRARY_AIR}
-            COMMAND xcrun -sdk macosx metal -c ${CMAKE_SOURCE_DIR}/macOS/Library.metal -o ${METAL_LIBRARY_AIR}
+            COMMAND xcrun -sdk macosx metal -c ${CMAKE_SOURCE_DIR}/MechoSoma/macOS/Library.metal -o ${METAL_LIBRARY_AIR}
             )
 
     add_custom_command(OUTPUT ${METAL_LIBRARY}

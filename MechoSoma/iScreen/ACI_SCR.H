@@ -594,9 +594,9 @@ void acsFreeResource(aciScreenResource* p);
 aciScreenObject* acsAllocObject(int type);
 void acsFreeObject(aciScreenObject* p);
 
-void acsOutText16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space);
-int acsTextStrLenMax(int fnt,unsigned char* str,int space);
-int acsTextHeight(int fnt,unsigned char* str,int space);
+void acsOutText16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space);
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space);
+int acsTextHeight(int fnt,const unsigned char* str,int space);
 
 //@caiiiycuk
 struct acsTimer {

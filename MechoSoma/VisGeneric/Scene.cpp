@@ -22,10 +22,10 @@
 #define start_timer(a,b)
 #endif//_MECHOSOMA_
 
-void SetTextureNameTrack(char *name,char *fname,int track)
+void SetTextureNameTrack(const char *name,char *fname,int track)
 {
 	if(!name) { fname[0]=0; return; }
-	char *tmp=name;
+	const char *tmp=name;
 	for(int CountSpace=-1;(CountSpace<track)&&(CountSpace<9)&&((tmp-name)<strlen(name));CountSpace++)
 	{
 		int count=0;
@@ -63,9 +63,9 @@ cScene::cScene() : cUnknownClass(KIND_SCENE)
 	AmbientLightingMax.set(0.0f,0.0f,0.0f,1.f);
 	DiffuseLightingMax.set(0.6f,0.6f,0.6f,1.f);
 #ifdef _MECHOSOMA_
-	extern char* mch_mainINI;
-	extern char* getIniKey(char* fname,char* section,char* key);
-	char *p = getIniKey(mch_mainINI,"m3d","MechosLighting");
+	extern const char* mch_mainINI;
+	extern const char* getIniKey(const char* fname,const char* section,const char* key);
+	const char *p = getIniKey(mch_mainINI,"m3d","MechosLighting");
 	XBuffer *XBuf = new XBuffer(p,strlen(p));
 	*XBuf >= AmbientObjectMechos.r >= AmbientObjectMechos.g >= AmbientObjectMechos.b;
 	delete XBuf;
@@ -297,8 +297,8 @@ void cScene::LoadWorld(const std::string &path,int number,int track)
 	delete root;
 	// инициализация шара
 #ifdef _MECHOSOMA_
-	extern char* mch_mainINI;
-	extern char* getIniKey(char* fname,char* section,char* key);
+	extern const char* mch_mainINI;
+	extern const char* getIniKey(const char* fname,const char* section,const char* key);
 	RadiusPlanet()=atoi(getIniKey(mch_mainINI,"m3d","RadiusShare"));
 #endif
 	InitArrayShare(RadiusPlanet()=RadiusPlanet());
@@ -515,7 +515,7 @@ void cScene::GetOmniLight(const Vect3f &pos,sColor4f &diffuse,sColor4f &illumina
 		}
 }
 //////////////////////////////////////// PRIVATE ////////////////////////////////////////
-cWorldPolyGrid* cScene::LoadAir(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *TexturePath,int AirHeight)
+cWorldPolyGrid* cScene::LoadAir(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *TexturePath,int AirHeight)
 {
 	int xSky=2*((RadiusPlanet()+AirHeight)/xstep+3);
 	int ySky=2*((RadiusPlanet()+AirHeight)/ystep+3);
@@ -539,7 +539,7 @@ cWorldPolyGrid* cScene::LoadAir(int xstep,int ystep,float uScale,float vScale,fl
 		}
 	return WorldPolyGrid;
 }
-cWorldPolyGrid* cScene::LoadCloud(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *OpacityName,char *TexturePath,int CloudHeight)
+cWorldPolyGrid* cScene::LoadCloud(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *OpacityName,const char *TexturePath,int CloudHeight)
 {
 	int xSky=2*((RadiusPlanet()+CloudHeight)/xstep+3);
 	int ySky=2*((RadiusPlanet()+CloudHeight)/ystep+3);
@@ -576,7 +576,7 @@ inline int FunctionLightShare(int x,int y,sColor4f &Diffuse,int RadiusWorldSun,s
 	color=Diffuse*(RadiusWorldSun-l)/RadiusWorldSun;
 	return 1;
 }
-void cScene::AddAirLight(Vect3f &Pos,sColor4f &Ambient,sColor4f &Diffuse,sColor4f &Illumination,float RadiusWorldSun,float RadiusLight,float RadiusSun,char *TextureName,char *TexturePath)
+void cScene::AddAirLight(Vect3f &Pos,sColor4f &Ambient,sColor4f &Diffuse,sColor4f &Illumination,float RadiusWorldSun,float RadiusLight,float RadiusSun,const char *TextureName,const char *TexturePath)
 {
 	cWorldPolyGrid *Air=GetAir();
 	if(!Air) return;
@@ -646,7 +646,7 @@ void cScene::AddAirLight(Vect3f &Pos,sColor4f &Ambient,sColor4f &Diffuse,sColor4
 			}
 	}
 }
-void cScene::LoadWorldLight(int number,int track,sColor4f &ColorAmbientAir,char *TextureSun,char *TextureMoon,char *TexturePath)
+void cScene::LoadWorldLight(int number,int track,sColor4f &ColorAmbientAir,const char *TextureSun,const char *TextureMoon,const char *TexturePath)
 {
 #ifdef _USE_TERRA_
 	extern s_sur_scr sur_scr;

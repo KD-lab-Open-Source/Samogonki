@@ -22,13 +22,13 @@
 #include "Mesh3ds.h"
 
 
-void fxlabServerEvolutionType::Start(void)
+void fxlabServerEvolutionType::Start()
 {
 	CurrentTime = fxlabServerD->GetTime() - StartTime;	
 	fxlabApplicationObjectType::Start();
 };
 
-void fxlabServerEvolutionType::Quant(void)
+void fxlabServerEvolutionType::Quant()
 {
 	CurrentTime = fxlabServerD->GetTime() - StartTime;	
 	fxlabApplicationObjectType::Quant();
@@ -50,7 +50,7 @@ void fxlabServerEvolutionType::SetStatistic(int owner_id,int arcane_id,fxlabGene
 
 //-----------------------------------------
 
-void fxlabServerKeyObjectType::Start(void)
+void fxlabServerKeyObjectType::Start()
 {
 	fxlabServerSpaceType::Start();
 	KeyTime = CurrentTime * fxlabGlobalTimeRate;
@@ -63,13 +63,13 @@ void fxlabServerKeyObjectType::Start(void)
 	};
 };
 
-void fxlabServerKeyObjectType::Close(void)
+void fxlabServerKeyObjectType::Close()
 {
 	if(KeyData) delete KeyData;
 	fxlabServerSpaceType::Close();
 };
 
-void fxlabServerKeyObjectType::Quant(void)
+void fxlabServerKeyObjectType::Quant()
 {
 	fxlabServerSpaceType::Quant();
 	KeyTime = CurrentTime * fxlabGlobalTimeRate;
@@ -82,20 +82,20 @@ void fxlabServerKeyObjectType::Quant(void)
 	};
 };
 
-void fxlabServerKeyObjectType::KeyUpdate(void)
+void fxlabServerKeyObjectType::KeyUpdate()
 {
 	Alive &= KeyPoint->GetKey(KeyData,KeyTime);
 };
 
 //------------------------------
 
-/*fxlabTrackDataType::fxlabTrackDataType(void)
+/*fxlabTrackDataType::fxlabTrackDataType()
 {
 	TrackType = TRACK_EL_BUSY;
 	TrackRadius = 0;
 };
 
-void fxlabTrackDataType::SetTrackInfo(void)
+void fxlabTrackDataType::SetTrackInfo()
 {
 	TrackType = TRACK_EL_BUSY;
 	TrackRadius = 0;
@@ -108,14 +108,14 @@ void fxlabTrackDataType::UpdateTrack(int x,int y)
 
 //-----------------------------------------
 
-fxlabProtectionType::fxlabProtectionType(void)
+fxlabProtectionType::fxlabProtectionType()
 {
 	ProtectionID = -1;
 	ProtectionTime = 0;
 	ProtectionTimer.start(0);
 };
 
-void fxlabProtectionType::ProtectionQuant(void)
+void fxlabProtectionType::ProtectionQuant()
 {
 	if(!ProtectionTimer())
 		ProtectionID = -1;
@@ -225,7 +225,7 @@ void fxlabArcaneAction(const class ArcaneStatisticsInfo* p,int id)
 	};
 };
 
-void fxlabArcaneStatisticInit(void)
+void fxlabArcaneStatisticInit()
 {
 /*	fxlabGeneralObjectType* l;
 	list<fxlabGeneralObjectType*>::iterator p;

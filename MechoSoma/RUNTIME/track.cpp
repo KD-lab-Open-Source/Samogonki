@@ -76,7 +76,7 @@ extern char* fcPath;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-char* GetTargetName(char* name);
+const char* GetTargetName(const char* name);
 void mchLoadTrackNode(XStream& fh);
 
 void mchA_d3dRectangle(int x,int y,int sx,int sy,int col,int outline = 0);
@@ -99,7 +99,7 @@ void mchLoadTrack(void)
 
 	mchTrackBranch* p;
 
-	char* fname;
+	const char* fname;
 
 	if(!mchTrackData) mchTrackData = new xtList<mchTrackBranch>;
 	if(!mch_trackMap) mch_trackMap = new mchTrackMap;

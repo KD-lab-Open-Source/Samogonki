@@ -162,7 +162,7 @@ struct fxlabArcaneLightningBolt : fxlabInternalArcane
 
 /*struct fxlabArcaneJumpBall : fxlabInternalArcane
 {
-	void InterruptAction(void);
+	void InterruptAction();
 };*/
 
 struct fxlabArcaneSpiderSpawn : fxlabInternalArcane
@@ -266,7 +266,7 @@ struct fxlabArcaneFireStone : fxlabExternalPowerArcane
 	void Start() override;
 	void Close() override;
 	void Quant() override;
-//	void InterruptAction(void);
+//	void InterruptAction();
 };
 
 struct fxlabArcaneSnowFall : fxlabExternalPowerArcane

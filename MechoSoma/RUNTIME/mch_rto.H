@@ -99,7 +99,7 @@ struct ShowImageRTO : BaseRTO
 
 	char** fileNames;
 	char** palNames;
-	char** textPtr;
+	const char** textPtr;
 
 	int imageSX;
 	int imageSY;
@@ -110,9 +110,9 @@ struct ShowImageRTO : BaseRTO
 	virtual void Finit(void);
 
 	void SetNumFiles(int num);
-	void SetName(char* p,int id = 0){ strcpy(fileNames[id],p); count = 0; Flags[id] = 0; }
-	void SetPalette(char* p,int id = 0){ strcpy(palNames[id],p); Flags[id] |= IMG_RTO_PALETTE; }
-	void SetText(char* p,int fnt,int sp,int col,int id = 0){ textPtr[id] = p; fntData[id] = fnt; spaceData[id] = sp; colData[id] = col; Flags[id] |= IMG_RTO_TEXT; }
+	void SetName(const char* p,int id = 0){ strcpy(fileNames[id],p); count = 0; Flags[id] = 0; }
+	void SetPalette(const char* p,int id = 0){ strcpy(palNames[id],p); Flags[id] |= IMG_RTO_PALETTE; }
+	void SetText(const char* p,int fnt,int sp,int col,int id = 0){ textPtr[id] = p; fntData[id] = fnt; spaceData[id] = sp; colData[id] = col; Flags[id] |= IMG_RTO_TEXT; }
 
 	void SetGammaSeq(int dir);
 

@@ -70,15 +70,15 @@ struct scrDataBlock
 
 void scrSetVerbose(int v = 1);
 
-void scrSetInputDir(char* p);
-void scrSetOutputDir(char* p);
-void scrSetOutputFile(char* p);
+void scrSetInputDir(const char* p);
+void scrSetOutputDir(const char* p);
+void scrSetOutputFile(const char* p);
 
 scrDataBlock* loadScript(const std::string &path);
 scrDataBlock* loadScript(XStream& fh);
-scrDataBlock* parseScript(char* fname,char *set_name);
-void saveScript(char* fname,scrDataBlock* p);
-void dumpScript(char* fname,scrDataBlock* p);
-void dumpScriptKeywords(char* fname,scrDataBlock* p);
+scrDataBlock* parseScript(const char* fname,const char *set_name);
+void saveScript(const char* fname,scrDataBlock* p);
+void dumpScript(const char* fname,scrDataBlock* p);
+void dumpScriptKeywords(const char* fname,scrDataBlock* p);
 
 #endif /* __ACI_PARSER_H__ */

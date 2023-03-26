@@ -88,9 +88,9 @@ struct fxlabServerBodyLinkType : fxlabServerKeyObjectType
 	int BonusActionID;
 	int BonusPartID;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
+	void Open();
+	void Start();
+	void Close();
 	void SetAlive(int alive);
 
 	void SetBonusModelType(int type){ BonusModelType = type; };
@@ -105,11 +105,11 @@ struct fxlabServerBonusSingle : fxlabServerSpaceType
 	int BonusPartID;
 	fxlabProcessInterface BonusPoint;
 
-	void Open(void);
-	void Start(void);
-	void Close(void);
+	void Open();
+	void Start();
+	void Close();
 
-	void Generate(void);
+	void Generate();
 
 	void SetBonusActionID(int id);
 };
@@ -120,9 +120,9 @@ struct fxlabServerBonusMarket : fxlabServerBonusSingle
 	int WaitFlag;
 	DurationTimer RespawnTimer;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
+	void Open();
+	void Start();
+	void Quant();
 
 	void SetBonusRespawnTime(int time){ RespawnTime = time; };
 };

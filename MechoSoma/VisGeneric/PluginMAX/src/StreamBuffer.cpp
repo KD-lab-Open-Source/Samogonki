@@ -212,7 +212,7 @@ cStream& cStream::operator << (char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ltoa(a,buf,10);
+        const char *ch=port_ltoa(a,buf,10);
 	write(&ch,strlen(ch));
 	return *this; 
 }
@@ -220,7 +220,7 @@ cStream& cStream::operator << (unsigned char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ultoa(a,buf,10);
+	const char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -228,7 +228,7 @@ cStream& cStream::operator << (short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ltoa(a,buf,10);
+        const char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -236,7 +236,7 @@ cStream& cStream::operator << (unsigned short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ultoa(a,buf,10);
+        const char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -244,7 +244,7 @@ cStream& cStream::operator << (int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ltoa(a,buf,10);
+        const char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -252,7 +252,7 @@ cStream& cStream::operator << (unsigned int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ultoa(a,buf,10);
+        const char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -260,7 +260,7 @@ cStream& cStream::operator << (long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ltoa(a,buf,10);
+        const char *ch=port_ltoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }
@@ -268,7 +268,7 @@ cStream& cStream::operator << (unsigned long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=port_ultoa(a,buf,10);
+        const char *ch=port_ultoa(a,buf,10);
 	write(ch,strlen(ch));
 	return *this; 
 }

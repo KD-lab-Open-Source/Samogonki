@@ -18,14 +18,14 @@ using namespace KDWIN;
 
 #include "xtool.h"
 
-inline void ErrAbort(char *message)
+inline void ErrAbort(const char *message)
 {
 	ErrH.Abort(message);
 }
-inline void ErrAbort(char *message1,char *message2,char *message3)
+inline void ErrAbort(const char *message1,const char *message2,const char *message3)
 {
 	XBuffer buf;
-	buf<(const char*)message1<(const char*)message2<(const char*)message3;
+	buf<message1<message2<message3;
 	ErrH.Abort(buf.address());
 }
 

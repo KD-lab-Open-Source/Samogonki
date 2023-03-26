@@ -23,8 +23,8 @@ const float FXLAB_TRACK_AI_SCALE = 4.0f;
 	int TrackType;
 	int TrackRadius;
 
-	fxlabTrackDataType(void);
-	virtual void SetTrackInfo(void);
+	fxlabTrackDataType();
+	virtual void SetTrackInfo();
 	virtual void UpdateTrack(int x,int y);
 };
 */

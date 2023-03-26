@@ -142,7 +142,7 @@ public:
 				return this->Base[i];
 		return 0;
 	}
-	cBaseMesh* Get(void *Key)
+	cBaseMesh* Get(const void *Key)
 	{
 		for(int i=0;i<this->length();i++)
 			if(this->Base[i]->cmp(Key)==0)

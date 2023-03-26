@@ -15,7 +15,7 @@ float GlobalGetCPUSpeed()
 {
 	return 0;
 }
-cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,float yPos,float zPos,float xSizeReflection,float ySizeReflection,int xTextureSize,int yTextureSize,float du,float dv,char **TextureName,char **OpacityName,char *TexturePath,int KoofReflection,float dPeriod)
+cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,float yPos,float zPos,float xSizeReflection,float ySizeReflection,int xTextureSize,int yTextureSize,float du,float dv,const char **TextureName,const char **OpacityName,const char *TexturePath,int KoofReflection,float dPeriod)
 {
 	float kCPU=GlobalGetCPUSpeed();
 	if(kCPU>0.75f) kCPU=1.f;
@@ -37,8 +37,8 @@ cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,
 	SurfaceReflection->xMaterial=xTextureSize; 
 	SurfaceReflection->yMaterial=yTextureSize;
 #ifdef _MECHOSOMA_
-	extern char* mch_mainINI;
-	extern char* getIniKey(char* fname,char* section,char* key);
+	extern const char* mch_mainINI;
+	extern const char* getIniKey(const char* fname,const char* section,const char* key);
 	SurfaceReflection->AmplitudeColor=atoi(getIniKey(mch_mainINI,"m3d","MenuAmplitudeColor"));
 	SurfaceReflection->Attribute=0;
 	if(atoi(getIniKey(mch_mainINI,"m3d","AddColorReflectionSurface")))

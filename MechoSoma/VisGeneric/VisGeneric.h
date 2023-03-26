@@ -48,7 +48,7 @@ public:
 	virtual int LoadObjectLibrary(const std::string &path);
 	virtual int FreeObjectLibrary(int kind=0xFFFFFFFF,int type=0xFFFFFFFF);
 	virtual int ReleaseObject(int kind,int type);
-	virtual cUnknownClass* CreateObject(char *fname,char *TexturePath,int Kind=0,int Type=0);
+	virtual cUnknownClass* CreateObject(const char *fname,const char *TexturePath,int Kind=0,int Type=0);
 	virtual cUnknownClass* CreateObject(int kind,int type);
 	virtual int SetObjectAttribute(cUnknownClass *UObject,int attribute);
 	virtual int ClearObjectAttribute(cUnknownClass *UObject,int attribute);
@@ -67,8 +67,8 @@ public:
 	virtual int GetObjectAnimation(cUnknownClass *UObject,float *AnimationPeriod,float *StartPhase);
 	virtual int SetObjectAnimation(cUnknownClass *UObject,float AnimationPeriod,float StartPhase=0.f,float FinishPhase=1.f,int mask=0xFFFFFFFF);
 	virtual int SetObjectChannel(cUnknownClass *UObject,int NumberChain,float TransitionTime=200.f);
-	virtual int SetObjectChannel(cUnknownClass *UObject,char *NameChainMask=0,float TransitionTime=200.f,int number=0);
-	virtual int GetObjectNumberChannel(cUnknownClass *UObject,char *NameChain=0);
+	virtual int SetObjectChannel(cUnknownClass *UObject,const char *NameChainMask=0,float TransitionTime=200.f,int number=0);
+	virtual int GetObjectNumberChannel(cUnknownClass *UObject,const char *NameChain=0);
 	virtual int IsObjectAnimationPhasePassed(cUnknownClass *UObject,float Phase);
 	virtual int SetObjectColor(cUnknownClass *UObject,const sColor4f *diffuse,const sColor4f *specular,int mask=0xffffffff);
 	virtual int GetObjectColor(cUnknownClass *UObject,sColor4f *diffuse,sColor4f *specular,int mask=0xffffffff);
@@ -130,8 +130,8 @@ public:
 	virtual cUnknownClass* CreateWorld(const std::string &path,int number=0,int track=0,int LoadTerra=0);
 	virtual int ReleaseWorld(cUnknownClass *UWorld);
 	virtual int GetPolygonMapAttribute(int x1,int y1,int x2,int y2,int x3,int y3);
-	virtual cUnknownClass* FindObject(char *name); // поиск объекта на миру по имени объекта
-	virtual cUnknownClass* FindObjectByFileName(char *fname); // поиск объекта на миру по имени файла объекта
+	virtual cUnknownClass* FindObject(const char *name); // поиск объекта на миру по имени объекта
+	virtual cUnknownClass* FindObjectByFileName(const char *fname); // поиск объекта на миру по имени файла объекта
 	virtual cUnknownClass* GetMeshLibrary(cUnknownClass *UScene=0);
 	virtual cUnknownClass* GetCameraList(cUnknownClass *UScene=0);
 	virtual cUnknownClass* GetTileWater(cUnknownClass *UScene=0);

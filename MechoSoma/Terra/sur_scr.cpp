@@ -8,11 +8,10 @@
 
 #include "sur_scr.h"
 
-// TODO: @caiiiycuk implement this
-char *itoa(int number, char *dest, size_t dest_size)
-{
-	return nullptr;
-}
+#ifndef _WIN32
+#include "port.h"
+#define itoa port_itoa
+#endif
 
 s_sur_scr sur_scr;
 
@@ -86,7 +85,7 @@ void s_sur_scr::lex2oper(char* world, char*& buf)
 
 }
 
-int s_sur_scr::load_scr(char* fname)
+int s_sur_scr::load_scr(const char* fname)
 {
 	strcpy(name_scr,fname);
 	XStream f(0);

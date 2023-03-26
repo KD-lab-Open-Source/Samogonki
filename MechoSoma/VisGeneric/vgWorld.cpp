@@ -24,7 +24,7 @@ int cVisGeneric::ReleaseWorld(cUnknownClass *UWorld)
 	GetActiveScene()->ReleaseWorld();
 	return 0;
 }
-cUnknownClass* cVisGeneric::FindObject(char *name)
+cUnknownClass* cVisGeneric::FindObject(const char *name)
 { // поиск объекта на миру по имени объекта
 	assert(GetActiveScene());
 	return (cUnknownClass*) GetActiveScene()->GetM3D()->FindObject(name);

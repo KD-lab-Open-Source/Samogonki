@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef __APPLE__
 #include <strings.h>
@@ -38,7 +39,7 @@ public:
 		}
 	}
 
-	cString(char *string)
+	cString(const char *string)
 	{
 		if(string)
 		{
@@ -52,11 +53,11 @@ public:
 		}
 	}
 
-	cString(cString &string)
+	cString(const cString &string)
 	{
 		if(string.buf)
 		{
-			buf=strdup(string);
+			buf=strdup(string.buf);
 			SetSize();
 		}
 		else
@@ -89,7 +90,7 @@ public:
 		return buf[l];
 	}
 
-	inline operator char*()
+	inline operator const char*()
 	{
 		return buf;
 	}
@@ -105,7 +106,7 @@ public:
 		return 0;
 	}
 
-	inline cString& operator << (cString &string)
+	inline cString& operator << (const cString &string)
 	{
 		if(string.buf)
 		{
@@ -149,7 +150,7 @@ public:
 		return *this;
 	}
 
-	inline cString& operator = (cString &string)
+	inline cString& operator = (const cString &string)
 	{
 		if(buf) free(buf);
 		if(string.buf)
@@ -217,7 +218,14 @@ public:
 		}
 	}
 
-	inline void Set(const char *string,int pos=0);				
+	inline void Set(const char *string,int pos=0);
+
+        inline const cString& ToLower() const {
+          for (size_t i = 0; i < strlen(buf); i++) {
+            buf[i] = static_cast<char>(tolower(buf[i]));
+          }
+          return *this;
+        }
 
 private:
 #ifdef _STRING_DEBUG_

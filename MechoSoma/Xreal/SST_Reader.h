@@ -15,14 +15,14 @@ struct DirectedRecord : UsualRecord
 	void read(XBuffer& b) { UsualRecord::read(b); b >= angle; }
 };
 
-int vmapOpenResource(char* fname,XStream& fh);
+int vmapOpenResource(const char* fname,XStream& fh);
 
 template <class Record>
 class SST_Reader : public std::list<Record>
 {
 public:
 
-SST_Reader(char* fname)
+SST_Reader(const char* fname)
 {
 	XStream ff(0);
 	//if(!ff.open(fname, XS_IN))

@@ -12,7 +12,7 @@
 
 #include "port.h"
 
-class SoundTable : std::unordered_map<string, int>
+class SoundTable : std::unordered_map<std::string, int>
 {
 public:
 	SoundTable()
@@ -20,11 +20,14 @@ public:
 		(*this)["watch_work.3ds->gear09"] = EFF_BLADE; 
 	}
 
-	int look(char* fname, char* name)
+	int look(const char* fname, const char* name)
 	{
-		string s = strlwr(fname);
-		s += "->";
-		s += strlwr(name);
+		cString t = fname;
+                t.ToLower();
+                t << "->";
+		t << cString(name).ToLower();
+                std::string s = t.ptr();
+
 		int pos = s.rfind("\\");
 		if(pos != string::npos)
 			s.erase(0, pos + 1);

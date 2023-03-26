@@ -562,7 +562,7 @@ void BodyDispatcher::print_statistics(XBuffer& buf)
 		total += mi -> second;
 		}
 	buf < "Body total: " <= total < "\n";
-#endif _FINAL_VERSION_
+#endif
 }
 
 //void BodyDispatcher::save_log(XStream& f)

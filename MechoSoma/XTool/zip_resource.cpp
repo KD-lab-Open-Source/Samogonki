@@ -27,7 +27,7 @@ XZIP_FileHeader::XZIP_FileHeader(void)
 	list = NULL;
 }
 
-XZIP_FileHeader::XZIP_FileHeader(char* fname,unsigned offs,unsigned size,void* ext_ptr,int ext_sz)
+XZIP_FileHeader::XZIP_FileHeader(const char* fname,unsigned offs,unsigned size,void* ext_ptr,int ext_sz)
 {
 	SetName(fname);
 	dataOffset = offs;
@@ -68,7 +68,7 @@ XZIP_FileHeader::~XZIP_FileHeader(void)
 		delete[] extData;
 }
 
-void XZIP_FileHeader::SetName(char* p)
+void XZIP_FileHeader::SetName(const char* p)
 {
 	int i,sz = strlen(p);
 	fileName = strdup(p); 
@@ -87,7 +87,7 @@ void XZIP_FileHeader::save(XStream& fh)
 		fh.write(extData,extDataSize);
 }
 
-XZIP_Resource::XZIP_Resource(char* fname,int fl)
+XZIP_Resource::XZIP_Resource(const char* fname,int fl)
 {
 	int sz;
 	flags = fl;
@@ -245,7 +245,7 @@ XZIP_FileHeader* XZIP_Resource::find(const char* fname)
 	return NULL;
 }
 
-int XZIP_Resource::open(char* fname,XStream& fh,int mode)
+int XZIP_Resource::open(const char* fname,XStream& fh,int mode)
 {
 	std::string t(fname);
 	for(auto &c : t){
@@ -262,7 +262,7 @@ int XZIP_Resource::open(char* fname,XStream& fh,int mode)
 	return 0;
 }
 
-void XZIP_Resource::dump(char* fname)
+void XZIP_Resource::dump(const char* fname)
 {
 	XZIP_FileHeader* p = fileList.first();
 

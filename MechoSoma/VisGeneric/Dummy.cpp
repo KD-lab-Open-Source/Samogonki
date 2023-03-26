@@ -2,6 +2,7 @@
 #include "Base.h"
 #include "Dummy.h"
 #include "HashStringGroup.h"
+#include "cString.h"
 
 #include "port.h"
 
@@ -47,7 +48,7 @@ struct DummyNameMap :  HashStringGroup<int>
 } dummy_name_map;
 
 
-unsigned int CalcType(char* NameMesh)
+unsigned int CalcType(const char* NameMesh)
 {
 	int* type = dummy_name_map.look(NameMesh);
 	if(type)
@@ -58,7 +59,7 @@ unsigned int CalcType(char* NameMesh)
 ////////////////////////////////////////////////////////////////
 //	Dummy
 ////////////////////////////////////////////////////////////////
-Dummy::Dummy(const Vect3f& v, char* n, int t)
+Dummy::Dummy(const Vect3f& v, const char* n, int t)
 : Vect3f(v)
 {
 	name = new char[strlen(n) + 1];
@@ -95,12 +96,13 @@ Dummy::~Dummy()
 //////////////////////////////////////////////////
 //	Dummy List
 //////////////////////////////////////////////////
-int DummyList::Add(const Vect3f& v, char* n) 
-{ 
-	strlwr(n);
-	int* type = dummy_name_map.look(n);
+int DummyList::Add(const Vect3f& v, const char* n)
+{
+        cString t = n;
+        t.ToLower();
+	int* type = dummy_name_map.look(t);
 	if(type){
-		push_back( Dummy(v, n, *type) ); 
+		push_back( Dummy(v, t, *type) );
 		return 1;
 		}
 	return 0;
@@ -137,7 +139,7 @@ Dummy* DummyList::Search(unsigned int Type)
 	return 0;
 }
 
-Dummy* DummyList::Search(char* name)
+Dummy* DummyList::Search(const char* name)
 {
 	iterator i;
 	FOR_EACH(*this, i)
@@ -158,7 +160,7 @@ Dummy& DummyList::Find(unsigned int Type)
 	return *p;
 }
 		
-Dummy& DummyList::Find(char* name)
+Dummy& DummyList::Find(const char* name)
 {
 	Dummy* p = Search(name);
 	if(!p){
@@ -184,7 +186,7 @@ void DummyList::SortByName()
 	abort();
 }
 
-DummyList::iterator DummyList::Iterator(char* name_mask)
+DummyList::iterator DummyList::Iterator(const char* name_mask)
 {
 	iterator i;
 	FOR_EACH(*this, i)

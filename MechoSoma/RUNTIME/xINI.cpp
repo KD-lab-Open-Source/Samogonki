@@ -10,7 +10,7 @@
 
 void xINI_Init(void);
 int xINI_PutKey(const char* fname,const char* section,const char* key,const char* val);
-char* xINI_GetKey(const char* fname,const char* section,const char* key);
+const char* xINI_GetKey(const char* fname,const char* section,const char* key);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
@@ -79,7 +79,7 @@ int xINI_PutKey(const char* fname,const char* section,const char* key,const char
 	return 0;
 }
 
-char* xINI_GetKey(const char* fname,const char* section,const char* key)
+const char* xINI_GetKey(const char* fname,const char* section,const char* key)
 {
 	xINI_File* p;
 	p = xINI_List -> first();

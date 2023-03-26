@@ -23,18 +23,18 @@ public:
 	~cTextureBuffer();
 
 	sTexture* BeginList(int x,int y);			// создать мульти текстуру размера x*y
-	sTextureChild* AttachChild(char *name,int id);	// добавить в мульти текстуру текстуру
+	sTextureChild* AttachChild(const char *name,int id);	// добавить в мульти текстуру текстуру
 	sTexture* EndList();						// завершить создание мультитектуры
 	sTextureChild& GetTextureChild(int number)				{ assert(0<=number&&number<TextureChildArray.length()); return TextureChildArray[number]; }
 
-	sTexture* Get(char *name,char *path,char *warning="");
+	sTexture* Get(const char *name,const char *path,const char *warning="");
 	void Release(unsigned int Type);
 private:
-	sTexture* Load(char *fname,char *warning="");
-	sTexture* LoadTGA(char *fname,char *warning="");
-	sTexture* LoadJPG(char *fname,char *warning="");
-	int LoadTGA(char *fname,void **buf,int &x,int &y,int &fmt);
-	int SaveTGA(char *fname,void *buf,int x,int y,int fmt);
+	sTexture* Load(const char *fname,const char *warning="");
+	sTexture* LoadTGA(const char *fname,const char *warning="");
+	sTexture* LoadJPG(const char *fname,const char *warning="");
+	int LoadTGA(const char *fname,void **buf,int &x,int &y,int &fmt);
+	int SaveTGA(const char *fname,void *buf,int x,int y,int fmt);
 	void ConvertTextureFormat(void *pOld,int xOld,int yOld,int fmtOld,void *pNew,int xNew,int yNew,int fmtNew);
 };
 extern cTextureBuffer *TextureBuffer;

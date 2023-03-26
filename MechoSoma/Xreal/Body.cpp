@@ -466,12 +466,12 @@ void Body::setAnimation(float AnimationPeriod, float StartPhase, float FinishPha
 	xrealIVG -> SetObjectAnimation(geometry, AnimationPeriod, StartPhase, FinishPhase, mask);
 }
 
-void Body::setChannel(char* channel)
+void Body::setChannel(const char* channel)
 {
 	xrealIVG -> SetObjectChannel(geometry, channel);
 }
 
-void Body::setChannelRandom(char* channel)
+void Body::setChannelRandom(const char* channel)
 {
 	int n = xrealIVG -> GetObjectNumberChannel(geometry, channel);
 	xrealIVG -> SetObjectChannel(geometry, channel, 0, random(n));

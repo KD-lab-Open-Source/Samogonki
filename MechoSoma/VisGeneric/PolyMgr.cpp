@@ -18,7 +18,7 @@
 #define NUMBER_POINT_ATTRIBUTE		10000
 #define NUMBER_POLYGON_FIX			10000
 
-extern void SaveMemoryMessage(char *message,int i=0);
+extern void SaveMemoryMessage(const char *message,int i=0);
 int					gb_CurrentTexture=0;
 
 cPolyDispatcher::cPolyDispatcher()

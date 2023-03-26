@@ -26,7 +26,7 @@ public:
 	~cTileWater();
 	void Release();
 
-	void Load(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *TexturePath,int attribute);
+	void Load(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *TexturePath,int attribute);
 	void PreDraw(cUnknownClass *UScene);
 	void Draw(cUnknownClass *UScene);
 	void Attach(cTileMap *TileMap=0);

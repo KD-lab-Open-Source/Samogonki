@@ -10,7 +10,7 @@ void sndCoordsRnd(int& x,int& y);
 int sndGetFreeChannel(int x,int y,int& pr);
 int sndGetFreeChannel2(int x,int y,int& pr);
 
-char* sndGetTargetName(char* p);
+const char* sndGetTargetName(const char* p);
 
 int sndGetCurrentCD_Track(void);
 void sndNextCD_Track(void);

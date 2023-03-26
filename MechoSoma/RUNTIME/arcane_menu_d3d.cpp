@@ -31,7 +31,7 @@ extern mchArcaneBMP** mchA_ShapeBMP;
 extern mchArcaneBMP** mchA_iShapeBMP;
 extern mchArcaneBMP** mchA_MapPointer;
 
-extern char* mchIscreenINI;
+extern const char* mchIscreenINI;
 
 extern cInterfaceVisGeneric	*gb_IVisGeneric;
 extern cInterfaceGraph3d	*gb_IGraph3d;
@@ -47,8 +47,8 @@ void mchA_d3dMemPutSpr(int x,int y,int sx,int sy,char* p,int bsx,char* buf);
 void mchA_d3dSprPutpixel(int x,int y,int idx,unsigned r,unsigned g,unsigned b);
 void mchA_d3dSaveSprite(int idx);
 
-char* getIniKey(char* fname,char* section,char* key);
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+char* getIniKey(const char* fname,const char* section,const char* key);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
 int mchA_GetEssenceID(void);
 
@@ -332,14 +332,14 @@ void mchA_d3dDrawSpriteZ(int x,int y,int z,float sx,float sy,int handle,int col,
 	} while(ret != MD3D_OK);
 }
 
-void mchA_d3dOutString(int x,int y,float sx,float sy,void* str,int col,int alpha,int fnt,int space,float mul,int pr_flag,int vspace)
+void mchA_d3dOutString(int x,int y,float sx,float sy,const void* str,int col,int alpha,int fnt,int space,float mul,int pr_flag,int vspace)
 {
 	int i,sz;
 	float xx,yy;
 
 	HFont* p = acsFntTable[fnt];
 	HChar* ch;
-	unsigned char* str_buf = (unsigned char*)str;
+	const unsigned char* str_buf = (const unsigned char*)str;
 
 	sz = strlen((char*)str);
 
@@ -367,14 +367,14 @@ void mchA_d3dOutString(int x,int y,float sx,float sy,void* str,int col,int alpha
 	}
 }
 
-void mchA_d3dOutStringZ(int x,int y,int z,float sx,float sy,void* str,int col,int alpha,int fnt,int space,float mul,int pr_flag)
+void mchA_d3dOutStringZ(int x,int y,int z,float sx,float sy,const void* str,int col,int alpha,int fnt,int space,float mul,int pr_flag)
 {
 	int i,sz;
 	float xx,yy;
 
 	HFont* p = acsFntTable[fnt];
 	HChar* ch;
-	unsigned char* str_buf = (unsigned char*)str;
+	const unsigned char* str_buf = (const unsigned char*)str;
 
 	sz = strlen((char*)str);
 

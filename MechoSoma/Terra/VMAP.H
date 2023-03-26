@@ -52,7 +52,7 @@ struct PrmFile;
 	//#define offsetSpec (XS_Buf * YS_Buf*3)
 #else 
 	#define offsetAt (XS_Buf * YS_Buf*0)
-	#define offsetVx (XS_Buf * YS_Buf/4*1) //Размер VxBuf в мехосоме - 1M
+	#define offsetVx (XS_Buf * YS_Buf/4*1) //пїЅпїЅпїЅпїЅпїЅпїЅ VxBuf пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - 1M
 	#define offsetClTr (XS_Buf * YS_Buf/4*1 + (XS_Buf * YS_Buf/4) )
 	//#define offsetSpec (XS_Buf * YS_Buf*2 + (XS_Buf * YS_Buf/4) )
 #endif
@@ -133,8 +133,8 @@ struct vrtMap {
 	//inline unsigned char ZF(int i);
 	void init(void);
 	void finit(void);
-	void open(char* name,int nWorld);
-	void load(char* name,int nWorld,int nTrack=0);
+	void open(const char* name,int nWorld);
+	void load(const char* name,int nWorld,int nTrack=0);
 	void reload(int nWorld,int nTrack=0);
 	void release(void);
 //	void allocHeap(void);
@@ -218,8 +218,8 @@ struct vrtMap {
 	void fileLoad(void);
 	};
 
-void vMapPrepare(char* name,int nWorld = 0,int nTrack=0);
-char* GetTargetName(char* name);
+void vMapPrepare(const char* name,int nWorld = 0,int nTrack=0);
+const char* GetTargetName(const char* name);
 
 void S2G_z_buffer(int camera_x,int camera_y,int camera_z,double focus,int screen_x_center,int screen_y_center,
 			int xs, int ys, int plane_mode, int &xg, int &yg, int &zg);
@@ -272,15 +272,15 @@ inline int getDeltaX(int v0,int v1)
 
 const int MLNAMELEN = 15;
 
-//Работа с INI Файлом
+//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ INI пїЅпїЅпїЅпїЅпїЅпїЅ
 extern char* GetINIstringV(const char* iniFile,const char* section,const char* key);
-extern void SaveINIstringV(const char* iniFile,const char* section,const char* key,char* var);
+extern void SaveINIstringV(const char* iniFile,const char* section,const char* key,const char* var);
 
 
 struct sWorldTable {
-	char* name; //Имя мира
-	char* dir;  //Путь до каталога с миром
-	char* fname;//имя INI файла мира пока с частичным путем
+	char* name; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	char* dir;  //пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+	char* fname;//пїЅпїЅпїЅ INI пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
 	int numberMechosomWorld;
 	int numberMechosomTrack;
@@ -296,7 +296,7 @@ struct sAllWorldsTable {
 	sWorldTable * it;
 	int maxWorld;
 
-	sAllWorldsTable (char* worlds_prm_name);
+	sAllWorldsTable (const char* worlds_prm_name);
 
 	~sAllWorldsTable (void){
 	};

@@ -3,5 +3,5 @@
 //
 #include "Statistics.h"
 
-void allocation_tracking(char* title) {}
-void allocation_tracking(char* title, struct AllocationAccumulator* state) {}
+void allocation_tracking(const char* title) {}
+void allocation_tracking(const char* title, struct AllocationAccumulator* state) {}

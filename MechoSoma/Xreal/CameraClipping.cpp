@@ -19,7 +19,7 @@ class ZBuffer
 		y_max = 32, 
 		int_max = 0x7fffffff,
 
-		x_max = 1 << x_shift - 1,
+		x_max = 1 << (x_shift - 1),
 		x_min = -x_max,
 		y_min = -y_max,
 		x_size = x_max - x_min,
@@ -252,7 +252,7 @@ void CameraDispatcher::show()
 
 void CameraDispatcher::write_state(XBuffer& buf)
 {
-	char* input_modes[InputModeMax] = {
+	const char* input_modes[InputModeMax] = {
 		"ConstInput", 
 		"BodyInput",
 		"TrackInput",

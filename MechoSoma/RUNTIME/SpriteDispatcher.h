@@ -54,7 +54,7 @@ struct mchA_Sprite
 
 	mchA_Sprite(int id = 0);
 
-	mchA_Sprite(char* fname,int id = 0);
+	mchA_Sprite(const char* fname,int id = 0);
 	~mchA_Sprite(void);
 };
 
@@ -65,10 +65,10 @@ struct mchA_SpriteDispatcher
 
 	void Quant(void);
 
-	void LoadScript(char* fname);
+	void LoadScript(const char* fname);
 
 	void AddSlot(int sx,int sy,int id);
-	void AddSprite(int id,char* fname);
+	void AddSprite(int id,const char* fname);
 
 	int GetSlot(int spriteID);
 

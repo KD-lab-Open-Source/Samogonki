@@ -19,7 +19,7 @@
 extern int MCH_CP_STAR_NUM;
 extern int mchNumLaps;
 
-extern char* mch_hotseatINI;
+extern const char* mch_hotseatINI;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 /* --------------------------- DEFINITION SECTION --------------------------- */
@@ -423,7 +423,7 @@ void mchTrackDispatcher::Reset(void)
 	curLevel = 0;
 }
 
-char* mchTrackDispatcher::TrackName(int world,int track)
+const char* mchTrackDispatcher::TrackName(int world,int track)
 {
 	mchTrackInfo* p = GetTrack(world,track);
 
@@ -432,7 +432,7 @@ char* mchTrackDispatcher::TrackName(int world,int track)
 	return NULL;
 }
 
-char* mchTrackDispatcher::TrackText(int world,int track)
+const char* mchTrackDispatcher::TrackText(int world,int track)
 {
 	mchTrackInfo* p = GetTrack(world,track);
 
@@ -602,7 +602,7 @@ void mchTrackDispatcher::SaveFigureFlags(void)
 void mchTrackDispatcher::LoadFigureFlags(void)
 {
 	int i,id;
-	char* p = getIniKey(mch_hotseatINI,"chars","enable");
+	const char* p = getIniKey(mch_hotseatINI,"chars","enable");
 
 	if(!strlen(p))
 		return;

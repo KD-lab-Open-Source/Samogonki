@@ -7,14 +7,14 @@
 #include "fxlabKey.h"
 #include "fxlabSprite.h"
 
-extern char* getIniKey(char* fname,char* section,char* key);
+extern char* getIniKey(const char* fname,const char* section,const char* key);
 extern char* mch_mainINI;
 
 int* fxlabCosTableType::FXLAB_COS_DATA = NULL;
 
-void fxlabCreateSpriteTable(void);
+void fxlabCreateSpriteTable();
 
-void fxlabResourceDispatcher::Open(void)
+void fxlabResourceDispatcher::Open()
 {
 	char* t;
 	int i,j,id,type;
@@ -111,7 +111,7 @@ void fxlabResourceDispatcher::Open(void)
 	delete script;
 };
 
-void fxlabResourceDispatcher::Close(void)
+void fxlabResourceDispatcher::Close()
 {
 	int i,j;
 	for(i = 0;i < FXLAB_SCRIPT_SECTION_MAX;i++){
@@ -146,7 +146,7 @@ fxlabResourceObject* fxlabResourceDispatcher::CreateResource(int type)
 
 //-----------------------------------------
 
-void fxlabCosTableType::Open(void)
+void fxlabCosTableType::Open()
 {
 	int i;
 	FXLAB_COS_DATA = new int[FXLAB_2PI];
@@ -154,7 +154,7 @@ void fxlabCosTableType::Open(void)
 		FXLAB_COS_DATA[i] = round((float)(FXLAB_WAVEGROUND_RANGE) * cos(2.0f * M_PI * (float)(i) / (float)(FXLAB_2PI)));
 };
 
-void fxlabCosTableType::Close(void)
+void fxlabCosTableType::Close()
 {
 	delete FXLAB_COS_DATA;
 	FXLAB_COS_DATA = NULL;
@@ -162,7 +162,7 @@ void fxlabCosTableType::Close(void)
 
 //---------------------------------------
 
-void fxlabUniverseDataType::Open(void)
+void fxlabUniverseDataType::Open()
 {
 	scrDataBlock* p;
 	scrDataBlock* s;
@@ -216,7 +216,7 @@ void fxlabUniverseDataType::Open(void)
 	delete s;
 };
 
-void fxlabUniverseDataType::Close(void)
+void fxlabUniverseDataType::Close()
 {
 	int i;
 
@@ -235,7 +235,7 @@ void fxlabUniverseDataType::Close(void)
 
 //---------------------------------
 
-fxlabWorldDataType::fxlabWorldDataType(void)
+fxlabWorldDataType::fxlabWorldDataType()
 {
 };
 
@@ -263,7 +263,7 @@ void fxlabWorldDataType::Open(scrDataBlock* p)
 	};
 };
 
-void fxlabWorldDataType::Close(void)
+void fxlabWorldDataType::Close()
 {
 	int i;
 	for(i = 0;i < FXLAB_WORLD_TRACK_NUM;i++)
@@ -339,7 +339,7 @@ void fxlabTrackInfoType::Open(scrDataBlock* p)
 	};
 };
 
-void fxlabTrackInfoType::Close(void)
+void fxlabTrackInfoType::Close()
 {
 };
 
@@ -347,7 +347,7 @@ void fxlabTrackInfoType::Close(void)
 
 #include "TexMgr.h"
 
-void fxlabCreateSpriteTable(void)
+void fxlabCreateSpriteTable()
 {
 	TextureBuffer->BeginList(256,256);
 	TextureBuffer->AttachChild("resource\\fx\\tga\\sphere0000.tga",FXLAB_ID_IMAGE_SPHERE); 

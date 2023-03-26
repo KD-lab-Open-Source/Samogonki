@@ -112,9 +112,9 @@ void xINI_Init(void);
 int xINI_PutKey(const char* fname,const char* section,const char* key,const char* val);
 char* xINI_GetKey(const char* fname,const char* section,const char* key);
 
-char* getIniKey(char* fname,char* section,char* key);
-void putIniKey(char* fname,char* section,char* key,char* val);
-void putIniKey(char* fname,char* section,char* key,int val);
+const char* getIniKey(const char* fname,const char* section,const char* key);
+void putIniKey(const char* fname,const char* section,const char* key,const char* val);
+void putIniKey(const char* fname,const char* section,const char* key,int val);
 
 void acsSetMM_Option(int scr,int obj,int val);
 void acsLockObject(int scr_id,int obj_id,int mode);
@@ -170,7 +170,7 @@ int mchOptionObjIDs[ACS_NUM_OPTIONS] =
 	ACS_GR_FULLSCR1
 };
 
-char* mchOptionKeys[ACS_NUM_OPTIONS] = 
+const char* mchOptionKeys[ACS_NUM_OPTIONS] =
 {
 	"resolution",
 	"auto_3d",
@@ -195,7 +195,7 @@ char* mchOptionKeys[ACS_NUM_OPTIONS] =
 hsPlayerData hsPlayers[HS_PLAYERS_MAX];
 char mch_playerNames[15][HS_NAME_LEN + 2];
 
-char* getIniKey(char* fname,char* section,char* key)
+const char* getIniKey(const char* fname,const char* section,const char* key)
 {
 	char* p = NULL;
 
@@ -224,7 +224,7 @@ char* getIniKey(char* fname,char* section,char* key)
 	return buf;
 }
 
-void putIniKey(char* fname,char* section,char* key,int val)
+void putIniKey(const char* fname,const char* section,const char* key,int val)
 {
 	static XBuffer str;
 
@@ -234,7 +234,7 @@ void putIniKey(char* fname,char* section,char* key,int val)
 	putIniKey(fname,section,key,str);
 }
 
-void putIniKey(char* fname,char* section,char* key,char* val)
+void putIniKey(const char* fname,const char* section,const char* key,const char* val)
 {
 	int flag = 0;
 	static char path[_MAX_PATH];
@@ -380,7 +380,6 @@ void mchCompileMainScript(void)
 void hsSetup(void)
 {
 	int i,id;
-	char* p;
 	XBuffer XBuf,XBuf2;
 
 	hsStartAssembled = atoi(getIniKey(mch_hotseatINI,"game parameters","start_assembled"));
@@ -403,7 +402,7 @@ void hsSetup(void)
 #endif
 
 	for(i = 0; i < 15; i ++){
-		p = iGetText(iTXT_NAME00 + i);
+		cString p = iGetText(iTXT_NAME00 + i);
 		if(strlen(p) > HS_NAME_LEN) p[HS_NAME_LEN] = 0;
 		strcpy(mch_playerNames[i],p);
 	}
@@ -484,7 +483,7 @@ void hsSaveParams(void)
 
 void mchOptionData::Init(void)
 {
-	char* p;
+	const char* p;
 	LimitMin = 0;
 	LimitMax = 255;
 	Value = 128;

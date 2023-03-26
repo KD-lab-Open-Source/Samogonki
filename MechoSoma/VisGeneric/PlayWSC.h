@@ -43,7 +43,7 @@ public:
 	inline void SetCameraDispatcher(CameraDispatcher *pCameraDisp)	{ CameraDisp=pCameraDisp; }
 	inline int isPlay()												{ return StartTime>=0; }
 	inline int& GetMusicTrack()										{ return MusicTrack; }
-	inline char* GetName()											{ return CutName; }
+	inline const char* GetName()											{ return CutName; }
 private:
 	inline int GetNumberConnect()									{ return  ConnectArray.length(); }
 	inline cElementWorldScript*& GetConnect(int number)				{ return  ConnectArray[number]; }

@@ -43,8 +43,8 @@ void mchA_d3dOutSpriteZ(int x,int y,int z,float sx,float sy,int idx,int col,int 
 void mchA_d3dDrawSprite(int x,int y,float sx,float sy,int handle,int col,int alpha,float rotate = 0.0f,int center_flag = 0);
 void mchA_d3dDrawSpriteZ(int x,int y,int z,float sx,float sy,int handle,int col,int alpha,float rotate = 0.0f,int center_flag = 0);
 
-void mchA_d3dOutString(int x,int y,float sx,float sy,void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
-void mchA_d3dOutStringZ(int x,int y,int z,float sx,float sy,void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1);
+void mchA_d3dOutString(int x,int y,float sx,float sy,const void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
+void mchA_d3dOutStringZ(int x,int y,int z,float sx,float sy,const void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1);
 void mchA_d3dSetClip(int x,int y,int sx,int sy);
 void mchA_d3dClearClip(void);
 

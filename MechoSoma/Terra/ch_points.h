@@ -55,8 +55,8 @@ struct sCh_points{
 	void delallLink(int _ID);
 	void set1(int MapX,int MapY, int scx, int scy);
 	void set2(int MapX,int MapY, int scx, int scy);
-	void save(char* fname,int number_track=-1);
-	void load(char* fname,int number_track=-1);
+	void save(const char* fname,int number_track=-1);
+	void load(const char* fname,int number_track=-1);
 	void insstart(int _num,int x,int y,int z);
 	void delstart(int num);
 #ifdef _SURMAP_

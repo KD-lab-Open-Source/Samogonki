@@ -19,14 +19,14 @@
 
 //---------------------------------------------------------
 
-void fxlabColorModel::Open(void)
+void fxlabColorModel::Open()
 {
 	ModelPoint = NULL;
 	Matrix.set(Mat3f::ZERO,Vect3f::ZERO);
 	fxlabClientKeyObjectType::Open();
 };
 
-void fxlabColorModel::Start(void)
+void fxlabColorModel::Start()
 {
 	sColor4f c;
 
@@ -42,7 +42,7 @@ void fxlabColorModel::Start(void)
 	IVisGeneric->Release();
 };
 
-void fxlabColorModel::Close(void)
+void fxlabColorModel::Close()
 {
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
 	IVisGeneric->ReleaseObject((cUnknownClass*)ModelPoint);
@@ -50,7 +50,7 @@ void fxlabColorModel::Close(void)
 	IVisGeneric->Release();
 };
 
-void fxlabColorModel::Quant(void)
+void fxlabColorModel::Quant()
 {
 	sColor4f c;
 
@@ -63,7 +63,7 @@ void fxlabColorModel::Quant(void)
 	IVisGeneric->Release();
 };
 
-void fxlabColorModel::KeyCheck(void)
+void fxlabColorModel::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_COLOR_MODEL_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabColorModel");
@@ -81,7 +81,7 @@ void fxlabColorModel::SetPosition(const class Vect3f& v)
 	Matrix.trans() = v;
 };
 
-int fxlabColorModel::CreateObjectID(void)
+int fxlabColorModel::CreateObjectID()
 {
 	return M3D_TOTAL_TYPE(round(KeyData[FXLAB_COLOR_MODEL_DATA_MODEL]),M3D_EFFECT);
 };
@@ -94,14 +94,14 @@ void fxlabColorModel::CalcColor(sColor4f& color)
 	color.a = KeyData[FXLAB_COLOR_MODEL_DATA_ALPHA];
 };
 
-int fxlabColorModel::CalcAttribute(void)
+int fxlabColorModel::CalcAttribute()
 {
 	return (MESH_NOT_SHADE | MESH_NOT_LIGHTING | MESH_LIGHTING_MUL | MESH_USE_OPACITY | MESH_NOT_WRITEZBUFFER);
 };
 
 //----------------------------------------------------------
 
-void fxlabControlModel::Open(void)
+void fxlabControlModel::Open()
 {
 	fxlabColorModel::Open();
 
@@ -112,7 +112,7 @@ void fxlabControlModel::Open(void)
 	Matrix.rot() = Mat3f(ModelAngle.x, X_AXIS)*Mat3f(ModelAngle.y, Y_AXIS)*Mat3f(ModelAngle.z, Z_AXIS);
 };
 
-void fxlabControlModel::Start(void)
+void fxlabControlModel::Start()
 {
 	Vect3f s;
 	fxlabColorModel::Start();
@@ -126,13 +126,13 @@ void fxlabControlModel::Start(void)
 	ModelPoint->SetScale(Vect3f(s.x / ModelRadius,s.y / ModelRadius,s.z / ModelRadius));
 };
 
-void fxlabControlModel::KeyCheck(void)
+void fxlabControlModel::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CONTROL_MODEL_DATA_MAX)
 		ErrH.Abort("Bad fxGlowSpot Key");
 };
 
-void fxlabControlModel::Quant(void)
+void fxlabControlModel::Quant()
 {
 	Vect3f s;
 
@@ -148,7 +148,7 @@ void fxlabControlModel::CalcSize(Vect3f& size)
 	size.x = size.y = size.z = KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS];
 };
 
-void fxlabControlModel::CalcMatrix(void)
+void fxlabControlModel::CalcMatrix()
 {
 	ModelAngle.x += KeyData[FXLAB_CONTROL_MODEL_DATA_ANGLEX] * DeltaTime;
 	ModelAngle.y += KeyData[FXLAB_CONTROL_MODEL_DATA_ANGLEY] * DeltaTime;
@@ -159,13 +159,13 @@ void fxlabControlModel::CalcMatrix(void)
 
 //---------------------------------------------------------
 
-void fxlabControlOmni::Open(void)
+void fxlabControlOmni::Open()
 {
 	OmniPoint = NULL;
 	fxlabClientKeyObjectType::Open();
 };
 
-void fxlabControlOmni::Start(void)
+void fxlabControlOmni::Start()
 {
 	fxlabClientKeyObjectType::Start();
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
@@ -179,7 +179,7 @@ void fxlabControlOmni::Start(void)
 	IVisGeneric->Release();
 };
 
-void fxlabControlOmni::Close(void)
+void fxlabControlOmni::Close()
 {
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
 	IVisGeneric->ReleaseOmni((cUnknownClass*)OmniPoint);
@@ -187,7 +187,7 @@ void fxlabControlOmni::Close(void)
 	fxlabClientKeyObjectType::Close();
 };
 
-void fxlabControlOmni::Quant(void)
+void fxlabControlOmni::Quant()
 {
 	fxlabClientKeyObjectType::Quant();
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
@@ -203,7 +203,7 @@ void fxlabControlOmni::Quant(void)
 	IVisGeneric->Release();
 };
 
-void fxlabControlOmni::KeyCheck(void)
+void fxlabControlOmni::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CONTROL_OMNI_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabControlOmni");
@@ -222,7 +222,7 @@ void fxlabControlOmni::SetVisible(int v)
 
 //--------------------------------------------------
 
-void fxlabBonusModel::Start(void)
+void fxlabBonusModel::Start()
 {
 	ModelAngle = Vect3f(fxlabClientRND.UnitRND()*360.0f,fxlabClientRND.UnitRND()*360.0f,fxlabClientRND.UnitRND()*360.0f);
 	fxlabControlModel::Start();
@@ -230,7 +230,7 @@ void fxlabBonusModel::Start(void)
 
 //-------------------------------------------------
 
-void fxlabBonusPart::Open(void)
+void fxlabBonusPart::Open()
 {
 	fxlabBonusModel::Open();
 	BonusPartID = M3D_TOTAL_TYPE(0,M3D_ENGINE);
@@ -238,7 +238,7 @@ void fxlabBonusPart::Open(void)
 
 //-------------------------------------------------
 
-void fxlabAnimationModel::Quant(void)
+void fxlabAnimationModel::Quant()
 {
 	float phase;
 	fxlabControlModel::Quant();
@@ -249,7 +249,7 @@ void fxlabAnimationModel::Quant(void)
 	IVisGeneric->Release();
 };
 
-void fxlabAnimationModel::KeyCheck(void)
+void fxlabAnimationModel::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_ANIMATION_MODEL_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabAnimationModel");
@@ -263,13 +263,13 @@ void fxlabAnimationModel::CalcDeltaPhase(float& delta)
 
 //---------------------------------------------------
 
-void fxlabSlimeModel::Start(void)
+void fxlabSlimeModel::Start()
 {
 	Phase = 1.0f;
 	fxlabAnimationModel::Start();
 };
 
-void fxlabSlimeModel::Quant(void)
+void fxlabSlimeModel::Quant()
 {
 	fxlabAnimationModel::Quant();
 	if(!Alive)
@@ -289,7 +289,7 @@ void fxlabSlimeModel::CalcSize(Vect3f& size)
 	size.x = size.y = size.z = KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS] * Phase;
 };
 
-int fxlabSlimeModel::GetAlive(void)
+int fxlabSlimeModel::GetAlive()
 {
 	if(!Alive && Phase < 0.01)
 		return 0;
@@ -298,7 +298,7 @@ int fxlabSlimeModel::GetAlive(void)
 
 //-----------------------------------
 
-void fxlabLashModel::Open(void)
+void fxlabLashModel::Open()
 {
 	fxlabAnimationModel::Open();
 	ScaleDelta = 0;
@@ -307,7 +307,7 @@ void fxlabLashModel::Open(void)
 	DeltaPhase = 0.8f;
 };
 
-void fxlabLashModel::Start(void)
+void fxlabLashModel::Start()
 {
 	Phase = 1.0f;
 	AnimationRate = 0.5f + fxlabClientRND.UnitRND() * 1.5f;
@@ -315,7 +315,7 @@ void fxlabLashModel::Start(void)
 	fxlabAnimationModel::Start();
 };
 
-void fxlabLashModel::Quant(void)
+void fxlabLashModel::Quant()
 {
 	fxlabAnimationModel::Quant();
 	
@@ -328,7 +328,7 @@ void fxlabLashModel::Quant(void)
 		Phase *= DeltaPhase;
 };
 
-int fxlabLashModel::GetAlive(void)
+int fxlabLashModel::GetAlive()
 {
 	if(!Alive && Phase < 0.01)
 		return 0;
@@ -371,13 +371,13 @@ void fxlabLashModel::SetScaleAnimation(float start_scale,float end_scale,int tim
 
 //------------------------------------------------------
 
-void fxlabVoodooHeadModel::Start(void)
+void fxlabVoodooHeadModel::Start()
 {
 	Phase = 1.0f;
 	fxlabControlModel::Start();
 };
 
-void fxlabVoodooHeadModel::Quant(void)
+void fxlabVoodooHeadModel::Quant()
 {
 	fxlabControlModel::Quant();
 	if(!Alive)
@@ -397,7 +397,7 @@ void fxlabVoodooHeadModel::CalcSize(Vect3f& size)
 	size.x = size.y = size.z = KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS] + (1.0f - Phase) * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS] * 2.0f;
 };
 
-int fxlabVoodooHeadModel::GetAlive(void)
+int fxlabVoodooHeadModel::GetAlive()
 {
 	if(!Alive && Phase < 0.01)
 		return 0;
@@ -406,7 +406,7 @@ int fxlabVoodooHeadModel::GetAlive(void)
 
 //---------------------------
 
-void fxlabPressureModel::Open(void)
+void fxlabPressureModel::Open()
 {
 	PressureSize = Vect3f(1.0f,1.0f,1.0f);
 	fxlabControlModel::Open();
@@ -426,7 +426,7 @@ void fxlabPressureModel::CalcSize(Vect3f& size)
 };
 
 
-void fxlabPressureModel::KeyCheck(void)
+void fxlabPressureModel::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_PRESSURE_MODEL_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabPressureModel");
@@ -439,13 +439,13 @@ void fxlabPressureModel::SetVelocity(const Vect3f& v)
 
 //-------------------------------------------------
 
-void fxlabRevoltSpaceModel::Start(void)
+void fxlabRevoltSpaceModel::Start()
 {
 	Phase = 1.0f;
 	fxlabPressureModel::Start();
 };
 
-void fxlabRevoltSpaceModel::Quant(void)
+void fxlabRevoltSpaceModel::Quant()
 {
 	fxlabPressureModel::Quant();
 	if(!Alive)
@@ -473,7 +473,7 @@ void fxlabRevoltSpaceModel::CalcSize(Vect3f& size)
 	size.z = size.z * (1 + cosf(t + M_PI) * KeyData[FXLAB_PRESSURE_MODEL_DATA_DELTA_RADIUS]);
 };
 
-int fxlabRevoltSpaceModel::GetAlive(void)
+int fxlabRevoltSpaceModel::GetAlive()
 {
 	if(!Alive && Phase < 0.01)
 		return 0;
@@ -483,7 +483,7 @@ int fxlabRevoltSpaceModel::GetAlive(void)
 
 //-------------------------------------------------
 
-void fxlabMassShifterModel::Quant(void)
+void fxlabMassShifterModel::Quant()
 {
 	Matrix.trans() = Vect3f(Position.x,Position.y,Position.z + KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS]);
 	fxlabControlModel::Quant();
@@ -498,13 +498,13 @@ void fxlabMassShifterModel::CalcSize(Vect3f& size)
 
 //---------------------------------------------------
 
-void fxlabTrapGroundModel::Start(void)
+void fxlabTrapGroundModel::Start()
 {
 	Phase = 1.0f;
 	fxlabControlModel::Start();
 };
 
-void fxlabTrapGroundModel::Quant(void)
+void fxlabTrapGroundModel::Quant()
 {
 	fxlabControlModel::Quant();
 	if(!Alive)
@@ -524,14 +524,14 @@ void fxlabTrapGroundModel::CalcSize(Vect3f& size)
 	size.x = size.y = size.z = KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS] + (1.0f - Phase) * KeyData[FXLAB_CONTROL_MODEL_DATA_RADIUS] * 2.0f;
 };
 
-int fxlabTrapGroundModel::GetAlive(void)
+int fxlabTrapGroundModel::GetAlive()
 {
 	if(!Alive && Phase < 0.01)
 		return 0;
 	return 1;
 };
 
-void fxlabTrapGroundModel::CalcMatrix(void)
+void fxlabTrapGroundModel::CalcMatrix()
 {
 	Matrix.rot() = Matrix.rot()*Mat3f(KeyData[FXLAB_CONTROL_MODEL_DATA_ANGLEZ] * DeltaTime, Z_AXIS);
 };
@@ -557,13 +557,13 @@ Mat3f turn_cross(const Vect3f& target, const Vect3f& current)
 }
 
 
-void fxlabBulletModel::Open(void)
+void fxlabBulletModel::Open()
 {
 	fxlabControlModel::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabBulletModel::Start(void)
+void fxlabBulletModel::Start()
 {
 	fxlabControlModel::Start();
 
@@ -573,7 +573,7 @@ void fxlabBulletModel::Start(void)
 	NormVelocity.normalize();
 };
 
-void fxlabBulletModel::Quant(void)
+void fxlabBulletModel::Quant()
 {
 	Position = Velocity * CurrentTime * fxlabGlobalTimeRate;
 	Position += SourcePosition;
@@ -589,19 +589,19 @@ void fxlabBulletModel::SetVelocity(const Vect3f& v)
 	Velocity = v;
 };
 
-void fxlabBulletModel::CalcMatrix(void)
+void fxlabBulletModel::CalcMatrix()
 {
 	Matrix.rot() = turn_cross(Vect3f(Velocity.x,Velocity.y,-Velocity.z),Vect3f(0,0,-1.0f));
 };
 
-int fxlabBulletModel::CalcAttribute(void)
+int fxlabBulletModel::CalcAttribute()
 {
 	return (MESH_NOT_LIGHTING | MESH_LIGHTING_MUL | MESH_USE_OPACITY);
 };
 
 //--------------------------------
 
-void fxlabPetardModel::Start(void)
+void fxlabPetardModel::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -621,14 +621,14 @@ void fxlabPetardModel::Start(void)
 	t->Start();
 };
 
-void fxlabPetardModel::Close(void)
+void fxlabPetardModel::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
 	fxlabBulletModel::Close();
 };
 
-void fxlabPetardModel::Quant(void)
+void fxlabPetardModel::Quant()
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
@@ -640,7 +640,7 @@ void fxlabPetardModel::Quant(void)
 
 //--------------------------------
 
-void fxlabSnowBulletModel::Start(void)
+void fxlabSnowBulletModel::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -660,14 +660,14 @@ void fxlabSnowBulletModel::Start(void)
 	t->Start();
 };
 
-void fxlabSnowBulletModel::Close(void)
+void fxlabSnowBulletModel::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
 	fxlabBulletModel::Close();
 };
 
-void fxlabSnowBulletModel::Quant(void)
+void fxlabSnowBulletModel::Quant()
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
@@ -679,7 +679,7 @@ void fxlabSnowBulletModel::Quant(void)
 
 //--------------------------------
 
-void fxlabFireBulletModel::Start(void)
+void fxlabFireBulletModel::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -699,14 +699,14 @@ void fxlabFireBulletModel::Start(void)
 	t->Start();
 };
 
-void fxlabFireBulletModel::Close(void)
+void fxlabFireBulletModel::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
 	fxlabBulletModel::Close();
 };
 
-void fxlabFireBulletModel::Quant(void)
+void fxlabFireBulletModel::Quant()
 {
 	fxlabBulletModel::Quant();
 	if(TailPoint.Process)
@@ -718,14 +718,14 @@ void fxlabFireBulletModel::Quant(void)
 
 //-------------------------------------------------------
 
-void fxlabClientJumpActionModel::Open(void)
+void fxlabClientJumpActionModel::Open()
 {
 	fxlabControlModel::Open();
 	LocalPosition = Vect3f::ZERO;
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientJumpActionModel::Quant(void)
+void fxlabClientJumpActionModel::Quant()
 {
 	Vect3f v;
 
@@ -740,7 +740,7 @@ void fxlabClientJumpActionModel::Quant(void)
 
 //-------------------------------------------------------
 
-void fxlabClientWaterWaveModel::Open(void)
+void fxlabClientWaterWaveModel::Open()
 {
 	fxlabControlModel::Open();
 	Red = 1.0f;

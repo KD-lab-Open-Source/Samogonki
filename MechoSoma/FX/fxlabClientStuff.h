@@ -517,7 +517,7 @@ struct fxlabClientPartController : fxlabClientColorController
 
 	void Open() override;
 	void Quant() override;
-//	void CalcKeyTime(void);
+//	void CalcKeyTime();
 
 	void SetControllerPartID(int id) override { ControllerPartID = id; };
 	void SetControllerArcaneID(int id) override { ControllerArcaneID = id; };

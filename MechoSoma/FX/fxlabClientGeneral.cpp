@@ -12,14 +12,14 @@
 #include "fxlabClientGeneral.h"
 #include "Mesh3ds.h"
 
-void fxlabClientEvolutionType::Start(void)
+void fxlabClientEvolutionType::Start()
 {
 	CurrentTime = fxlabClientD->GetTime() - StartTime;
 	DeltaTime = fxlabClientD->GetDeltaTime() * fxlabGlobalTimeRate;
 	fxlabApplicationObjectType::Start();
 };
 
-void fxlabClientEvolutionType::Quant(void)
+void fxlabClientEvolutionType::Quant()
 {
 	CurrentTime = fxlabClientD->GetTime() - StartTime;
 	DeltaTime = fxlabClientD->GetDeltaTime() * fxlabGlobalTimeRate;
@@ -28,7 +28,7 @@ void fxlabClientEvolutionType::Quant(void)
 
 //-----------------------------------------
 
-void fxlabClientKeyObjectType::Start(void)
+void fxlabClientKeyObjectType::Start()
 {
 	fxlabClientSpaceType::Start();
 
@@ -42,18 +42,18 @@ void fxlabClientKeyObjectType::Start(void)
 		CalcKeyTime();
 };
 
-void fxlabClientKeyObjectType::CalcKeyTime(void)
+void fxlabClientKeyObjectType::CalcKeyTime()
 {
 	KeyTime = CurrentTime * fxlabGlobalTimeRate;
 };
 
-void fxlabClientKeyObjectType::Close(void)
+void fxlabClientKeyObjectType::Close()
 {
 	if(KeyData) delete[] KeyData;
 	fxlabClientSpaceType::Close();
 };
 
-void fxlabClientKeyObjectType::Quant(void)
+void fxlabClientKeyObjectType::Quant()
 {
 	fxlabClientSpaceType::Quant();
 	CalcKeyTime();
@@ -66,19 +66,19 @@ void fxlabClientKeyObjectType::Quant(void)
 	};
 };
 
-void fxlabClientKeyObjectType::KeyUpdate(void)
+void fxlabClientKeyObjectType::KeyUpdate()
 {
 	Alive &= KeyPoint->GetKey(KeyData,KeyTime);
 };
 
 //-------------------------------------
 
-void fxlabParticleToolType::OpenParticleTool(void)
+void fxlabParticleToolType::OpenParticleTool()
 {
 	ParticlePoint = NULL;
 };
 
-void fxlabParticleToolType::CloseParticleTool(void)
+void fxlabParticleToolType::CloseParticleTool()
 {
 	fxlabParticleType* n,*nn;
 
@@ -92,7 +92,7 @@ void fxlabParticleToolType::CloseParticleTool(void)
 	ParticleList.delete_all();
 };
 
-fxlabParticleType* fxlabParticleToolType::AddParticle(void)
+fxlabParticleType* fxlabParticleToolType::AddParticle()
 {
 	fxlabParticleType* p;
 	int i;
@@ -120,14 +120,14 @@ void fxlabParticleToolType::DeleteParticle(fxlabParticleType* p)
 	ParticleList.append(p);
 };
 
-void fxlabParticleToolType::DeleteAllParticle(void)
+void fxlabParticleToolType::DeleteAllParticle()
 {
 	ParticlePoint = ParticleList.first();
 };
 
 //-------------------------------------
 
-void fxlabParticleCore::Open(void)
+void fxlabParticleCore::Open()
 {
 	fxlabClientKeyObjectType::Open();
 
@@ -151,7 +151,7 @@ void fxlabParticleCore::Open(void)
 };
 
 
-void fxlabParticleCore::Start(void)
+void fxlabParticleCore::Start()
 {
 	fxlabClientKeyObjectType::Start();
 
@@ -161,7 +161,7 @@ void fxlabParticleCore::Start(void)
 //	ConvertPosition();
 };
 
-void fxlabParticleCore::StopQuant(void)
+void fxlabParticleCore::StopQuant()
 {
 	int i;
 
@@ -181,7 +181,7 @@ void fxlabParticleCore::StopQuant(void)
 	};
 };
 
-void fxlabParticleCore::Quant(void)
+void fxlabParticleCore::Quant()
 {
  	fxlabParticleType* p;
 	fxlabParticleType* pp;
@@ -230,14 +230,14 @@ void fxlabParticleCore::Quant(void)
 	};
 };
 
-int fxlabParticleCore::GetAlive(void)
+int fxlabParticleCore::GetAlive()
 {
 	if(!Alive && ParticleList.first() == ParticlePoint)
 		return 0;
 	return 1;
 };
 
-void fxlabParticleCore::ConvertPosition(void)
+void fxlabParticleCore::ConvertPosition()
 {
 	VsS = Vect3f(ProcessMaxX - ProcessMinX,ProcessMaxY - ProcessMinY,ProcessMaxZ - ProcessMinZ);
 	VsL.x = XCYCL(int(round(Position.x + ProcessMinX)));
@@ -245,13 +245,13 @@ void fxlabParticleCore::ConvertPosition(void)
 	VsL.z = Position.z + ProcessMinZ;
 };
 	
-void fxlabParticleCore::KeyUpdate(void)
+void fxlabParticleCore::KeyUpdate()
 {
 	fxlabClientKeyObjectType::KeyUpdate();
 	RegenerateTime = round(KeyData[FXLAB_PARTICLE_CORE_DATA_REGENERATE_TIME]);
 };
 
-void fxlabParticleCore::KeyCheck(void)
+void fxlabParticleCore::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_PARTICLE_CORE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabParticleCore");
@@ -261,7 +261,7 @@ void fxlabParticleCore::KeyCheck(void)
 #include "Camera.h"
 #include "Scene.h"
 
-void fxlabParticleCore::CheckVisibility(void)
+void fxlabParticleCore::CheckVisibility()
 {
 	int i;
 	cInterfaceVisGeneric *IVisGeneric;
@@ -285,7 +285,7 @@ void fxlabParticleCore::CheckVisibility(void)
 	return;
 };
 
-void fxlabParticleCore::StopTimeCheckVisibility(void)
+void fxlabParticleCore::StopTimeCheckVisibility()
 {
 	int i;
 	cInterfaceVisGeneric *IVisGeneric;
@@ -307,7 +307,7 @@ void fxlabParticleCore::StopTimeCheckVisibility(void)
 	return;
 };
 
-void fxlabParticleCore::Close(void)
+void fxlabParticleCore::Close()
 {
 	CloseParticleTool();
 	fxlabClientKeyObjectType::Close();

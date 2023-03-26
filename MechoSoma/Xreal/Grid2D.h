@@ -204,7 +204,7 @@ public:
 			int a = x2 - x1;
 			int b = y2 - y1;
 			int x = x1;
-			int y = (y1 << F_PREC) + (1 << F_PREC - 1);
+			int y = (y1 << F_PREC) + (1 << (F_PREC - 1));
 			int incr = 1;
 			int k = (b << F_PREC)/a;
 			if(x1 > x2){
@@ -228,7 +228,7 @@ public:
 		else{
 			int a = x2 - x1;
 			int b = y2 - y1;
-			int x = (x1 << F_PREC) + (1 << F_PREC - 1);
+			int x = (x1 << F_PREC) + (1 << (F_PREC - 1));
 			int y = y1;
 			int incr = 1;
 			int k = (a << F_PREC)/b;

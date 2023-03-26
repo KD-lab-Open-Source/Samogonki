@@ -29,7 +29,7 @@ EffectData Mechos::effect_data[EffectsMax] =
 	EffectData(exult_period, "exult", EffectData::Forward, EFF_ANIMATION_1_BONUS) // "BonusExultEffect", // Ликование от взятия бонуса
 };
 
-EffectData::EffectData(float period, char* channel, Mode mode_, int sound_, int delay_) 
+EffectData::EffectData(float period, const char* channel, Mode mode_, int sound_, int delay_)
 : mode(mode_),
 delay(delay_),
 AnimationData(period, 0, mode_ == Cycled ? -1 : 1, channel),		

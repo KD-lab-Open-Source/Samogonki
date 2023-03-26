@@ -141,7 +141,7 @@ void mchSoundEFF::Load(void)
 	}
 }
 
-void mchSoundEFF::Load(char* fname)
+void mchSoundEFF::Load(const char* fname)
 {
 	if(fileName) free(fileName);
 	fileName = strdup(fname);
@@ -418,7 +418,7 @@ void mchSoundDispatcher::Quant(void)
 	}
 }
 
-void mchSoundDispatcher::Load(char* scr_name,int local)
+void mchSoundDispatcher::Load(const char* scr_name,int local)
 {
 	if(!mchSoundInitFlag) return;
 

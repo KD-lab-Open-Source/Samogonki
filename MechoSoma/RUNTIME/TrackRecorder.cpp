@@ -24,8 +24,8 @@ extern int mchFreezeTime;
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
 int mchA_ConvertCoords(int x,int y,int z,int& sx,int& sy,int viewport = 0);
-int acsStrLen(int fnt,unsigned char* str,int space);
-int acsStrHeight(int fnt,unsigned char* str);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+int acsStrHeight(int fnt,const unsigned char* str);
 
 void mchA_CHQuant(int k);
 

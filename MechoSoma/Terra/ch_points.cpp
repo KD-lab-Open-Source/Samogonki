@@ -95,12 +95,12 @@ void sCh_points::set2(int MapX,int MapY,int ScX,int ScY)
 }
 
 #ifndef _WIN32
-int vmapOpenResource(char* fname,XStream& fh);
+int vmapOpenResource(const char* fname,XStream& fh);
 #endif
 
 // For workins the FILES
 XStream Cmap(0);
-void sCh_points::load(char* fname,int number_track)
+void sCh_points::load(const char* fname,int number_track)
 {
 	if(number_track==-1) number_track=currient_track;
 	//if(number_track!=currient_track) save(fname,currient_track);
@@ -139,7 +139,7 @@ void sCh_points::load(char* fname,int number_track)
 #endif	
 }
 
-void sCh_points::save(char* fname,int number_track)
+void sCh_points::save(const char* fname,int number_track)
 {
 	if (edit != -1) {
 		del(edit); edit = -1;

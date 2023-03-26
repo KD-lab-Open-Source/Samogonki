@@ -14,13 +14,13 @@
 
 extern int mchPBEM_HiddenTime;
 
-void fxlabClientImpulseSound::Open(void)
+void fxlabClientImpulseSound::Open()
 {
 	fxlabClientEvolutionType::Open();
 	SoundID = 0;
 };
 
-void fxlabClientImpulseSound::Start(void)
+void fxlabClientImpulseSound::Start()
 {
 	fxlabClientEvolutionType::Start();
 	if(!mchPBEM_HiddenTime)
@@ -29,13 +29,13 @@ void fxlabClientImpulseSound::Start(void)
 
 //---------------------------------------
 
-void fxlabClientImpulseSpaceSound::Open(void)
+void fxlabClientImpulseSpaceSound::Open()
 {
 	fxlabClientSpaceType::Open();
 	SoundID = 0;
 };
 
-void fxlabClientImpulseSpaceSound::Start(void)
+void fxlabClientImpulseSpaceSound::Start()
 {
 	fxlabClientSpaceType::Start();
 	if(!mchPBEM_HiddenTime)
@@ -44,20 +44,20 @@ void fxlabClientImpulseSpaceSound::Start(void)
 
 //---------------------------------------
 
-void fxlabClientLongSound::Open(void)
+void fxlabClientLongSound::Open()
 {
 	fxlabClientEvolutionType::Open();
 	SoundID = 0;
 };
 
-void fxlabClientLongSound::Start(void)
+void fxlabClientLongSound::Start()
 {
 	fxlabClientEvolutionType::Start();
 	if(!mchPBEM_HiddenTime)
 		mchStartSoundEFF(SoundID);
 };
 
-void fxlabClientLongSound::Close(void)
+void fxlabClientLongSound::Close()
 {
 	if(!mchPBEM_HiddenTime)
 		mchStopSoundEFF(SoundID);
@@ -66,27 +66,27 @@ void fxlabClientLongSound::Close(void)
 
 //---------------------------------------
 
-void fxlabClientLongSpaceSound::Open(void)
+void fxlabClientLongSpaceSound::Open()
 {
 	fxlabClientSpaceType::Open();
 	SoundID = 0;
 };
 
-void fxlabClientLongSpaceSound::Start(void)
+void fxlabClientLongSpaceSound::Start()
 {
 	fxlabClientSpaceType::Start();
 	if(!mchPBEM_HiddenTime)
 		mchStartSoundEFF(SoundID,Position.x,Position.y);
 };
 
-void fxlabClientLongSpaceSound::Quant(void)
+void fxlabClientLongSpaceSound::Quant()
 {
 	fxlabClientSpaceType::Quant();
 	if(!mchPBEM_HiddenTime)
 		mchStartSoundEFF(SoundID,Position.x,Position.y);
 };
 
-void fxlabClientLongSpaceSound::Close(void)
+void fxlabClientLongSpaceSound::Close()
 {
 	if(!mchPBEM_HiddenTime)
 		mchStopSoundEFF(SoundID);

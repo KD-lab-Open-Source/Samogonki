@@ -42,7 +42,7 @@
 
 //extern XBuffer bout;
 
-void fxlabGeneralObjectDispatcher::Open(void)
+void fxlabGeneralObjectDispatcher::Open()
 {
 	if(CreateList.size() != 0)
 		ErrH.Abort("Bad fxlabGeneral::CreateList Open");
@@ -51,7 +51,7 @@ void fxlabGeneralObjectDispatcher::Open(void)
 		ErrH.Abort("Bad fxlabGeneral::ObjectList Open");
 };
 
-void fxlabGeneralObjectDispatcher::Close(void)
+void fxlabGeneralObjectDispatcher::Close()
 {
 	list<fxlabGeneralObjectType*>::iterator p;
 
@@ -81,7 +81,7 @@ void fxlabGeneralObjectDispatcher::Close(void)
 extern int mchFreezeTime;
 extern int fxlabStopTime;
 
-void fxlabGeneralObjectDispatcher::Quant(void)
+void fxlabGeneralObjectDispatcher::Quant()
 {
 	list<fxlabGeneralObjectType*>::iterator p;
 
@@ -101,7 +101,7 @@ void fxlabGeneralObjectDispatcher::Quant(void)
 };
 
 
-void fxlabGeneralObjectDispatcher::CreateQuant(void)
+void fxlabGeneralObjectDispatcher::CreateQuant()
 {
 	list<fxlabGeneralObjectType*> tmp_list;
 	list<fxlabGeneralObjectType*>::iterator p;
@@ -159,7 +159,7 @@ fxlabGeneralObjectType* fxlabGeneralObjectDispatcher::SearchObject(int type)
 
 //------------------------------------------
 
-void fxlabServerObjectDispatcher::Open(void)
+void fxlabServerObjectDispatcher::Open()
 {
 	fxlabGeneralObjectDispatcher::Open();
 	ActionOpen();
@@ -167,19 +167,19 @@ void fxlabServerObjectDispatcher::Open(void)
 	RootID = 0;
 };
 
-void fxlabServerObjectDispatcher::Close(void)
+void fxlabServerObjectDispatcher::Close()
 {
 	ActionClose();
 	fxlabGeneralObjectDispatcher::Close();
 };
 
-void fxlabServerObjectDispatcher::CreateQuant(void)
+void fxlabServerObjectDispatcher::CreateQuant()
 {
 	fxlabGeneralObjectDispatcher::CreateQuant();
 	ActionQuant();
 };
 	
-void fxlabServerObjectDispatcher::Start(void)
+void fxlabServerObjectDispatcher::Start()
 {
 	fxlabGeneralObjectDispatcher::Start();
 	Time = global_time();
@@ -188,7 +188,7 @@ void fxlabServerObjectDispatcher::Start(void)
 	RootID = 0;
 };
 
-void fxlabServerObjectDispatcher::Quant(void)
+void fxlabServerObjectDispatcher::Quant()
 {
 	list<fxlabGeneralObjectType*>::iterator p;
 
@@ -491,7 +491,7 @@ void fxlabServerObjectDispatcher::AddAction(fxlabGeneralObjectType* p,int id)
 	ActionList.push_back(fxlabGeneralActionType(p,id));
 };
 
-void fxlabServerObjectDispatcher::ActionQuant(void)
+void fxlabServerObjectDispatcher::ActionQuant()
 {
 	fxlabGeneralObjectType* l;
 	fxlabGeneralObjectType* own;
@@ -527,13 +527,13 @@ void fxlabServerObjectDispatcher::ActionQuant(void)
 	};
 };
 
-void fxlabServerObjectDispatcher::ActionOpen(void)
+void fxlabServerObjectDispatcher::ActionOpen()
 {
 	if(ActionList.size() != 0)
 		ErrH.Abort("Bad fxlabServerObjectDispatcher ActionList");
 };
 
-void fxlabServerObjectDispatcher::ActionClose(void)
+void fxlabServerObjectDispatcher::ActionClose()
 {
 	list<fxlabGeneralActionType>::iterator ev;
 
@@ -555,7 +555,7 @@ void fxlabServerObjectDispatcher::StopArcane(int id,int owner_id)
 
 //-------------------------------------------------
 
-void fxlabClientObjectDispatcher::Start(void)
+void fxlabClientObjectDispatcher::Start()
 {
 	fxlabGeneralObjectDispatcher::Start();
 	Time = global_time();
@@ -563,7 +563,7 @@ void fxlabClientObjectDispatcher::Start(void)
 	DeltaTime = 0;
 };
 
-void fxlabClientObjectDispatcher::Quant(void)
+void fxlabClientObjectDispatcher::Quant()
 {
 	Time = global_time();
 	DeltaTime = DeltaTimer();
@@ -983,7 +983,7 @@ fxlabGeneralObjectType* fxlabClientObjectDispatcher::CreateObject(int type)
 
 //---------------------------------------
 
-void fxlabRndGenerator::Open(void)
+void fxlabRndGenerator::Open()
 {
 	fxlabRNDVAL = /*clock()*/0x83838383;
 };

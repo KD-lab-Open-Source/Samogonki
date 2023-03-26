@@ -178,8 +178,8 @@ struct PrmFile {
 	int len;
 	int index;
 
-	void init(char* name);
-	char* getAtom(void);
+	void init(const char* name);
+	const char* getAtom(void);
 	void finit(void){ delete[] buf; }
 	};
 /* --------------------------- DEFINITION SECTION -------------------------- */
@@ -237,7 +237,7 @@ char* GetINIstringV(const char* iniFile,const char* section,const char* key)
 	if (GetPrivateProfileString(section,key,"",buffer,255,iniFile))	return buffer;
 	else return NULL;
 }
-void SaveINIstringV(const char* iniFile,const char* section,const char* key,char* var)
+void SaveINIstringV(const char* iniFile,const char* section,const char* key,const char* var)
 {
 	WritePrivateProfileString(section,key,var,iniFile);
 }
@@ -364,12 +364,12 @@ void vrtMap::calcH2Ocolor(int terr)
 	for(int j=0; j<256;j++){
 		if(XGR_HighColorMode!=0){//5x6x5
 			r=(TrPal[terr][j]>>11)&0x1f; g=(TrPal[terr][j]>>5)&0x3f; b=(TrPal[terr][j]>>0)&0x1f;
-			r=r*a+rw*a1>>16; g=g*a+gw*a1>>16; b=b*a+bw*a1>>16;
+			r=(r*a+rw*a1)>>16; g=(g*a+gw*a1)>>16; b=(b*a+bw*a1)>>16;
 			TrPal[terr+16][j] = ((r&0x1f)<<11)+((g&0x3f)<<5)+(b&0x1f);
 		}
 		if(XGR_HighColorMode==1){//5x5x5 
 			r=(TrPal[terr][j]>>10)&0x1f; g=(TrPal[terr][j]>>5)&0x1f; b=(TrPal[terr][j]>>0)&0x1f;
-			r=r*a+rw*a1>>16; g=g*a+(gw>>1)*a1>>16; b=b*a+bw*a1>>16;
+			r=(r*a+rw*a1)>>16; g=(g*a+(gw>>1)*a1)>>16; b=(b*a+bw*a1)>>16;
 			TrPal[terr+16][j] = ((r&0x1f)<<10)+((g&0x1f)<<5)+(b&0x1f);
 		}
 	}
@@ -385,7 +385,7 @@ void vrtMap::calcH2Ocolor(void)
 	for(int i=0; i< TERRAIN_MAX;i++){
 		for(int j=0; j<256;j++){
 			r=(TrPal[i][j]>>11)&0x1f; g=(TrPal[i][j]>>5)&0x3f; b=(TrPal[i][j]>>0)&0x1f;
-			r=r*a+rw*a1>>16; g=g*a+gw*a1>>16; b=b*a+bw*a1>>16;
+			r=(r*a+rw*a1)>>16; g=(g*a+gw*a1)>>16; b=(b*a+bw*a1)>>16;
 			TrPal[i+16][j] = ((r&0x1f)<<11)+((g&0x3f)<<5)+(b&0x1f);
 		}
 	}
@@ -545,7 +545,7 @@ char* GetTargetName(char* name)
 }
 */
 
-char* GetTargetName(char* name)
+const char* GetTargetName(const char* name)
 {
 	static char* buf = new char[256];
 
@@ -729,7 +729,7 @@ void vMapInit(void)
 //#endif
 }
 
-void vMapPrepare(char* name,int nWorld,int nTrack)
+void vMapPrepare(const char* name,int nWorld,int nTrack)
 {
 ///		KeepON = 0;
 	
@@ -1144,7 +1144,7 @@ void vrtMap::fileLoad(void)
 #endif
 }
 
-void vrtMap::open(char* name,int nWorld)
+void vrtMap::open(const char* name,int nWorld)
 {
 	//Копирование только имени каталога в dirWorldPrm 
 	char* dir,*dirtemp;
@@ -1162,7 +1162,7 @@ void vrtMap::open(char* name,int nWorld)
 	maxWorld = atoi(pFile -> getAtom());
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
 	int i;
-	char* atom;
+	const char* atom;
 	wTable = new vrtWorld[maxWorld];
 	for(i = 0;i < maxWorld;i++){
 		atom = pFile -> getAtom();
@@ -1181,7 +1181,7 @@ void vrtMap::open(char* name,int nWorld)
 
 
 }
-void vrtMap::load(char* name,int nWorld,int nTrack)
+void vrtMap::load(const char* name,int nWorld,int nTrack)
 {
 	//Копирование только имени каталога в dirWorldPrm 
 	char* dir,*dirtemp;
@@ -1198,7 +1198,7 @@ void vrtMap::load(char* name,int nWorld,int nTrack)
 	maxWorld = atoi(pFile -> getAtom());
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
 	int i;
-	char* atom;
+	const char* atom;
 	wTable = new vrtWorld[maxWorld];
 	char str_dir[256];
 	for(i = 0;i < maxWorld;i++){
@@ -4417,7 +4417,7 @@ void vrtMap::SlopTurnSkip(int Turn,int Slop,int H,int F,int cx,int cy,int xc,int
 	void finit(void){ delete buf; }
 	};
 */
-void PrmFile::init(char* name)
+void PrmFile::init(const char* name)
 {
 	XStream ff(name,XS_IN);
 	buf = new char[len = ff.size()];
@@ -4454,7 +4454,7 @@ void PrmFile::init(char* name)
 	index = 0;
 }
 
-char* PrmFile::getAtom(void)
+const char* PrmFile::getAtom(void)
 {
 	char* p = buf + index;
 	while(index < len && !(*p)) p++, index++;
@@ -4464,7 +4464,7 @@ char* PrmFile::getAtom(void)
 	return ret;
 }
 
-sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
+sAllWorldsTable::sAllWorldsTable(const char* worlds_prm_name)
 {
 	char* dir,*dirtemp;
 	char *dirend=dirtemp=dir=strdup(worlds_prm_name);
@@ -4484,7 +4484,7 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 	if(maxWorld < 1) ErrH.Abort("Empty world list");
 	it= new sWorldTable[maxWorld];
 	int i;
-	char* atom;
+	const char* atom;
 	for(i = 0;i < maxWorld;i++){
 		atom = pFile -> getAtom();
 		if(!atom) ErrH.Abort("Null world name");
@@ -4523,8 +4523,8 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 		const char* secCh_points = "Ch_points Parameters";
 		char* ini_str=GetINIstringV(tS,secCh_points,"Ch_points File");
 		//ini_str = "CH_P.TK0";
-		char* Ch_pointsFileName;
-		if(ini_str!=NULL) Ch_pointsFileName = strdup(ini_str);
+		cString Ch_pointsFileName;
+		if(ini_str!=NULL) Ch_pointsFileName = ini_str;
 		else continue;
 
 		tS.init();
@@ -4535,8 +4535,6 @@ sAllWorldsTable::sAllWorldsTable(char* worlds_prm_name)
 
 		Ch_points.load(tS,0);
 		it[i].QuantityTrack=Ch_points.max_number; //Запись в таблицу количества трэков
-
-		free(Ch_pointsFileName);
 
 	}
 	pFile -> finit();

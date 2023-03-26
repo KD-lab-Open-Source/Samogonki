@@ -72,10 +72,10 @@ public:
 	int output_size(void) const { return outSize; }
 	char* output_buffer(void) { return outBuffer; }
 
-	int connect(char* server,unsigned int port);
+	int connect(const char* server,unsigned int port);
 	void disconnect(void);
 
-	int open_request(int action,char* obj,char* header = 0,int header_len = 0,char* data = 0,int data_len = 0);
+	int open_request(int action,const char* obj,const char* header = 0,int header_len = 0,const char* data = 0,int data_len = 0);
 	void close_request(void);
 
 	void quant(void);
@@ -88,8 +88,8 @@ void wiInit(void);
 void wiFinit(void);
 
 extern wiDispatcher wi_D;
-extern char* wiServerName;
-extern char* wiGameURL;
+extern const char* wiServerName;
+extern const char* wiGameURL;
 extern int wiServerPort;
 
 extern void* wiCritical;

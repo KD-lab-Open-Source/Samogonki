@@ -269,13 +269,13 @@ void fxlabSwarmDomain::Get(Vect3f& d)
 
 //-------------------------------------------------------------
 
-void fxlabParticleFear::KeyCheck(void)
+void fxlabParticleFear::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabParticleFear");
 };
 
-void fxlabParticleFear::KeyUpdate(void)
+void fxlabParticleFear::KeyUpdate()
 {
 	fxlabParticleCore::KeyUpdate();
 	ImageType = round(KeyData[FXLAB_FEAR_DATA_IMAGE_TYPE]);
@@ -287,7 +287,7 @@ void fxlabParticleFear::KeyUpdate(void)
 #include "Camera.h"
 #include "Scene.h"
 
-void fxlabParticleFear::Show(void)
+void fxlabParticleFear::Show()
 {
 	int i,n;
 	cInterfaceVisGeneric *IVisGeneric;
@@ -318,13 +318,13 @@ void fxlabParticleFear::Show(void)
 
 //-------------------------------------------
 
-void fxlabFearSpring::Open(void)
+void fxlabFearSpring::Open()
 {
 	fxlabParticleFear::Open();
 	AddRateFactor = 0;
 };
 
-void fxlabFearSpring::CoreGenerate(void)
+void fxlabFearSpring::CoreGenerate()
 {
 	int n,i;
 	float num;
@@ -364,7 +364,7 @@ void fxlabFearSpring::CoreGenerate(void)
 	};
 };
 
-void fxlabFearSpring::KeyUpdate(void)
+void fxlabFearSpring::KeyUpdate()
 {
 	fxlabParticleFear::KeyUpdate();
 	Rate = KeyData[FXLAB_FEAR_SPRING_DATA_RATE];
@@ -376,7 +376,7 @@ void fxlabFearSpring::KeyUpdate(void)
 	EmitterVelocity.Load(fxlabResourceD->GetResource(FXLAB_SCRIPT_SECTION_KEY,round(KeyData[FXLAB_FEAR_SPRING_DATA_VELOCITY_KEY_ID])),KeyTime);
 };
 
-void fxlabFearSpring::KeyCheck(void)
+void fxlabFearSpring::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_SPRING_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabFearSpring");
@@ -384,19 +384,19 @@ void fxlabFearSpring::KeyCheck(void)
 
 //--------------------------------------------------------------------
 
-void fxlabCrazyTwister::Open(void)
+void fxlabCrazyTwister::Open()
 {
 	fxlabParticleFear::Open();
 	OffsetAngle = fxlabClientRND.UnitRND() * M_PI;
 };
 
-void fxlabCrazyTwister::KeyCheck(void)
+void fxlabCrazyTwister::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_TWISTER_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabCrazyTwister");
 };
 
-void fxlabCrazyTwister::KeyUpdate(void)
+void fxlabCrazyTwister::KeyUpdate()
 {
 	fxlabParticleFear::KeyUpdate();
 	NumBranch = round(KeyData[FXLAB_FEAR_TWISTER_DATA_NUM_BRANCH]);
@@ -421,7 +421,7 @@ void fxlabCrazyTwister::KeyUpdate(void)
 	EndPower = KeyData[FXLAB_FEAR_TWISTER_DATA_END_POWER];
 };
 
-void fxlabCrazyTwister::Show(void)
+void fxlabCrazyTwister::Show()
 {
 	int i,n;
 	cInterfaceVisGeneric *IVisGeneric;
@@ -450,7 +450,7 @@ void fxlabCrazyTwister::Show(void)
 	};
 };
 
-void fxlabCrazyTwister::CoreProcess(void)
+void fxlabCrazyTwister::CoreProcess()
 {
 	Vect3f v;
  	fxlabParticleType* p;
@@ -478,7 +478,7 @@ void fxlabCrazyTwister::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabCrazyTwister::CoreGenerate(void)
+void fxlabCrazyTwister::CoreGenerate()
 {
 	fxlabParticleType* p;
 	float dz,dr,da;
@@ -525,7 +525,7 @@ void fxlabCrazyTwister::CoreGenerate(void)
 };
 
 
-void fxlabCrazyTwister::ConvertPosition(void)
+void fxlabCrazyTwister::ConvertPosition()
 {	
 	if(ProcessMaxX < 0) ProcessMaxX = -ProcessMaxX;
 	if(ProcessMinX < 0) ProcessMinX = -ProcessMinX;
@@ -544,14 +544,14 @@ void fxlabCrazyTwister::ConvertPosition(void)
 
 //--------------------------------------------------------------------
 
-void fxlabRubberSnake::Open(void)
+void fxlabRubberSnake::Open()
 {
 	fxlabParticleFear::Open();
 	Spline = NULL;
 	Conversion = 0;
 };
 
-void fxlabRubberSnake::CoreGenerate(void)
+void fxlabRubberSnake::CoreGenerate()
 {
 	float pow;
 	double d;
@@ -618,13 +618,13 @@ void fxlabRubberSnake::SetSplineOwner(void* point)
 
 //--------------------------------------------------------
 
-void fxlabCrazyExplode::KeyCheck(void)
+void fxlabCrazyExplode::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_EXPLODE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabCrazyExplode");
 };
 
-void fxlabCrazyExplode::KeyUpdate(void)
+void fxlabCrazyExplode::KeyUpdate()
 {
 	fxlabFearSpring::KeyUpdate();
 	PointPower1 = KeyData[FXLAB_FEAR_EXPLODE_DATA_POINT_POWER1];
@@ -633,7 +633,7 @@ void fxlabCrazyExplode::KeyUpdate(void)
 	PointEpsilon2 = KeyData[FXLAB_FEAR_EXPLODE_DATA_POINT_EPSILON2];
 };
 
-void fxlabCrazyExplode::CoreProcess(void)
+void fxlabCrazyExplode::CoreProcess()
 {
 	Vect3f v;
  	fxlabParticleType* p;
@@ -675,19 +675,19 @@ void fxlabCrazyExplode::CoreProcess(void)
 
 //--------------------------------------------------------
 
-void fxlabCrazyTail::Open(void)
+void fxlabCrazyTail::Open()
 {
 	fxlabFearSpring::Open();
 	Velocity = Vect3f::ZERO;	
 };
 
-void fxlabCrazyTail::KeyCheck(void)
+void fxlabCrazyTail::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_TAIL_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabCrazyTail");
 };
 
-void fxlabCrazyTail::KeyUpdate(void)
+void fxlabCrazyTail::KeyUpdate()
 {
 	fxlabFearSpring::KeyUpdate();
 	PointPower = KeyData[FXLAB_FEAR_TAIL_DATA_POINT_POWER];
@@ -695,7 +695,7 @@ void fxlabCrazyTail::KeyUpdate(void)
 	PointRadius = KeyData[FXLAB_FEAR_TAIL_DATA_POINT_RADIUS];
 };
 
-void fxlabCrazyTail::CoreProcess(void)
+void fxlabCrazyTail::CoreProcess()
 {
 	float r;
 	Vect3f pos;
@@ -744,25 +744,25 @@ void fxlabCrazyTail::SetVelocity(const Vect3f& v)
 
 //---------------------------------------------
 
-void fxlabCrazyDust::Open(void)
+void fxlabCrazyDust::Open()
 {
 	fxlabFearSpring::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabCrazyDust::KeyCheck(void)
+void fxlabCrazyDust::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_DUST_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabCrazyDust");
 };
 
-void fxlabCrazyDust::KeyUpdate(void)
+void fxlabCrazyDust::KeyUpdate()
 {
 	fxlabFearSpring::KeyUpdate();
 	Damp = KeyData[FXLAB_FEAR_DUST_DATA_DAMP];
 };
 
-void fxlabCrazyDust::CoreProcess(void)
+void fxlabCrazyDust::CoreProcess()
 {
 	Vect3f v;
 	float damp;
@@ -793,7 +793,7 @@ void fxlabCrazyDust::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabCrazyDust::CoreGenerate(void)
+void fxlabCrazyDust::CoreGenerate()
 {
 	fxlabParticleType* p;
 	float num;
@@ -841,13 +841,13 @@ void fxlabCrazyDust::SetVelocity(const Vect3f& v)
 
 //-----------------------------------------------------------
 
-void fxlabFearFire::Open(void)
+void fxlabFearFire::Open()
 {
 	fxlabFearSpring::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabFearFire::CoreProcess(void)
+void fxlabFearFire::CoreProcess()
 {
 	float r;
 	Vect3f vd;
@@ -896,7 +896,7 @@ void fxlabFearFire::SetVelocity(const Vect3f& v)
 	Velocity = v;
 };
 
-void fxlabFearFire::KeyUpdate(void)
+void fxlabFearFire::KeyUpdate()
 {
 	fxlabFearSpring::KeyUpdate();
 
@@ -908,7 +908,7 @@ void fxlabFearFire::KeyUpdate(void)
 	Axis.normalize();
 };
 
-void fxlabFearFire::KeyCheck(void)
+void fxlabFearFire::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_FIRE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabFearFire");
@@ -916,7 +916,7 @@ void fxlabFearFire::KeyCheck(void)
 
 //---------------------------------------------------------------------
 
-void fxlabSparkGenerator::CoreProcess(void)
+void fxlabSparkGenerator::CoreProcess()
 {
 	Vect3f v;
  	fxlabParticleType* p;
@@ -944,7 +944,7 @@ void fxlabSparkGenerator::CoreProcess(void)
 
 //----------------------------------------------------------------
 
-void fxlabFearStream::Open(void)
+void fxlabFearStream::Open()
 {
 	fxlabFearSpring::Open();
 
@@ -952,13 +952,13 @@ void fxlabFearStream::Open(void)
 	ScaleRate = 1.0f;
 };
 
-void fxlabFearStream::KeyCheck(void)
+void fxlabFearStream::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FEAR_STREAM_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabFearStream");
 };
 
-void fxlabFearStream::KeyUpdate(void)
+void fxlabFearStream::KeyUpdate()
 {
 	fxlabFearSpring::KeyUpdate();
 
@@ -967,7 +967,7 @@ void fxlabFearStream::KeyUpdate(void)
 	VelocityImpulse = KeyData[FXLAB_FEAR_STREAM_DATA_VELOCITY_IMPULSE];
 };
 
-void fxlabFearStream::CoreGenerate(void)
+void fxlabFearStream::CoreGenerate()
 {
 	float num;
 	int n,i;
@@ -1012,7 +1012,7 @@ void fxlabFearStream::CoreGenerate(void)
 	};
 };
 
-void fxlabFearStream::CoreProcess(void)
+void fxlabFearStream::CoreProcess()
 {
 	int x,y,z;
 	Vect3f v;
@@ -1065,7 +1065,7 @@ void fxlabFearStream::SetScale(float scale)
 //----------------------------------------------------------
 
 
-void fxlabCrazyTailWaterClip::CoreProcess(void)
+void fxlabCrazyTailWaterClip::CoreProcess()
 {
 	Vect3f pos;
 	Vect3f v;
@@ -1112,7 +1112,7 @@ void fxlabCrazyTailWaterClip::CoreProcess(void)
 //	ConvertPosition();
 };
 
-void fxlabCrazyDustWaterClip::CoreProcess(void)
+void fxlabCrazyDustWaterClip::CoreProcess()
 {
 	float z;
 	Vect3f v;
@@ -1149,7 +1149,7 @@ void fxlabCrazyDustWaterClip::CoreProcess(void)
 };
 
 
-void fxlabSparkWaterClip::CoreProcess(void)
+void fxlabSparkWaterClip::CoreProcess()
 {
 	float z;
 	Vect3f v;
@@ -1183,13 +1183,13 @@ void fxlabSparkWaterClip::CoreProcess(void)
 
 //--------------------------------------
 
-void fxlabSparkWind::Open(void)
+void fxlabSparkWind::Open()
 {
 	fxlabSparkGenerator::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabSparkWind::CoreGenerate(void)
+void fxlabSparkWind::CoreGenerate()
 {
 	float num;
 	int n,i;
@@ -1234,7 +1234,7 @@ void fxlabSparkWind::CoreGenerate(void)
 	};
 };
 
-void fxlabSparkWind::KeyCheck(void)
+void fxlabSparkWind::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SPARK_WIND_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabSparkWind");
@@ -1243,7 +1243,7 @@ void fxlabSparkWind::KeyCheck(void)
 
 //---------------------
 
-void fxlabSparkWindWaterClip::CoreProcess(void)
+void fxlabSparkWindWaterClip::CoreProcess()
 {
 	float z;
 	Vect3f v;
@@ -1277,7 +1277,7 @@ void fxlabSparkWindWaterClip::CoreProcess(void)
 
 //-----------------------------------
 
-void fxlabSparkGeneratorExternal::CoreGenerate(void)
+void fxlabSparkGeneratorExternal::CoreGenerate()
 {
 	int n,i;
 	float num;
@@ -1339,13 +1339,13 @@ void fxlabSparkGeneratorExternal::SetVelocityDomain(fxlabSwarmDomain* p)
 
 //--------------------------------------------------
 
-void fxlabSparkLine::Open(void)
+void fxlabSparkLine::Open()
 {
 	fxlabSparkGenerator::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabSparkLine::CoreGenerate(void)
+void fxlabSparkLine::CoreGenerate()
 {
 	int n,i;
 	float num;
@@ -1401,7 +1401,7 @@ extern int hCamera;
 extern float mchCameraX;
 extern float mchCameraY;
 
-void fxlabSnowLayer::Show(void)
+void fxlabSnowLayer::Show()
 {
 	int i,n;
 	cInterfaceVisGeneric *IVisGeneric;
@@ -1439,21 +1439,21 @@ void fxlabSnowLayer::Show(void)
 };
 
 
-void fxlabSnowLayer::CheckVisibility(void)
+void fxlabSnowLayer::CheckVisibility()
 {
 	Visibility = 0xffffffff;
 };
 
-void fxlabSnowLayer::StopTimeCheckVisibility(void)
+void fxlabSnowLayer::StopTimeCheckVisibility()
 {
 	Visibility = 0xffffffff;
 };
 
-void fxlabSnowLayer::ConvertPosition(void)
+void fxlabSnowLayer::ConvertPosition()
 {
 };
 
-void fxlabSnowLayer::CoreProcess(void)
+void fxlabSnowLayer::CoreProcess()
 {
 	Vect3f v;
  	fxlabParticleType* p;
@@ -1478,13 +1478,13 @@ void fxlabSnowLayer::CoreProcess(void)
 
 #include "TileMap.h"
 
-void fxlabSnowLayer::Open(void)
+void fxlabSnowLayer::Open()
 {
 	fxlabSparkGenerator::Open();
 	TilePoint = NULL;
 };
 
-void fxlabSnowLayer::CheckVisibility(void)
+void fxlabSnowLayer::CheckVisibility()
 {	
 	if(TilePoint->GetVisible())
 		Visibility = 0xffffffff;
@@ -1494,7 +1494,7 @@ void fxlabSnowLayer::CheckVisibility(void)
 	};
 };
 
-void fxlabSnowLayer::StopTimeCheckVisibility(void)
+void fxlabSnowLayer::StopTimeCheckVisibility()
 {
 	if(TilePoint->GetVisible())
 		Visibility = 0xffffffff;
@@ -1503,11 +1503,11 @@ void fxlabSnowLayer::StopTimeCheckVisibility(void)
 	};
 };
 
-void fxlabSnowLayer::ConvertPosition(void)
+void fxlabSnowLayer::ConvertPosition()
 {
 };
 
-void fxlabSnowLayer::CoreProcess(void)
+void fxlabSnowLayer::CoreProcess()
 {
 	Vect3f v;
  	fxlabParticleType* p;
@@ -1542,7 +1542,7 @@ extern int mchSplitScreenGame;
 const double FXLAB_SPLINE_WAY_DELTA = 0.01f;
 const double FXLAB_SPLINE_WAY_SPEED = 0.1;
 
-void fxlabSplineWay::Open(void)
+void fxlabSplineWay::Open()
 {
 	fxlabClientEvolutionType::Open();
 	ImagePoint = fxlabResourceD->GetResource(FXLAB_SCRIPT_SECTION_SPRITE,FXLAB_ID_SPRITE_SPLINE_WAY);
@@ -1553,7 +1553,7 @@ void fxlabSplineWay::Open(void)
 
 extern int mchFreezeTime;
 extern int mchTurnBasedGame;
-void fxlabSplineWay::Show(void)
+void fxlabSplineWay::Show()
 {
 	cInterfaceVisGeneric *IVisGeneric;
 	Vect3f pos;

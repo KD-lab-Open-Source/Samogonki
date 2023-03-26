@@ -32,8 +32,8 @@ char ogStatusStr[256];
 
 int ogRefreshTimer = 0;
 
-char* ogErrorStr = NULL;
-char* ogErrorStr0 = "ERROR:";
+const char* ogErrorStr = NULL;
+const char* ogErrorStr0 = "ERROR:";
 
 const int OG_PACKET_VERSION = 104;
 
@@ -130,7 +130,7 @@ int ogCheckRefreshTime(void)
 	return 0;
 }
 
-void ogLogError(char* text,int uid,int turn,int prm0,int prm1)
+void ogLogError(const char* text,int uid,int turn,int prm0,int prm1)
 {
 #ifdef _ONLINE_LOG_
 	char* log_name = og_logName;
@@ -151,7 +151,7 @@ void ogLogError(char* text,int uid,int turn,int prm0,int prm1)
 #endif
 }
 
-void ogLogStr(char* text)
+void ogLogStr(const char* text)
 {
 #ifdef _ONLINE_LOG_
 	char* log_name = og_logName;

@@ -4,10 +4,17 @@
 
 void cBasePolyGrid::New(int xSize,int ySize,float xStep,float yStep)
 {
-	FREE_MEM(pColor);
-	FREE_MEM(pUVWarp);
-	FREE_MEM(pXYZWarp);
-	FREE_MEM(pStructWarp);
+	delete[] pColor;
+	delete[] pUVWarp;
+	delete[] pXYZWarp;
+
+        if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_TIMEWARP)) {
+          delete[] reinterpret_cast<sBaseWarpTime *>(pStructWarp);
+        }
+        if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_WAVEWARP)) {
+          delete[] reinterpret_cast<sBaseWarpWave *>(pStructWarp);
+        }
+
 	xsize=xSize; ysize=ySize;
 	xstep=xStep; ystep=yStep;
 	if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_COLOR))

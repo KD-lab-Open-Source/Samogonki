@@ -5,10 +5,10 @@
 #include "PolyMgr.h"
 
 #ifdef _MECHOSOMA_
-int m3dOpenResource(char* fname,XStream& fh);
+int m3dOpenResource(const char* fname,XStream& fh);
 #endif
 
-void SetExtension(char *fnameOld,char *extension,char *fnameNew)
+void SetExtension(const char *fnameOld,const char *extension,char *fnameNew)
 {
 	strcpy(fnameNew,fnameOld);
 	int l;
@@ -18,7 +18,7 @@ void SetExtension(char *fnameOld,char *extension,char *fnameNew)
 	if(l>=0) strcpy(&fnameNew[l+1],extension);
 }
 
-void SetExtension(char *name,char *extension,char *fname,char *path)
+void SetExtension(const char *name,const char *extension,char *fname,const char *path)
 {
 	char fn[255]; int i=0,k=0;
 	do { fn[i]=name[i]; } while((name[i]!=0)&&(name[i++]!='.'));
@@ -58,7 +58,7 @@ sTexture* cTextureBuffer::BeginList(int x,int y)
 	Attach(MultiTexture);
 	return MultiTexture;
 }
-sTextureChild* cTextureBuffer::AttachChild(char *fname,int id)
+sTextureChild* cTextureBuffer::AttachChild(const char *fname,int id)
 {
 	unsigned char *buf=0;
 	int x,y,fmt;
@@ -97,7 +97,7 @@ sTexture* cTextureBuffer::EndList()
 	MultiTexture=0;
 	return tmp;
 }
-sTexture* cTextureBuffer::Get(char *name,char *path,char *warning)
+sTexture* cTextureBuffer::Get(const char *name,const char *path,const char *warning)
 {
 	if(name==0||name[0]==0) return 0;
 	char FullName[512];
@@ -119,7 +119,7 @@ sTexture* cTextureBuffer::Get(char *name,char *path,char *warning)
 	if(Texture==0) { XBuffer buf; buf<"Error: cTextureBuffer::Get()\r\nTexture "<FullName<" not found in file "<warning; ErrAbort(buf.address()); }
 	return Texture;
 }
-sTexture* cTextureBuffer::Load(char *fname,char *warning)
+sTexture* cTextureBuffer::Load(const char *fname,const char *warning)
 {
 	int x=0,y=0;
 	char PaletteName[255],TextureName[255];
@@ -167,7 +167,7 @@ sTexture* cTextureBuffer::Load(char *fname,char *warning)
 	Texture->SetAttribute(ATTRTEX_PAL8);
 	return Texture;
 }
-sTexture* cTextureBuffer::LoadTGA(char *fname,char *warning)
+sTexture* cTextureBuffer::LoadTGA(const char *fname,const char *warning)
 {
 	int x=0,y=0,fmt=0; 
 	unsigned char *buf=0;
@@ -186,7 +186,7 @@ sTexture* cTextureBuffer::LoadTGA(char *fname,char *warning)
 	Texture->SetAttribute(fmt);
 	return Texture;
 }
-int cTextureBuffer::LoadTGA(char *fname,void **buf,int &x,int &y,int &fmt)
+int cTextureBuffer::LoadTGA(const char *fname,void **buf,int &x,int &y,int &fmt)
 {
 	char NameTGA[255];
 	if((fname)&&(strcmp(fname,"")==0)) { *buf=0; return 0; }
@@ -280,7 +280,7 @@ int cTextureBuffer::LoadTGA(char *fname,void **buf,int &x,int &y,int &fmt)
 	}
 	return 1;
 }
-sTexture* cTextureBuffer::LoadJPG(char *fname,char *warning)
+sTexture* cTextureBuffer::LoadJPG(const char *fname,const char *warning)
 {
 /*	int x=0,y=0,fmt=0; 
 	unsigned char *buf=0;
@@ -399,7 +399,7 @@ void cTextureBuffer::ConvertTextureFormat(void *pOld,int xOld,int yOld,int fmtOl
 		}
 	}
 }
-int cTextureBuffer::SaveTGA(char *fname,void *buf,int x,int y,int fmt)
+int cTextureBuffer::SaveTGA(const char *fname,void *buf,int x,int y,int fmt)
 {
 	if((fname)&&(strcmp(fname,"")==0)) return 0;
 	int bpp=0;
