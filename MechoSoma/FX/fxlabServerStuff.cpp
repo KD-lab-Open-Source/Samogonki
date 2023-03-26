@@ -33,19 +33,19 @@
 
 void fxlabChargeMana(class mchMechosRacer* p,float power);
 
-void fxlabDamageSensorType::Open(void)
+void fxlabDamageSensorType::Open()
 {
 	fxlabServerKeyObjectType::Open();
 	Position = Vect3f::ZERO;
 };
 
-void fxlabDamageSensorType::Quant(void)
+void fxlabDamageSensorType::Quant()
 {
 	fxlabServerKeyObjectType::Quant();
 	Action();
 };
 
-void fxlabDamageSensorType::Action(void)
+void fxlabDamageSensorType::Action()
 {
 	mchRacer* mp;
 	int dx,dy,dz;
@@ -132,7 +132,7 @@ void fxlabDamageSensorType::Action(void)
 	};
 };
 
-void fxlabDamageSensorType::KeyUpdate(void)
+void fxlabDamageSensorType::KeyUpdate()
 {
 	fxlabServerKeyObjectType::KeyUpdate();
 	Power = KeyData[FXLAB_DAMAGE_SENSOR_DATA_POWER] * fxlabServerTimeRate;
@@ -140,7 +140,7 @@ void fxlabDamageSensorType::KeyUpdate(void)
 	SensorType = round(KeyData[FXLAB_DAMAGE_SENSOR_DATA_TYPE]);
 };
 
-void fxlabDamageSensorType::KeyCheck(void)
+void fxlabDamageSensorType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_DAMAGE_SENSOR_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabDamageSphere");
@@ -148,13 +148,13 @@ void fxlabDamageSensorType::KeyCheck(void)
 
 //-----------------------------------------------------------------
 
-void fxlabDamageLineType::Open(void)
+void fxlabDamageLineType::Open()
 {
 	fxlabDamageSensorType::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabDamageLineType::Action(void)
+void fxlabDamageLineType::Action()
 {
 	mchRacer* mp;
 	int dx,dy,dz;
@@ -248,7 +248,7 @@ void fxlabDamageLineType::Action(void)
 	};
 };
 
-void fxlabDamageLineType::KeyCheck(void)
+void fxlabDamageLineType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_DAMAGE_LINE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabDamageLineType");
@@ -256,7 +256,7 @@ void fxlabDamageLineType::KeyCheck(void)
 
 //-----------------------------------------
 
-void fxlabDamageCircleType::Action(void)
+void fxlabDamageCircleType::Action()
 {
 	mchRacer* mp;
 	int dx,dy;
@@ -343,14 +343,14 @@ void fxlabDamageCircleType::Action(void)
 	};
 };
 
-void fxlabDamageCircleType::KeyUpdate(void)
+void fxlabDamageCircleType::KeyUpdate()
 {
 	fxlabDamageSensorType::KeyUpdate();
 	MinRadius = KeyData[FXLAB_DAMAGE_CIRCLE_DATA_MIN_RADIUS];
 	Height = KeyData[FXLAB_DAMAGE_CIRCLE_DATA_HEIGHT];
 };
 
-void fxlabDamageCircleType::KeyCheck(void)
+void fxlabDamageCircleType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_DAMAGE_CIRCLE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabDamageCircleType");
@@ -358,7 +358,7 @@ void fxlabDamageCircleType::KeyCheck(void)
 
 //-----------------------------------------
 
-void fxlabServerBodyLinkType::Quant(void)
+void fxlabServerBodyLinkType::Quant()
 {
 	fxlabServerKeyObjectType::Quant();
 	if(Alive){
@@ -375,7 +375,7 @@ void fxlabServerBodyLinkType::Quant(void)
 	};
 };
 
-void fxlabServerBodyLinkType::Destroy(void)
+void fxlabServerBodyLinkType::Destroy()
 {
 	fxlabGeneralObjectType* t;
 
@@ -397,7 +397,7 @@ void fxlabServerBodyLinkType::SetBody(class Body* p)
 	Position = Core->R();
 };
 
-void fxlabServerBodyLinkType::KeyCheck(void)
+void fxlabServerBodyLinkType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_BODY_LINK_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerBodyLinkType");
@@ -485,7 +485,7 @@ void fxlabTakeBonus(int type, const Vect3f& pos_)
 	};
 };
 
-/*void fxlabServerBonusType::Open(void)
+/*void fxlabServerBonusType::Open()
 {
 	fxlabServerSpaceType::Open();
 	LinkPoint = NULL;
@@ -495,7 +495,7 @@ void fxlabTakeBonus(int type, const Vect3f& pos_)
 	BonusPartID = 0;
 };
 
-void fxlabServerBonusType::Start(void)
+void fxlabServerBonusType::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -515,7 +515,7 @@ void fxlabServerBonusType::Start(void)
 	LinkPoint->Process = this;
 };
 
-void fxlabServerBonusType::Close(void)
+void fxlabServerBonusType::Close()
 {
 	if(ModelPoint.Process)
 		ModelPoint.Process->SetAlive(0);
@@ -545,20 +545,20 @@ void fxlabDestroyBonus(struct fxlabProcessInterface* p)
 
 //-------------------------------------------
 
-void fxlabServerBonusSingle::Open(void)
+void fxlabServerBonusSingle::Open()
 {
 	fxlabServerSpaceType::Open();
 	BonusActionID = ARCANE053;
 	BonusPartID = 0;
 };
 
-void fxlabServerBonusSingle::Start(void)
+void fxlabServerBonusSingle::Start()
 {
 	fxlabServerSpaceType::Start();
 	Generate();
 };
 
-void fxlabServerBonusSingle::Close(void)
+void fxlabServerBonusSingle::Close()
 {
 	if(BonusPoint.Process)
 		BonusPoint.Process->SetAlive(0);
@@ -572,7 +572,7 @@ void fxlabServerBonusSingle::SetBonusActionID(int id)
 		BonusPartID = M3D_TOTAL_TYPE(fxlabServerRND.RND(5) + 1,M3D_ENGINE);
 };
 
-void fxlabServerBonusSingle::Generate(void)
+void fxlabServerBonusSingle::Generate()
 {
 	fxlabGeneralObjectType* t;
 
@@ -641,20 +641,20 @@ void fxlabServerBonusSingle::Generate(void)
 	};
 };
 
-void fxlabServerBonusMarket::Open(void)
+void fxlabServerBonusMarket::Open()
 {
 	fxlabServerBonusSingle::Open();
 	RespawnTime = 0;
 	WaitFlag = 1;
 };
 
-void fxlabServerBonusMarket::Start(void)
+void fxlabServerBonusMarket::Start()
 {
 	RespawnTimer.start(0);
 	fxlabServerBonusSingle::Start();
 };
 
-void fxlabServerBonusMarket::Quant(void)
+void fxlabServerBonusMarket::Quant()
 {
 	fxlabServerBonusSingle::Quant();
 
@@ -674,26 +674,26 @@ void fxlabServerBonusMarket::Quant(void)
 
 //-------------------------------------------------
 
-void fxlabServerDragonFire::Open(void)
+void fxlabServerDragonFire::Open()
 {
 	fxlabDamageLineType::Open();
 	EnableFlag = 0;
 };
 
-void fxlabServerDragonFire::Close(void)
+void fxlabServerDragonFire::Close()
 {
 	if(RemotePoint.Process)
 		RemotePoint.Process->SetAlive(0);
 	fxlabDamageLineType::Close();
 };
 
-void fxlabServerDragonFire::Start(void)
+void fxlabServerDragonFire::Start()
 {
 	fxlabDamageLineType::Start();
 	FireTimer.start(round(KeyData[FXLAB_SERVER_DRAGON_FIRE_DATA_START_TIME]));
 };
 
-void fxlabServerDragonFire::Action(void)
+void fxlabServerDragonFire::Action()
 {
 	if(EnableFlag){
 		if(FireTimer())
@@ -714,7 +714,7 @@ void fxlabServerDragonFire::Action(void)
 	};
 };
 
-void fxlabServerDragonFire::KeyCheck(void)
+void fxlabServerDragonFire::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_DRAGON_FIRE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerDragonFire");
@@ -728,7 +728,7 @@ void fxlabServerDragonFire::SetRemoteObject(fxlabGeneralObjectType* p)
 
 void fxlabDragonRose(const Vect3f& pos,const Vect3f& vel);
 
-void fxlabServerDragonHeadFire::Action(void)
+void fxlabServerDragonHeadFire::Action()
 {
 	if(EnableFlag){
 		if(FireTimer()){
@@ -754,20 +754,20 @@ void fxlabServerDragonHeadFire::Action(void)
 //------------------------------------------------------
 
 
-void fxlabServerSuckDamage::Open(void)
+void fxlabServerSuckDamage::Open()
 {
 	fxlabServerKeyObjectType::Open();
 	Target = NULL;
 };
 
-void fxlabServerSuckDamage::Close(void)
+void fxlabServerSuckDamage::Close()
 {
 	if(RemotePoint.Process)
 		RemotePoint.Process->SetAlive(0);
 	fxlabServerKeyObjectType::Close();
 };
 
-void fxlabServerSuckDamage::Quant(void)
+void fxlabServerSuckDamage::Quant()
 {
 	fxlabServerKeyObjectType::Quant();
 	CheckTarget();
@@ -776,13 +776,13 @@ void fxlabServerSuckDamage::Quant(void)
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_SERVER_SUCK_DAMAGE_PASSIVE_RADIUS],((DamageType == FXLAB_DAMAGE_SPHERE_TYPE_LIGHTNING) ? TRACK_EL_ELECTRICITY : TRACK_EL_FIRE));
 };
 
-void fxlabServerSuckDamage::KeyCheck(void)
+void fxlabServerSuckDamage::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_SUCK_DAMAGE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerSuckDamage");
 };
 
-void fxlabServerSuckDamage::KeyUpdate(void)
+void fxlabServerSuckDamage::KeyUpdate()
 {
 	fxlabServerKeyObjectType::KeyUpdate();
 	Power = KeyData[FXLAB_SERVER_SUCK_DAMAGE_POWER] * fxlabServerTimeRate;
@@ -799,7 +799,7 @@ void fxlabServerSuckDamage::SetRemoteObject(fxlabGeneralObjectType* p)
 	p->SetRemoteInterface(&RemotePoint);
 };
 
-void fxlabServerSuckDamage::CheckTarget(void)
+void fxlabServerSuckDamage::CheckTarget()
 {
 	mchRacer* mp;
 	int dx,dy,dz;
@@ -850,7 +850,7 @@ void fxlabServerSuckDamage::CheckTarget(void)
 	};
 };
 
-void fxlabServerSuckDamage::Action(void)
+void fxlabServerSuckDamage::Action()
 {
 	Target->damage(Power,DamageType);
 	fxlabArcaneAction(this,(static_cast<mchMechosRacer*>(Target))->Mechos::ID);
@@ -858,12 +858,12 @@ void fxlabServerSuckDamage::Action(void)
 		TargetDestruction();
 };
 
-void fxlabServerSuckDamage::TargetDestruction(void)
+void fxlabServerSuckDamage::TargetDestruction()
 {
 	Target = NULL;
 };
 
-void fxlabServerSuckDamage::TargetLost(void)
+void fxlabServerSuckDamage::TargetLost()
 {
 	Target = NULL;
 };
@@ -872,13 +872,13 @@ void fxlabServerSuckDamage::AssignTarget(struct mchRacer* Target)
 {
 };
 
-void fxlabServerSuckDamage::CheckAlive(void)
+void fxlabServerSuckDamage::CheckAlive()
 {
 };
 
 //-------------------------------------
 
-void fxlabServerWildClaw::Action(void)
+void fxlabServerWildClaw::Action()
 {
 	if(!ErectionTimer())
 		fxlabServerSuckDamage::Action();
@@ -889,19 +889,19 @@ void fxlabServerWildClaw::AssignTarget(struct mchRacer* target)
 	ErectionTimer.start(round(KeyData[FXLAB_SERVER_WILD_CLAW_ERECTION_TIME]));
 };
 
-void fxlabServerWildClaw::KeyCheck(void)
+void fxlabServerWildClaw::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_WILD_CLAW_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerWildClaw");
 };
 
-void fxlabServerPlasmaClaw::Open(void)
+void fxlabServerPlasmaClaw::Open()
 {
 	fxlabServerWildClaw::Open();
 	OwnerPoint = NULL;
 };
 
-void fxlabServerPlasmaClaw::Action(void)
+void fxlabServerPlasmaClaw::Action()
 {
 	if(!ErectionTimer()){
 		if(OwnerPoint){
@@ -920,7 +920,7 @@ void fxlabServerPlasmaClaw::Action(void)
 
 //--------------------------------------------
 
-void fxlabServerPerestroykaClaw::CheckTarget(void)
+void fxlabServerPerestroykaClaw::CheckTarget()
 {
 	mchRacer* mp;
 	int dx,dy,dz;
@@ -978,7 +978,7 @@ void fxlabServerPerestroykaClaw::CheckTarget(void)
 
 //--------------------------------------------
 
-void fxlabServerBombExplosion::Start(void)
+void fxlabServerBombExplosion::Start()
 {
 	fxlabDamageSensorType::Start();
 //!!!!!
@@ -987,13 +987,13 @@ void fxlabServerBombExplosion::Start(void)
 
 //--------------------------------------------
 
-void fxlabServerStoneLauncher::Quant(void)
+void fxlabServerStoneLauncher::Quant()
 {
 	fxlabServerKeyObjectType::Quant();
 	Action();
 };
 
-void fxlabServerStoneLauncher::Action(void)
+void fxlabServerStoneLauncher::Action()
 {
 	int i,n;
 	float f,r;
@@ -1009,7 +1009,7 @@ void fxlabServerStoneLauncher::Action(void)
 		Generate();
 };
 
-void fxlabServerStoneLauncher::KeyCheck(void)
+void fxlabServerStoneLauncher::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_STONE_LAUNCHER_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerStoneLauncher");
@@ -1018,7 +1018,7 @@ void fxlabServerStoneLauncher::KeyCheck(void)
 //----------------------------------------------
 
 
-void fxlabServerVolcanoLauncher::Generate(void)
+void fxlabServerVolcanoLauncher::Generate()
 {
 	Vect3f v;
 	v.setSpherical(fxlabServerRND.UnitRND()*2.0f*M_PI,KeyData[FXLAB_SERVER_VOLCANO_LAUNCHER_DATA_THETTA] + fxlabServerRND.UnitRND() * KeyData[FXLAB_SERVER_VOLCANO_LAUNCHER_DATA_DELTA_THETTA],KeyData[FXLAB_SERVER_VOLCANO_LAUNCHER_DATA_SPEED] + fxlabServerRND.UnitRND() * KeyData[FXLAB_SERVER_VOLCANO_LAUNCHER_DATA_DELTA_SPEED]);
@@ -1026,7 +1026,7 @@ void fxlabServerVolcanoLauncher::Generate(void)
 	fxlabCreateBolide<fxlabVolcanicBomb>(FXLAB_MODEL_INTERFACE_ID_VOLCANO_START,FXLAB_MODEL_INTERFACE_ID_VOLCANO_NOISE,Position,v,10.0,FXLAB_CLIENT_PROCESS_VOLCANIC_STONE_LINK,NULL,NULL,NULL);
 };
 
-void fxlabServerVolcanoLauncher::KeyCheck(void)
+void fxlabServerVolcanoLauncher::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_VOLCANO_LAUNCHER_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerVolcanoLauncher");
@@ -1034,26 +1034,26 @@ void fxlabServerVolcanoLauncher::KeyCheck(void)
 
 //------------------------------------------
 
-void fxlabServerDragonRose::Open(void)
+void fxlabServerDragonRose::Open()
 {
 	fxlabDamageSensorType::Open();
 	EnableFlag = 0;
 };
 
-void fxlabServerDragonRose::Close(void)
+void fxlabServerDragonRose::Close()
 {
 	if(RemotePoint.Process)
 		RemotePoint.Process->SetAlive(0);
 	fxlabDamageSensorType::Close();
 };
 
-void fxlabServerDragonRose::Start(void)
+void fxlabServerDragonRose::Start()
 {
 	fxlabDamageSensorType::Start();
 	FireTimer.start(round(KeyData[FXLAB_SERVER_DRAGON_ROSE_DATA_START_TIME]));
 };
 
-void fxlabServerDragonRose::Action(void)
+void fxlabServerDragonRose::Action()
 {
 	if(EnableFlag){
 		if(FireTimer())
@@ -1074,7 +1074,7 @@ void fxlabServerDragonRose::Action(void)
 	};			
 };
 
-void fxlabServerDragonRose::KeyCheck(void)
+void fxlabServerDragonRose::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_DRAGON_ROSE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerDragonRose");
@@ -1087,20 +1087,20 @@ void fxlabServerDragonRose::SetRemoteObject(fxlabGeneralObjectType* p)
 
 //--------------------------------------------------
 
-void fxlabFieldLinkType::Open(void)
+void fxlabFieldLinkType::Open()
 {
 	fxlabServerKeyObjectType::Open();
 	FieldPoint = NULL;
 };
 
-void fxlabFieldLinkType::Close(void)
+void fxlabFieldLinkType::Close()
 {
 	if(FieldPoint) 
 		Mdisp -> deleteFieldSource(FieldPoint);
 	fxlabServerKeyObjectType::Close();
 };
 
-void fxlabFieldLinkType::Start(void)
+void fxlabFieldLinkType::Start()
 {
 	OwnerProtection* op;
 
@@ -1112,14 +1112,14 @@ void fxlabFieldLinkType::Start(void)
 	Mdisp -> attachFieldSource(FieldPoint);
 };
 
-void fxlabFieldLinkType::Quant(void)
+void fxlabFieldLinkType::Quant()
 {
 	fxlabServerKeyObjectType::Quant();
 	Mdisp -> changeFieldSource(FieldPoint,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS]);	
 };
 
 
-void fxlabFieldLinkType::KeyCheck(void)
+void fxlabFieldLinkType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_FIELD_LINK_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabFieldLinkType");
@@ -1133,56 +1133,56 @@ void fxlabFieldLinkType::SetPosition(const Vect3f& v)
 };
 
 
-void fxlabCircleLinkType::KeyCheck(void)
+void fxlabCircleLinkType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CIRCLE_LINK_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabCircleLinkType");
 };
 
-void fxlabVortexField::Generate(void)
+void fxlabVortexField::Generate()
 {
 	FieldPoint = new VortexFieldSource(Position,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],ProtectionID);
 };
 
-void fxlabMagneticField::Generate(void)
+void fxlabMagneticField::Generate()
 {
 	FieldPoint = new MagneticFieldSource(Position,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],ProtectionID);
 };
 
 //-------------------------------------------
 
-void fxlabStreamField::Open(void)
+void fxlabStreamField::Open()
 {
 	fxlabFieldLinkType::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabStreamField::Quant(void)
+void fxlabStreamField::Quant()
 {
 	fxlabFieldLinkType::Quant();
 	(static_cast<UniformFieldSource*>(FieldPoint))->setForce(Velocity * KeyData[FXLAB_FIELD_LINK_DATA_POWER]);
 };
 
 
-void fxlabFluxField::Generate(void)
+void fxlabFluxField::Generate()
 {
 	FieldPoint = new StreamFieldSource(Position,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],Velocity);
 	(static_cast<UniformFieldSource*>(FieldPoint))->setForce(Velocity * KeyData[FXLAB_FIELD_LINK_DATA_POWER]);
 };
 
-void fxlabFluxField::Quant(void)
+void fxlabFluxField::Quant()
 {
 	fxlabStreamField::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
 };
 
-void fxlabWindField::Generate(void)
+void fxlabWindField::Generate()
 {
 	FieldPoint = new WindFieldSource(Position,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],Velocity);
 	(static_cast<UniformFieldSource*>(FieldPoint))->setForce(Velocity * KeyData[FXLAB_FIELD_LINK_DATA_POWER]);
 };
 
-void fxlabWindField::Quant(void)
+void fxlabWindField::Quant()
 {
 	fxlabStreamField::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
@@ -1190,63 +1190,63 @@ void fxlabWindField::Quant(void)
 
 //--------------------------------------------------
 
-void fxlabWildThicketCircle::Generate(void)
+void fxlabWildThicketCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::WILD_THICKET,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabWildThicketCircle::Quant(void)
+void fxlabWildThicketCircle::Quant()
 {
 	fxlabCircleLinkType::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
 };
 
 
-void fxlabRageSlimeCircle::Generate(void)
+void fxlabRageSlimeCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::RAGE_OF_SLIME,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabRageSlimeCircle::Quant(void)
+void fxlabRageSlimeCircle::Quant()
 {
 	fxlabCircleLinkType::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
 };
 
-void fxlabRedTrackCircle::Generate(void)
+void fxlabRedTrackCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::RED_TRACK,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabGreenSlimeCircle::Generate(void)
+void fxlabGreenSlimeCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::GREEN_SLIME,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabGreenSlimeCircle::Quant(void)
+void fxlabGreenSlimeCircle::Quant()
 {
 	fxlabCircleLinkType::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
 };
 
 
-void fxlabYellowSlimeCircle::Generate(void)
+void fxlabYellowSlimeCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::YELLOW_SLIME,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabYellowSlimeCircle::Quant(void)
+void fxlabYellowSlimeCircle::Quant()
 {
 	fxlabCircleLinkType::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
 };
 
-void fxlabBlueSlimeCircle::Generate(void)
+void fxlabBlueSlimeCircle::Generate()
 {
 	FieldPoint = new CircleMapSource(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],FieldSource::BLUE_SLIME,ProtectionID,KeyData[FXLAB_CIRCLE_LINK_DATA_MIN_Z] + Position.z,KeyData[FXLAB_CIRCLE_LINK_DATA_MAX_Z] + Position.z);
 };
 
-void fxlabBlueSlimeCircle::Quant(void)
+void fxlabBlueSlimeCircle::Quant()
 {
 	fxlabCircleLinkType::Quant();
 	FXLAB_TRACK_AI_UPDATE(Position.x,Position.y,KeyData[FXLAB_FIELD_LINK_DATA_RADIUS],TRACK_EL_SLIME);
@@ -1254,7 +1254,7 @@ void fxlabBlueSlimeCircle::Quant(void)
 
 //-----------------------------------------------------
 
-void fxlabServerBowMachineDamage::TargetDestruction(void)
+void fxlabServerBowMachineDamage::TargetDestruction()
 {
 	fxlabServerSuckDamage::TargetDestruction();
 	SetAlive(0);
@@ -1262,7 +1262,7 @@ void fxlabServerBowMachineDamage::TargetDestruction(void)
 
 //--------------------------------------------------------
   
-void fxlabServerLightningSeedDamage::Action(void)
+void fxlabServerLightningSeedDamage::Action()
 {
 	if(!LifeTimer())
 		SetAlive(0);
@@ -1276,7 +1276,7 @@ void fxlabServerLightningSeedDamage::AssignTarget(struct mchRacer* target)
 	LifeTimer.start(2000);
 };
 
-void fxlabServerLightningSeedDamage::TargetLost(void)
+void fxlabServerLightningSeedDamage::TargetLost()
 {
 	fxlabServerBowMachineDamage::TargetLost();
 	SetAlive(0);
@@ -1286,13 +1286,13 @@ void fxlabServerLightningSeedDamage::TargetLost(void)
 
 const float FXLAB_SERVER_MASS_SHIFTER_TIME = 20.0f;
 
-void fxlabServerMassShifter::Open(void)
+void fxlabServerMassShifter::Open()
 {
 	fxlabServerSpaceType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerMassShifter::Start(void)
+void fxlabServerMassShifter::Start()
 {
 	fxlabServerSpaceType::Start();
 	CalcBranch();
@@ -1303,7 +1303,7 @@ void fxlabServerMassShifter::Start(void)
 };
 
 
-void fxlabServerMassShifter::Generate(void)
+void fxlabServerMassShifter::Generate()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1356,7 +1356,7 @@ void fxlabServerMassShifter::Generate(void)
 	t->Start();
 };
 
-void fxlabServerMassShifter::Quant(void)
+void fxlabServerMassShifter::Quant()
 {
 	fxlabGeneralObjectType* t;
 	fxlabServerSpaceType::Quant();
@@ -1378,14 +1378,14 @@ void fxlabServerMassShifter::Quant(void)
 	};
 };
 
-void fxlabServerMassShifter::Close(void)
+void fxlabServerMassShifter::Close()
 {
 	Owner->reset_feature(Mechos::STATIC_NULIFICATOR);
 	Owner->reset_feature(Mechos::PROTECT_FROM_DAMAGE);
 	fxlabServerSpaceType::Close();
 };
 
-void fxlabServerMassShifter::CalcBranch(void)
+void fxlabServerMassShifter::CalcBranch()
 {
 	int px,py;
 	mchCheckpoint* next;
@@ -1428,7 +1428,7 @@ void fxlabServerMassShifter::CalcBranch(void)
 
 //-------------------------------
 
-void fxlabServerChargeType::Open(void)
+void fxlabServerChargeType::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
@@ -1436,7 +1436,7 @@ void fxlabServerChargeType::Open(void)
 	ChargeTime = 1.0f;
 };
 
-void fxlabServerChargeType::Start(void)
+void fxlabServerChargeType::Start()
 {
 	fxlabServerEvolutionType::Start();
 	DeltaValue = Value / ChargeTime;
@@ -1449,7 +1449,7 @@ void fxlabServerChargeType::SetChargeTime(float t)
 
 //-------------------------------
 
-void fxlabServerChargeEnergy::Start(void)
+void fxlabServerChargeEnergy::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1464,14 +1464,14 @@ void fxlabServerChargeEnergy::Start(void)
 	};
 };
 
-void fxlabServerChargeEnergy::Close(void)
+void fxlabServerChargeEnergy::Close()
 {
 	if(ChargePoint.Process)
 		ChargePoint.Process->SetAlive(0);
 	fxlabServerChargeType::Close();
 };
 
-void fxlabServerChargeEnergy::Quant(void)
+void fxlabServerChargeEnergy::Quant()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1495,7 +1495,7 @@ void fxlabServerChargeEnergy::Quant(void)
 
 //-------------------------------
 
-void fxlabServerChargeMana::Start(void)
+void fxlabServerChargeMana::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1510,14 +1510,14 @@ void fxlabServerChargeMana::Start(void)
 	};
 };
 
-void fxlabServerChargeMana::Close(void)
+void fxlabServerChargeMana::Close()
 {
 	if(ChargePoint.Process)
 		ChargePoint.Process->SetAlive(0);
 	fxlabServerChargeType::Close();
 };
 
-void fxlabServerChargeMana::Quant(void)
+void fxlabServerChargeMana::Quant()
 {
 	int i,cnt;
 	mchArcaneData* t;
@@ -1558,7 +1558,7 @@ void fxlabServerChargeMana::Quant(void)
 
 //---------------------------------------------
 
-void fxlabServerMechosFire::Start(void)
+void fxlabServerMechosFire::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1572,14 +1572,14 @@ void fxlabServerMechosFire::Start(void)
 	t->Start();
 };
 
-void fxlabServerMechosFire::Close(void)
+void fxlabServerMechosFire::Close()
 {
 	if(FirePoint.Process)
 		FirePoint.Process->SetAlive(0);
 	fxlabServerChargeType::Close();
 };
 
-void fxlabServerMechosFire::Quant(void)
+void fxlabServerMechosFire::Quant()
 {
 	fxlabServerChargeType::Quant();	
 	if(Owner->completed() && Owner->Energy() > 0 && !FXLAB_MECHOS_IN_WATER(Owner) && !(Owner->features() & Mechos::FIRE_PROTECTION)){
@@ -1593,7 +1593,7 @@ void fxlabServerMechosFire::Quant(void)
 
 //------------------------------------------------------
 
-void fxlabServerTrapSphere::Quant(void)
+void fxlabServerTrapSphere::Quant()
 {
 	mchRacer* mp;
 	float dx,dy,dz;
@@ -1634,13 +1634,13 @@ void fxlabServerTrapSphere::Action(struct mchRacer* p)
 	SetAlive(0);
 };
 
-void fxlabServerTrapSphere::KeyCheck(void)
+void fxlabServerTrapSphere::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_TRAP_SPHERE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerTrapSphere");
 };
 
-void fxlabServerTrapSphere::KeyUpdate(void)
+void fxlabServerTrapSphere::KeyUpdate()
 {
 	fxlabServerKeyObjectType::KeyUpdate();
 	Radius = KeyData[FXLAB_TRAP_SPHERE_DATA_RADIUS];
@@ -1649,13 +1649,13 @@ void fxlabServerTrapSphere::KeyUpdate(void)
 
 //---------------------------------------------------------
 
-void fxlabServerTrapProcess::Start(void)
+void fxlabServerTrapProcess::Start()
 {
 	fxlabServerMassShifter::Start();
 	Owner->RemoveSeeds();
 };
 
-void fxlabServerTrapProcess::Generate(void)
+void fxlabServerTrapProcess::Generate()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1708,7 +1708,7 @@ void fxlabServerTrapProcess::Generate(void)
 	t->Start();
 };
 
-void fxlabServerTrapProcess::CalcBranch(void)
+void fxlabServerTrapProcess::CalcBranch()
 {
 	int px,py;
 	Vect3f v;
@@ -1746,25 +1746,25 @@ void fxlabServerTrapProcess::CalcBranch(void)
 
 //------------------------------------
 
-void fxlabServerSkinProtection::Open(void)
+void fxlabServerSkinProtection::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerSkinProtection::Start(void)
+void fxlabServerSkinProtection::Start()
 {
 	fxlabServerEvolutionType::Start();
 	Owner->set_feature(Mechos::FIRE_PROTECTION);
 };
 
-void fxlabServerSkinProtection::Close(void)
+void fxlabServerSkinProtection::Close()
 {
 	Owner->reset_feature(Mechos::FIRE_PROTECTION);
 	fxlabServerEvolutionType::Close();
 };
 
-void fxlabServerSkinProtection::Quant(void)
+void fxlabServerSkinProtection::Quant()
 {
 	fxlabServerEvolutionType::Quant();
 	if(CurrentTime * fxlabGlobalTimeRate >= 200.0f || !Owner->completed() || !Owner->geometry)
@@ -1773,25 +1773,25 @@ void fxlabServerSkinProtection::Quant(void)
 
 //-----------------------------------------
 
-void fxlabServerIsolationProtection::Open(void)
+void fxlabServerIsolationProtection::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerIsolationProtection::Start(void)
+void fxlabServerIsolationProtection::Start()
 {
 	fxlabServerEvolutionType::Start();
 	Owner->set_feature(Mechos::LIGHTNING_PROTECTION);
 };
 
-void fxlabServerIsolationProtection::Close(void)
+void fxlabServerIsolationProtection::Close()
 {
 	Owner->reset_feature(Mechos::LIGHTNING_PROTECTION);
 	fxlabServerEvolutionType::Close();
 };
 
-void fxlabServerIsolationProtection::Quant(void)
+void fxlabServerIsolationProtection::Quant()
 {
 	fxlabServerEvolutionType::Quant();
 	if(CurrentTime * fxlabGlobalTimeRate >= 200.0f || !Owner->completed() || !Owner->geometry)
@@ -1800,25 +1800,25 @@ void fxlabServerIsolationProtection::Quant(void)
 
 //-------------------------------------------
 
-void fxlabServerArmorProtection::Open(void)
+void fxlabServerArmorProtection::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerArmorProtection::Start(void)
+void fxlabServerArmorProtection::Start()
 {
 	fxlabServerEvolutionType::Start();
 	Owner->set_feature(Mechos::NULIFICATOR);
 };
 
-void fxlabServerArmorProtection::Close(void)
+void fxlabServerArmorProtection::Close()
 {
 	Owner->reset_feature(Mechos::NULIFICATOR);
 	fxlabServerEvolutionType::Close();
 };
 
-void fxlabServerArmorProtection::Quant(void)
+void fxlabServerArmorProtection::Quant()
 {
 	fxlabServerEvolutionType::Quant();
 
@@ -1828,19 +1828,19 @@ void fxlabServerArmorProtection::Quant(void)
 
 //-------------------------------------------
 
-void fxlabServerBioProtection::Open(void)
+void fxlabServerBioProtection::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerBioProtection::Start(void)
+void fxlabServerBioProtection::Start()
 {
 	fxlabServerEvolutionType::Start();
 	Owner->set_feature(Mechos::PROTECT_FROM_DAMAGE);
 };
 
-void fxlabServerBioProtection::Close(void)
+void fxlabServerBioProtection::Close()
 {
 	if(SoundPoint.Process)
 		SoundPoint.Process->SetAlive(0);
@@ -1849,7 +1849,7 @@ void fxlabServerBioProtection::Close(void)
 	fxlabServerEvolutionType::Close();
 };
 
-void fxlabServerBioProtection::Quant(void)
+void fxlabServerBioProtection::Quant()
 {
 	fxlabGeneralObjectType* t;
 
@@ -1873,7 +1873,7 @@ void fxlabServerBioProtection::Quant(void)
 
 //--------------------------------------------
 
-void fxlabServerStaticTeleport::Open(void)
+void fxlabServerStaticTeleport::Open()
 {
 	fxlabServerSuckDamage::Open();
 	WorldID = 0;
@@ -1884,7 +1884,7 @@ void fxlabServerStaticTeleport::Open(void)
 	LastTarget = NULL;
 };
 
-void fxlabServerStaticTeleport::Close(void)
+void fxlabServerStaticTeleport::Close()
 {
 	if(OmniPoint.Process)
 		OmniPoint.Process->SetAlive(0);
@@ -1895,7 +1895,7 @@ void fxlabServerStaticTeleport::Close(void)
 	fxlabServerSuckDamage::Close();
 };
 
-void fxlabServerStaticTeleport::Action(void)
+void fxlabServerStaticTeleport::Action()
 {
 /*	if(!PrepareTimer() && UseFlag){
 	};
@@ -1903,7 +1903,7 @@ void fxlabServerStaticTeleport::Action(void)
 		TargetDestruction();*/
 };
 
-void fxlabServerStaticTeleport::TargetDestruction(void)
+void fxlabServerStaticTeleport::TargetDestruction()
 {
 //	(static_cast<mchMechosRacer*>(Target))->reset_feature(Mechos::STATIC_NULIFICATOR);
 //	UseFlag = 0;
@@ -1911,7 +1911,7 @@ void fxlabServerStaticTeleport::TargetDestruction(void)
 	fxlabServerSuckDamage::TargetDestruction();
 };
 
-void fxlabServerStaticTeleport::TargetLost(void)
+void fxlabServerStaticTeleport::TargetLost()
 {
 //	(static_cast<mchMechosRacer*>(Target))->reset_feature(Mechos::STATIC_NULIFICATOR);
 //	UseFlag = 0;
@@ -1956,7 +1956,7 @@ void fxlabServerStaticTeleport::AssignTarget(struct mchRacer* Target)
 	};
 };
 
-void fxlabServerStaticTeleport::CheckTarget(void)
+void fxlabServerStaticTeleport::CheckTarget()
 {
 	mchRacer* mp;
 	int dx,dy;
@@ -2069,7 +2069,7 @@ void fxlabServerStaticTeleport::CheckTarget(void)
 
 //---------------------------------
 
-void fxlabServerVoodooHead::Open(void)
+void fxlabServerVoodooHead::Open()
 {
 	fxlabServerKeyObjectType::Open();
 	OwnerPoint = NULL;
@@ -2077,7 +2077,7 @@ void fxlabServerVoodooHead::Open(void)
 	TargetPoint = NULL;
 };
 
-void fxlabServerVoodooHead::Start(void)
+void fxlabServerVoodooHead::Start()
 {	
 	fxlabGeneralObjectType* t;
 	fxlabServerKeyObjectType::Start();
@@ -2096,14 +2096,14 @@ void fxlabServerVoodooHead::Start(void)
 	t->Start();
 };
 
-void fxlabServerVoodooHead::Close(void)
+void fxlabServerVoodooHead::Close()
 {
 	if(HeadPoint.Process)
 		HeadPoint.Process->SetAlive(0);
 	fxlabServerKeyObjectType::Close();
 };
 
-void fxlabServerVoodooHead::Quant(void)
+void fxlabServerVoodooHead::Quant()
 {
 	mchMechosRacer* m;
 	mchRacer* mp;
@@ -2148,13 +2148,13 @@ void fxlabServerVoodooHead::Quant(void)
 	};
 };
 
-void fxlabServerVoodooHead::KeyCheck(void)
+void fxlabServerVoodooHead::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_SERVER_VOODOO_HEAD_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabServerVoodooHead");
 };
 
-void fxlabServerVoodooHead::KeyUpdate(void)
+void fxlabServerVoodooHead::KeyUpdate()
 {
 	fxlabServerKeyObjectType::KeyUpdate();
 	Power = KeyData[FXLAB_DAMAGE_SENSOR_DATA_POWER] * fxlabServerTimeRate;
@@ -2164,13 +2164,13 @@ void fxlabServerVoodooHead::KeyUpdate(void)
 
 //----------------------------
 
-void fxlabServerFrozenType::Open(void)
+void fxlabServerFrozenType::Open()
 {
 	fxlabServerEvolutionType::Open();
 	Owner = NULL;
 };
 
-void fxlabServerFrozenType::Start(void)
+void fxlabServerFrozenType::Start()
 {
 	fxlabGeneralObjectType* t;
 	fxlabServerEvolutionType::Start();
@@ -2187,7 +2187,7 @@ void fxlabServerFrozenType::Start(void)
 	ColorTimer.start(256 * 1000 / 20);
 };
 
-void fxlabServerFrozenType::Quant(void)
+void fxlabServerFrozenType::Quant()
 {
 	fxlabServerEvolutionType::Quant();
 	if(!ColorTimer())
@@ -2198,7 +2198,7 @@ void fxlabServerFrozenType::Quant(void)
 //		SetAlive(0);
 };
 
-void fxlabServerFrozenType::Close(void)
+void fxlabServerFrozenType::Close()
 {
 	Owner->reset_feature(Mechos::FROZEN);
 

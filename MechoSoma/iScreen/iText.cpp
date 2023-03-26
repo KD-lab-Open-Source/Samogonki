@@ -18,7 +18,7 @@ public:
 	iTextData* prev;
 	iTextData* next;
 
-	char* Text(void) const { return text; }
+	const char* Text(void) const { return text; }
 
 	iTextData(int id,const char* p);
 	~iTextData(void);
@@ -27,7 +27,7 @@ public:
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
 void iTextInit(void);
 void iTextFinit(void);
@@ -35,7 +35,7 @@ void iTextFinit(void);
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
 xtList<iTextData> iTxtList;
-static char* iEmptyTxt = "";
+static const char* iEmptyTxt = "";
 
 iTextData::iTextData(int id,const char* p)
 {
@@ -91,7 +91,7 @@ void iTextFinit(void)
 	}
 }
 
-char* iGetText(int id)
+const char* iGetText(int id)
 {
 	iTextData* p = iTxtList.search(id);
 

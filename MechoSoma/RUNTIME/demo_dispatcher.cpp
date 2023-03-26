@@ -27,7 +27,7 @@ extern int mch_iScreenID;
 
 extern int mchFreeResourcesFlag;
 
-extern char* mchIscreenINI;
+extern const char* mchIscreenINI;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
@@ -60,7 +60,7 @@ mchDemoDispatcher mch_demoD;
 void mchInitDemo(void)
 {
 	int i;
-	char* p;
+	const char* p;
 	XBuffer buf;
 
 	DEMO_IDLE_TIMER	= atoi(getIniKey(mchIscreenINI,"demo","idle_timer"));

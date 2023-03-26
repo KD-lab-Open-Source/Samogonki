@@ -59,9 +59,9 @@ xINI_FileSection::~xINI_FileSection(void)
 	}
 }
 
-char* xINI_FileSection::getKey(const char* key_name)
+const char* xINI_FileSection::getKey(const char* key_name)
 {
-	static char* empty_str = "";
+	static const char* empty_str = "";
 	xINI_FileKey* p = keyList.first();
 	while(p){
 		if(!stricmp(p -> getName(),key_name))
@@ -124,7 +124,7 @@ int xINI_File::is_binary(void) const
 	return !strcmp(xINI_Sign,str);
 }
 
-void xINI_File::save_binary(char* fname)
+void xINI_File::save_binary(const char* fname)
 {
 	xINI_FileSection* sp;
 
@@ -140,7 +140,7 @@ void xINI_File::save_binary(char* fname)
 	fh.close();
 }
 
-void xINI_File::save_text(char* fname)
+void xINI_File::save_text(const char* fname)
 {
 	xINI_FileSection* sp;
 
@@ -445,9 +445,9 @@ void xINI_File::put_key(const char* section,const char* key,const char* value)
 	sectionList.append(p);
 }
 
-char* xINI_File::get_key(const char* section,const char* key)
+const char* xINI_File::get_key(const char* section,const char* key)
 {
-	static char* empty_str = "";
+	static const char* empty_str = "";
 	xINI_FileSection* p = sectionList.first();
 	while(p){
 		if(!stricmp(p -> getName(),section)){

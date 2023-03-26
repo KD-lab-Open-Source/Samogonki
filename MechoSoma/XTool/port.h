@@ -10,11 +10,11 @@
 	
  */
 	
-char* port_itoa( int value, char* result, int base );
+const char* port_itoa( int value, char* result, int base );
 
-char* port_ltoa( long value, char* result, int base );
+const char* port_ltoa( long value, char* result, int base );
 
-char* port_ultoa( unsigned long value, char* result, int base );
+const char* port_ultoa( unsigned long value, char* result, int base );
 
 #if defined(__unix__) || defined(__APPLE__)
 char *strupr(char *string);
@@ -33,8 +33,6 @@ inline int BitSR(int x) {
 
 #ifndef _WIN32
 char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
-
-char *strlwr(char *str);
 #endif
 
 uint32_t GetPrivateProfileString(

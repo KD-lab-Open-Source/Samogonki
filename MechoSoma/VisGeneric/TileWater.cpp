@@ -42,7 +42,7 @@ void cTileWater::Attach(cTileMap *TileMap)
 	_xTile=Map->_SizeTileX(); _yTile=Map->_SizeTileY();
 	PolyGrid=new cPolyGrid*[(xTile=Map->NumberTileX())*(yTile=Map->NumberTileY())];
 }
-void cTileWater::Load(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *TexturePath,int attribute)
+void cTileWater::Load(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *TexturePath,int attribute)
 {
 	assert(Map);
 	assert(PolyGrid);

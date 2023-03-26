@@ -106,7 +106,7 @@ struct mchSoundEFF
 	mchSoundEFF* prev;
 
 	void Load(void);
-	void Load(char* fname);
+	void Load(const char* fname);
 
 	void Start(int x = -1,int y = -1,float vol = 1.0f,float speed = 0.0f,int loop = 0);
 	void Stop(void);
@@ -145,7 +145,7 @@ struct mchSoundDispatcher
 	struct XStream* log_file; // -> "sound"
 	#endif
 
-	void Load(char* fname,int local = 1);
+	void Load(const char* fname,int local = 1);
 	void Free(int local = 1);
 
 	void StartEFF(int id,int x,int y,float vol,float speed);

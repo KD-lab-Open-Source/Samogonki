@@ -129,7 +129,7 @@ private:
 	inline int GetNewID()													{ return NumberID++; }
 };
 
-extern void GlobalFunctionSetMaterial(cMaterial &Material,char *TextureName=0,char *OpacityName=0,char *TexturePath=0,int attribute=0);
+extern void GlobalFunctionSetMaterial(cMaterial &Material,const char *TextureName=0,const char *OpacityName=0,const char *TexturePath=0,int attribute=0);
 extern int GlobalVariable_DrawAll;
 
 class cBaseAttributeObject
@@ -149,7 +149,7 @@ public:
 	
 	cBaseDrawObject()														{ }
 	inline cBaseDrawObject* BaseDrawObject()								{ return this; }
-	inline void SetTexture(char *TextureName,char *TexturePath,char *OpacityName=0)		{ GlobalFunctionSetMaterial(MaterialArray(MaterialArray.length()),TextureName,OpacityName,TexturePath); }
+	inline void SetTexture(const char *TextureName,const char *TexturePath,const char *OpacityName=0)		{ GlobalFunctionSetMaterial(MaterialArray(MaterialArray.length()),TextureName,OpacityName,TexturePath); }
 };
 
 class cBaseVolumeObject : public cBaseAttributeObject

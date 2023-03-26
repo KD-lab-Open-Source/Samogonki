@@ -68,9 +68,9 @@ struct mchArcaneBMP
 	mchArcaneBMP* next;
 
 	void Crop(void);
-	void Load(char* fname);
-	void Load(char* fname,XStream& fh);
-	void Save(char* fname);
+	void Load(const char* fname);
+	void Load(const char* fname,XStream& fh);
+	void Save(const char* fname);
 	void Scale(int sx,int sy);
 	void Expand(int sx,int sy);
 
@@ -78,7 +78,7 @@ struct mchArcaneBMP
 
 	void CalcBound(void);
 
-	mchArcaneBMP(char* fname);
+	mchArcaneBMP(const char* fname);
 	mchArcaneBMP(void);
 	mchArcaneBMP(int sx,int sy);
 	~mchArcaneBMP(void);
@@ -258,7 +258,7 @@ struct mchArcaneScreenElement
 	int dataType;
 
 	int exDataParam[5];
-	void* exDataPtr;
+	const void* exDataPtr;
 
 	mchArcaneRacerSet* owner;
 
@@ -283,7 +283,7 @@ struct mchArcaneScreenElement
 	virtual void alloc(void);
 	virtual void free(void);
 
-	void InitCoords(char* name);
+	void InitCoords(const char* name);
 	void ScaleCoords(struct mchGameWindow* src,struct mchGameWindow* dest);
 	void ScaleSize(float sc);
 	void InitR(void);
@@ -296,8 +296,8 @@ struct mchArcaneScreenElement
 	void GetFon(void);
 	void PutFon(void);
 
-	void SetString(int fnt,int sp,void* p);
-	void SetString3D(int fnt,int sp,void* p);
+	void SetString(int fnt,int sp,const void* p);
+	void SetString3D(int fnt,int sp,const void* p);
 	virtual void SetState(int st);
 	void SetTimer(int tm){ SetState(1); Timer = tm; }
 

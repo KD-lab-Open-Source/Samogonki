@@ -493,7 +493,7 @@ extern XGR_Mouse XGR_MouseObj;
 void XGR_OutString(int x,int y,int col,void* str,int font = 0,int space = 1,int pr_flag = 1);
 int XGR_StrLen(void* str,int font = 0,int space = 1);
 
-void XGR_OutText(int x,int y,int col,void* text,int font = 0,int hspace = 1,int vspace = 1,int pr_flag = 1);
+void XGR_OutText(int x,int y,int col,const char* text,int font = 0,int hspace = 1,int vspace = 1,int pr_flag = 1);
 int XGR_TextHeight(void* text,int font = 0,int hspace = 1,int vspace = 1);
 int XGR_TextWidth(void* text,int font = 0,int hspace = 1,int vspace = 1);
 

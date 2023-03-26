@@ -26,7 +26,7 @@ void allocation_tracking_message(char* str);
 inline int total_memory_used(){ return 0;}
 //inline void allocation_tracking(char* title){}
 //inline void allocation_tracking(char* title, struct AllocationAccumulator* state){}
-inline void allocation_tracking_message(char* str){}
+inline void allocation_tracking_message(const char* str){}
 
 #endif // ALLOW_ALLOCATION_TRACKING
 

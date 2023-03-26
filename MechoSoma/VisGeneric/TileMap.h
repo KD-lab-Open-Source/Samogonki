@@ -106,7 +106,7 @@ public:
 	void Draw(cUnknownClass *UCameraList);
 	void DrawReflection(cUnknownClass *UCameraList);
 	// загрузка и т.д.
-	void Load(char *fname);
+	void Load(const char *fname);
 	inline int GetVisible(int x,int y)					{ int i=x>>_xTile, j=y>>_yTile; UNKNOWN_ASSERT(i>=0&&i<xTile&&j>=0&&j<yTile); return Tile[i+j*xTile].GetVisible(); }
 	inline int NumberTileX()							{ return xTile; }
 	inline int NumberTileY()							{ return yTile; }
@@ -117,7 +117,7 @@ public:
 	int SetPolygonFirst();
 	int GetPolygonNext(Vect3f &v1,Vect3f &v2,Vect3f &v3,int &attribute);
 private:
-	int Load3ds(char *fname);
+	int Load3ds(const char *fname);
 };
 
 // переменные для работы c cPolyMgr

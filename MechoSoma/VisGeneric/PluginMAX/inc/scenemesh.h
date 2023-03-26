@@ -54,7 +54,7 @@ struct sChannelMapping
 	sChannelMapping()						{ ID=0; }
 	~sChannelMapping()						{ Release(); }
 	void Release()							{ ID=0; TexVertex.Release(); TexFace.Release(); }
-	inline int cmp(void *Key)				{ return (*(unsigned int*)Key)!=ID; }
+	inline int cmp(const void *Key)				{ return (*(const unsigned int*)Key)!=ID; }
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
 };
@@ -74,7 +74,7 @@ struct sAnimationMesh
 	sAnimationMesh()						{ ID=0; time=0; }
 	~sAnimationMesh()						{ Release(); }
 	void Release()							{ ID=0; time=0; Vertex.Release(); Face.Release(); VertexNormal.Release(); FaceNormal.Release(); ChannelMappingLibrary.Release(); }
-	inline int cmp(void *Key)				{ return (*(int*)Key)!=time; }
+	inline int cmp(const void *Key)				{ return (*(const int*)Key)!=time; }
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
 };
@@ -95,7 +95,7 @@ struct sNodeObject
 	sNodeObject(int Type=NODEOBJECT_NULL)	{ ID=0; type=Type; memset(matrix,0,12*sizeof(float)); }
 	virtual ~sNodeObject()					{ Release(); }
 	void Release();
-	inline int cmp(void *Key)				{ return stricmp((char*)Key,name); }
+	inline int cmp(const void *Key)				{ return stricmp((const char*)Key,name); }
 	virtual int Write(cMeshFile &f)			{ return 1; }
 };
 typedef cBaseMeshPointerLibrary <sNodeObject> cNodeObjectLibrary;
@@ -138,7 +138,7 @@ struct sSubTexmap
 	}
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
-	inline int cmp(void *Key)				{ return stricmp((char*)Key,name); }
+	inline int cmp(const void *Key)				{ return stricmp((const char*)Key,name); }
 };
 typedef cBaseMeshPointerLibrary <sSubTexmap> cSubTexmapArray;
 
@@ -157,7 +157,7 @@ struct sAnimationMaterial
 	sAnimationMaterial()						{ memset(this,0,sizeof(sAnimationMaterial)); }
 	~sAnimationMaterial()						{ Release(); }
 	void Release()								{ SubTexmap.Release(); memset(this,0,sizeof(sAnimationMaterial)); }
-	inline int cmp(void *Key)					{ return (*(int*)Key)!=time; }
+	inline int cmp(const void *Key)					{ return (*(const int*)Key)!=time; }
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
 };
@@ -176,7 +176,7 @@ public:
 	sMaterialObject()						{ ID=NumberSubObject=Shading=0; name=parent=0; }
 	~sMaterialObject()						{ Release(); }
 	void Release()							{ ID=NumberSubObject=Shading=0; name.Release(); parent.Release(); AnimationMaterialLibrary.Release(); }
-	inline int cmp(void *Key)				{ return stricmp((char*)Key,name); }
+	inline int cmp(const void *Key)				{ return stricmp((const char*)Key,name); }
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
 };
@@ -195,7 +195,7 @@ struct sLodObject
 		NodeObjectLibrary.Release(); 
 		MaterialLibrary.Release(); 
 	}
-	inline int cmp(void *Key)				{ return (*(unsigned int*)Key)!=LevelDetail; }
+	inline int cmp(const void *Key)				{ return (*(const unsigned int*)Key)!=LevelDetail; }
 
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
@@ -216,7 +216,7 @@ struct sChannelAnimation
 	sChannelAnimation()						{ ID=1; name=(char*)0; TicksPerFrame=FrameSpeed=LastFrame=FirstFrame=NumberFrame=0; }
 	~sChannelAnimation()					{ Release(); }
 	void Release()							{ name.Release(); LodLibrary.Release(); }
-	inline int cmp(void *Key)				{ return stricmp((char*)Key,name); }
+	inline int cmp(const void *Key)				{ return stricmp((const char*)Key,name); }
 	int Read(cMeshFile &f);
 	int Write(cMeshFile &f);
 	int GetNumberMeshAnimation();

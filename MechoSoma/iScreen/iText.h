@@ -4,7 +4,7 @@
 
 #include "iTextID.h"
 
-char* iGetText(int id);
+const char* iGetText(int id);
 void iTextInit(void);
 void iTextFinit(void);
 

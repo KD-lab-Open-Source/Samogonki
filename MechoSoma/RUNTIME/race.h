@@ -59,7 +59,7 @@ struct mch_AI_Prm
 	int tractionDistMin;
 	int tractionDistMax;
 
-	void init(char* ini_file,char* section);
+	void init(const char* ini_file,const char* section);
 };
 
 // mchRacerStats::flags

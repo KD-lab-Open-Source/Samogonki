@@ -64,13 +64,13 @@ struct fxlabParticleFear : fxlabParticleCore
 
 //-----------
 /*	class cMesh* ModelPoint;
-	void Start(void);
-	void Close(void);*/
+	void Start();
+	void Close();*/
 //-----------
 
-	void Show(void);
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void Show() override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
 };
 
 //-----------------------------------------
@@ -96,10 +96,10 @@ struct fxlabFearSpring : fxlabParticleFear
 	fxlabSwarmDomain EmitterPosition;
 	fxlabSwarmDomain EmitterVelocity;
 
-	void Open(void);
-	void CoreGenerate(void);
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void Open() override;
+	void CoreGenerate() override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
 };
 
 //-------------------------------------------
@@ -138,14 +138,14 @@ struct fxlabCrazyTwister : fxlabParticleFear
 
 	float OffsetAngle;
 
-	void Open(void);
-	void Show(void);
-	void ConvertPosition(void);
+	void Open() override;
+	void Show() override;
+	void ConvertPosition() override;
 
-	void CoreProcess(void);
-	void CoreGenerate(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void CoreProcess() override;
+	void CoreGenerate() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 };
 
 //---------------------------------------------------------------
@@ -155,13 +155,13 @@ struct fxlabRubberSnake : fxlabParticleFear
 	float Conversion;
 	list<Vect3f>* Spline;
 
-	void Open(void);
+	void Open() override;
 
-	void CoreGenerate(void);
-	void SetConversion(int conv);
+	void CoreGenerate() override;
+	void SetConversion(int conv) override;
 
-	void SetSplineOwner(void* point);
-	int GetAlive(void){ return Alive; };
+	void SetSplineOwner(void* point) override;
+	int GetAlive() override { return Alive; };
 };
 
 
@@ -181,9 +181,9 @@ struct fxlabCrazyExplode : fxlabFearSpring
 	float PointPower1,PointEpsilon1;
 	float PointPower2,PointEpsilon2;
 
-	void CoreProcess(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void CoreProcess() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 };
 
 //--------------------------------------------------------
@@ -204,10 +204,10 @@ struct fxlabCrazyTail : fxlabFearSpring
 
 	Vect3f Velocity;	
 
-	void Open(void);
-	void CoreProcess(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void Open() override;
+	void CoreProcess() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 	void SetVelocity(const Vect3f& v) override;
 };
 
@@ -225,11 +225,11 @@ struct fxlabCrazyDust : fxlabFearSpring
 
 	Vect3f Velocity;
 
-	void Open(void);
-	void CoreProcess(void);
-	void CoreGenerate(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void Open() override;
+	void CoreProcess() override;
+	void CoreGenerate() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 
 	void SetVelocity(const Vect3f& v) override;
 };
@@ -259,10 +259,10 @@ struct fxlabFearFire : fxlabFearSpring
 
 	Vect3f Velocity;
 
-	void Open(void);
-	void CoreProcess(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void Open() override;
+	void CoreProcess() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 	void SetVelocity(const Vect3f& v) override;
 };
 
@@ -270,7 +270,7 @@ struct fxlabFearFire : fxlabFearSpring
 
 struct fxlabSparkGenerator : fxlabFearSpring
 {	
-	void CoreProcess(void);
+	void CoreProcess() override;
 };
 
 //----------------------------------
@@ -294,30 +294,30 @@ struct fxlabFearStream : fxlabFearSpring
 
 	Vect3f Velocity;
 
-	void Open(void);
-	void CoreProcess(void);
-	void CoreGenerate(void);
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void Open() override;
+	void CoreProcess() override;
+	void CoreGenerate() override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
 	void SetVelocity(const Vect3f& v) override;
-	void SetScale(float scale);
+	void SetScale(float scale) override;
 };
 
 //---------------------------------------------------
 
 struct fxlabCrazyTailWaterClip : fxlabCrazyTail
 {
-	void CoreProcess(void);
+	void CoreProcess() override;
 };
 
 struct fxlabCrazyDustWaterClip : fxlabCrazyDust
 {
-	void CoreProcess(void);
+	void CoreProcess() override;
 };
 
 struct fxlabSparkWaterClip : fxlabSparkGenerator
 {	
-	void CoreProcess(void);
+	void CoreProcess() override;
 };
 
 //------------------------------------------------------
@@ -332,23 +332,23 @@ struct fxlabSparkWind : fxlabSparkGenerator
 {
 	Vect3f Velocity;
 
-	void Open(void);
-	void CoreGenerate(void);
-	void KeyCheck(void);
+	void Open() override;
+	void CoreGenerate() override;
+	void KeyCheck() override;
 	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
 struct fxlabSparkWindWaterClip : fxlabSparkWind
 {
-	void CoreProcess(void);
+	void CoreProcess() override;
 };
 
 struct fxlabSparkLine : fxlabSparkGenerator
 {
 	Vect3f Velocity;
 
-	void Open(void);
-	void CoreGenerate(void);
+	void Open() override;
+	void CoreGenerate() override;
 	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 };
 
@@ -359,9 +359,9 @@ struct fxlabSparkGeneratorExternal : fxlabSparkGenerator
 	fxlabSwarmDomain ExternalPosition;
 	fxlabSwarmDomain ExternalVelocity;
 
-	void CoreGenerate(void);
-	void SetPositionDomain(fxlabSwarmDomain* p);
-	void SetVelocityDomain(fxlabSwarmDomain* p);
+	void CoreGenerate() override;
+	void SetPositionDomain(fxlabSwarmDomain* p) override;
+	void SetVelocityDomain(fxlabSwarmDomain* p) override;
 };
 
 //----------------------------------
@@ -369,12 +369,12 @@ struct fxlabSparkGeneratorExternal : fxlabSparkGenerator
 /*
 struct fxlabSnowLayer : fxlabSparkGenerator
 {
-	void CheckVisibility(void);
-	void StopTimeCheckVisibility(void);
+	void CheckVisibility();
+	void StopTimeCheckVisibility();
 
-	void CoreProcess(void);
-	void ConvertPosition(void);
-	void Show(void);
+	void CoreProcess();
+	void ConvertPosition();
+	void Show();
 };
 */
 
@@ -382,15 +382,15 @@ struct fxlabSnowLayer : fxlabSparkGenerator
 {
 	struct sTileMap* TilePoint;
 
-	void Open(void);
+	void Open() override;
 
-	void CheckVisibility(void);
-	void StopTimeCheckVisibility(void);
+	void CheckVisibility() override;
+	void StopTimeCheckVisibility() override;
 
-	void CoreProcess(void);
-	void ConvertPosition(void);
+	void CoreProcess() override;
+	void ConvertPosition() override;
 
-	void SetTilePoint(void* pTileMap);
+	void SetTilePoint(void* pTileMap) override;
 };
 
 //-------------------------------------
@@ -402,8 +402,8 @@ struct fxlabSplineWay : fxlabClientEvolutionType
 	double Offset;
 	float Phase;
 
-	void Open(void);
-	void Show(void);
-	void SetMechosPoint(class mchMechosRacer* p){ Owner = p; };
+	void Open() override;
+	void Show() override;
+	void SetMechosPoint(class mchMechosRacer* p) override { Owner = p; };
 };
 

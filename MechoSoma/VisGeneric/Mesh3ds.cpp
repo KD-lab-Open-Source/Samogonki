@@ -14,17 +14,17 @@ unsigned short *zBuffer=0;
 
 #ifdef _MECHOSOMA_
 #ifdef _DEBUG
-extern void allocation_tracking(char* title);
-void SaveMemoryMessage(char *message,int i=0)
+extern void allocation_tracking(const char* title);
+void SaveMemoryMessage(const char *message,int i=0)
 {
 	XBuffer buf;
 	buf<message<=i;
 	allocation_tracking(buf.address());
 }
 #else 
-void SaveMemoryMessage(char *message,int i=0)	{}
+void SaveMemoryMessage(const char *message,int i=0)	{}
 #endif
 #else 
-void SaveMemoryMessage(char *message,int i=0)	{}
+void SaveMemoryMessage(const char *message,int i=0)	{}
 #endif
 

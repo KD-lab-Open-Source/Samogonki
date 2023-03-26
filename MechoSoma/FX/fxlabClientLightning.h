@@ -27,11 +27,11 @@ struct fxlabLightningSphere : fxlabClientKeyObjectType
 	fxlabProcessInterface OmniPoint;
 	cLevin Bow;
 
-	void Start(void);
-	void Close(void);
-	void Quant(void);
-	void Show(void);
-	void KeyCheck(void);
+	void Start() override;
+	void Close() override;
+	void Quant() override;
+	void Show() override;
+	void KeyCheck() override;
 
 	virtual void CalcVelocity(Vect3f& v);
 };
@@ -40,16 +40,16 @@ struct fxlabLightningLine : fxlabLightningSphere
 {
 	Vect3f Velocity;
 
-	void Open(void);
-	void CalcVelocity(Vect3f& v);
+	void Open() override;
+	void CalcVelocity(Vect3f& v) override;
 	void SetVelocity(const Vect3f& v) override;
 };
 
 struct fxlabLightningRadius : fxlabLightningLine
 {
 	float Radius;
-	void Open(void);
-	void Show(void);
+	void Open() override;
+	void Show() override;
 	void SetVelocity(const Vect3f& v) override;
 };
 

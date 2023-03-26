@@ -32,11 +32,11 @@ extern HFont** acsFntTable;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 unsigned short* loadJPG(XStream *Xfile, int &IMGwidth, int &IMGheight);
 
-int acsTextStrLenMax(int fnt,unsigned char* str,int space);
-int acsTextHeight(int fnt,unsigned char* str,int space);
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space);
+int acsTextHeight(int fnt,const unsigned char* str,int space);
 
 void mchA_DrawTextWindow(int x,int y,int sx,int sy,int wnd_alpha,int border_col,int border_alpha);
 
@@ -655,7 +655,7 @@ int mchIntroMovieDispatcher::skip(void)
 	return 0;
 }
 
-void mchIntroMovieDispatcher::init_text(char* txt)
+void mchIntroMovieDispatcher::init_text(const char* txt)
 {
 	int i,sz,beg_idx;
 	mchIntroMovieText* p;

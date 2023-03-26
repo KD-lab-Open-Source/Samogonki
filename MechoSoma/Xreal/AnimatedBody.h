@@ -5,12 +5,12 @@
 
 struct AnimationData
 {
-	char* channel;
+	const char* channel;
 	float period;
 	float start;
 	float finish;
 
-	AnimationData(float period_ = 2000, float start_ = 0, float finish_ = -1, char* channel_ = 0) :
+	AnimationData(float period_ = 2000, float start_ = 0, float finish_ = -1, const char* channel_ = 0) :
 		period(period_), start(start_), finish(finish_), channel(channel_){}
 };
 
@@ -28,7 +28,7 @@ public:
 		};
 
 	EffectData(){}
-	EffectData(float period, char* channel, Mode mode_, int sound_ = 0, int delay_ = 0);
+	EffectData(float period, const char* channel, Mode mode_, int sound_ = 0, int delay_ = 0);
 	
 	int soundID() const { return sound; }
 

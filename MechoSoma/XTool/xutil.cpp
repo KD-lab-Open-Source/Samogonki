@@ -77,7 +77,7 @@ void XList::RemoveElement(XListElement* p)
 	}
 }
 
-char* XFindFirst(char* mask)
+char* XFindFirst(const char* mask)
 {
 	return nullptr;
 }
@@ -87,7 +87,7 @@ char* XFindNext(void)
 	return nullptr;
 }
 
-void xtDeleteFile(char* fname)
+void xtDeleteFile(const char* fname)
 {
 }
 

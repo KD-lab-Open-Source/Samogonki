@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int XBuffer::search(char* what, int mode, int cs)
+int XBuffer::search(const char* what, int mode, int cs)
 {
 	int i,j;
 	unsigned int wlen = strlen(what) - 1;

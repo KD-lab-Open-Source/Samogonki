@@ -27,7 +27,7 @@ char *strupr(char *string) {
 
  */
 
-char* port_itoa( int value, char* result, int base ) {
+const char* port_itoa( int value, char* result, int base ) {
 	// check that the base if valid
 	if (base < 2 || base > 16) {
 		*result = 0;
@@ -53,7 +53,7 @@ char* port_itoa( int value, char* result, int base ) {
 	return result;
 }
 
-char* port_ltoa( long value, char* result, int base ) {
+const char* port_ltoa( long value, char* result, int base ) {
 	// check that the base if valid
 	if (base < 2 || base > 16) {
 		*result = 0;
@@ -78,7 +78,7 @@ char* port_ltoa( long value, char* result, int base ) {
 	return result;
 }
 
-char* port_ultoa( unsigned long value, char* result, int base ) {
+const char* port_ultoa( unsigned long value, char* result, int base ) {
 	// check that the base if valid
 	if (base < 2 || base > 16) {
 		*result = 0;
@@ -105,11 +105,6 @@ char *_fullpath(char *absPath, const char *relPath, size_t maxLength)
 	const auto absolute_path = std::filesystem::absolute(relPath).native();
 	absolute_path.copy(absPath, absolute_path.size());
 	return absPath;
-}
-
-char *strlwr(char *str)
-{
-	return str;
 }
 #endif
 

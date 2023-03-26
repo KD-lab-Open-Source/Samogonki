@@ -14,7 +14,7 @@
 #include "fxlabClientModel.h"
 #include "fxlabClientLightning.h"
 
-void fxlabLightningSphere::Start(void)
+void fxlabLightningSphere::Start()
 {
 	fxlabGeneralObjectType* t;
 
@@ -30,14 +30,14 @@ void fxlabLightningSphere::Start(void)
 	};
 };
 
-void fxlabLightningSphere::Close(void)
+void fxlabLightningSphere::Close()
 {
 	if(OmniPoint.Process)
 		OmniPoint.Process->SetAlive(0);
 	fxlabClientKeyObjectType::Close();
 };
 
-void fxlabLightningSphere::Quant(void)
+void fxlabLightningSphere::Quant()
 {
 	fxlabClientKeyObjectType::Quant();
 
@@ -45,7 +45,7 @@ void fxlabLightningSphere::Quant(void)
 		OmniPoint.Process->SetPosition(Position);
 };
 
-void fxlabLightningSphere::Show(void)
+void fxlabLightningSphere::Show()
 {
 	int i;
 	Vect3f v;
@@ -69,7 +69,7 @@ void fxlabLightningSphere::Show(void)
 	IVisGeneric->Release();
 };
 
-void fxlabLightningSphere::KeyCheck(void)
+void fxlabLightningSphere::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_LIGHTNING_SPHERE_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabLightningSphere");
@@ -82,7 +82,7 @@ void fxlabLightningSphere::CalcVelocity(Vect3f& v)
 
 //------------------------------------
 
-void fxlabLightningLine::Open(void)
+void fxlabLightningLine::Open()
 {
 	fxlabLightningSphere::Open();
 	Velocity = Vect3f::ZERO;
@@ -101,7 +101,7 @@ void fxlabLightningLine::SetVelocity(const Vect3f& v)
 
 //--------------------------------------
 
-void fxlabLightningRadius::Open(void)
+void fxlabLightningRadius::Open()
 {
 	fxlabLightningLine::Open();
 	Radius = 0;
@@ -117,7 +117,7 @@ void fxlabLightningRadius::SetVelocity(const Vect3f& v)
 		Velocity = Vect3f::ZERO;
 };
 
-void fxlabLightningRadius::Show(void)
+void fxlabLightningRadius::Show()
 {
 	int i;
 	Vect3f v;

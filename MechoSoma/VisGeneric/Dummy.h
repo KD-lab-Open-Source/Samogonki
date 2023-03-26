@@ -13,7 +13,7 @@
 
 using namespace std;
 
-unsigned int CalcType(char* NameMesh);
+unsigned int CalcType(const char* NameMesh);
 
 struct Dummy : Vect3f
 {
@@ -21,7 +21,7 @@ struct Dummy : Vect3f
 	char* name;
 
 	Dummy() : Vect3f(0,0,0)	{ Type=0; name = 0; }
-	Dummy(const Vect3f& v, char* n, int t);
+	Dummy(const Vect3f& v, const char* n, int t);
 	Dummy(const Dummy& d);
 	Dummy& operator = (const Dummy& d);
 	~Dummy();
@@ -33,7 +33,7 @@ struct Dummy : Vect3f
 class DummyList : public vector<Dummy>
 {
 public:
-	int Add(const Vect3f& v, char* n);
+	int Add(const Vect3f& v, const char* n);
 	void SortByName();
 	void Print();
 
@@ -41,15 +41,15 @@ public:
   	void Translate(float dx,float dy,float dz);
 
 	Dummy& Find(unsigned int Type);
-	Dummy& Find(char* name);
+	Dummy& Find(const char* name);
 	
 	Dummy* Search(unsigned int Type);
-	Dummy* Search(char* name);
+	Dummy* Search(const char* name);
 	
-	iterator Iterator(char* name_mask);
+	iterator Iterator(const char* name_mask);
 		
 	template <class InputIter>									   
-	int Query(char* name_mask, InputIter result)
+	int Query(const char* name_mask, InputIter result)
 	{
 		iterator i;
 		int count = 0;

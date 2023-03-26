@@ -13,8 +13,8 @@ class fContainer
 
 public:
 
-	void load_idx(char* idx_name);
-	void save_idx(char* idx_name);
+	void load_idx(const char* idx_name);
+	void save_idx(const char* idx_name);
 
 	void load_idx(XStream& fh);
 
@@ -24,8 +24,8 @@ public:
 	void write(char* p,int len);
 #endif
 
-	void set_file(char* p){ if(fname) free(fname); fname = strdup(p); }
-	void set_path(char* p){ if(fpath) free(fpath); fpath = strdup(p); }
+	void set_file(const char* p){ if(fname) free(fname); fname = strdup(p); }
+	void set_path(const char* p){ if(fpath) free(fpath); fpath = strdup(p); }
 
 	fContainer(void);
 	~fContainer(void);

@@ -8,6 +8,10 @@
 #include "UMATH.H"
 #include "float.h"
 
+#ifdef __APPLE__
+#define __forceinline inline
+#endif
+
 #define FLOAT_CONST_PREC					1.f
 
 class cRenderDevice;

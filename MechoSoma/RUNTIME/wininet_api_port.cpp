@@ -20,8 +20,8 @@ typedef struct
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-char* wiServerName = NULL;
-char* wiGameURL = NULL;
+const char* wiServerName = NULL;
+const char* wiGameURL = NULL;
 int wiServerPort = 8500;
 
 wiDispatcher wi_D;
@@ -64,7 +64,7 @@ void wiDispatcher::free_outbuf(void)
 {
 }
 
-int wiDispatcher::connect(char* server,unsigned int port)
+int wiDispatcher::connect(const char* server,unsigned int port)
 {
 	return 0;
 }
@@ -73,7 +73,7 @@ void wiDispatcher::disconnect(void)
 {
 }
 
-int wiDispatcher::open_request(int action,char* obj,char* header,int header_len,char* data,int data_len)
+int wiDispatcher::open_request(int action,const char* obj,const char* header,int header_len,const char* data,int data_len)
 {
 	return 1;
 }

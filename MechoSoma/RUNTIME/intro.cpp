@@ -36,7 +36,7 @@ extern cInterfaceGraph3d	*gb_IGraph3d;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 void mchScreenShot(int mode = 0);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */

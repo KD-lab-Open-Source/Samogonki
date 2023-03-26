@@ -334,7 +334,7 @@ void LCP_Solver::print_state()
 #endif
 }
 
-void LCP_Solver::abort(char* msg)
+void LCP_Solver::abort(const char* msg)
 {
 #ifdef _LCPSolverListing_
 	lout << msg << endl;

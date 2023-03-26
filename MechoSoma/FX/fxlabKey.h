@@ -6,7 +6,7 @@ struct fxlabKeyDataType
 	float Value;
 	float Delta;
 
-	fxlabKeyDataType(void){ Mode = FXLAB_KEY_MODE_LINEAR; Value = FXLAB_RESOURCE_KEY_DEFAULT_VALUE; Delta = 0; };
+	fxlabKeyDataType(){ Mode = FXLAB_KEY_MODE_LINEAR; Value = FXLAB_RESOURCE_KEY_DEFAULT_VALUE; Delta = 0; };
 };
 
 struct fxlabKeyPointType
@@ -14,7 +14,7 @@ struct fxlabKeyPointType
 	float Time;
 	int Mode;
 	fxlabKeyDataType* Data;
-	fxlabKeyPointType(void){ Time = -1.0f; Data = NULL; Mode = FXLAB_KEY_MODE_LINEAR; };
+	fxlabKeyPointType(){ Time = -1.0f; Data = NULL; Mode = FXLAB_KEY_MODE_LINEAR; };
 };
 
 struct fxlabKeyType : fxlabResourceObject
@@ -26,16 +26,16 @@ struct fxlabKeyType : fxlabResourceObject
 	fxlabKeyDataType* KeyStorage;
 	char** Name;
 
-	void Open(scrDataBlock* data);
-	void Close(void);
+	void Open(scrDataBlock* data) override;
+	void Close() override;
 
-	float GetScale(void){ return Scale; };
-	float GetInvScale(void){ return InvScale; };
+	float GetScale() { return Scale; };
+	float GetInvScale() { return InvScale; };
 
-	int GetKeyNum(void){ return KeyNum; };
-	int GetKey(float* point,float time);
-	int GetKeyAttribute(void){ return Attribute; };
-	int GetKeyStatus(float time);
+	int GetKeyNum() override { return KeyNum; };
+	int GetKey(float* point,float time) override;
+	int GetKeyAttribute() override { return Attribute; };
+	int GetKeyStatus(float time) override;
 
 	void FillLinear(float* point,float time);
 	void FillStorage(float* point,float time);

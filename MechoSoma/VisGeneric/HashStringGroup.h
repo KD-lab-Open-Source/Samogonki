@@ -14,10 +14,10 @@
 template <class T>
 struct HashStringGroup :  std::unordered_map<std::string, T>
 {
-	void add(char* str, const T& data) 
+	void add(const char* str, const T& data)
 	{ (*this)[str] = data; }
 
-	T* look(char* n)
+	T* look(const char* n)
 	{
 		char name[256];
 		assert(strlen(n) + 1 < 256);

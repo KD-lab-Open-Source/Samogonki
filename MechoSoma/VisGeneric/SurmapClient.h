@@ -16,8 +16,8 @@ extern void doneM3D();
 extern void setCamera(float x,float y,float z,int xCenter,int yCenter,int xSize,int ySize,float ax,float ay,float az,int focus,char perspective);
 extern void DrawSurmapClient();
 // OMNI - OPERATION
-extern void SaveO3DMap(char *fname);
-extern void LoadO3DMap(char *fname);
+extern void SaveO3DMap(const char *fname);
+extern void LoadO3DMap(const char *fname);
 extern int CreateOmni(float x,float y,float z,float radius,float r,float g,float b);
 extern void DeleteOmni(int number);
 extern void SetOmni(int number,float radius,float r,float g,float b);
@@ -27,12 +27,12 @@ extern void SetOmniVisible(int number,char Visible);
 extern void delO3DAll();
 
 // ***********************************
-extern void loadM3DAll(char*mmapname, unsigned int track_mask=0xFFffFFff);
-extern void saveM3DAll(char*mmapname);
+extern void loadM3DAll(const char *mmapname, unsigned int track_mask=0xFFffFFff);
+extern void saveM3DAll(const char *mmapname);
 //
 extern cMatrix LMatrix;
 extern float Lz,Lax,Lay,Laz,Lsx,Lsy,Lsz;
-extern int  loadM3D(char* name,char flCollision,float x,float y,float z=Lz,float ax=Lax,float ay=Lay,float az=Laz,float sx=Lsx,float sy=Lsy,float sz=Lsz);
+extern int  loadM3D(const char *name,char flCollision,float x,float y,float z=Lz,float ax=Lax,float ay=Lay,float az=Laz,float sx=Lsx,float sy=Lsy,float sz=Lsz);
 extern void delM3D(int number);
 extern void delM3DAll(void);
 extern void setMesh(int number,float x,float y,float z,float ax,float ay,float az);

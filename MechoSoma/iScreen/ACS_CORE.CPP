@@ -58,11 +58,11 @@ Vect3f acsCalcR(Vect3f r0,float phase);
 void acsPrepareChangeScreen3D(int scr_id);
 float acsChangeScreenQuant3D(void);
 
-void acsStrLen3D(void* str,int fnt,int space,int& sx,int& sy);
+void acsStrLen3D(const void* str,int fnt,int space,int& sx,int& sy);
 void acsOutRect3D(float x,float y,float z,int sx,int sy,int col,int alpha,int mat_fl = 0,int ch = 2,Mat3f mat = Mat3f::ZERO,float gamma = 1.0f);
-void acsOutString3D(int x,int y,void* str,int fnt,int col,int space,int alpha,float z = 0.0f,float sc = 1.0f);
+void acsOutString3D(int x,int y,const void* str,int fnt,int col,int space,int alpha,float z = 0.0f,float sc = 1.0f);
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
 int acsGetKeyName(int vkey,int shift,int lng_flag);
 void ibsout(int x,int y,void* ptr);
@@ -79,15 +79,15 @@ aciScreenResource* acsGetResource(int id);
 void acsGetResourceSize(aciScreenResource* p,int& x,int& y,int& sx,int& sy);
 int acsGetMaxFrame(int res_id);
 
-void acsOutStr(int x,int y,int fnt,int col,unsigned char* str,int space);
-void acsOutStr16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space);
-void acsOutStr16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutStr16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-int acsStrLen(int fnt,unsigned char* str,int space);
-void acsOutText16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutText16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
+void acsOutStr(int x,int y,int fnt,int col,const unsigned char* str,int space);
+void acsOutStr16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space);
+void acsOutStr16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutStr16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+void acsOutText16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutText16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
 
-void acsRectangle(int x,int y,int sx,int sy,int col,unsigned* pal,int alpha);
+void acsRectangle(int x,int y,int sx,int sy,int col,const unsigned* pal,int alpha);
 
 void acsChangeStrState(int id);
 
@@ -146,8 +146,8 @@ char* acsFontDir = "FONTS";
 char* acsFontPrefix = "font";
 HFont** acsFntTable = NULL;
 
-char* acsSTR_ON = "ON";
-char* acsSTR_OFF = "OFF";
+const char* acsSTR_ON = "ON";
+const char* acsSTR_OFF = "OFF";
 
 int acsHighColor = 1;
 

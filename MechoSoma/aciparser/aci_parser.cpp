@@ -4,9 +4,9 @@
 
 int** scrStringData = NULL;
 
-char* scrOutputDIR = "";
-char* scrOutputFILE = NULL;
-char* scrInputDIR = "";
+const char* scrOutputDIR = "";
+const char* scrOutputFILE = NULL;
+const char* scrInputDIR = "";
 
 scrDataBlock* scrRoot;
 int scrVerboseFlag = 1;
@@ -270,17 +270,17 @@ void scrSetVerbose(int v)
 	scrVerboseFlag = v;
 }
 
-void scrSetInputDir(char* p)
+void scrSetInputDir(const char* p)
 {
 	scrInputDIR = strdup(p);
 }
 
-void scrSetOutputDir(char* p)
+void scrSetOutputDir(const char* p)
 {
 	scrOutputDIR = strdup(p);
 }
 
-void scrSetOutputFile(char* p)
+void scrSetOutputFile(const char* p)
 {
 	scrOutputFILE = strdup(p);
 }
@@ -331,12 +331,12 @@ scrDataBlock* loadScript(XStream& fh)
 	return p;
 }
 
-scrDataBlock* parseScript(char* fname,char *set_name)
+scrDataBlock* parseScript(const char* fname,const char *set_name)
 {
 	return NULL;
 }
 
-void saveScript(char* fname,scrDataBlock* p)
+void saveScript(const char* fname,scrDataBlock* p)
 {
 	int sz0,sz1,type = 2;
 	char* p0,*p1;

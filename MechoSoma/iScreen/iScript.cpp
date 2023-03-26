@@ -20,9 +20,9 @@ extern char* acsFontPrefix;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
-void acsLoadScript(char* fname);
+void acsLoadScript(const char* fname);
 
 aciScreenResource* acsCreateResource(scrDataBlock* p);
 aciScreenKeyObject* acsCreateKeyObj(scrDataBlock* p);
@@ -40,7 +40,7 @@ aciScreen* acsCreateScreen(scrDataBlock* p);
 
 scrDataBlock* acsScrRoot = NULL;
 
-void acsLoadScript(char* fname)
+void acsLoadScript(const char* fname)
 {
 	XStream fh;
 

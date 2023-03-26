@@ -75,13 +75,19 @@ public:
 	float				u,v,du,dv,uofs,vofs;				// текстурные координаты на сетке uofs+du .. u+uofs+du , vofs+dv .. v+vofs+dv (du и dv - динамическое смещение)
 	int					Attribute;
 
-	cBasePolyGrid(unsigned int type,unsigned int kind) : cBaseObject(type,kind)	{ pColor=0; pXYZWarp=0; pUVWarp=0; pStructWarp=0; Matrix.NewMatrix(); }
+	cBasePolyGrid(unsigned int type,unsigned int kind) : cBaseObject(type,kind)	{ pColor=nullptr; pXYZWarp=nullptr; pUVWarp=nullptr; pStructWarp=nullptr; Matrix.NewMatrix(); }
 	~cBasePolyGrid()												
 	{ 
 		delete[] pColor;
 		delete[] pXYZWarp;
-		FREE_MEM(pUVWarp); 
-		delete[] pStructWarp;
+		delete[] pUVWarp;
+
+                if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_TIMEWARP)) {
+                  delete[] reinterpret_cast<sBaseWarpTime *>(pStructWarp);
+                }
+                if(BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_WAVEWARP)) {
+                  delete[] reinterpret_cast<sBaseWarpWave *>(pStructWarp);
+                }
 	}
 	void New(int xSize,int ySize,float xStep,float yStep);
 //	int Draw(cCamera *Camera);

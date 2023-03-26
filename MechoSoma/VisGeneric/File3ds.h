@@ -20,10 +20,10 @@ class cFile3ds
 	unsigned int CountDummy;
 
 public:
-	cFile3ds(char *fname=0)				{ CountDummy=0; f=NULL; db=NULL; Scale=1.0f; if(fname) Open(fname); }
+	cFile3ds(const char *fname=0)				{ CountDummy=0; f=NULL; db=NULL; Scale=1.0f; if(fname) Open(fname); }
 	~cFile3ds()							{ }
 
-	char Open(char *fname,int OpenDirection=1);
+	char Open(const char *fname,int OpenDirection=1);
 	void Close();
 	//****************** Mesh operation ********************
 	int		OpenBaseMesh(); // return Number Object Tri-mesh
@@ -37,12 +37,12 @@ public:
 	//**************** KeyFrame operation *******************
 	int		OpenBaseKeyFrame();	// return Number Mesh Motion
 
-	void	OpenKeyFrame(char *NameFrame);
+	void	OpenKeyFrame(const char *NameFrame);
 	void	ReadKeyFrame(char *Parent,float **Pos,int *NumberPos,float **Rot,int *NumberRot,float **Scale,int *NumberScale,float *Pivot);
 	void	CloseKeyFrame();
 	
-	char*	OpenDummy(int NumberKeyFrame);
-	char*	GetDummyParent();
+	const char*	OpenDummy(int NumberKeyFrame);
+	const char*	GetDummyParent();
 	void	ReadDummy(float *x,float *y,float *z);
 	void	CloseDummy();
 	

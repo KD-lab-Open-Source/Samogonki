@@ -9,7 +9,7 @@
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-char* GetTargetName(char*);
+const char* GetTargetName(const char*);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
@@ -21,12 +21,12 @@ XZIP_Resource* mch_vmapRes = NULL;
 #endif
 
 int mchUseContainer = 0;
-char* acsResourceDir = "RESOURCE/ISCREEN/";
-char* acsResourceDirL = "RESOURCE/ISCREEN/RES_LOW/";
-char* acsResourceDirH = "RESOURCE/ISCREEN/RES_HIGH/";
+const char* acsResourceDir = "RESOURCE/ISCREEN/";
+const char* acsResourceDirL = "RESOURCE/ISCREEN/RES_LOW/";
+const char* acsResourceDirH = "RESOURCE/ISCREEN/RES_HIGH/";
 XBuffer mch_ResXBuf;
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag)
+int acsOpenResource(const char* fname,XStream& fh,int res_flag)
 {
 	mch_ResXBuf.init();
 	if(res_flag == -1)
@@ -52,7 +52,7 @@ int acsOpenResource(char* fname,XStream& fh,int res_flag)
 #endif	
 }
 
-int m3dOpenResource(char* fname,XStream& fh)
+int m3dOpenResource(const char* fname,XStream& fh)
 {
 #ifdef _XRESOURCE_
 	if(mchUseContainer){
@@ -76,7 +76,7 @@ void mchXResourceInit(void)
 #endif	
 }
 
-int vmapOpenResource(char* fname,XStream& fh)
+int vmapOpenResource(const char* fname,XStream& fh)
 {
 #ifdef _XRESOURCE_
 	if(mchUseContainer){
@@ -91,7 +91,7 @@ int vmapOpenResource(char* fname,XStream& fh)
 #endif	
 }
 
-int mch_vmapResourceInit(char * Path2World)
+int mch_vmapResourceInit(const char * Path2World)
 {
 #ifdef _XRESOURCE_
 	XStream test(0);
@@ -102,7 +102,7 @@ int mch_vmapResourceInit(char * Path2World)
 
 		const char * resourceFileName="resource.pak";
 		XBuffer name;
-		if(Path2World==NULL) name < GetTargetName((char*)resourceFileName);
+		if(Path2World==NULL) name < GetTargetName(resourceFileName);
 		else name < Path2World < resourceFileName;
 
 		if(test.open(name)){

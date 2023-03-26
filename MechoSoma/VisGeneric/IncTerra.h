@@ -31,7 +31,7 @@ inline unsigned char vMap_GetAt(int x,int y)		{ return GetAt(x,y); }
 inline unsigned char vMap_GetAlt(int x,int y)		{ return GetAlt(x,y); }
 inline unsigned char* vMap_VxBuf()					{ return (unsigned char*)&vMap->VxBuf[0][0][0]; }
 inline unsigned char* vMap_AtBuf()					{ return &vMap->AtBuf[0][0][0]; }
-inline char* vMap_GetTargetName(char *fname)		{ return GetTargetName(fname); }
+inline const char* vMap_GetTargetName(const char *fname)		{ return GetTargetName(fname); }
 inline int vMap_H2OCR()								{ return vMap->H2OCR; }
 inline int vMap_H2OCG()								{ return vMap->H2OCG; }
 inline int vMap_H2OCB()								{ return vMap->H2OCB; }

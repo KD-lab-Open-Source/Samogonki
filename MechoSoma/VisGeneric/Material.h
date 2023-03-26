@@ -55,7 +55,7 @@ struct sTexture : public sAttribute, public sPointerCount
 	~sTexture();
 	void Release();
 
-	void SetName(char *Name)							{ name=Name; }
+	void SetName(const char *Name)							{ name=Name; }
 	inline int GetStatus(int status=0xFFFF0000)			{ return sAttribute::GetAttribute(status); }
 	inline void SetStatus(int status)					{ sAttribute::SetAttribute(status); }
 	inline void ClearStatus(int status)					{ sAttribute::ClearAttribute(status); }

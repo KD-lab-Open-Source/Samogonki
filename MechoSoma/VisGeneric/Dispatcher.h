@@ -14,10 +14,10 @@ class cMeshLibrary
 public:
 	cMeshLibrary()											{ MeshList=new cList(); Window=0; }
 	~cMeshLibrary()											{ Release(0); }
-	cMesh* Load3ds(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=0);
-	cMesh* Loadm3d(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=0);
-	cMesh* LoadMorph(unsigned int Type,int NumberMorph,float *time,char **name3dsMorph,char *FilePath,char *TexturePath);
-	cMesh* Get(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
+	cMesh* Load3ds(const char *fname,const char *TexturePath,unsigned int Type=0,float SizeObject=0);
+	cMesh* Loadm3d(const char *fname,const char *TexturePath,unsigned int Type=0,float SizeObject=0);
+	cMesh* LoadMorph(unsigned int Type,int NumberMorph,float *time,const char **name3dsMorph,const char *FilePath,const char *TexturePath);
+	cMesh* Get(const char *fname,const char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
 	cMesh* Get(unsigned int Type);
 	void   Release(unsigned int Type=M3D_STATIC);
 	inline cMesh* First()									{ Window=MeshList->next; if(Window) return Window->Mesh; return 0; }
@@ -26,9 +26,9 @@ public:
 	cMesh* Find(unsigned int Type);
 private:
 	cMesh* CopyObject(cMesh *Mesh,unsigned int Type);
-	cMesh* AddMesh(char *NameMesh);
+	cMesh* AddMesh(const char *NameMesh);
 	cList* Attach(cMesh *Mesh);
-	cMesh* Find(char *fname);
+	cMesh* Find(const char *fname);
 	void Detach(cMesh *Mesh);
 	void Delete(cMesh *Mesh);
 };
@@ -60,21 +60,21 @@ public:
 	~cM3D()													{ Release(0); }
 	// загрузка
 	void LoadLib(const std::string &path);
-	void LoadMap(char *fname,int LoadNumberTrack=0xFFFFFFFF);
-	void SaveMap(char *fname,char Version='O');
+	void LoadMap(const char *fname,int LoadNumberTrack=0xFFFFFFFF);
+	void SaveMap(const char *fname,char Version='O');
 	// вывод
 	void TestVisible(cUnknownClass *UCameraList);
 	void Draw(cUnknownClass *UCameraList);
 	// создание объектов и т.д.
 	cMesh* CreateObject(unsigned int *vType,int number);	// Constructor objects
-	cMesh* CreateObject(char *fname,char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
+	cMesh* CreateObject(const char *fname,const char *TexturePath,unsigned int Type=0,float SizeObject=MAX_SIZE_OBJECT);
 	cMesh* CreateObject(unsigned int Type,float x,float y,float z,float ax,float ay,float az);
 	cMesh* CreateObject(unsigned int Type);
 	cMesh* CreateObject(cMesh *Mesh)														{ return CreateObject(Mesh->Type); }
 	cMesh* RebuildObject(cMesh *Mesh,unsigned int OldType,unsigned int NewType);
-	cMesh* FindObject(char* name);
-	cMesh* FindNextObject(char* name);
-	cMesh* FindObjectByFileName(char* fname);
+	cMesh* FindObject(const char* name);
+	cMesh* FindNextObject(const char* name);
+	cMesh* FindObjectByFileName(const char* fname);
 	void dSetPosition(cMesh *Mesh,float dx,float dy,float dz,float dax,float day,float daz);
 	void SetPosition(cMesh *Mesh,float x,float y,float z,float ax,float ay,float az);
 	inline void SetPosition(cMesh *Mesh,const class MatXf &Matrix)							{ Mesh->SetPosition(Matrix); }
@@ -115,7 +115,7 @@ private:
 #endif
 };
 
-extern char *dirM3D,*dirM3Dtexture;
+extern const char *dirM3D,*dirM3Dtexture;
 
 typedef cBaseList <cOmni> cOmniList;
 typedef cBaseDispatcher <cOmni,cOmniList> cOmniDispatcher;
@@ -130,8 +130,8 @@ public:
 	~cO3D()																	{ Release(); }
 
 	void Release(int type=0xFFFFFFFF);
-	void SaveMap(char *fname,char Version='b');
-	void LoadMap(char *fname);
+	void SaveMap(const char *fname,char Version='b');
+	void LoadMap(const char *fname);
 	cOmni* CreateOmni(float xOmni=0.0f,float yOmni=0.0f,float zOmni=0.0f,float radius=0.0f,float r=0.0f,float g=0.0f,float b=0.0f);
 	void Draw(cUnknownClass *UCameraList);
 	void DrawID(cUnknownClass *UCameraList);

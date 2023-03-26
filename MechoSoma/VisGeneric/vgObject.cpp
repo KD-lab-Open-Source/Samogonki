@@ -25,7 +25,7 @@ cUnknownClass* cVisGeneric::CreateObject(int kind,int type)
 	assert(Scene);
 	return (cUnknownClass*)Scene->GetM3D()->CreateObject(M3D_TOTAL_TYPE(kind,type),0,0,0,0,0,0);
 }
-cUnknownClass* cVisGeneric::CreateObject(char *fname,char *TexturePath,int Kind,int Type)
+cUnknownClass* cVisGeneric::CreateObject(const char *fname,const char *TexturePath,int Kind,int Type)
 {
 	assert(Scene);
 	return (cUnknownClass*)Scene->GetM3D()->CreateObject(fname,TexturePath,M3D_TOTAL_TYPE(Kind,Type));
@@ -170,14 +170,14 @@ int cVisGeneric::SetObjectChannel(cUnknownClass *UObject,int NumberChain,float T
 	if(Mesh==0||Mesh->Frame==0||Mesh->Frame->SetCurrentChain(NumberChain)<0) return 1;
 	return 0;
 }
-int cVisGeneric::GetObjectNumberChannel(cUnknownClass *UObject,char *NameChainMask)
+int cVisGeneric::GetObjectNumberChannel(cUnknownClass *UObject,const char *NameChainMask)
 {
 	cMesh *Mesh=(cMesh*)UObject;
 	assert(Mesh);
 	if(Mesh==0||Mesh->Frame==0) return -1;
 	return Mesh->Frame->GetChain(NameChainMask);
 }
-int cVisGeneric::SetObjectChannel(cUnknownClass *UObject,char *NameChainMask,float TransitionTime,int number)
+int cVisGeneric::SetObjectChannel(cUnknownClass *UObject,const char *NameChainMask,float TransitionTime,int number)
 {
 	cMesh *Mesh=(cMesh*)UObject;
 	assert(Mesh);
@@ -248,7 +248,7 @@ int cVisGeneric::ClearRenderObjectSwitch(int attribute)
 //	GlobalObjectRenderSwitch&=~attribute;
 	return 0;
 }
-cUnknownClass* cVisGeneric::FindObjectByFileName(char *fname)
+cUnknownClass* cVisGeneric::FindObjectByFileName(const char *fname)
 { // поиск объекта на миру по имени файла объекта
 	if(fname==0||fname[0]==0) return 0;
 	return GetActiveScene()->GetM3D()->FindObjectByFileName(fname);

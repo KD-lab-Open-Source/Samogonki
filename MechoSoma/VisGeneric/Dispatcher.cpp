@@ -21,11 +21,6 @@
 extern MemoryHeap MemoryHeapDynamicShade;
 #endif
 
-// TODO: @caiiiycuk implement this correctly
-char *_strlwr(char *str)
-{
-	return str;
-}
 
 cAnimChain *AnimChain=0;
 cMesh *tmpMesh;
@@ -35,13 +30,13 @@ extern cTextureBuffer *TextureBuffer;
 
 Vect3f gb_sign(1,-1,1);
 
-extern void allocation_tracking(char*);
+extern void allocation_tracking(const char*);
 #ifdef _MECHOSOMA_
-int ResourceFileRead(char *fname,void *&buf,int &size)
+int ResourceFileRead(const char *fname,void *&buf,int &size)
 {
 	buf=0; size=0;
 	XStream f(0);
-	extern int m3dOpenResource(char* fname,XStream& fh);
+	extern int m3dOpenResource(const char* fname,XStream& fh);
 	if(m3dOpenResource(fname,f)==0) return -1<<0;
 	if((size=f.size())<=0) { f.close(); return -1<<1; }
 	buf=new char[size];
@@ -68,7 +63,7 @@ int ResourceFileRead(char *fname,void *&buf,int &size)
 }
 #endif
 
-inline char* GetFileName(char *str)
+inline const char* GetFileName(const char *str)
 {
 	if(str==0) return 0;
 	int l=strlen(str);
@@ -87,7 +82,7 @@ cMesh* cMeshLibrary::Get(unsigned int Type)
 	Mesh=CopyObject(Mesh,Type);
 	return Mesh;
 }
-cMesh* cMeshLibrary::Get(char *fname,char *TexturePath,unsigned int Type,float SizeObject)
+cMesh* cMeshLibrary::Get(const char *fname,const char *TexturePath,unsigned int Type,float SizeObject)
 {	
 	cMesh *Mesh;
 	if((Mesh=Find(fname))==0) Mesh=Load3ds(fname,TexturePath,Type,SizeObject);
@@ -99,10 +94,10 @@ cMesh* cMeshLibrary::Get(char *fname,char *TexturePath,unsigned int Type,float S
 	else Mesh=CopyObject(Mesh,Type); 
 	return Mesh;
 }
-cMesh* cMeshLibrary::Find(char *fname)
+cMesh* cMeshLibrary::Find(const char *fname)
 {
 	for(cList *start=MeshList->next; start; start=start->next)
-		if(start->Mesh->GetFileName()==static_cast<const char*>(fname)) return start->Mesh;
+		if(start->Mesh->GetFileName()==fname) return start->Mesh;
 	return 0;
 }
 cMesh* cMeshLibrary::Find(unsigned int Type)
@@ -119,7 +114,7 @@ cMesh* cMeshLibrary::CopyObject(cMesh *Mesh,unsigned int Type)
 	return tmpMesh;
 }
 
-inline sObjectMesh *GetObjectByName(sLodObject *LodObject,char *name)
+inline sObjectMesh *GetObjectByName(sLodObject *LodObject,const char *name)
 { // функция ищет в LOD'е объект поимени и времени анимации
 	for(int nNodeObject=0;nNodeObject<LodObject->NodeObjectLibrary.length();nNodeObject++)
 	{ 
@@ -128,7 +123,7 @@ inline sObjectMesh *GetObjectByName(sLodObject *LodObject,char *name)
 		{
 			case NODEOBJECT_MESH:
 				sObjectMesh *ObjectMesh=(sObjectMesh*)NodeObject;
-				if(ObjectMesh->name==static_cast<const char*>(name))
+				if(ObjectMesh->name==name)
 					return ObjectMesh;
 				break;
 		}
@@ -193,7 +188,7 @@ void GetMatrix(cMatrix &Matrix,sNodeObject *StartNodeObject,sLodObject *LodObjec
 }
 */
 int gb_TileID=1;
-sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMesh,sAnimationMesh *AnimationMesh,int time,char *TexturePath,int IsStatic)
+sTile* ReadAnimationMesh(const char *fname,sLodObject *LodObject,sObjectMesh *ObjectMesh,sAnimationMesh *AnimationMesh,int time,const char *TexturePath,int IsStatic)
 {
 	sTile *Tile=new sTile;
 	Tile->GetName()=ObjectMesh->name;
@@ -293,7 +288,7 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 	// .. пока не реализовано
 	// !!! и еще нужно добавить кватернион SCALEAXIS как в ASCII !!!
 	cMatrix Matrix; Matrix.NewMatrix();
-	for(sNodeObject *NodeObject=ObjectMesh;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get((char*)NodeObject->parent))
+	for(sNodeObject *NodeObject=ObjectMesh;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get(NodeObject->parent))
 	{
 		cMatrix AnimationMatrix; // матрица положения объекта относительного родителя
 		AnimationMatrix.NewMatrix(); // установка матрицы анимации
@@ -358,7 +353,7 @@ sTile* ReadAnimationMesh(char *fname,sLodObject *LodObject,sObjectMesh *ObjectMe
 #endif
   return Tile;
 }
-inline int TestFirstName(char *name,char *string)
+inline int TestFirstName(const char *name,const char *string)
 {
   if(name==0||string==0) return 0;
 	int LengthName=strlen(name),LengthString=strlen(string);
@@ -381,7 +376,7 @@ inline sAnimationMesh* GetAnimationMesh(sObjectMesh *ObjectMesh,int time)
 }
 inline int IsAnimate(sLodObject *LodObject,sObjectMesh *ObjectMesh,sAnimationMesh *AnimationMesh,int time)
 {
-	for(sNodeObject *NodeObject=ObjectMesh;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get((char*)NodeObject->parent))
+	for(sNodeObject *NodeObject=ObjectMesh;NodeObject;NodeObject=LodObject->NodeObjectLibrary.Get(NodeObject->parent))
 	{
 		if((time==AnimationMesh->time)||(NodeObject->AnimationPosition.length()>1)||(NodeObject->AnimationRotation.length()>1)||(NodeObject->AnimationScale.length()>1)) 
 			return 1;
@@ -451,7 +446,7 @@ inline int IsAnimate(cMaterialObjectLibrary &MaterialLibrary,sObjectMesh *Object
 	return 0;
 }
 */
-cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,float SizeObject)
+cMesh* cMeshLibrary::Loadm3d(const char *fname,const char *TexturePath,unsigned int Type,float SizeObject)
 {
 	cMeshScene MeshScene;
 	// загрузка MeshScene сцены из файла
@@ -484,7 +479,7 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 		sChannelAnimation *Channel=MeshScene.ChannelLibrary[nChannel];
 		AnimChain=Frame->AddAnimChain();
 		float FirstFrame=Channel->FirstFrame*Channel->TicksPerFrame;
-		AnimChain->GetName()=_strlwr(Channel->name);
+		AnimChain->GetName()=Channel->name.ToLower();
 		AnimChain->SetTimeChain((Channel->LastFrame-Channel->FirstFrame)*Channel->TicksPerFrame);
 		for(int LevelDetail=0;LevelDetail<Channel->LodLibrary.length();LevelDetail++)
 		{ // импорт уровня детализации
@@ -640,9 +635,10 @@ cMesh* cMeshLibrary::Loadm3d(char *fname,char *TexturePath,unsigned int Type,flo
 	}
 	return BaseMesh;
 }
-cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,float SizeObject)
+cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsigned int Type,float SizeObject)
 {
-	_strlwr(fname);
+	cString fname = filename;
+        fname.ToLower();
 	int l=strlen(fname);
 	while((l>=0)&&(fname[l]!='.')) l--;
 	if(stricmp(&fname[l],".m3d")==0) return Loadm3d(fname,TexturePath,Type,SizeObject);
@@ -768,10 +764,10 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 	for(i=NumberObject3ds;i<NumberKeyFrame;i++)
 	{	// set dummy
 		Vect3f v;
-		char *DummyName=f.OpenDummy(i);
+		const char *DummyName=f.OpenDummy(i);
 		f.ReadDummy(&v.x,&v.y,&v.z);
 		v.x*=gb_sign.x; v.y*=gb_sign.y; v.z*=gb_sign.z;
-		char *NameDummyParent=f.GetDummyParent();
+		const char *NameDummyParent=f.GetDummyParent();
 		cMesh *Mesh=0;
 		if(NameDummyParent[0]==0) Mesh=BaseMesh;
 		else Mesh=BaseMesh->FindMesh(NameDummyParent);
@@ -793,13 +789,13 @@ cMesh* cMeshLibrary::Load3ds(char *fname,char *TexturePath,unsigned int Type,flo
 	f.Close();
 	return BaseMesh;
 }
-int FindTile(cMesh *Mesh,char *name)
+int FindTile(cMesh *Mesh,const char *name)
 {
 	for(int i=0;i<Mesh->GetNumberTile();i++)
-		if(Mesh->GetTile(i)->GetName()==static_cast<const char*>(name)) return i;
+		if(Mesh->GetTile(i)->GetName()==name) return i;
 	return -1;
 }
-cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,char **name3dsMorph,char *FilePath,char *TexturePath)
+cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,const char **name3dsMorph,const char *FilePath,const char *TexturePath)
 {
 	cMesh *Mesh=Find(Type);
 	if(NumberMorph==0) return Mesh;
@@ -832,7 +828,7 @@ cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,cha
 				if((n=FindTile(mesh,Mesh->GetTile(nTile)->GetName()))<0) 
 				{ 
 					XBuffer bufs(1000); 
-					bufs<"Error: cMeshLibrary::LoadMorph()\r\nName tile not found = "<Mesh->GetTile(nTile)->GetName()<" in file "<buf.address(); 
+					bufs<"Error: cMeshLibrary::LoadMorph()\r\nName tile not found = "<Mesh->GetTile(nTile)->GetName()<" in file "<buf.address();
 					ErrAbort(bufs.address()); 
 				}
 				mesh->Tile->Swap(nTile,n);
@@ -861,7 +857,7 @@ cMesh* cMeshLibrary::LoadMorph(unsigned int Type,int NumberMorph,float *time,cha
 	delete[] Morph;
 	return Mesh;
 }
-cMesh* cMeshLibrary::AddMesh(char *NameMesh)
+cMesh* cMeshLibrary::AddMesh(const char *NameMesh)
 { 
 	cMesh *Mesh=new cMesh();
 	Mesh->SetName(NameMesh);
@@ -1130,7 +1126,7 @@ int GetNumber(cList *start,int newID)
 			return 1;
 	return 0;
 }
-cMesh* cM3D::CreateObject(char *fname,char *TexturePath,unsigned int Type,float SizeObject)
+cMesh* cM3D::CreateObject(const char *fname,const char *TexturePath,unsigned int Type,float SizeObject)
 { // only static object
 	cMesh *Mesh;
 	if(M3D_KIND(Type)==0) Mesh=MeshLibrary->Get(fname,TexturePath,M3D_TOTAL_TYPE(NumberID+1,M3D_STATIC_NON_COLLIDING),SizeObject);
@@ -1153,7 +1149,7 @@ void cM3D::LoadLib(const std::string &path)
 {
 //	allocation_tracking("Begin Load Lib");
 	int kind, type, eff_id;
-	char* p3ds, *pbmp,*p3ds0,*pbmp0,*name3ds,*name3dsMorph[30];
+	const char* p3ds, *pbmp,*p3ds0,*pbmp0,*name3ds,*name3dsMorph[30];
 	float time[30];
 	double sx,sy,sz;
 
@@ -1305,7 +1301,7 @@ cMesh* cM3D::CreateObject(unsigned int Type)
 	Attach(Mesh);
 	return Mesh;
 }
-cMesh* cM3D::FindObject(char* name)
+cMesh* cM3D::FindObject(const char* name)
 {
 	cMesh* m = First();
 	while(m){
@@ -1315,10 +1311,10 @@ cMesh* cM3D::FindObject(char* name)
 		}
 	return 0;
 }
-cMesh* cM3D::FindObjectByFileName(char* fname)
+cMesh* cM3D::FindObjectByFileName(const char* fname)
 {
 	cString fName=fname;
-	_strlwr(fName);
+	fName.ToLower();
 	cMesh* m = First();
 	while(m)
 	{
@@ -1328,7 +1324,7 @@ cMesh* cM3D::FindObjectByFileName(char* fname)
 	}
 	return 0;
 }
-cMesh* cM3D::FindNextObject(char* name)
+cMesh* cM3D::FindNextObject(const char* name)
 {
 	cMesh* m = Next();
 	while(m){
@@ -1339,13 +1335,13 @@ cMesh* cM3D::FindNextObject(char* name)
 	return 0;
 }
 
-char* strtest(char *str,char ch)
+const char* strtest(const char *str,char ch)
 {
-	char *buf=str,*tmp=str;
+	const char *buf=str,*tmp=str;
 	while((*buf)!=0) { if((*buf)==ch) tmp=(buf+1); buf++; }
 	return tmp;
 }
-void cM3D::SaveMap(char *fname,char Version)
+void cM3D::SaveMap(const char *fname,char Version)
 {
 	cList *start;
 	for(start=MeshList->next;start;start=start->next)
@@ -1356,7 +1352,7 @@ void cM3D::SaveMap(char *fname,char Version)
 	{
 		float x,y,z;
 		cMesh *Mesh=start->Mesh;
-		char *name3ds,*TexturePath;
+		const char *name3ds,*TexturePath;
 		name3ds=strstr(Mesh->GetFileName(),"model3d");
 		TexturePath=strstr(Mesh->GetTexturePath(),"model3d");
 		switch (Version)
@@ -1379,7 +1375,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->GetScale().x<" "<=Mesh->GetScale().y<" "<=Mesh->GetScale().z<"\r\n";
 				break;
 			case 'B': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				f.write(tmp,sizeof(Mesh->GetFileName()));
 				x=Mesh->x(); y=Mesh->y(); z=Mesh->z();
@@ -1388,7 +1384,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&Mesh->GetScale().x,sizeof(Mesh->GetScale().x));f.write(&Mesh->GetScale().y,sizeof(Mesh->GetScale().y));f.write(&Mesh->GetScale().z,sizeof(Mesh->GetScale().z)); }
 				break;
 			case 'T': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID<"\r\n";
 				f<tmp<"\r\n";
 				f<=Mesh->x()<" "<=Mesh->y()<" "<=Mesh->z()<"\r\n";
@@ -1396,7 +1392,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->GetScale().x<" "<=Mesh->GetScale().y<" "<=Mesh->GetScale().z<"\r\n"; }
 				break;
 			case 'c': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				f.write(tmp,sizeof(Mesh->GetFileName()));
 				x=Mesh->x(); y=Mesh->y(); z=Mesh->z();
@@ -1405,7 +1401,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&Mesh->GetScale().x,sizeof(Mesh->GetScale().x));f.write(&Mesh->GetScale().y,sizeof(Mesh->GetScale().y));f.write(&Mesh->GetScale().z,sizeof(Mesh->GetScale().z)); }
 				break;
 			case 'q': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID<"\r\n";
 				f<tmp<"\r\n";
 				f<=Mesh->x()<" "<=Mesh->y()<" "<=Mesh->z()<"\r\n";
@@ -1413,7 +1409,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->GetScale().x<" "<=Mesh->GetScale().y<" "<=Mesh->GetScale().z<"\r\n"; }
 				break;
 			case 'C': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1424,7 +1420,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&Mesh->GetScale().x,sizeof(Mesh->GetScale().x));f.write(&Mesh->GetScale().y,sizeof(Mesh->GetScale().y));f.write(&Mesh->GetScale().z,sizeof(Mesh->GetScale().z)); }
 				break;
 			case 'Q': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1434,7 +1430,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->GetScale().x<" "<=Mesh->GetScale().y<" "<=Mesh->GetScale().z<"\r\n"; }
 				break;
 			case 'd': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1459,7 +1455,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&Mesh->LocalMatrix(2,3),sizeof(Mesh->LocalMatrix(2,3)));
 				break; }
 			case 'r': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1471,7 +1467,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->LocalMatrix(2,0)<" "<=Mesh->LocalMatrix(2,1)<" "<=Mesh->LocalMatrix(2,2)<" "<=Mesh->LocalMatrix(2,3)<"\r\n";
 				break; }
 			case 'D': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1494,7 +1490,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&Mesh->LocalMatrix(2,3),sizeof(Mesh->LocalMatrix(2,3)));
 				break; }
 			case 'f': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1523,7 +1519,7 @@ void cM3D::SaveMap(char *fname,char Version)
 #endif
 				break; }
 			case 'F': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1558,7 +1554,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&AnimatePhase,sizeof(AnimatePhase));
 				break; }
 			case 'g': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f.write("+",1);
 				else f.write("-",1);
@@ -1601,7 +1597,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write(&MeshAttribute,sizeof(MeshAttribute));
 				break; }
 			case 'G': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f.write(&Mesh->ID,sizeof(Mesh->ID));
 				f.write(tmp,sizeof(Mesh->GetFileName()));
 				f.write(&Mesh->GetScale().x,sizeof(Mesh->GetScale().x));f.write(&Mesh->GetScale().y,sizeof(Mesh->GetScale().y));f.write(&Mesh->GetScale().z,sizeof(Mesh->GetScale().z));
@@ -1645,7 +1641,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f.write("ch",1);
 				break; }
 			case 'R': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1656,7 +1652,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=Mesh->LocalMatrix(2,0)<" "<=Mesh->LocalMatrix(2,1)<" "<=Mesh->LocalMatrix(2,2)<" "<=Mesh->LocalMatrix(2,3)<"\r\n";
 				break; }
 			case 's': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1673,7 +1669,7 @@ void cM3D::SaveMap(char *fname,char Version)
 #endif
 				break; }
 			case 'S': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1695,7 +1691,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=AnimatePeriod<" "<=AnimatePhase<"\r\n";
 				break; }
 			case 'o': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID;
 				if(Mesh->Type&M3D_STATIC_COLLIDING) f < " +\r\n";
 				else f < " -\r\n";
@@ -1725,7 +1721,7 @@ void cM3D::SaveMap(char *fname,char Version)
 				f<=MeshAttribute<"\r\n";
 				break; }
 			case 'O': {
-				char *tmp=strtest(name3ds,'\\');
+				const char *tmp=strtest(name3ds,'\\');
 				f<"\r\n"<=Mesh->ID<"\r\n";
 				f<tmp<"\r\n";
 				f<=Mesh->GetScale().x<" "<=Mesh->GetScale().y<" "<=Mesh->GetScale().z<"\r\n";
@@ -1774,14 +1770,14 @@ inline void ReadSpecString(XStream &f,char *string)
 	}
 	string[i]=0;
 }
-void cM3D::LoadMap(char *fname,int LoadNumberTrack)
+void cM3D::LoadMap(const char *fname,int LoadNumberTrack)
 {	
 	XStream f(0);
 	NumberID=0;
 #ifdef _MECHOSOMA_
-	extern int vmapOpenResource(char* fname,XStream& fh);
+	extern int vmapOpenResource(const char* fname,XStream& fh);
 	if(!vmapOpenResource(fname,f)) return;
-	extern char* getIniKey(char* fname,char* section,char* key);
+	extern const char* getIniKey(const char* fname,const char* section,const char* key);
 	XBuffer Path3ds; Path3ds<getIniKey(mch_mainINI,"m3d","path3ds")<"\\";
 	XBuffer PathBmp; PathBmp<getIniKey(mch_mainINI,"m3d","pathbmp")<"\\";
 #elif _SURMAP_
@@ -2074,8 +2070,8 @@ void cM3D::LoadMap(char *fname,int LoadNumberTrack)
 		while(FindID(Type)!=0) Type++;
 		if(flCollision=='-') FullType=M3D_TOTAL_TYPE(Type,M3D_STATIC_NON_COLLIDING);
 		else FullType=M3D_TOTAL_TYPE(Type,M3D_STATIC_COLLIDING);
-		char Name3dsFull[FILE3DS_NAME_SIZE],TexturePathFull[TEXTURE_PATH_SIZE],*tmp;
-		tmp=strtest(name3ds,'\\'); strcpy(Name3dsFull,Path3ds.address()); strcat(Name3dsFull,tmp);
+		char Name3dsFull[FILE3DS_NAME_SIZE],TexturePathFull[TEXTURE_PATH_SIZE];
+		const char *tmp=strtest(name3ds,'\\'); strcpy(Name3dsFull,Path3ds.address()); strcat(Name3dsFull,tmp);
 		strcpy(TexturePathFull,PathBmp.address());
 //		if(NumberTrack&LoadNumberTrack)
 		{
@@ -2283,7 +2279,7 @@ void cO3D::DrawID(cUnknownClass *UCameraList)
 			start->Base->DrawID((cCamera*)ArrayCamera[i]);
 	}
 }
-void cO3D::SaveMap(char *fname,char Version)
+void cO3D::SaveMap(const char *fname,char Version)
 {
 	cOmniList *start;
 	for(start=BaseList;start;start=start->next)
@@ -2306,7 +2302,7 @@ void cO3D::SaveMap(char *fname,char Version)
 	}
 	f.close();
 }
-void cO3D::LoadMap(char *fname)
+void cO3D::LoadMap(const char *fname)
 {
 	XStream f(0);
 	if(!f.open(fname,XS_IN)) return;

@@ -145,7 +145,7 @@ class cFrame
 {
 public:
 	cFrame(cFrame *Frame=0);
-	cFrame(	char *name,char *parent,float xpivot,float ypivot,float zpivot,
+	cFrame(	const char *name,const char *parent,float xpivot,float ypivot,float zpivot,
 			float xofs,float yofs,float zofs);
 	~cFrame();
 	
@@ -167,7 +167,7 @@ public:
 	inline int IsAnimated()										{ return dcount != 0 || count != prev_count; }
 
 	// установить анимационную цепочку, возвращает <0 в случае ошибки
-	int SetCurrentChain(char *NameChain); 
+	int SetCurrentChain(const char *NameChain);
 	inline cAnimChain*& GetAnimChain(int number)				{ assert(0<=number&&number<GetNumberAnimChain()); return AnimChain[number]; }
 	inline int SetCurrentChain(int number)						{ if(number<0||number>=GetNumberAnimChain()) return -1; return ChainNumber=number; }
 	inline int GetCurrentChain()								{ return ChainNumber; }
@@ -182,8 +182,8 @@ public:
 	inline void GetAnimKey(cTile *Tile)							{ if(GetNumberAnimChain()==0) return; GetAnimChain(ChainNumber)->GetTile(Tile,GetPhase()); }
 	inline cAnimChain* AddAnimChain()							{ if(ChainNumber<0) ChainNumber=0; AnimChain.Resize(GetNumberAnimChain()+1); return AnimChain[GetNumberAnimChain()-1]=new cAnimChain; }
 	inline int GetNumberAnimChain()								{ return AnimChain.length(); }
-	int SetCurrentChain(char *NameChainMask,int number);	// устанавливает канал по имени содержащем маску и номеру
-	int GetChain(char *NameChainMask);						// возвращает число цепочек имеющих в имени строку NameChainMask
+	int SetCurrentChain(const char *NameChainMask,int number);	// устанавливает канал по имени содержащем маску и номеру
+	int GetChain(const char *NameChainMask);						// возвращает число цепочек имеющих в имени строку NameChainMask
 private:
 	float count;							// счетчик
 	float prev_count;						// предыдущее значение для PassPhase

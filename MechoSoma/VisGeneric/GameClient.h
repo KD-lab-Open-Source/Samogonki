@@ -6,7 +6,7 @@
 class cUnknownClass;
 class cSurfaceReflectionMultiMaterial;
 
-extern cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,float yPos,float zPos,float xSizeReflection,float ySizeReflection,int xTextureSize,int yTextureSize,float du,float dv,char **TextureName=0,char **OpacityName=0,char *TexturePath=0,int KoofReflection=100,float dPeriod=0.5f);
+extern cSurfaceReflectionMultiMaterial* BaseObject_SurfaceReflection_Create(float xPos,float yPos,float zPos,float xSizeReflection,float ySizeReflection,int xTextureSize,int yTextureSize,float du,float dv,const char **TextureName=0,const char **OpacityName=0,const char *TexturePath=0,int KoofReflection=100,float dPeriod=0.5f);
 extern void BaseObject_SurfaceReflection_Pos(Vect3f &Pos,Vect3f &ReflectionPos);
 extern void BaseObject_SurfaceReflection_Pos(Vect3f &Pos,float &fWarp);
 extern void BaseObject_SurfaceReflection_WaveWarp(float x,float y,float z);

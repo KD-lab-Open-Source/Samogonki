@@ -1,6 +1,8 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
+#define __forceinline inline
+
 //@caiiiycuk can't find defininition of SHIFT_FRACTION_VX
 #define SHIFT_FRACTION_VX 6
 #define VX_FRACTION 6 // from LAND.CPP

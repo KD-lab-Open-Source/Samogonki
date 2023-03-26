@@ -137,8 +137,8 @@ struct acsTextureMosaic
 
 	acsTextureMosaicElement** mosaic;
 
-	int PutStr(int x,int y,int fnt,int sp,void* p,void* pal,int col,int alpha,int align = 0);
-	void PutSpr(int x,int y,int sx,int sy,void* p,void* pal,int col,int alpha);
+	int PutStr(int x,int y,int fnt,int sp,const void* p,const void* pal,int col,int alpha,int align = 0);
+	void PutSpr(int x,int y,int sx,int sy,const void* p,const void* pal,int col,int alpha);
 	void dump(void);
 
 	void Quant(void);
@@ -209,14 +209,14 @@ void acsInitSaveOptions(void);
 
 void mchDrawQuant(void);
 
-int acsStrLen(int fnt,unsigned char* str,int space);
-int acsTextStrLen(int fnt,unsigned char* str,int space);
-int acsTextStrLenMax(int fnt,unsigned char* str,int space);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+int acsTextStrLen(int fnt,const unsigned char* str,int space);
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space);
 
 void mchA_DrawMouse(int mode = 0);
 void acsUpdateMM_Option(int scr,int obj);
 
-void acsGetTexture(int x,int y,unsigned char* p);
+void acsGetTexture(int x,int y,const unsigned char* p);
 
 void acsOutMouse3D(void);
 Vect3f acsCalcR(Vect3f r0,float phase);
@@ -232,7 +232,7 @@ void mchA_DrawM3D(cMesh* p);
 void acsInitFont3D(void);
 void acsFinitFont3D(void);
 
-char* getIniKey(char* fname,char* section,char* key);
+const char* getIniKey(const char* fname,const char* section,const char* key);
 
 void acsExtQuant(void);
 void acsExtInit(void);
@@ -291,8 +291,8 @@ int acsDistRnd;
 acsScreenMatrix acsScr0;
 acsScreenMatrix acsScr1;
 
-char* mchIscreenINI = "RESOURCE/ISCREEN/iscreen.ini";
-char* mchLocalINI = "RESOURCE/ISCREEN/local.ini";
+const char* mchIscreenINI = "RESOURCE/ISCREEN/iscreen.ini";
+const char* mchLocalINI = "RESOURCE/ISCREEN/local.ini";
 
 acsTextureMosaic* acsTM = NULL;
 acsEssenceData** acsBody = NULL;
@@ -323,7 +323,7 @@ char acsShopCfgBackup[100];
 
 void acsExtInitPrm(void)
 {
-	char* p;
+	const char* p;
 	XBuffer* XBuf,xb;
 
 	acsMouseAlpha = atof(getIniKey(mchIscreenINI,"mouse","alpha"));
@@ -483,12 +483,12 @@ void acsExtRedraw(void)
 #endif
 }
 
-void acsStrLen3D(void* str,int fnt,int space,int& sx,int& sy)
+void acsStrLen3D(const void* str,int fnt,int space,int& sx,int& sy)
 {
 	int i,len,sz = 0,sz0 = 0,fsx,fsy;
 	unsigned ch;
 
-	unsigned char* p = (unsigned char*)str;
+	const unsigned char* p = (const unsigned char*)str;
 
 	float scale_x = (float)XGR_MAXX / 640.0f;
 	float scale_y = (float)XGR_MAXY / 480.0f;
@@ -662,13 +662,13 @@ void acsOutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float b
 	acsDrawM3D(acsFont3D[ch],0);
 }
 
-void acsOutString3D(int x,int y,void* str,int fnt,int col,int space,int alpha,float z,float sc)
+void acsOutString3D(int x,int y,const void* str,int fnt,int col,int space,int alpha,float z,float sc)
 {
 	float al;
 	int i,len,sx,sy,ch,cl;
 	float _x,_y,scale_x,scale_y,_sx,_sy;
 
-	unsigned char* p = (unsigned char*)str;
+	const unsigned char* p = (const unsigned char*)str;
 
 	len = strlen((char*)str);
 	_x = x;
@@ -706,7 +706,7 @@ void acsOutString3D(int x,int y,void* str,int fnt,int col,int space,int alpha,fl
 	}
 }
 
-void mchA_OutString3D(float x,float y,void* str,int fnt,int col,int space,int alpha,float z,float sc)
+void mchA_OutString3D(float x,float y,const void* str,int fnt,int col,int space,int alpha,float z,float sc)
 {
 	float al,c_rgb;
 	int i,len,sx,sy,ch,cl;
@@ -714,7 +714,7 @@ void mchA_OutString3D(float x,float y,void* str,int fnt,int col,int space,int al
 
 	c_rgb = (col) ? 1.0f : 0.5f;
 
-	unsigned char* p = (unsigned char*)str;
+	const unsigned char* p = (const unsigned char*)str;
 
 	len = strlen((char*)str);
 	_x = x * mchA_d3dResX;
@@ -752,7 +752,7 @@ void mchA_OutString3D(float x,float y,void* str,int fnt,int col,int space,int al
 	}
 }
 
-void mchA_StrLen3D(void* str,int fnt,int space,int& sx,int& sy)
+void mchA_StrLen3D(const void* str,int fnt,int space,int& sx,int& sy)
 {
 	acsStrLen3D(str,fnt,space,sx,sy);
 
@@ -1164,15 +1164,15 @@ acsTextureMosaicElement::~acsTextureMosaicElement(void)
 	delete data;
 }
 
-void acsTextureMosaic::PutSpr(int x,int y,int sx,int sy,void* p,void* pal,int col,int alpha)
+void acsTextureMosaic::PutSpr(int x,int y,int sx,int sy,const void* p,const void* pal,int col,int alpha)
 {
 	int i,j,_x,_y,idx_x,idx_y,dx,dy,al;
 	unsigned cl,cl0,cl1,r,g,b;
 	alpha = 256 - alpha;
 
 	unsigned short* dest_ptr;
-	unsigned char* ptr = (unsigned char*)p;
-	unsigned* pal_ptr = (unsigned*)pal;
+	const unsigned char* ptr = (const unsigned char*)p;
+	const unsigned* pal_ptr = (const unsigned*)pal;
 
 	_x = x;
 	_y = y;
@@ -1267,7 +1267,7 @@ void acsTextureMosaic::dump(void)
 	}
 }
 
-int acsTextureMosaic::PutStr(int x,int y,int fnt,int space,void* str,void* pal,int col,int alpha,int align)
+int acsTextureMosaic::PutStr(int x,int y,int fnt,int space,const void* str,const void* pal,int col,int alpha,int align)
 {
 	int _x,_y,i,sx,ssx,sy,ss,sz = strlen((char*)str),str_num = 0,col1;
 	HFont* p = acsFntTable[fnt];

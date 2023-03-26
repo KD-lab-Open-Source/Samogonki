@@ -94,7 +94,7 @@ inline void AddPointAlpha(cBaseArray <sPointAlpha> &PointAlpha,short x,short y,i
 	sPointAlpha &p=PointAlpha(i);
 	p.x=x; p.y=y; p.alpha=alpha; p.number=1;
 }
-int cTileMap::Load3ds(char *fname)
+int cTileMap::Load3ds(const char *fname)
 {
 	cFile3ds f;
 	if(f.Open(fname,2)==0) return 0;
@@ -275,7 +275,7 @@ int cTileMap::Load3ds(char *fname)
 	}
 	return 1;
 }
-void SetFileExtension(char *fname,char *extension)
+void SetFileExtension(char *fname,const char *extension)
 {
 	int end=strlen(fname),count=end;
 	while((count>=0)&&((end-count)<=4)&&(fname[count]!='.')) count--;
@@ -286,18 +286,19 @@ void SetFileExtension(char *fname,char *extension)
 			fname[count+1+i]=extension[i];
 	}
 }
-void cTileMap::Load(char *fname)
+void cTileMap::Load(const char *filename)
 {
 #ifdef _MECHOSOMA_
 	extern void allocation_tracking(char*);
 //	allocation_tracking("Begin cTileMap::cTileMap()");
 #endif
 	Attribute=0;
-	SetFileExtension(fname,"tlm");
+        cString fname = filename;
+	SetFileExtension(fname.ptr(),"tlm");
 	XStream in(0);
 	if(!in.open(fname,XS_IN)) 
 	{
-		SetFileExtension(fname,"3ds");
+		SetFileExtension(fname.ptr(),"3ds");
 		if(Load3ds(fname)) return;
 	}
 	int TotalNumberPoint=0,TotalNumberPolygon=0;

@@ -53,7 +53,7 @@ public:
 	sKey3f& GetNewScale()							{ return KeyScale(KeyScale.length()); }
 	sKeyVisible& GetNewVisible()					{ return KeyVisible(KeyVisible.length()); }
 	void SetName(char *NameChain)					{ name=NameChain; }
-	char* GetName()									{ return name; }
+	const char* GetName()									{ return name; }
 	// анимационные действия
 	void GetMatrix(float phase,int &visible,MatXf &Matrix);
 };

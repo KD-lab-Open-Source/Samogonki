@@ -5,17 +5,17 @@
 #include "BaseDefine.h"
 
 #ifdef _MECHOSOMA_
-int m3dOpenResource(char* fname,XStream& fh);
-int vmapOpenResource(char* fname,XStream& fh);
+int m3dOpenResource(const char* fname,XStream& fh);
+int vmapOpenResource(const char* fname,XStream& fh);
 extern "C" {
-void openLogFile(char* fname);
+void openLogFile(const char* fname);
 void closeLogFile(void);
 };
 #endif
 
 #define RAD_GRAD		57.296f
 
-char cFile3ds::Open(char *fname,int OpenDirection)
+char cFile3ds::Open(const char *fname,int OpenDirection)
 {
 	const ErrRec3ds *ErrList=ReturnErrorList3ds();
 
@@ -177,7 +177,7 @@ int cFile3ds::OpenBaseKeyFrame()
 //	InfoBuf<"Number object motion: "<=objlist->count<"\r\n";
 	return (int) objlist->count;
 }
-void cFile3ds::OpenKeyFrame(char *NameFrame)
+void cFile3ds::OpenKeyFrame(const char *NameFrame)
 {
 	kfmesh=NULL;
 	for(unsigned int i=0;i<objlist->count;i++)
@@ -248,7 +248,7 @@ void cFile3ds::CloseKeyFrame()
 {
 	ReleaseObjectMotion3ds(&kfmesh);
 }
-char* cFile3ds::OpenDummy(int NumberKeyFrame)
+const char* cFile3ds::OpenDummy(int NumberKeyFrame)
 {
 	while(CountDummy<objlist->count)
 	{
@@ -257,11 +257,11 @@ char* cFile3ds::OpenDummy(int NumberKeyFrame)
 		if(strcmp(kfmesh->name,DummyName3ds)==0) return (char*) kfmesh->instance;
 		ReleaseObjectMotion3ds(&kfmesh);
 	}
-	XBuffer buf; buf<"Error: dummy not found - "<f->filename; ErrH.Abort(buf.address()); return 0;
+	XBuffer buf; buf<"Error: dummy not found - " <f->filename; ErrH.Abort(buf.address()); return 0;
 }
-char* cFile3ds::GetDummyParent()
+const char* cFile3ds::GetDummyParent()
 {
-	return (char*) kfmesh->parent;
+	return kfmesh->parent;
 }
 void cFile3ds::ReadDummy(float *x,float *y,float *z)
 {

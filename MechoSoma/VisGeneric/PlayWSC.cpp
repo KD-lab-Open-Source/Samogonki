@@ -198,14 +198,14 @@ public:
 	virtual void Draw()
 	{
 		if(StartTime>CurrentTime||CurrentTime>FinishTime) return;
-		extern void mchA_d3dOutString(int x,int y,float sx,float sy,void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
+		extern void mchA_d3dOutString(int x,int y,float sx,float sy,const void* str,int col,int alpha,int fnt,int space = 0,float mul = 1.0f,int pr_flag = 1,int vspace = 0);
 		int xPos=Pos.x*640,yPos=Pos.y*480,color=(Color.GetR()<<16)|(Color.GetG()<<8)|(Color.GetB()<<0);
 		if(RenderMode == XGRAPH_HICOLOR)
-			XGR_OutText(xPos,yPos,0xFFFF,(char*)Text,1,0,0,0);
+			XGR_OutText(xPos,yPos,0xFFFF,Text,1,0,0,0);
 		else 
 		{
 			if(centered) xPos-=strlen(Text)*7/2;
-			mchA_d3dOutString(xPos,yPos,FontSize.x,FontSize.y,(char*)Text,color,Color.GetA(),nFont);
+			mchA_d3dOutString(xPos,yPos,FontSize.x,FontSize.y,Text,color,Color.GetA(),nFont);
 		}
 	}
 	inline void SetText(char *pText)								{ Text=pText; }
@@ -362,7 +362,7 @@ int cWorldScriptPlay::OpenWorldScript(const std::string &path)
 							cString DefaultNameWSC=(char*)p1->c_dataPtr;
 							int size=0;
 							void *buf=0;
-							extern int ResourceFileRead(char *fname,void *&buf,int &size);
+							extern int ResourceFileRead(const char *fname,void *&buf,int &size);
 							ResourceFileRead(DefaultNameWSC,buf,size);
 							cWorldScriptPlay::PreLoadWSC((char*)buf,size);
 							break;
@@ -550,7 +550,7 @@ int cWorldScriptPlay::LoadNextWorldScript()
 				cString DefaultNameWSC=(char*)p->c_dataPtr;
 				int size=0;
 				void *buf=0;
-				extern int ResourceFileRead(char *fname,void *&buf,int &size);
+				extern int ResourceFileRead(const char *fname,void *&buf,int &size);
 				ResourceFileRead(DefaultNameWSC,buf,size);
 				cWorldScriptPlay::LoadWSC((char*)buf,size);
 				break;
@@ -818,7 +818,7 @@ cElementWorldScript* cWorldScriptPlay::FindElement(char *ConnectName)
 {
 	for(int i=0;i<GetNumberConnect();i++)
 	{
-		char *NameWSC=GetConnect(i)->GetConnectName();
+		const char *NameWSC=GetConnect(i)->GetConnectName();
 		if(NameWSC&&stricmp(NameWSC,ConnectName)==0)
 			return GetConnect(i);
 	}

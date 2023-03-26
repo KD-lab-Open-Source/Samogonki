@@ -69,8 +69,8 @@ extern int mchNextTrack;
 
 extern int xgrGameMode;
 
-extern char* mchA_StopTimeStr;
-extern unsigned char* mchNameStr;
+extern const char* mchA_StopTimeStr;
+extern const unsigned char* mchNameStr;
 extern int mchCurrentTrack;
 extern int mchAutoCenterCamera;
 extern int mchTimeStopArcaneCount;
@@ -98,7 +98,7 @@ extern char mch_playerNames[15][HS_NAME_LEN + 2];
 extern int mchHS_SaveFlag;
 extern int mchHS_LoadFlag;
 
-extern char* mchIscreenINI;
+extern const char* mchIscreenINI;
 
 extern XBuffer mchA_XBuf;
 
@@ -182,7 +182,7 @@ int mchPartID[NUM_ACTIVE_PARTS];
 xtList<mchRacerStats> mch_racerLst;
 int mchRacersInitFlag = 0;
 
-char* mch_botsINI = "RESOURCE\\bots.ini";
+const char* mch_botsINI = "RESOURCE\\bots.ini";
 
 int mchAI_NumCfg = 0;
 mch_AI_Prm* mchAI_Cfg = NULL;
@@ -2560,7 +2560,7 @@ void mchRaceDispatcher::redraw(void)
 #endif 
 }
 
-void mch_AI_Prm::init(char* ini_file,char* section)
+void mch_AI_Prm::init(const char* ini_file,const char* section)
 {
 	arcaneRnd = atoi(getIniKey(ini_file,section,"arcane_rnd"));
 
@@ -3725,7 +3725,7 @@ void mchInitWorldsPrm(void)
 {
 	int i,j,idx;
 
-	char* p;
+	const char* p;
 	XBuffer* xb;
 
 	memset(mch_partFlags,1,ARCANE_MAX);

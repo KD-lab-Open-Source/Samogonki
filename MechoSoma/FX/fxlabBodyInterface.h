@@ -56,7 +56,7 @@ class fxlabCannonBomb : public Meteorite
 public:
 	fxlabCannonBomb(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0)
 		: Meteorite( m3d_model, R_, V_, damage__, owner_ID) {}
-	void kill();
+	void kill() override;
 };
 
 //VolcanicBomb
@@ -65,7 +65,7 @@ class fxlabVolcanicBomb : public Meteorite
 public:
 	fxlabVolcanicBomb(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0)
 		: Meteorite( m3d_model, R_, V_, damage__, owner_ID) {}
-	void kill();
+	void kill() override;
 };
 
 //FireBolide
@@ -74,7 +74,7 @@ class fxlabFireBolide : public StatisticalMeteorite
 public:
 	fxlabFireBolide(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0)
 		: StatisticalMeteorite( m3d_model, R_, V_, damage__, owner_ID) { scaleRadius(2); }
-	void kill();
+	void kill() override;
 };
 
 //FireBolide
@@ -82,9 +82,9 @@ class fxlabSnowBall : public StatisticalMeteorite
 {
 public:
 	fxlabSnowBall(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0);
-	void body_overlap_reaction(Body& body);
-	void calc_forces_and_drags();
-	void kill();
+	void body_overlap_reaction(Body& body) override;
+	void calc_forces_and_drags() override;
+	void kill() override;
 };
 
 //Mortar
@@ -93,8 +93,8 @@ class fxlabSleepyMortar : public BonusMeteorite
 	MeasurementTimer color_time;
 public:
 	fxlabSleepyMortar(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0);
-	void kill();
-	void quant();
+	void kill() override;
+	void quant() override;
 };
 
 //MinorBonus
@@ -103,8 +103,8 @@ class fxlabMinorBonus : public BonusMeteorite
 public:
 	fxlabMinorBonus(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID = 0)
 		: BonusMeteorite(m3d_model, R_, V_, damage__, owner_ID) {}
-	void body_overlap_reaction(Body& body);
-	void kill();
+	void body_overlap_reaction(Body& body) override;
+	void kill() override;
 };
 
 //MajorBonus
@@ -113,6 +113,6 @@ class fxlabMajorBonus : public BonusMeteorite
 public:
 	fxlabMajorBonus(int m3d_model, const Vect3f& R_, const Vect3f& V_, double damage__, int owner_ID)
 		: BonusMeteorite(m3d_model,R_,V_,damage__,owner_ID){ type_ = REAL_BONUS_METEORITE; }
-	void body_overlap_reaction(Body& body);
-	void kill();
+	void body_overlap_reaction(Body& body) override;
+	void kill() override;
 };

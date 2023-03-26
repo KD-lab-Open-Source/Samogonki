@@ -12,8 +12,8 @@ struct CameraPrm
 	float Delta;
 	float Default;
 
-	void init(char* iniFile,char* section,char* id);
-	void save(char* iniFile,char* section,char* id);
+	void init(const char* iniFile,const char* section,const char* id);
+	void save(const char* iniFile,const char* section,const char* id);
 };
 
 enum CameraMode 
@@ -41,8 +41,8 @@ struct CameraModeInfo
 	int rotateMode;
 	CameraPrm rotatePrm;
 
-	void init(char* iniFile,char* id);
-	void save(char* iniFile,char* id);
+	void init(const char* iniFile,const char* id);
+	void save(const char* iniFile,const char* id);
 };
 
 struct CameraCoords

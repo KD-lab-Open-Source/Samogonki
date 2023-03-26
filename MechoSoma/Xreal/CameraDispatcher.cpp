@@ -32,9 +32,9 @@ public:
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-char* mch_cameraINI = "RESOURCE/ISCREEN/camera.ini";
+const char* mch_cameraINI = "RESOURCE/ISCREEN/camera.ini";
 
-char* mch_cameraModeID[CAM_MODE_MAX] = 
+const char* mch_cameraModeID[CAM_MODE_MAX] =
 {
 	"flat",
 	"fixed_3d",
@@ -74,7 +74,7 @@ Vect3f retrieve_mouse_movement()
 //	CameraModeInfo
 ////////////////////////////////////////////////////////////////////////////////////
 
-void CameraModeInfo::init(char* iniFile,char* id)
+void CameraModeInfo::init(const char* iniFile,const char* id)
 {
 	mapMode = atoi(getIniKey(iniFile, id, "map_mode"));
 
@@ -89,25 +89,25 @@ void CameraModeInfo::init(char* iniFile,char* id)
 	rotatePrm.init(iniFile, id, "rotate");
 }
 
-void CameraModeInfo::save(char* iniFile,char* id)
+void CameraModeInfo::save(const char* iniFile,const char* id)
 {
 	zPrm.save(iniFile, id, "z");
 	if(slopeMode)
 		slopePrm.save(iniFile,id,"slope");
 }
 
-static float init_prm(char* iniFile,char* section,char* id, char* postfix)
+static float init_prm(const char* iniFile,const char* section,const char* id, const char* postfix)
 {
 	XBuffer XBuf;
 	XBuf < id < postfix;
-	char* str = getIniKey(iniFile,section,XBuf.address());
+	const char* str = getIniKey(iniFile,section,XBuf.address());
 	if(strlen(str))
 		return atof(str);
 	else
 		return atof(getIniKey(iniFile, "general" ,XBuf.address()));
 }
 
-void CameraPrm::init(char* iniFile,char* section,char* id)
+void CameraPrm::init(const char* iniFile,const char* section,const char* id)
 {
 	Max = init_prm(iniFile,section,id, "_max");
 	Min = init_prm(iniFile,section,id, "_min");
@@ -115,7 +115,7 @@ void CameraPrm::init(char* iniFile,char* section,char* id)
 	Default = init_prm(iniFile,section,id, "_default");
 }
 
-void CameraPrm::save(char* iniFile,char* section,char* id)
+void CameraPrm::save(const char* iniFile,const char* section,const char* id)
 {
 	if(init_prm(iniFile,section,id, "_default") == Default)
 		return;

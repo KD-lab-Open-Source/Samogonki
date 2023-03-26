@@ -268,7 +268,7 @@ extern ogPacket og_inP;
 extern ogPacket og_inP2;
 extern ogPacket og_outP;
 
-extern char* ogErrorStr;
+extern const char* ogErrorStr;
 
 void hsOnlineSetup(void);
 
@@ -278,8 +278,8 @@ char* ogStatus(void);
 void ogSetRefreshTime(void);
 int ogCheckRefreshTime(void);
 
-void ogLogStr(char* text);
-void ogLogError(char* text,int uid,int turn,int prm0,int prm1);
+void ogLogStr(const char* text);
+void ogLogError(const char* text,int uid,int turn,int prm0,int prm1);
 int ogGetErrorStr(void);
 
 #endif /* __ONLINE_GAME_H__ */

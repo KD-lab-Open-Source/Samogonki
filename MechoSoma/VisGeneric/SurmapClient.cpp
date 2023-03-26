@@ -421,15 +421,15 @@ void DrawMeshPoint(unsigned int ID,float x,float y,float z,float ax,float ay,flo
 }
 
 #else //_SURMAP_
-char* dirM3D = "";
-char* dirM3Dtexture = "TEXTURES";
+const char* dirM3D = "";
+const char* dirM3Dtexture = "TEXTURES";
 void initM3D(int xScr,int yScr,int FullScr) { assert(0); }
 void doneM3D() { assert(0); }
 void setCamera(float x,float y,float z,int xCenter,int yCenter,int xSize,int ySize,float ax,float ay,float az,int focus,char perspective) { assert(0); }
 void DrawSurmapClient();
 // OMNI - OPERATION
-void SaveO3DMap(char *fname) { assert(0); }
-void LoadO3DMap(char *fname) { }
+void SaveO3DMap(const char *fname) { assert(0); }
+void LoadO3DMap(const char *fname) { }
 int CreateOmni(float x,float y,float z,float radius,float r,float g,float b) { assert(0); return 0; }
 void DeleteOmni(int number) { assert(0); }
 void SetOmni(int number,float radius,float r,float g,float b) { assert(0); }
@@ -438,11 +438,11 @@ void editPropertisCLS(int number) { assert(0); }
 void SetOmniVisible(int number,char Visible) { assert(0); }
 void delO3DAll() { }
 // ***********************************
-void DrawID(int xe,int ye,unsigned int ID,char *string="")	{}
-void loadM3DAll(char*mmapname, unsigned int track_mask) {}
-void saveM3DAll(char*mmapname) { assert(0); }
+void DrawID(int xe,int ye,unsigned int ID,const char *string="")	{}
+void loadM3DAll(const char* mmapname, unsigned int track_mask) {}
+void saveM3DAll(const char* mmapname) { assert(0); }
 //
-int  loadM3D(char* name,char flCollision,float x,float y,float z,float ax,float ay,float az,float sx,float sy,float sz) { assert(0); return 0; }
+int  loadM3D(const char* name,char flCollision,float x,float y,float z,float ax,float ay,float az,float sx,float sy,float sz) { assert(0); return 0; }
 void delM3D(int number) { assert(0); }
 void delM3DAll(void) { }
 void setMesh(int number,float x,float y,float z,float ax,float ay,float az) { assert(0); }

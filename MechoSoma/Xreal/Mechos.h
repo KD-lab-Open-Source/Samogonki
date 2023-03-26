@@ -125,7 +125,7 @@ public:
 		};	
 
 
-		Mechos(char* KindsStr);
+		Mechos(const char* KindsStr);
 		~Mechos();
 
 	void set_activity(int flag);

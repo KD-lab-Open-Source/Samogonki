@@ -358,9 +358,9 @@ void TriangleMap::add(const Vect3f& p0, const Vect3f& p1, const Vect3f& p2, Tria
 		Grid::insert(front(), front().getBound()); 
 		}
 }
-int vmapOpenResource(char* fname,XStream& fh);
+int vmapOpenResource(const char* fname,XStream& fh);
 
-void TriangleMap::load(char* name)
+void TriangleMap::load(const char* name)
 {
 	//ifstream is(name);
 	XStream ff;
@@ -419,7 +419,7 @@ struct SpotRecord : UsualRecord
 
 typedef SST_Reader<SpotRecord> SpotReader;
 
-void TriangleMap::loadSpots(char* name)
+void TriangleMap::loadSpots(const char* name)
 {
 	SpotReader spots(name);
 	SpotReader::iterator si;

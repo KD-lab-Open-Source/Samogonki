@@ -18,7 +18,7 @@ XBuffer::XBuffer(unsigned int sz, int automatic_realloc_)
 	alloc(sz);
 }
 
-XBuffer::XBuffer(void* p,int sz)
+XBuffer::XBuffer(const void* p,int sz)
 {
 	offset = 0L;
 	radix = XB_DEFRADIX;

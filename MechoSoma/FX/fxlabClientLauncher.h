@@ -12,7 +12,7 @@ struct fxlabClientSetAtomType
 	fxlabProcessInterface ObjectPoint;
 	int UseFlag;
 
-	fxlabClientSetAtomType(void){ ObjectType = -1;KeyID = -1;UseFlag = 0; };
+	fxlabClientSetAtomType(){ ObjectType = -1;KeyID = -1;UseFlag = 0; };
 };
 
 enum fxlabClientSetObjectDataField
@@ -33,16 +33,16 @@ struct fxlabClientSetObjectType : fxlabClientKeyObjectType
 	fxlabClientSetAtomType* AtomData;
 	Vect3f Velocity;
 
-	void Open(void);
-	void Close(void);
-	void Start(void);
-	void Quant(void);
-	void KeyUpdate(void);
-	void KeyCheck(void);
+	void Open() override;
+	void Close() override;
+	void Start() override;
+	void Quant() override;
+	void KeyUpdate() override;
+	void KeyCheck() override;
 	void SetVelocity(const Vect3f& v) override;
-	int GetAlive(void);
+	int GetAlive() override;
 
-	void ObjectGenerate(void);
+	void ObjectGenerate();
 };
 
 //-----------------------------------------
@@ -67,25 +67,25 @@ struct fxlabClientBaseBodyType : fxlabClientKeyObjectType
 	Vect3f Velocity;
 	fxlabProcessInterface TailPoint;
 
-	void Open(void);
-	void Close(void);
-	void Quant(void);
+	void Open() override;
+	void Close() override;
+	void Quant() override;
 
-	void SetBody(class Body* p);
-	void KeyCheck(void);
-	void KeyUpdate(void);
+	void SetBody(class Body* p) override;
+	void KeyCheck() override;
+	void KeyUpdate() override;
 
-	virtual void CalcVelocity(void){};
-	virtual void Destroy(void);
+	virtual void CalcVelocity() {};
+	virtual void Destroy();
 };
 
 struct fxlabClientBodyLinkType : fxlabClientBaseBodyType
 {
 	Vect3f LastPosition;
 
-	void Open(void);
-	void CalcVelocity(void);
-	void SetBody(class Body* p);
+	void Open() override;
+	void CalcVelocity() override;
+	void SetBody(class Body* p) override;
 };
 
 //---------------------------------------
@@ -93,39 +93,39 @@ struct fxlabClientBodyLinkType : fxlabClientBaseBodyType
 struct fxlabClientMechosLinkType : fxlabClientBodyLinkType
 {
 	class Mechos* MechosOwner;
-	void Open(void);
-	void SetBody(class Body* p);
-	void Quant(void);
+	void Open() override;
+	void SetBody(class Body* p) override;
+	void Quant() override;
 };
 
 struct fxlabClientFrontLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 
 struct fxlabClinetBackLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 
 struct fxlabClinetLeftForwardWheelLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 
 struct fxlabClientRightForwardWheelLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 
 struct fxlabClientLeftBackWheelLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 
 struct fxlabClientRightBackWheelLink : fxlabClientMechosLinkType
 {
-	void CalcVelocity(void);
+	void CalcVelocity() override;
 };
 												
 //----------------------------------------------
@@ -144,14 +144,14 @@ struct fxlabClientObjectLauncher : fxlabClientKeyObjectType
 	DurationTimer ObjectTimer;
 	Vect3f Velocity;
 
-	void Open(void);
-	void Start(void);
-	void Quant(void);
+	void Open() override;
+	void Start() override;
+	void Quant() override;
 
-	void KeyCheck(void);
+	void KeyCheck() override;
 	void SetVelocity(const Vect3f& v) override { Velocity = v; };
 
-	virtual void CreateObject(void);
+	virtual void CreateObject();
 };
 
 enum fxlabClientObjectSwitcherDataField
@@ -166,15 +166,15 @@ struct fxlabClientObjectSwitcher : fxlabClientObjectLauncher
 	Vect3f Velocity;
 	fxlabProcessInterface ObjectPoint;
 
-	void Open(void);
-	void Close(void);
-	void Quant(void);
+	void Open() override;
+	void Close() override;
+	void Quant() override;
 
-	void KeyCheck(void);
+	void KeyCheck() override;
 
-	void CreateObject(void);
-	virtual void UpdateObject(void);
-	virtual void DestroyObject(void);
+	void CreateObject() override;
+	virtual void UpdateObject();
+	virtual void DestroyObject();
 };
 
 //------------------------------------
@@ -191,15 +191,15 @@ struct fxlabClientRemoteSwitcher : fxlabClientRemoteCotrol
 	fxlabProcessInterface ObjectPoint;
 	Vect3f Velocity;
 
-	void Open(void);
-	void Close(void);
-	void KeyCheck(void);
-	void SetRemoteID(int id);
+	void Open() override;
+	void Close() override;
+	void KeyCheck() override;
+	void SetRemoteID(int id) override;
 	void SetVelocity(const Vect3f& v) override;
 	void SetPosition(const Vect3f& v) override;
 
-	virtual void CreateObject(void);
-	virtual void DestroyObject(void);
+	virtual void CreateObject();
+	virtual void DestroyObject();
 };
 
 //----------------------------------------
@@ -209,8 +209,8 @@ struct fxlabClientRemoteAim : fxlabClientRemoteCotrol
 	int TargetID;
 	struct mchRacer* Target;
 
-	void Open(void);
-	void SetRemoteID(int id);
+	void Open() override;
+	void SetRemoteID(int id) override;
 };
 
 //--------------------------------------
@@ -220,23 +220,23 @@ struct fxlabClientBaseBindingType : fxlabClientSpaceType
 	ShareHandle<Body> Core;
 	Vect3f Velocity;
 
-	void Open(void);
-	void Quant(void);
+	void Open() override;
+	void Quant() override;
 
-	void SetBody(class Body* p);
+	void SetBody(class Body* p) override;
 
-	virtual void CalcVelocity(void){};
-	virtual void Update(void){};
-	virtual void Destroy(void);
+	virtual void CalcVelocity() {};
+	virtual void Update() {};
+	virtual void Destroy();
 };
 
 struct fxlabClientCompareBindingType : fxlabClientBaseBindingType
 {
 	Vect3f LastPosition;
 
-	void Open(void);
-	void CalcVelocity(void);
-	void SetBody(class Body* p);
+	void Open() override;
+	void CalcVelocity() override;
+	void SetBody(class Body* p) override;
 };
 
 //-----------------------------------------
@@ -245,9 +245,9 @@ struct fxlabClientSuicideLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void CalcVelocity(void);
-	void Update(void);
+	void Close() override;
+	void CalcVelocity() override;
+	void Update() override;
 };
 
 //------------------------------
@@ -257,9 +257,9 @@ struct fxlabClientBolideLink : fxlabClientCompareBindingType
 	fxlabProcessInterface TailPoint;
 //	fxlabProcessInterface SoundPoint;
 
-	void Start(void);
-	void Close(void);
-	void Update(void);
+	void Start() override;
+	void Close() override;
+	void Update() override;
 };
 
 //----------------------------
@@ -268,8 +268,8 @@ struct fxlabClientVolcanicStoneLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 //----------------------------
@@ -278,8 +278,8 @@ struct fxlabClientBombExplodeLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 //------------------------
@@ -289,8 +289,8 @@ struct fxlabClientFireBallLink : fxlabClientCompareBindingType
 	fxlabProcessInterface TailPoint;
 	fxlabProcessInterface OmniPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 //-------------------------
@@ -299,8 +299,8 @@ struct fxlabClientLightningBoltLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 //---------------------------
@@ -310,17 +310,17 @@ struct fxlabClientMortarBodyLink : fxlabClientCompareBindingType
 	fxlabProcessInterface TailPoint;
 	MeasurementTimer Timer;
 
-	void Start(void);
-	void Quant(void);
-	void Close(void);
-	void Update(void);
+	void Start() override;
+	void Quant() override;
+	void Close() override;
+	void Update() override;
 };
 
 //-------------------
 
 struct fxlabClientBonusBodyLink : fxlabClientMortarBodyLink
 {
-	void Update(void);
+	void Update() override;
 };
 
 //----------------------------
@@ -329,24 +329,24 @@ struct fxlabClientSnowFallLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 struct fxlabClientMechosBurnLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 struct fxlabClientBombSplinterLink : fxlabClientCompareBindingType
 {
 	fxlabProcessInterface TailPoint;
 
-	void Close(void);
-	void Update(void);
+	void Close() override;
+	void Update() override;
 };
 
 
@@ -357,13 +357,13 @@ struct fxlabClientMechosBindingType : fxlabClientSpaceType
 {
 	class Mechos* MechosOwner;
 
-	void Open(void);
-	void Quant(void);
-	void SetMechosPoint(class mchMechosRacer* p);
+	void Open() override;
+	void Quant() override;
+	void SetMechosPoint(class mchMechosRacer* p) override;
 
-	virtual void CalcVelocity(void){};
-	virtual void Update(void){};
-	virtual void Destroy(void);
+	virtual void CalcVelocity(){};
+	virtual void Update(){};
+	virtual void Destroy();
 };
 
 //----------------
@@ -386,15 +386,15 @@ struct fxlabClientVoodooMasterLink : fxlabClientMechosBindingType
 	float RadiusVelocity;
 	float PsiVelocity;
 
-	void Open(void);
-	void Close(void);
-	void CalcVelocity(void);
-	void Update(void);
-	void SetAngle(float angle){ StartAngle = Angle = angle; };
-	void SetDeltaAngle(float angle){ DeltaAngle = angle; };
-	void SetRadius(float r){ Radius = r; };
+	void Open() override;
+	void Close() override;
+	void CalcVelocity() override;
+	void Update() override;
+	void SetAngle(float angle) override { StartAngle = Angle = angle; };
+	void SetDeltaAngle(float angle) override { DeltaAngle = angle; };
+	void SetRadius(float r) override { Radius = r; };
 
-	void SetTarget(class mchMechosRacer* p);
+	void SetTarget(class mchMechosRacer* p) override;
 };
 
 

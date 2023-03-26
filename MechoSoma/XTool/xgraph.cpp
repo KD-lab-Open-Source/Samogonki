@@ -571,7 +571,7 @@ void XGR_Screen::rectangle16(int x,int y,int sx,int sy,int outcol,int incol,int 
 {
 }
 
-void XGR_OutText(int x,int y,int col,void* text,int font,int hspace,int vspace,int pr_flag)
+void XGR_OutText(int x,int y,int col,const char* text,int font,int hspace,int vspace,int pr_flag)
 {
 }
 

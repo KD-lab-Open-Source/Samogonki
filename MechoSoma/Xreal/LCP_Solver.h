@@ -123,7 +123,7 @@ protected:
 	double energy(const double* vels);
 	double det(const Mat& A);
 	Mat fullMatrix();
-	void abort(char* msg); // throw
+	void abort(const char* msg); // throw
 	void check_solution();
 	void print_state();
 

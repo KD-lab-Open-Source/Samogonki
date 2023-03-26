@@ -48,7 +48,7 @@ void cOmni::DrawID(cCamera *Camera)
 	Camera->ConvertPoint(pos,pw,pv,pe);
 //	extern void DrawID(cCamera *Camera,int xe,int ye,unsigned int ID,char *string="");
 //	DrawID(Camera,round(pe.x),round(pe.y),ID);
-	extern void DrawID(int xe,int ye,unsigned int ID,char *string="");
+	extern void DrawID(int xe,int ye,unsigned int ID,const char *string="");
 	DrawID(round(pe.x),round(pe.y),ID);
 }
 void cOmni::Draw(cUnknownClass *UCameraList)

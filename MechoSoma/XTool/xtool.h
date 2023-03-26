@@ -226,7 +226,7 @@ struct XBuffer
 	int automatic_realloc;
 
 	XBuffer(unsigned int sz = XB_DEFSIZE, int automatic_realloc_ = 0);
-	XBuffer(void* p,int sz);
+	XBuffer(const void* p,int sz);
 	~XBuffer(){ free(); }
 
 	void SetRadix(int r) { radix = r; }
@@ -237,19 +237,20 @@ struct XBuffer
 	void fill(char fc = '\0');
 	void set(int off,int mode = XB_BEG);
 	void init(void){ offset = 0; *buf = 0; }
-	int search(char* what,int mode = XB_FORWARD,int cs = XB_CASEON);
+	int search(const char* what,int mode = XB_FORWARD,int cs = XB_CASEON);
 	int end() const { return (offset > size); }
 
 	unsigned int tell(void) const { return offset; }
 	unsigned int length(void) const { return size; }
-	char* address(){ return buf; }
+        char* address(){ return buf; }
+	const char* address() const { return buf; }
 
 	unsigned int read(void* s, unsigned int len);
 	unsigned int write(const void* s, unsigned int len, int bin_flag = 1);
 	void handleOutOfSize();
 	
 	XBuffer& operator< (const char* v);
-	XBuffer& operator< (char* v) { return this->operator<((const char*) v); };
+        XBuffer& operator< (char* v) { return this->operator<((const char*) v); };
 	XBuffer& operator< (char v) { return write(v); }
 	XBuffer& operator< (unsigned char v) { return write(v); }
 	XBuffer& operator< (short v) { return write(v); }
@@ -840,7 +841,7 @@ void XRndSet(unsigned int m);
 unsigned int XRndGet();
 
 char* XFindNext(void);
-char* XFindFirst(char* mask);
+char* XFindFirst(const char* mask);
 
 #ifndef M_PI
 #define M_PI	3.14159265358979323846
@@ -895,7 +896,7 @@ void initclock(void);
 int clocki(void);
 double clockf(void);
 
-void xtDeleteFile(char* fname);
+void xtDeleteFile(const char* fname);
 
 #endif
 #ifndef __XCPUID_H
@@ -1168,17 +1169,17 @@ public:
 	XZIP_FileHeader* prev;
 	XZIP_FileHeader* next;
 
-	void SetName(char* p);
+	void SetName(const char* p);
 
 	unsigned size(void) const { return dataSize; }
 	unsigned offset(void) const { return dataOffset; }
 	char* data(void) const { return extData; }
-	char* name(void) const { return fileName; }
+	const char* name(void) const { return fileName; }
 
 	void save(XStream& fh);
 
 	XZIP_FileHeader(void);
-	XZIP_FileHeader(char* fname,unsigned offs,unsigned size,void* ext_ptr,int ext_sz);
+	XZIP_FileHeader(const char* fname,unsigned offs,unsigned size,void* ext_ptr,int ext_sz);
 	XZIP_FileHeader(XStream& fh);
 	~XZIP_FileHeader(void);
 };
@@ -1199,15 +1200,15 @@ class XZIP_Resource
 
 	XZIP_FileHeader* find(const char* fname);
 public:
-	int open(char* fname,XStream& fh,int mode = 0);
+	int open(const char* fname,XStream& fh,int mode = 0);
 
 	void LoadHeaders(void);
 	void LoadIndex(void);
 	void SaveIndex(void);
 
-	void dump(char* fname);
+	void dump(const char* fname);
 
-	XZIP_Resource(char* fname,int fl);
+	XZIP_Resource(const char* fname,int fl);
 	~XZIP_Resource(void);
 };
 

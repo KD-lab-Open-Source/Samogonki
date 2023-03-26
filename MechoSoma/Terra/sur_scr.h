@@ -131,7 +131,7 @@ struct s_sur_scr  { //: s_row
 			if(current_cell >= numbers_cell) current_cell=(numbers_cell-1); //??
 		}
 	};
-	int load_scr(char* fname);
+	int load_scr(const char* fname);
 	void lex2oper(char* world, char*& buf);
 	void load_data();
 	void save_data_release();

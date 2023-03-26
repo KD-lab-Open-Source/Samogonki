@@ -115,7 +115,7 @@ cManagerKindObject::~cManagerKindObject()
 	}
 	NumberID=0;
 }
-void GlobalFunctionSetMaterial(cMaterial &Material,char *TextureName,char *OpacityName,char *TexturePath,int attribute)
+void GlobalFunctionSetMaterial(cMaterial &Material,const char *TextureName,const char *OpacityName,const char *TexturePath,int attribute)
 {
 	assert(TextureBuffer);
 	if(TextureName) 

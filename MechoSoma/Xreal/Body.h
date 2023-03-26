@@ -290,8 +290,8 @@ public:
 	void setFrame(float frame);
 	class cFrame& findFrame();
 	void setAnimation(float AnimationPeriod = 2000.f, float StartPhase = 0.f, float FinishPhase = -1.f, unsigned int mask = 0xffffffff);
-	void setChannel(char* channel);
-	void setChannelRandom(char* channel);
+	void setChannel(const char* channel);
+	void setChannelRandom(const char* channel);
 	void setAlpha(float alpha);
 	void setColor(float r, float g, float b);
 

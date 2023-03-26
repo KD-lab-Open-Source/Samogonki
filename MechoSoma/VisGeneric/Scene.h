@@ -87,10 +87,10 @@ private:
 	cUnkClassDynArrayPointer		*SunArray;				// массив небесных светил
 	sColor4f						AmbientObjectAll,AmbientObjectMechos,DiffuseLightingMax,AmbientLightingMax;
 
-	cWorldPolyGrid* LoadAir(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *TexturePath,int AirHeight);
-	cWorldPolyGrid* LoadCloud(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,char *TextureName,char *OpacityName,char *TexturePath,int CloudHeight);
-	void LoadWorldLight(int number,int track,sColor4f &ColorAmbientAir,char *TextureSun,char *TextureMoon,char *TexturePath);
-	void AddAirLight(Vect3f &Pos,sColor4f &Ambient,sColor4f &Diffuse,sColor4f &Illumination,float RadiusWorldSun,float RadiusLight,float RadiusSun,char *TextureName,char *TexturePath);
+	cWorldPolyGrid* LoadAir(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *TexturePath,int AirHeight);
+	cWorldPolyGrid* LoadCloud(int xstep,int ystep,float uScale,float vScale,float duOfs,float dvOfs,const char *TextureName,const char *OpacityName,const char *TexturePath,int CloudHeight);
+	void LoadWorldLight(int number,int track,sColor4f &ColorAmbientAir,const char *TextureSun,const char *TextureMoon,const char *TexturePath);
+	void AddAirLight(Vect3f &Pos,sColor4f &Ambient,sColor4f &Diffuse,sColor4f &Illumination,float RadiusWorldSun,float RadiusLight,float RadiusSun,const char *TextureName,const char *TexturePath);
 };
 
 #endif //__SCENE_H__

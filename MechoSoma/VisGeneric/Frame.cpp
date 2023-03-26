@@ -474,7 +474,7 @@ cFrame::cFrame(cFrame *Frame)
 	StartCount=Frame->StartCount;
 #endif //_SURMAP_
 }
-cFrame::cFrame(char *name,char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs)
+cFrame::cFrame(const char *name,const char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs)
 {
 	ChainNumber=-1; count = 0; prev_count=-1; 
 	finish=1; dcount=1.f/M3D_DEFAULT_ANIMATION_PERIOD;
@@ -575,7 +575,7 @@ float cFrame::dist(float v0,float v1)
 	if(ad <= dd) return d;
 	return d < 0 ? d + frame_phase_range : d - frame_phase_range;
 }
-int cFrame::SetCurrentChain(char *NameChain)
+int cFrame::SetCurrentChain(const char *NameChain)
 {
 	assert(NameChain);
 	for(int i=0;i<GetNumberAnimChain();i++)
@@ -583,7 +583,7 @@ int cFrame::SetCurrentChain(char *NameChain)
 			return SetCurrentChain(i);
 	return -1;
 }
-int cFrame::SetCurrentChain(char *NameChainMask,int number)
+int cFrame::SetCurrentChain(const char *NameChainMask,int number)
 { // возвращает число цепочек имеющих в имени строку NameChainMask
 	if(GetNumberAnimChain()<=0) return -1;
 	if(NameChainMask==0) return GetNumberAnimChain();
@@ -593,7 +593,7 @@ int cFrame::SetCurrentChain(char *NameChainMask,int number)
 			if((count++)==number) return SetCurrentChain(i);
 	return -1;
 }
-int cFrame::GetChain(char *NameChainMask)
+int cFrame::GetChain(const char *NameChainMask)
 { // возвращает число цепочек имеющих в имени строку NameChainMask
 	if(NameChainMask==0) return GetNumberAnimChain();
 	int count=0;

@@ -67,13 +67,13 @@ public:
 
 	int isEnabled(void) const { return is_enabled; }
 
-	char* Name(void) const { return name; }
-	char* Text(void) const { return text; }
+	const char* Name(void) const { return name; }
+	const char* Text(void) const { return text; }
 
-	char* OpenMovie(void) const { return openMovie; }
-	char* CloseMovie(void) const { return closeMovie; }
+	const char* OpenMovie(void) const { return openMovie; }
+	const char* CloseMovie(void) const { return closeMovie; }
 
-	char* Boss(void) const { return boss; }
+	const char* Boss(void) const { return boss; }
 	int BossID(void) const { return bossID; }
 	int BossFigureID(void) const { return bossFigureID; }
 	int BossSoundID(void) const { return bossSoundID; }
@@ -121,8 +121,8 @@ public:
 	void TrackCD_TrackNext(void){ if(curTrack) curTrack -> CD_TrackNext(); }
 	void TrackCD_TrackReset(void){ if(curTrack) curTrack -> CD_TrackReset(); }
 
-	char* TrackName(int world,int track);
-	char* TrackText(int world,int track);
+	const char* TrackName(int world,int track);
+	const char* TrackText(int world,int track);
 
 	int FigureEnabled(int n) const { if(n >= 0 && n < 20) return figureFlags[n]; return 0; }
 	int FigureEnabledHS(int n) const { if(n >= 0 && n < 20) return figureFlags2[n]; return 0; }
@@ -138,7 +138,7 @@ public:
 
 	int TrackBossID(void) const { if(curTrack) return curTrack -> BossID(); return 0; }
 	int TrackBossFigureID(void) const { if(curTrack) return curTrack -> BossFigureID(); return 0; }
-	char* TrackBoss(void) const { if(curTrack) return curTrack -> Boss(); return NULL; }
+	const char* TrackBoss(void) const { if(curTrack) return curTrack -> Boss(); return NULL; }
 
 	mchTrackInfo* FirstTrack(void){	return trackLst.first(); }
 	mchTrackInfo* NextTrack(int world,int track);

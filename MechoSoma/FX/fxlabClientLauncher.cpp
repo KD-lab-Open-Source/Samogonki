@@ -18,7 +18,7 @@
 #include "fxlabClientGeneral.h"
 #include "fxlabClientLauncher.h"
 
-void fxlabClientSetObjectType::Open(void)
+void fxlabClientSetObjectType::Open()
 {
 	fxlabClientKeyObjectType::Open();
 
@@ -30,14 +30,14 @@ void fxlabClientSetObjectType::Open(void)
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientSetObjectType::Start(void)
+void fxlabClientSetObjectType::Start()
 {
 	fxlabClientKeyObjectType::Start();
 	Mode = round(KeyData[FXLAB_CLIENT_SET_OBJECT_MODE]);
 	ObjectGenerate();
 };
 
-void fxlabClientSetObjectType::Close(void)
+void fxlabClientSetObjectType::Close()
 {
 	int i;
 	if(Mode & FXLAB_CLIENT_SET_MODE_DESTROY){
@@ -55,13 +55,13 @@ void fxlabClientSetObjectType::Close(void)
 	fxlabClientKeyObjectType::Close();
 };
 
-void fxlabClientSetObjectType::Quant(void)
+void fxlabClientSetObjectType::Quant()
 {
 	fxlabClientKeyObjectType::Quant();
 	ObjectGenerate();
 };
 
-void fxlabClientSetObjectType::ObjectGenerate(void)
+void fxlabClientSetObjectType::ObjectGenerate()
 {
 	int i;
 	Vect3f v;
@@ -105,14 +105,14 @@ void fxlabClientSetObjectType::ObjectGenerate(void)
 	};
 };
 
-int fxlabClientSetObjectType::GetAlive(void)
+int fxlabClientSetObjectType::GetAlive()
 {
 	if(!Alive && (!(Mode & FXLAB_CLIENT_SET_MODE_WAIT) || !ActiveCnt))
 		return 0;
 	return 1;
 };
 
-void fxlabClientSetObjectType::KeyUpdate(void)
+void fxlabClientSetObjectType::KeyUpdate()
 {
 	int i;
 	float* n;
@@ -135,7 +135,7 @@ void fxlabClientSetObjectType::KeyUpdate(void)
 	};
 };
 
-void fxlabClientSetObjectType::KeyCheck(void)
+void fxlabClientSetObjectType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CLINET_SET_OBJECT_MAX + FXLAB_CLIENT_SET_ATOM_DATA_MAX*NumAtom)
 		ErrH.Abort("Bad Key of fxClientSetObject");
@@ -148,20 +148,20 @@ void fxlabClientSetObjectType::SetVelocity(const Vect3f& v)
 
 //------------------------------------------------
 
-void fxlabClientBaseBodyType::Open(void)
+void fxlabClientBaseBodyType::Open()
 {
 	fxlabClientKeyObjectType::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientBaseBodyType::Close(void)
+void fxlabClientBaseBodyType::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
 	fxlabClientKeyObjectType::Close();
 };
 
-void fxlabClientBaseBodyType::Quant(void)
+void fxlabClientBaseBodyType::Quant()
 {
 	fxlabGeneralObjectType* t;
 
@@ -200,7 +200,7 @@ void fxlabClientBaseBodyType::Quant(void)
 	};
 };
 
-void fxlabClientBaseBodyType::Destroy(void)
+void fxlabClientBaseBodyType::Destroy()
 {
 	fxlabGeneralObjectType* t;
 
@@ -221,13 +221,13 @@ void fxlabClientBaseBodyType::SetBody(class Body* p)
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientBaseBodyType::KeyCheck(void)
+void fxlabClientBaseBodyType::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CLIENT_BODY_LINK_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabBodyLink");
 };
 
-void fxlabClientBaseBodyType::KeyUpdate(void)
+void fxlabClientBaseBodyType::KeyUpdate()
 {
 	fxlabClientKeyObjectType::KeyUpdate();
 
@@ -239,13 +239,13 @@ void fxlabClientBaseBodyType::KeyUpdate(void)
 
 //------------------------------------------------
 
-void fxlabClientBodyLinkType::Open(void)
+void fxlabClientBodyLinkType::Open()
 {
 	fxlabClientBaseBodyType::Open();
 	LastPosition = Vect3f::ZERO;
 };
 
-void fxlabClientBodyLinkType::CalcVelocity(void)
+void fxlabClientBodyLinkType::CalcVelocity()
 {
 	Position = Core->R();
 	Velocity = getDist(LastPosition,Position);
@@ -260,13 +260,13 @@ void fxlabClientBodyLinkType::SetBody(class Body* p)
 
 //----------------------------------------------
 
-void fxlabClientMechosLinkType::Open(void)
+void fxlabClientMechosLinkType::Open()
 {
 	fxlabClientBodyLinkType::Open();
 	MechosOwner = NULL;
 };
 
-void fxlabClientMechosLinkType::Quant(void)
+void fxlabClientMechosLinkType::Quant()
 {
 	fxlabGeneralObjectType* t;
 
@@ -320,7 +320,7 @@ void fxlabClientMechosLinkType::SetBody(class Body* p)
 
 //----------------------------------------------
 
-void fxlabClientFrontLink::CalcVelocity(void)
+void fxlabClientFrontLink::CalcVelocity()
 {
 	if(Core->completed()){
 		Position = MechosOwner->part_coords(M3D_FRONT);
@@ -328,7 +328,7 @@ void fxlabClientFrontLink::CalcVelocity(void)
 	};
 };
 
-void fxlabClinetBackLink::CalcVelocity(void)
+void fxlabClinetBackLink::CalcVelocity()
 {
 	if(Core->completed()){
 		Position = MechosOwner->part_coords(M3D_FRONT);
@@ -336,7 +336,7 @@ void fxlabClinetBackLink::CalcVelocity(void)
 	};
 };
 
-void fxlabClinetLeftForwardWheelLink::CalcVelocity(void)
+void fxlabClinetLeftForwardWheelLink::CalcVelocity()
 {
 //	Vect3f p;
 	if(Core->completed()){
@@ -348,7 +348,7 @@ void fxlabClinetLeftForwardWheelLink::CalcVelocity(void)
 	};
 };
 
-void fxlabClientRightForwardWheelLink::CalcVelocity(void)
+void fxlabClientRightForwardWheelLink::CalcVelocity()
 {
 //	Vect3f p;
 	if(Core->completed()){
@@ -360,7 +360,7 @@ void fxlabClientRightForwardWheelLink::CalcVelocity(void)
 	};
 };
 
-void fxlabClientLeftBackWheelLink::CalcVelocity(void)
+void fxlabClientLeftBackWheelLink::CalcVelocity()
 {
 //	Vect3f p;
 	if(Core->completed()){
@@ -372,7 +372,7 @@ void fxlabClientLeftBackWheelLink::CalcVelocity(void)
 	};
 };
 
-void fxlabClientRightBackWheelLink::CalcVelocity(void)
+void fxlabClientRightBackWheelLink::CalcVelocity()
 {
 //	Vect3f p;
 	if(Core->completed()){
@@ -386,33 +386,33 @@ void fxlabClientRightBackWheelLink::CalcVelocity(void)
 
 //------------------------------------------
 
-void fxlabClientObjectLauncher::Open(void)
+void fxlabClientObjectLauncher::Open()
 {
 	fxlabClientKeyObjectType::Open();
 	Velocity = Vect3f::ZERO;
 };
 
 
-void fxlabClientObjectLauncher::Start(void)
+void fxlabClientObjectLauncher::Start()
 {
 	fxlabClientKeyObjectType::Start();
 	ObjectTimer.start(round(KeyData[FXLAB_CLIENT_OBJECT_LAUNCHER_DATA_START_TIME]));
 };
 
-void fxlabClientObjectLauncher::Quant(void)
+void fxlabClientObjectLauncher::Quant()
 {
 	fxlabClientKeyObjectType::Quant();
 	if(!ObjectTimer())
 		CreateObject();
 };
 
-void fxlabClientObjectLauncher::KeyCheck(void)
+void fxlabClientObjectLauncher::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CLIENT_OBJECT_LAUNCHER_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabClientObjectLauncher");
 };
 
-void fxlabClientObjectLauncher::CreateObject(void)
+void fxlabClientObjectLauncher::CreateObject()
 {
 	fxlabGeneralObjectType* t;
 
@@ -428,21 +428,21 @@ void fxlabClientObjectLauncher::CreateObject(void)
 
 //----------------------------------------------------
 
-void fxlabClientObjectSwitcher::Open(void)
+void fxlabClientObjectSwitcher::Open()
 {
 	fxlabClientObjectLauncher::Open();
 	EnableFlag = 0;
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientObjectSwitcher::Close(void)
+void fxlabClientObjectSwitcher::Close()
 {
 	if(ObjectPoint.Process)
 		ObjectPoint.Process->SetAlive(0);
 	fxlabClientObjectLauncher::Close();
 };
 
-void fxlabClientObjectSwitcher::Quant(void)
+void fxlabClientObjectSwitcher::Quant()
 {
 	fxlabClientKeyObjectType::Quant();
 	if(EnableFlag){
@@ -460,14 +460,14 @@ void fxlabClientObjectSwitcher::Quant(void)
 	};
 };
 	
-void fxlabClientObjectSwitcher::KeyCheck(void)
+void fxlabClientObjectSwitcher::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CLIENT_OBJECT_SWITCHER_DATA_MAX)
 		ErrH.Abort("Bad Key of fxlabClientSwitcherLauncher");
 };
 
 
-void fxlabClientObjectSwitcher::CreateObject(void)
+void fxlabClientObjectSwitcher::CreateObject()
 {
 	fxlabGeneralObjectType* t;
 
@@ -482,7 +482,7 @@ void fxlabClientObjectSwitcher::CreateObject(void)
 	ObjectTimer.start(round(KeyData[FXLAB_CLIENT_OBJECT_SWITCHER_DATA_ENABLE_TIME]));
 };
 
-void fxlabClientObjectSwitcher::UpdateObject(void)
+void fxlabClientObjectSwitcher::UpdateObject()
 {
 	if(ObjectPoint.Process){
 		ObjectPoint.Process->SetPosition(Position);
@@ -490,7 +490,7 @@ void fxlabClientObjectSwitcher::UpdateObject(void)
 	};
 };
 
-void fxlabClientObjectSwitcher::DestroyObject(void)
+void fxlabClientObjectSwitcher::DestroyObject()
 {
 	if(ObjectPoint.Process)
 		ObjectPoint.Process->SetAlive(0);
@@ -499,14 +499,14 @@ void fxlabClientObjectSwitcher::DestroyObject(void)
 
 //-------------------------------------------
 
-void fxlabClientRemoteSwitcher::Close(void)
+void fxlabClientRemoteSwitcher::Close()
 {
 	if(ObjectPoint.Process)
 		ObjectPoint.Process->SetAlive(0);
 	fxlabClientRemoteCotrol::Close();
 };
 
-void fxlabClientRemoteSwitcher::KeyCheck(void)
+void fxlabClientRemoteSwitcher::KeyCheck()
 {
 	if(KeyPoint->GetKeyNum() != FXLAB_CLIENT_REMOTE_SWITCHER_MAX)
 		ErrH.Abort("Bad Key of fxlabClientRemoteSwitcher");
@@ -520,7 +520,7 @@ void fxlabClientRemoteSwitcher::SetRemoteID(int id)
 		DestroyObject();
 };
 
-void fxlabClientRemoteSwitcher::Open(void)
+void fxlabClientRemoteSwitcher::Open()
 {
 	fxlabClientRemoteCotrol::Open();
 	Velocity = Vect3f::ZERO;
@@ -540,7 +540,7 @@ void fxlabClientRemoteSwitcher::SetPosition(const Vect3f& v)
 		ObjectPoint.Process->SetPosition(v);
 };
 
-void fxlabClientRemoteSwitcher::CreateObject(void)
+void fxlabClientRemoteSwitcher::CreateObject()
 {
 	fxlabGeneralObjectType* t;
 	if(!ObjectPoint.Process){
@@ -554,7 +554,7 @@ void fxlabClientRemoteSwitcher::CreateObject(void)
 	};
 };
 
-void fxlabClientRemoteSwitcher::DestroyObject(void)
+void fxlabClientRemoteSwitcher::DestroyObject()
 {
 	if(ObjectPoint.Process)
 		ObjectPoint.Process->SetAlive(0);
@@ -563,7 +563,7 @@ void fxlabClientRemoteSwitcher::DestroyObject(void)
 
 //----------------------------------------------------------
 
-void fxlabClientRemoteAim::Open(void)
+void fxlabClientRemoteAim::Open()
 {
 	fxlabClientRemoteCotrol::Open();
 	TargetID = -1;
@@ -594,13 +594,13 @@ void fxlabClientRemoteAim::SetRemoteID(int id)
 
 //------------------------------------------------
 
-void fxlabClientBaseBindingType::Open(void)
+void fxlabClientBaseBindingType::Open()
 {
 	fxlabClientSpaceType::Open();
 	Velocity = Vect3f::ZERO;
 };
 
-void fxlabClientBaseBindingType::Quant(void)
+void fxlabClientBaseBindingType::Quant()
 {
 	fxlabClientSpaceType::Quant();
 	if(Alive){
@@ -619,7 +619,7 @@ void fxlabClientBaseBindingType::Quant(void)
 	};
 };
 
-void fxlabClientBaseBindingType::Destroy(void)
+void fxlabClientBaseBindingType::Destroy()
 {
 	SetAlive(0);
 };
@@ -633,13 +633,13 @@ void fxlabClientBaseBindingType::SetBody(class Body* p)
 
 //------------------------------------------------
 
-void fxlabClientCompareBindingType::Open(void)
+void fxlabClientCompareBindingType::Open()
 {
 	fxlabClientBaseBindingType::Open();
 	LastPosition = Vect3f::ZERO;
 };
 
-void fxlabClientCompareBindingType::CalcVelocity(void)
+void fxlabClientCompareBindingType::CalcVelocity()
 {
 	Position = Core->R();
 	Velocity = getDist(LastPosition,Position);
@@ -656,14 +656,14 @@ void fxlabClientCompareBindingType::SetBody(class Body* p)
 
 const float FXLAB_CLIENT_SUICIDE_SPEED = 10.0f;
 
-void fxlabClientSuicideLink::Close(void)
+void fxlabClientSuicideLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientSuicideLink::CalcVelocity(void)
+void fxlabClientSuicideLink::CalcVelocity()
 {
 	float d;
 	Position = Core->R();
@@ -676,7 +676,7 @@ void fxlabClientSuicideLink::CalcVelocity(void)
 	Velocity *= FXLAB_CLIENT_SUICIDE_SPEED;
 };
 
-void fxlabClientSuicideLink::Update(void)
+void fxlabClientSuicideLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -695,7 +695,7 @@ void fxlabClientSuicideLink::Update(void)
 
 //-----------------------------------------
 
-void fxlabClientBolideLink::Start(void)
+void fxlabClientBolideLink::Start()
 {
 	fxlabGeneralObjectType* t;
 	fxlabClientCompareBindingType::Start();
@@ -707,7 +707,7 @@ void fxlabClientBolideLink::Start(void)
 	t->Start();
 };
 
-void fxlabClientBolideLink::Close(void)
+void fxlabClientBolideLink::Close()
 {
 //	if(SoundPoint.Process)
 //		SoundPoint.Process->SetAlive(0);
@@ -717,7 +717,7 @@ void fxlabClientBolideLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientBolideLink::Update(void)
+void fxlabClientBolideLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -747,7 +747,7 @@ void fxlabClientBolideLink::Update(void)
 
 //----------------------------------
 
-void fxlabClientVolcanicStoneLink::Close(void)
+void fxlabClientVolcanicStoneLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -755,7 +755,7 @@ void fxlabClientVolcanicStoneLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientVolcanicStoneLink::Update(void)
+void fxlabClientVolcanicStoneLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -774,7 +774,7 @@ void fxlabClientVolcanicStoneLink::Update(void)
 
 //-----------------------------------
 
-void fxlabClientBombExplodeLink::Close(void)
+void fxlabClientBombExplodeLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -782,7 +782,7 @@ void fxlabClientBombExplodeLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientBombExplodeLink::Update(void)
+void fxlabClientBombExplodeLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -801,7 +801,7 @@ void fxlabClientBombExplodeLink::Update(void)
 
 //----------------------------------
 
-void fxlabClientFireBallLink::Close(void)
+void fxlabClientFireBallLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -812,7 +812,7 @@ void fxlabClientFireBallLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientFireBallLink::Update(void)
+void fxlabClientFireBallLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -841,7 +841,7 @@ void fxlabClientFireBallLink::Update(void)
 
 //----------------------------
 
-void fxlabClientLightningBoltLink::Close(void)
+void fxlabClientLightningBoltLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -849,7 +849,7 @@ void fxlabClientLightningBoltLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientLightningBoltLink::Update(void)
+void fxlabClientLightningBoltLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -867,13 +867,13 @@ void fxlabClientLightningBoltLink::Update(void)
 
 
 
-void fxlabClientMortarBodyLink::Start(void)
+void fxlabClientMortarBodyLink::Start()
 {
 	fxlabClientCompareBindingType::Start();
 	Timer.stop();
 };
 
-void fxlabClientMortarBodyLink::Quant(void)
+void fxlabClientMortarBodyLink::Quant()
 {
 	fxlabClientSpaceType::Quant();
 	if(Alive){
@@ -891,7 +891,7 @@ void fxlabClientMortarBodyLink::Quant(void)
 	};
 };
 
-void fxlabClientMortarBodyLink::Close(void)
+void fxlabClientMortarBodyLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -899,7 +899,7 @@ void fxlabClientMortarBodyLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientMortarBodyLink::Update(void)
+void fxlabClientMortarBodyLink::Update()
 {
 	fxlabGeneralObjectType* t;
 
@@ -934,7 +934,7 @@ void fxlabClientMortarBodyLink::Update(void)
 
 //-----------------------------
 
-void fxlabClientBonusBodyLink::Update(void)
+void fxlabClientBonusBodyLink::Update()
 {
 	fxlabGeneralObjectType* t;
 
@@ -968,7 +968,7 @@ void fxlabClientBonusBodyLink::Update(void)
 
 //---------------------------	
 
-void fxlabClientSnowFallLink::Close(void)
+void fxlabClientSnowFallLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -976,7 +976,7 @@ void fxlabClientSnowFallLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientSnowFallLink::Update(void)
+void fxlabClientSnowFallLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -996,7 +996,7 @@ void fxlabClientSnowFallLink::Update(void)
 //-----------------------------
 
 
-void fxlabClientMechosBurnLink::Close(void)
+void fxlabClientMechosBurnLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -1004,7 +1004,7 @@ void fxlabClientMechosBurnLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientMechosBurnLink::Update(void)
+void fxlabClientMechosBurnLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -1023,7 +1023,7 @@ void fxlabClientMechosBurnLink::Update(void)
 
 //-------------------------------
 
-void fxlabClientBombSplinterLink::Close(void)
+void fxlabClientBombSplinterLink::Close()
 {
 	if(TailPoint.Process)
 		TailPoint.Process->SetAlive(0);
@@ -1031,7 +1031,7 @@ void fxlabClientBombSplinterLink::Close(void)
 	fxlabClientCompareBindingType::Close();
 };
 
-void fxlabClientBombSplinterLink::Update(void)
+void fxlabClientBombSplinterLink::Update()
 {
 	fxlabGeneralObjectType* t;
 	if(!TailPoint.Process){
@@ -1051,13 +1051,13 @@ void fxlabClientBombSplinterLink::Update(void)
 
 //---------------------------------------
 
-void fxlabClientMechosBindingType::Open(void)
+void fxlabClientMechosBindingType::Open()
 {
 	fxlabClientSpaceType::Open();
 	MechosOwner = NULL;
 };
 
-void fxlabClientMechosBindingType::Quant(void)
+void fxlabClientMechosBindingType::Quant()
 {
 	fxlabClientSpaceType::Quant();
 	if(Alive){
@@ -1076,7 +1076,7 @@ void fxlabClientMechosBindingType::Quant(void)
 	};
 };
 
-void fxlabClientMechosBindingType::Destroy(void)
+void fxlabClientMechosBindingType::Destroy()
 {
 	SetAlive(0);
 };
@@ -1089,7 +1089,7 @@ void fxlabClientMechosBindingType::SetMechosPoint(class mchMechosRacer* p)
 
 //-------------------------------------
 
-void fxlabClientVoodooMasterLink::Open(void)
+void fxlabClientVoodooMasterLink::Open()
 {
 	fxlabClientMechosBindingType::Open();
 	StartAngle = 0;
@@ -1104,7 +1104,7 @@ void fxlabClientVoodooMasterLink::Open(void)
 	PsiVelocity = 0;
 };
 
-void fxlabClientVoodooMasterLink::Close(void)
+void fxlabClientVoodooMasterLink::Close()
 {
 	if(ModelPoint.Process)
 		ModelPoint.Process->SetAlive(0);
@@ -1129,7 +1129,7 @@ const float FXLAB_CLIENT_VOODOO_MASTER_PSI_MASS = 0.1f;
 const float FXLAB_CLIENT_VOODOO_MASTER_PSI_DAMP = 0.90f;
 
 
-void fxlabClientVoodooMasterLink::Update(void)
+void fxlabClientVoodooMasterLink::Update()
 {
 	Vect3f n,p;
 	MatXf mat;
@@ -1277,7 +1277,7 @@ void fxlabClientVoodooMasterLink::Update(void)
 	};
 };
 
-void fxlabClientVoodooMasterLink::CalcVelocity(void)
+void fxlabClientVoodooMasterLink::CalcVelocity()
 {
 	if(MechosOwner->completed())
 		Position = MechosOwner->part_coords(M3D_FRONT);

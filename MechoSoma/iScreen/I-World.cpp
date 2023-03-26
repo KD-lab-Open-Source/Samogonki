@@ -76,7 +76,7 @@ extern XBuffer mchA_XBuf;
 extern char mchA_String[];
 extern char mch_playerNames[HS_PLAYERS_MAX][HS_NAME_LEN + 2];
 
-extern char* mchIscreenINI;
+extern const char* mchIscreenINI;
 
 extern int mchOpenNewChar;
 
@@ -102,7 +102,7 @@ void mchSelectKeysConfig(int cfg);
 void iwCreateTeleports(void);
 void iwInitWorld(void);
 
-char* GetTargetName(char*);
+const char* GetTargetName(const char*);
 void mchSetNextQuantRTO(void);
 void mchA_DrawMouse(int mode = 0);
 int acsGetKeyName(int vkey,int shift,int lng_flag);
@@ -117,10 +117,10 @@ void fxlabChangeTeleport(int world_id,int track_id,int status);
 
 int acsCheckSaveName(char* p);
 
-int acsStrLen(int fnt,unsigned char* str,int space);
-int acsTextStrLenMax(int fnt,unsigned char* str,int space);
-int acsStrHeight(int fnt,unsigned char* str);
-int acsTextHeight(int fnt,unsigned char* str,int space);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space);
+int acsStrHeight(int fnt,const unsigned char* str);
+int acsTextHeight(int fnt,const unsigned char* str,int space);
 
 void iwInitDoggy(void);
 
@@ -151,10 +151,10 @@ Vect3f iwAssembly_R;
 
 int iwElectionaryFlag = 0;
 
-char* iwSpellStr;
-char* iwWaitStr;
-char* iwTurnBasedStr;
-char* iwRealTimeStr;
+const char* iwSpellStr;
+const char* iwWaitStr;
+const char* iwTurnBasedStr;
+const char* iwRealTimeStr;
 
 cMesh* iwElectionary_Arrow = NULL;
 cMesh* iwAssembly_Arrow = NULL;
@@ -172,12 +172,12 @@ int iwPartSize[4];
 
 xtList<iwDoggyPhrase> iwDoggyPhrases;
 
-char* iwBeginMovie = "RESOURCE\\WorldScript\\InterfaceWS.scb";
-char* iwEndMovie = "RESOURCE\\WorldScript\\GameVictoryWS.scb";
-char* iwOutroMovie = "Outro";
+const char* iwBeginMovie = "RESOURCE\\WorldScript\\InterfaceWS.scb";
+const char* iwEndMovie = "RESOURCE\\WorldScript\\GameVictoryWS.scb";
+const char* iwOutroMovie = "Outro";
 
 const int IW_NUM_OBJECTS_TO_HIDE	= 8;
-char* iwBoss3DS_Names[IW_NUM_OBJECTS_TO_HIDE] = {
+const char* iwBoss3DS_Names[IW_NUM_OBJECTS_TO_HIDE] = {
 	"Puzirks_Frog.m3d",
 	"Puzirks_Kit.m3d",
 	"Puzirks_Pauk.m3d",
@@ -303,7 +303,7 @@ iWorldDispatcher::iWorldDispatcher(int id)
 	int i;
 
 	XBuffer buf;
-	char* ini_str;
+	const char* ini_str;
 
 	ID = id;
 
@@ -506,7 +506,7 @@ void iWorldDispatcher::Quant(void)
 
 	iwSelect(ID);
 
-	char* m;
+	const char* m;
 
 	if(!mchSplitScreenGame){
 		nameScrID = IW_NAME_SCR;
@@ -1603,7 +1603,7 @@ void iWorldDispatcher::FinitAssembly(void)
 void iWorldDispatcher::draw_ElectionaryScreen(void)
 {
 	int x,y,sx,sy,al;
-	char* text;
+	const char* text;
 
 	aciScreenInputField* p;
 
@@ -1611,8 +1611,8 @@ void iWorldDispatcher::draw_ElectionaryScreen(void)
 
 	p = (aciScreenInputField*)curScreen -> GetObject(1);
 	if(p){
-		sx = acsStrLen(1,(unsigned char*)mch_playerNames[curFigure],0);
-		sy = acsStrHeight(1,(unsigned char*)mch_playerNames[curFigure]);
+		sx = acsStrLen(1,(const unsigned char*)mch_playerNames[curFigure],0);
+		sy = acsStrHeight(1,(const unsigned char*)mch_playerNames[curFigure]);
 		x = p -> PosX + (p -> SizeX0 - sx)/2;
 		y = p -> PosY + (p -> SizeY0 - sy)/2 - 3;
 		mchA_d3dOutString(x,y + acsY0,mchA_FontScaleX[1],mchA_FontScaleY[1],mch_playerNames[curFigure],mchA_ColorF[2],230,1,0);
@@ -1982,7 +1982,7 @@ void iWorldDispatcher::draw_TeleportScreen(void)
 	int id,sz,y0,info_flag = 0;
 	int x,y,sx,sy;
 
-	char* name,*text;
+	const char* name,*text;
 	XBuffer str;
 
 	if(RenderMode != DIRECT3D_HICOLOR) return;
@@ -2965,7 +2965,7 @@ void iWorldDispatcher::MovieQuant(void)
 		fxlabBigBossStatus(1);
 }
 
-void iWorldDispatcher::SetMovie(char* m)
+void iWorldDispatcher::SetMovie(const char* m)
 {
 	if(curMovieSize < IW_MAX_MOVIE)
 		movies[curMovieSize ++] = m;

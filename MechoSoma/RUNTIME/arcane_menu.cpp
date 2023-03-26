@@ -95,21 +95,21 @@ struct mchA_TextInfo
 
 	int StrPosY(int str);
 
-	mchA_TextInfo(char* ini_file,char* ini_section,char* ini_key_prefix);
+	mchA_TextInfo(const char* ini_file,const char* ini_section,const char* ini_key_prefix);
 };
 
 struct mchArcaneName
 {
 	int ID;
-	char* nameStr;
-	char* criticalHitStr;
+	const char* nameStr;
+	const char* criticalHitStr;
 
 	void* list;
 	mchArcaneName* prev;
 	mchArcaneName* next;
 
 	mchArcaneName(void){ ID = -1; list = NULL; nameStr = NULL; criticalHitStr = NULL; }
-	mchArcaneName(int id,char* p){ ID = id; list = NULL; nameStr = p; criticalHitStr = NULL; }
+	mchArcaneName(int id,const char* p){ ID = id; list = NULL; nameStr = p; criticalHitStr = NULL; }
 	~mchArcaneName(void){ };
 };
 
@@ -129,7 +129,7 @@ extern int mchFreeResourcesFlag;
 extern int MCH_CP_STAR_NUM;
 
 extern int iWorldMode;
-extern char* mch_mainINI;
+extern const char* mch_mainINI;
 
 extern int acsNumFonts;
 extern HFont** acsFntTable;
@@ -180,7 +180,7 @@ void mchA_BuildOnlinePlaceOrder(void);
 int mchA_GetOnlinePlaceOrder(int idx);
 void mchA_ChangeOnlinePlayer(int dir);
 
-void mchA_DrawCharBitmap(int x,int y,int sx,int sy,void* text,void* bitmap,int fnt,int sp = 0,int vsp = 0,float scale_x = 1.0f,float scale_y = 1.0f);
+void mchA_DrawCharBitmap(int x,int y,int sx,int sy,const void* text,void* bitmap,int fnt,int sp = 0,int vsp = 0,float scale_x = 1.0f,float scale_y = 1.0f);
 void mchA_CharBitmapTest(void);
 
 void mchInitChoiceScreen(void);
@@ -194,9 +194,9 @@ void mchA_DrawTips(void);
 int acsGetKeyName(int vkey,int shift,int lng_flag);
 char* mchGetKeyNameText(int code);
 
-void acsStrLen3D(void* str,int fnt,int space,int& sx,int& sy);
-void mchA_StrLen3D(void* str,int fnt,int space,int& sx,int& sy);
-void mchA_OutString3D(float x,float y,void* str,int fnt,int col,int space,int alpha,float z,float sc);
+void acsStrLen3D(const void* str,int fnt,int space,int& sx,int& sy);
+void mchA_StrLen3D(const void* str,int fnt,int space,int& sx,int& sy);
+void mchA_OutString3D(float x,float y,const void* str,int fnt,int col,int space,int alpha,float z,float sc);
 void mchInitPartIDs(void);
 
 void mchA_DrawM3D(cMesh* p);
@@ -211,7 +211,7 @@ void mchA_DrawRacersInfo(void);
 void mchA_DrawRacersEnergy(void);
 void mchA_DrawRacersPlace(void);
 void mchA_DrawRacerPlace(int x,int y,int id,int active);
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,char* name,int chr,int star,int time);
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time);
 void mchA_DrawArrow(int x,int y,int sx,mchArcaneRacerSet* p = NULL);
 void mchA_DrawMouse(int mode = 0);
 void mchA_DrawMouseRect(int sx,int sy,int sz,int delta);
@@ -235,15 +235,15 @@ void mch_scale_sprite(unsigned char* dest, unsigned char* src, int sx_src, int s
 
 void mchPrepareA_MenuPal(void);
 
-void acsOutStr16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutStr16_a2_clip(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
+void acsOutStr16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutStr16_a2_clip(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
 
-int acsStrLen(int fnt,unsigned char* str,int space);
-int acsStrHeight(int fnt,unsigned char* str);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+int acsStrHeight(int fnt,const unsigned char* str);
 
-void acsPutSpr16sz_a2(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha);
-void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha);
-void acsRectangle(int x,int y,int sx,int sy,int col,unsigned* pal,int alpha);
+void acsPutSpr16sz_a2(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha);
+void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha);
+void acsRectangle(int x,int y,int sx,int sy,int col,const unsigned* pal,int alpha);
 
 void mchA_ShowEnergy(int x,int y,float scale,float phase,float phase_scale,int alpha);
 void mchA_ShowEnergyZ(int x,int y,int z,int sx,int sy,float phase,int alpha);
@@ -273,7 +273,7 @@ void mchA_DropCPDisable(mchRacer* p);
 void mchA_ShowRacerPlace(int x,int y,int al,int finish = 0,mchArcaneRacerSet* owner = NULL);
 void mchA_ShowRacerLap(int x,int y,int al,mchArcaneRacerSet* owner = NULL);
 
-char* mchA_GetNumSuffix(int v);
+const char* mchA_GetNumSuffix(int v);
 
 unsigned short* loadJPG(XStream *Xfile, int &IMGwidth, int &IMGheight);
 
@@ -444,29 +444,29 @@ mchArcaneScreenElement* mchA_TimeSpeedEl;
 
 cMesh* mchA_BonusMesh = NULL;
 
-unsigned char* mchA_SymTempPtr = NULL;
-unsigned char* mchA_SymTempPtr2 = NULL;
+const unsigned char* mchA_SymTempPtr = NULL;
+const unsigned char* mchA_SymTempPtr2 = NULL;
 
 int mchA_TimerMax = 0;
 int mchA_TimerCur = 0;
 int mchA_TimerStart = 0;
 
-char* mchA_DropStr = NULL;
-char* mchA_TryAgainStr = NULL;
-char* mchA_GoAwayStr = NULL;
-char* mchA_LostStr = NULL;
-char* mchA_ContinueStr = NULL;
-char* mchA_NotLostStr = NULL;
-char* mchA_WonSpellStr0 = NULL;
-char* mchA_WonSpellStr1 = NULL;
-char* mchA_WinnerStr = NULL;
-char* mchA_BuyStr = NULL;
-char* mchA_BuyItStr = NULL;
-char* mchA_NoThanksStr = NULL;
-char* mchA_NotEnoughStr0 = NULL;
-char* mchA_NextTimeStr = NULL;
-char* mchA_PlayAgainStr = NULL;
-char* mchA_PressStr = NULL;
+const char* mchA_DropStr = NULL;
+const char* mchA_TryAgainStr = NULL;
+const char* mchA_GoAwayStr = NULL;
+const char* mchA_LostStr = NULL;
+const char* mchA_ContinueStr = NULL;
+const char* mchA_NotLostStr = NULL;
+const char* mchA_WonSpellStr0 = NULL;
+const char* mchA_WonSpellStr1 = NULL;
+const char* mchA_WinnerStr = NULL;
+const char* mchA_BuyStr = NULL;
+const char* mchA_BuyItStr = NULL;
+const char* mchA_NoThanksStr = NULL;
+const char* mchA_NotEnoughStr0 = NULL;
+const char* mchA_NextTimeStr = NULL;
+const char* mchA_PlayAgainStr = NULL;
+const char* mchA_PressStr = NULL;
 
 char mchA_NotEnoughStr1[100];
 char mchA_PriceStr[100];
@@ -479,7 +479,7 @@ cMesh* mchA_SpeedStarMesh = NULL;
 
 xtList<mchArcaneName>* mchA_Names = NULL;
 
-unsigned char* mchNameStr = NULL;
+const unsigned char* mchNameStr = NULL;
 
 float mchA_FontScaleX[5] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 float mchA_FontScaleY[5] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
@@ -618,11 +618,11 @@ mchArcaneScreenElement::~mchArcaneScreenElement(void)
 	free();
 }
 
-void mchArcaneScreenElement::InitCoords(char* name)
+void mchArcaneScreenElement::InitCoords(const char* name)
 {
 	int align;
 
-	char* p;
+	const char* p;
 	XBuffer XBuf;
 
 	XBuf.init();
@@ -2069,7 +2069,7 @@ void mchInitArcaneScreen(void)
 	p = new mchArcaneScreenElement;
 	p -> type = AE_SEED_COUNTER;
 	p -> InitCoords("seed_counter");
-	char *t = "999";
+	const char *t = "999";
 	p -> SetString(MCH_AM_SEED_COUNT_FNT,1,t);
 	p -> color = 7;
 	p -> SetState(0);
@@ -3087,7 +3087,7 @@ void mchArcaneMenu::Build(void)
 	}
 }
 
-mchArcaneBMP::mchArcaneBMP(char* fname)
+mchArcaneBMP::mchArcaneBMP(const char* fname)
 {
 	ID = -1;
 	list = 0;
@@ -3123,16 +3123,15 @@ mchArcaneBMP::mchArcaneBMP(int sx,int sy)
 	data = new char[sx * sy];
 }
 
-void mchArcaneBMP::Load(char* fname)
+void mchArcaneBMP::Load(const char* fname)
 {
 	int i;
-	char* p;
 	unsigned short sx,sy,sz;
 	XStream fh;
 
 	if(!fname) fname = fileName;
 
-	p = fname + strlen(fname) - 3;
+	const char *p = fname + strlen(fname) - 3;
 
 	if(!stricmp(p,"bmp")){
 
@@ -3171,15 +3170,14 @@ void mchArcaneBMP::Load(char* fname)
 
 }
 
-void mchArcaneBMP::Load(char* fname,XStream& fh)
+void mchArcaneBMP::Load(const char* fname,XStream& fh)
 {
 	int i;
-	char* p;
 	unsigned short sx,sy,sz;
 
 	if(!fname) fname = fileName;
 
-	p = fname + strlen(fname) - 3;
+	const char *p = fname + strlen(fname) - 3;
 
 	if(!stricmp(p,"bmp")){
 		fh > sx > sy;
@@ -3368,7 +3366,7 @@ void mch_scale_sprite(unsigned char* dest, unsigned char* src, int sx_src, int s
 	}
 }
 
-void mchArcaneScreenElement::SetString(int fnt,int sp,void* p)
+void mchArcaneScreenElement::SetString(int fnt,int sp,const void* p)
 {
 	free();
 
@@ -3382,7 +3380,7 @@ void mchArcaneScreenElement::SetString(int fnt,int sp,void* p)
 	exDataParam[1] = sp;
 }
 
-void mchArcaneScreenElement::SetString3D(int fnt,int sp,void* p)
+void mchArcaneScreenElement::SetString3D(int fnt,int sp,const void* p)
 {
 	free();
 
@@ -3536,7 +3534,7 @@ void mchArcaneBMP::Expand(int sx,int sy)
 	SizeY = sy;
 }
 
-void mchArcaneBMP::Save(char* fname)
+void mchArcaneBMP::Save(const char* fname)
 {
 	XStream fh(fname,XS_OUT);
 
@@ -4121,7 +4119,7 @@ void mchArcaneScreenDispatcher::ToggleVisible(int v)
 		Visible = v;
 }
 
-mchA_TextInfo::mchA_TextInfo(char* ini_file,char* ini_section,char* ini_key_prefix)
+mchA_TextInfo::mchA_TextInfo(const char* ini_file,const char* ini_section,const char* ini_key_prefix)
 {
 	XBuffer XBuf;
 
@@ -4962,7 +4960,7 @@ void mchA_DrawRacersPlace(void)
 	}
 }
 
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,char* name,int chr,int star,int time)
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time)
 {
 	int col = (active) ? 2 : 1,hrs,min,sec,num;
 	static int alpha = 0;
@@ -5682,7 +5680,7 @@ void mchA_ShowRacerLap(int x,int y,int al,mchArcaneRacerSet* owner)
 		mchA_d3dOutString(x,y,mchA_FontScaleX[1],mchA_FontScaleY[1],mchA_XBuf.address(),mchA_ColorF[2],256 - al,1,1,sc);
 }
 
-char* mchA_GetNumSuffix(int v)
+const char* mchA_GetNumSuffix(int v)
 {
 	return iGetText(iTXT_PLACE0 + v - 1);
 }
@@ -6329,7 +6327,7 @@ mchArcaneRacerSet::mchArcaneRacerSet(void)
 	starsEl -> align_x = AE_LEFT;
 	starsEl -> align_y = AE_TOP;
 	starsEl -> type = AE_STAR_COUNTER;
-	char* t2 = "99x99";
+	const char* t2 = "99x99";
 	starsEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,t2);
 	starsEl -> color = 3;
 
@@ -6342,7 +6340,7 @@ mchArcaneRacerSet::mchArcaneRacerSet(void)
 	speedEl -> type = AE_SPEED_COUNTER;
 	speedEl -> align_x = AE_RIGHT;
 	speedEl -> align_y = AE_TOP;
-	char* t3 = "99x99";
+	const char* t3 = "99x99";
 	speedEl -> SetString(MCH_AM_STAR_COUNT_FNT,1,t3);
 	speedEl -> color = 4;
 
@@ -6949,14 +6947,14 @@ void mchArcaneScreenDispatcher::TimerQuant(void)
 		playerSet2 -> Quant();
 }
 
-void mchA_DrawCharBitmap(int x,int y,int sx,int sy,void* text,void* bitmap,int fnt,int sp,int vsp,float scale_x,float scale_y)
+void mchA_DrawCharBitmap(int x,int y,int sx,int sy,const void* text,void* bitmap,int fnt,int sp,int vsp,float scale_x,float scale_y)
 {
 	int i,j,idx = 0;
 	float _x,_y,fsx,fsy,ssx,ssy;
 	unsigned r,g,b,col;
 
 	unsigned char* bp = (unsigned char*)bitmap;
-	unsigned char* tp = (unsigned char*)text;
+	const unsigned char* tp = (const unsigned char*)text;
 
 	_x = x;
 	_y = y;
@@ -7141,7 +7139,7 @@ void mchA_ShowLayoutID(void)
 	const int y = 2;
 //	const int y = 460;
 
-	char* str = iGetText(iTXT_OTHER_LAYOUT);
+	const char* str = iGetText(iTXT_OTHER_LAYOUT);
 	int id = win32_GetKeybLayoutID();
 
 	if(id == 0){
@@ -7272,7 +7270,7 @@ int mchArcaneRoundMenu::CheckMouse(void)
 void mchA_DrawOnlineScreen(void)
 {
 	int x,y,sx;
-	char* message;
+	const char* message;
 
 	y = 200;
 

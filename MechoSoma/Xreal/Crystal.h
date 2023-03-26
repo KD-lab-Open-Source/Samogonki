@@ -30,4 +30,4 @@ public:
 	void kill(void);
 };
 
-#endif __CRYSTAL_H__
+#endif

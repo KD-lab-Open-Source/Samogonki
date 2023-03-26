@@ -116,7 +116,7 @@ struct aciMainMenuOption
 	aciMainMenuOption* prev;
 	aciMainMenuOption* next;
 
-	aciMainMenuOption(int tp,int id,int scr_id,int obj_id,char* ini_file,char* ini_sec,char* ini_key);
+	aciMainMenuOption(int tp,int id,int scr_id,int obj_id,const char* ini_file,const char* ini_sec,const char* ini_key);
 	~aciMainMenuOption(void);
 };
 
@@ -263,33 +263,33 @@ void acsMouseMove(int fl,int x,int y);
 
 void acsSendEvent(int code,int data0,int data1,int data2,int data3);
 
-void acsLoadScript(char* fname);
+void acsLoadScript(const char* fname);
 
 int acsGetKeyName(int vkey,int shift,int lng_flag);
 void ibsout(int x,int y,void* ptr);
 
-void acsOutStr(int x,int y,int fnt,int col,unsigned char* str,int space);
-void acsOutStr16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space);
-void acsOutStr16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutStr16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutStr16_a2_clip(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutText16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space);
-void acsOutText16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutText16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha);
-void acsOutStr16buf(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int bsx,void* buf,int space,void* alpha_buf = NULL,int alpha0 = 0);
-int acsStrLen(int fnt,unsigned char* str,int space);
-int acsTextStrLen(int fnt,unsigned char* str,int space);
-int acsTextStrLenMax(int fnt,unsigned char* str,int space);
-int acsStrHeight(int fnt,unsigned char* str);
-int acsTextHeight(int fnt,unsigned char* str,int space);
+void acsOutStr(int x,int y,int fnt,int col,const unsigned char* str,int space);
+void acsOutStr16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space);
+void acsOutStr16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutStr16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutStr16_a2_clip(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutText16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space);
+void acsOutText16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutText16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha);
+void acsOutStr16buf(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int bsx,void* buf,int space,void* alpha_buf = NULL,int alpha0 = 0);
+int acsStrLen(int fnt,const unsigned char* str,int space);
+int acsTextStrLen(int fnt,const unsigned char* str,int space);
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space);
+int acsStrHeight(int fnt,const unsigned char* str);
+int acsTextHeight(int fnt,const unsigned char* str,int space);
 
-void acsPutSpr(int x,int y,int sx,int sy,void* buf,int col,int col_sz);
-void acsPutSpr16sz(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal);
-void acsPutSpr16sz_a(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha);
-void acsPutSpr16sz_a2(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha);
-void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha);
-void acsPutSpr16sz_buf(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int bsx,void* scr_buf,void* alpha_buf = NULL,int alpha0 = 0);
-void acsPutSpr16sz_buf_clip(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int bsx,int bsy,void* scr_buf,void* alpha_buf,int alpha0);
+void acsPutSpr(int x,int y,int sx,int sy,const void* buf,int col,int col_sz);
+void acsPutSpr16sz(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal);
+void acsPutSpr16sz_a(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha);
+void acsPutSpr16sz_a2(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha);
+void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha);
+void acsPutSpr16sz_buf(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int bsx,void* scr_buf,void* alpha_buf = NULL,int alpha0 = 0);
+void acsPutSpr16sz_buf_clip(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int bsx,int bsy,void* scr_buf,void* alpha_buf,int alpha0);
 
 void acsChangeStrState(int id);
 
@@ -396,7 +396,7 @@ int acsGetKeyName(int vkey,int shift,int lng_flag)
 	return -1;
 }
 
-void acsOutStr(int x,int y,int fnt,int col,unsigned char* str,int space)
+void acsOutStr(int x,int y,int fnt,int col,const unsigned char* str,int space)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
@@ -427,7 +427,7 @@ void acsOutStr(int x,int y,int fnt,int col,unsigned char* str,int space)
 	}
 }
 
-void acsOutStr16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space)
+void acsOutStr16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
@@ -458,7 +458,7 @@ void acsOutStr16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,in
 	}
 }
 
-void acsOutStr16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha)
+void acsOutStr16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
@@ -490,7 +490,7 @@ void acsOutStr16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,
 }
 
 
-void acsOutStr16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha)
+void acsOutStr16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
@@ -521,7 +521,7 @@ void acsOutStr16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal
 	}
 }
 
-void acsOutStr16_a2_clip(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha)
+void acsOutStr16_a2_clip(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
@@ -552,7 +552,7 @@ void acsOutStr16_a2_clip(int x,int y,int fnt,int col,unsigned char* str,unsigned
 	}
 }
 
-void acsOutText16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space)
+void acsOutText16(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz,ssx;
 	HFont* p = acsFntTable[fnt];
@@ -589,7 +589,7 @@ void acsOutText16(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,i
 	}
 }
 
-void acsOutText16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha)
+void acsOutText16_a(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz,ssx;
 	HFont* p = acsFntTable[fnt];
@@ -626,7 +626,7 @@ void acsOutText16_a(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal
 	}
 }
 
-void acsOutText16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int space,int alpha)
+void acsOutText16_a2(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int space,int alpha)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz,ssx;
 	HFont* p = acsFntTable[fnt];
@@ -663,12 +663,12 @@ void acsOutText16_a2(int x,int y,int fnt,int col,unsigned char* str,unsigned* pa
 	}
 }
 
-void acsOutStr16buf(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal,int bsx,void* buf,int space,void* alpha_buf,int alpha0)
+void acsOutStr16buf(int x,int y,int fnt,int col,const unsigned char* str,const unsigned* pal,int bsx,void* buf,int space,void* alpha_buf,int alpha0)
 {
 	int _x,_y,i,sx,sy,ss,sz = strlen((char*)str),col_sz;
 	HFont* p = acsFntTable[fnt];
 	HChar* ch;
-	unsigned char* ptr;
+	const unsigned char* ptr;
 
 	col_sz = (col >> 8) & 0xFF;
 	col &= 0xFF;
@@ -694,12 +694,12 @@ void acsOutStr16buf(int x,int y,int fnt,int col,unsigned char* str,unsigned* pal
 	}
 }
 
-int acsStrHeight(int fnt,unsigned char* str)
+int acsStrHeight(int fnt,const unsigned char* str)
 {
 	return acsFntTable[fnt] -> SizeY;
 }
 
-int acsStrLen(int fnt,unsigned char* str,int space)
+int acsStrLen(int fnt,const unsigned char* str,int space)
 {
 	int i,sx,sz = strlen((char*)str),len = 0;
 	HFont* p = acsFntTable[fnt];
@@ -716,7 +716,7 @@ int acsStrLen(int fnt,unsigned char* str,int space)
 	return len;
 }
 
-int acsTextStrLen(int fnt,unsigned char* str,int space)
+int acsTextStrLen(int fnt,const unsigned char* str,int space)
 {
 	int i,sx,sz = strlen((char*)str),len = 0;
 	HFont* p = acsFntTable[fnt];
@@ -732,7 +732,7 @@ int acsTextStrLen(int fnt,unsigned char* str,int space)
 	return len;
 }
 
-int acsTextStrLenMax(int fnt,unsigned char* str,int space)
+int acsTextStrLenMax(int fnt,const unsigned char* str,int space)
 {
 	int i,sx,sz = strlen((char*)str),len = 0,max_len = 0;
 	HFont* p = acsFntTable[fnt];
@@ -755,7 +755,7 @@ int acsTextStrLenMax(int fnt,unsigned char* str,int space)
 	return max_len;
 }
 
-int acsTextHeight(int fnt,unsigned char* str,int space)
+int acsTextHeight(int fnt,const unsigned char* str,int space)
 {
 	int i,sz = strlen((char*)str),len;
 	HFont* p = acsFntTable[fnt];
@@ -1022,7 +1022,7 @@ void acsHandleExtEvent(int code,int data0,int data1,int data2)
 	}
 }
 
-void acsPutSpr(int x,int y,int sx,int sy,void* buf,int col,int col_sz)
+void acsPutSpr(int x,int y,int sx,int sy,const void* buf,int col,int col_sz)
 {
 	int i,j,index = 0;
 	unsigned cl;
@@ -1051,7 +1051,7 @@ void acsPutSpr(int x,int y,int sx,int sy,void* buf,int col,int col_sz)
 	}
 }
 
-void acsPutSpr16sz(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal)
+void acsPutSpr16sz(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal)
 {
 	int i,j,index = 0;
 	unsigned cl;
@@ -1080,7 +1080,7 @@ void acsPutSpr16sz(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsign
 	}
 }
 
-void acsPutSpr16sz_a(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha)
+void acsPutSpr16sz_a(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha)
 {
 	int i,j,index = 0,r,g,b;
 	unsigned cl,cl0,cl1;
@@ -1125,7 +1125,7 @@ void acsPutSpr16sz_a(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsi
 	}
 }
 
-void acsPutSpr16sz_a2(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha)
+void acsPutSpr16sz_a2(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha)
 {
 	int i,j,index = 0,r,g,b,al;
 	unsigned cl,cl0,cl1;
@@ -1154,7 +1154,7 @@ void acsPutSpr16sz_a2(int x,int y,int sx,int sy,void* buf,int col,int col_sz,uns
 	}
 }
 
-void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int alpha)
+void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int alpha)
 {
 	int i,j,index = 0,r,g,b,al,_x,_x1,_y,_y1,_sx,_sy;
 	unsigned cl,cl0,cl1;
@@ -1194,7 +1194,7 @@ void acsPutSpr16sz_a2_clip(int x,int y,int sx,int sy,void* buf,int col,int col_s
 	}
 }
 
-void acsPutSpr16sz_buf(int x,int y,int sx,int sy,void* buf,int col,int col_sz,unsigned *pal,int bsx,void* scr_buf,void* alpha_buf,int alpha0)
+void acsPutSpr16sz_buf(int x,int y,int sx,int sy,const void* buf,int col,int col_sz,const unsigned *pal,int bsx,void* scr_buf,void* alpha_buf,int alpha0)
 {
 	int i,j,index = 0;
 	unsigned cl,cl1;
@@ -1787,7 +1787,7 @@ void acsInitOptions(void)
 	}
 }
 
-void acsRectangle(int x,int y,int sx,int sy,int col,unsigned* pal,int alpha)
+void acsRectangle(int x,int y,int sx,int sy,int col,const unsigned* pal,int alpha)
 {
 	int i,j,r,g,b;
 	unsigned cl0,cl1;
@@ -1841,7 +1841,7 @@ void acsInitWorldObjs(void)
 	}
 }
 
-aciMainMenuOption::aciMainMenuOption(int tp,int id,int scr_id,int obj_id,char* ini_file,char* ini_sec,char* ini_key)
+aciMainMenuOption::aciMainMenuOption(int tp,int id,int scr_id,int obj_id,const char* ini_file,const char* ini_sec,const char* ini_key)
 {
 	aciScreen* scr;
 
@@ -1890,7 +1890,7 @@ void aciMainMenuOption::Load(void)
 	int i;
 
 	XBuffer sec;
-	char* ini_str;
+	const char* ini_str;
 
 	if(!iniFile) return;
 
@@ -1921,7 +1921,7 @@ void aciMainMenuOption::Load(void)
 
 void aciMainMenuOption::SetObjectValue(void)
 {
-	char* p;
+	const char* p;
 	if(!objPtr) return;
 
 	switch(type){
@@ -2929,7 +2929,7 @@ cSurfaceReflectionMultiMaterial *GlobalMainMenuSurfaceReflection=0;
 void acsCreateWater(void)
 {
 	const int xTextureSize=4,yTextureSize=4;
-	char *VectorMenuName[xTextureSize*yTextureSize]={
+	const char *VectorMenuName[xTextureSize*yTextureSize]={
 		"Menu00.bmp","Menu01.bmp","Menu02.bmp","Menu03.bmp",
 		"Menu10.bmp","Menu11.bmp","Menu12.bmp","Menu13.bmp",
 		"Menu20.bmp","Menu21.bmp","Menu22.bmp","Menu23.bmp",

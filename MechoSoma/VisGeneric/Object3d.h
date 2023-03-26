@@ -245,10 +245,10 @@ public:
 		cBaseDynArrayPointer<sTile>::Base[n1]=cBaseDynArrayPointer<sTile>::Base[n2];
 		cBaseDynArrayPointer<sTile>::Base[n2]=tmp;
 	}
-	__forceinline sTile* GetTileByName(char *name)
+	__forceinline sTile* GetTileByName(const char *name)
 	{
 		for(int i=0;i<GetNumberTile();i++)
-			if(GetTile(i)->GetName()==static_cast<const char*>(name))
+			if(GetTile(i)->GetName()==name)
 				return GetTile(i);
 		return 0;
 	}
@@ -277,7 +277,7 @@ public:
 	~cList()												{ Detach(); }
 	cList* Attach(cList *Link);
 	cList* Detach();
-	cMesh* FindMesh(char *Name);
+	cMesh* FindMesh(const char *Name);
 	cMesh* FindMesh(unsigned int type);
 };
 
@@ -338,7 +338,7 @@ public:
 	void SetAnimation(float animation_period = 0, float start_phase = -1, float finish_phase = -1,int mask=0xFFFFFFFF,int count=0); // all the Meshes
 	void GetAnimation(float &animation_period,float &start_phase,float &finish); // all the Meshes
 	void GetAnimation(float &animation_period,float &start_phase); // all the Meshes
-	void SetFrame(char *name,char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
+	void SetFrame(const char *name,const char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
 				  float *PosKXYZ,int nPos,float *RotKWXYZ,int nRot,float *ScaleKXYZ,int nScale);
 	void SetFrame();
 	// работа с матрицей объекта
@@ -377,7 +377,7 @@ public:
 #endif
 		return Tile; 
 	}
-	cMesh* FindMesh(char *Name);
+	cMesh* FindMesh(const char *Name);
 	cMesh* FindMesh(unsigned int type);
 	cMesh* FindUnique(unsigned int unique);
 	cMesh* operator[] (int number);
@@ -388,7 +388,7 @@ public:
 	void Alignment();
 	char TypeMesh()									{ return (Type&0xFFFF0000)!=0; }
 	void GetGlobalGeometry(vector<Vect3f>& verts, vector<int>& faces, int recursive); // vectors must be cleared
-	void GetGlobalDummy(char* name_mask, vector<Vect3f>& dummies, int recursive = 1); // vectors must be cleared
+	void GetGlobalDummy(const char* name_mask, vector<Vect3f>& dummies, int recursive = 1); // vectors must be cleared
 	cList* AddChild(cMesh *child);
 	void Displace(float x,float y,float z);
 	void ReCalcMatrix()										{ GetGeneralParent()->CalcMatrix(); }
@@ -400,7 +400,7 @@ public:
 	int GetAttribute(int attribute)							{ return Attribute&attribute; }
 	void GetTotalBound(int types,cMesh *center,sBox6f &box);
 	void SetWireSize(const Vect3f &size);
-	void SetDescription(char *string);
+	void SetDescription(const char *string);
 	inline const char* GetDescription()							{ if(description) return description; return ""; }
 
 	template <class Operation>
@@ -434,16 +434,16 @@ public:
 	inline cString& GetName()								{ assert(StaticMesh); return StaticMesh->name; }
 	inline cString& GetFileName()							{ assert(StaticMesh); return StaticMesh->fname; }
 	inline cString& GetTexturePath()						{ assert(StaticMesh); return StaticMesh->TexturePath; }
-	inline void SetName(char *str)							{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->name=str; }
-	inline void SetFileName(char *str)						{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->fname=str; }
-	inline void SetTexturePath(char *str)					{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->TexturePath=str; }
-	inline sTile* GetTileByName(char *name)					{ assert(Tile); return Tile->GetTileByName(name); }
+	inline void SetName(const char *str)							{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->name=str; }
+	inline void SetFileName(const char *str)						{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->fname=str; }
+	inline void SetTexturePath(const char *str)					{ if(StaticMesh==0) StaticMesh=new sStaticMesh; StaticMesh->TexturePath=str; }
+	inline sTile* GetTileByName(const char *name)					{ assert(Tile); return Tile->GetTileByName(name); }
 	inline sTile* GetTile(int number)						{ assert(Tile); return Tile->GetTile(number); }
 	inline int GetNumberTile()								{ assert(Tile); return Tile->GetNumberTile(); }
 
 protected:
 	void DelChild(cMesh *child);
-	void Init(char *NameMesh=0,char *NameParent=0);
+	void Init(const char *NameMesh=0,const char *NameParent=0);
 	void ScaleMesh(Vect3f &dScale);
 	void WireScale(const Vect3f &scale);
 	void GetSize(sBox6f &box);

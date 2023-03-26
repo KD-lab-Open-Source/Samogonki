@@ -17,7 +17,7 @@ class HermitIterator {
 	int check(int assign);
 public:
 		HermitIterator(list<Vector> &points_);
-		HermitIterator(void);
+		HermitIterator();
 
 	HermitIterator& set(const iterator &i_, float t_);
 	HermitIterator& set(list<Vector>* points_,const iterator &i_, float t_);
@@ -42,7 +42,7 @@ inline HermitIterator<Vector>::HermitIterator(list<Vector> &points_)
 }
 
 template <class Vector>
-inline HermitIterator<Vector>::HermitIterator(void)
+inline HermitIterator<Vector>::HermitIterator()
 {
 	t = 0;
 	points = NULL;

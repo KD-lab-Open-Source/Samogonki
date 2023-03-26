@@ -19,7 +19,7 @@ extern int mchA_d3dSpriteParent;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-int acsOpenResource(char* fname,XStream& fh,int res_flag = -1);
+int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 void mchLoadTGA(XStream& fh,void** p,int& sx,int& sy,int& colors);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
@@ -110,7 +110,7 @@ void mchA_SpriteSlot::loadSprite(int x,int y,int sx,int sy,void* p,int id)
 //	mchA_d3dBeginScene();
 }
 
-mchA_Sprite::mchA_Sprite(char* fname,int id)
+mchA_Sprite::mchA_Sprite(const char* fname,int id)
 {
 	ID = id;
 	slotID = -1;
@@ -244,7 +244,7 @@ void mchA_SpriteDispatcher::AddSlot(int sx,int sy,int id)
 	slotLst.append(p);
 }
 
-void mchA_SpriteDispatcher::AddSprite(int id,char* fname)
+void mchA_SpriteDispatcher::AddSprite(int id,const char* fname)
 {
 	mchA_Sprite* p = new mchA_Sprite(fname,id);
 	p -> load();
@@ -403,7 +403,7 @@ int mchA_SpriteDispatcher::GetSlot(int spriteID)
 	return p -> d3dHandle;
 }
 
-void mchA_SpriteDispatcher::LoadScript(char* fname)
+void mchA_SpriteDispatcher::LoadScript(const char* fname)
 {
 	int sx,sy;
 	char* str;

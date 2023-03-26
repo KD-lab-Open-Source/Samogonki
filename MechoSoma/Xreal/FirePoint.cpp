@@ -47,7 +47,7 @@ struct FirePointType
 	FirePointConstructor constructor;
 	
 	FirePointType(){}
-	FirePointType(char* str, FirePointConstructor constr) : dummyB(str), constructor(constr) {}
+	FirePointType(const char* str, FirePointConstructor constr) : dummyB(str), constructor(constr) {}
 };
 
 struct FirePointTypeList :  HashStringGroup<FirePointType>

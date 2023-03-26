@@ -167,7 +167,7 @@ class iWorldDispatcher
 
 	int curMovie;
 	int curMovieSize;
-	char* movies[IW_MAX_MOVIE];
+	const char* movies[IW_MAX_MOVIE];
 
 	// Advisor
 	iwDoggyPhrase* curPhrase;
@@ -341,10 +341,10 @@ public:
 
 	void ShowNewPhrase(void);
 
-	void SetMovie(char* m);
+	void SetMovie(const char* m);
 	void SetMovie(int op_mode);
 	void SetEndMovie(void);
-	char* GetMovie(void){ if(curMovieSize > curMovie) return movies[curMovie ++]; return NULL; }
+	const char* GetMovie(void){ if(curMovieSize > curMovie) return movies[curMovie ++]; return NULL; }
 	void MovieQuant(void);
 	int PostMovieQuant(void);
 

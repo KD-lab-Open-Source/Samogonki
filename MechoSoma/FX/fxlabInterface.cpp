@@ -63,8 +63,8 @@ float fxlabServerTimeRate = 2.0f;
 //float fxlabParticleSystemScale = 1.0f; // move to script
 float fxlabInvParticleSystemScale = 1.0f / fxlabParticleSystemScale;
 
-extern char* getIniKey(char* fname,char* section,char* key);
-extern char* mch_mainINI;
+extern const char* getIniKey(const char* fname,const char* section,const char* key);
+extern const char* mch_mainINI;
 
 int fxlabPolyGridAlpha;
 
@@ -76,12 +76,12 @@ int fxlabStopTime;
 fxlabTeleportDispatcher* fxlabTeleportD;
 fxlabMovieDispacther* fxlabMovieD;
 
-//void fxlabCreateBonusMarket(void);
-void fxlabCreatePointMarket(void);
-void fxlabCreateLineMarket(void);
-void fxlabCreateWaveGround(void);
-void fxlabCreatePolarMarket(void);
-void fxlabCreateController(void);
+//void fxlabCreateBonusMarket();
+void fxlabCreatePointMarket();
+void fxlabCreateLineMarket();
+void fxlabCreateWaveGround();
+void fxlabCreatePolarMarket();
+void fxlabCreateController();
 
 MatXf getPlacementGroundPose(const Vect3f& center);
 
@@ -98,7 +98,7 @@ int fxlabBigBossWorldEnable = FXLAB_BIG_BOSS_WORLD_ID_MOUNTAIN | FXLAB_BIG_BOSS_
 void fxlabBigBossStatus(int status);
 void fxlabBigBossWorld(int world,int status);
 
-void fxlabOpen(void)
+void fxlabOpen()
 {
 	DBGCHECK;
 
@@ -129,7 +129,7 @@ void fxlabOpen(void)
 	DBGCHECK;
 };
 
-void fxlabClose(void)
+void fxlabClose()
 {
 	DBGCHECK;
 	fxlabMovieD->Clear();
@@ -141,7 +141,7 @@ void fxlabClose(void)
 };
 
 
-void fxlabInit(void)
+void fxlabInit()
 {
 	DBGCHECK;
 
@@ -174,7 +174,7 @@ void fxlabInit(void)
 	DBGCHECK;
 };
 
-void fxlabFinit(void)
+void fxlabFinit()
 {
 	DBGCHECK;
 
@@ -195,7 +195,7 @@ void fxlabFinit(void)
 	DBGCHECK;
 };
 
-void fxlabServerQuant(void)
+void fxlabServerQuant()
 {
 	start_autostop_timer(fxlabServerQuant, STAT_RESDISP);
 	CONTROL_FP();
@@ -205,7 +205,7 @@ void fxlabServerQuant(void)
 //	fxlabServerD->CreateQuant();
 };
 
-void fxlabClientQuant(void)
+void fxlabClientQuant()
 {
 	fxlabClearDeltaPolygon();
 
@@ -213,7 +213,7 @@ void fxlabClientQuant(void)
 	fxlabClientD->CreateQuant();
 };
 
-void fxlabClientClear(void)
+void fxlabClientClear()
 {
 	fxlabClientD->Quant();
 	fxlabClientD->CreateQuant();
@@ -223,9 +223,9 @@ void fxlabClientClear(void)
 
 void fxlabCharacterTeleportation(Vect3f& v0,Vect3f& v1);
 void fxlabPartWave(int x,int y);
-void fxlabPartWaveQuant(void);
+void fxlabPartWaveQuant();
 
-void fxlabClientShow(void)
+void fxlabClientShow()
 {
 	fxlabClientD->Show();
 
@@ -276,7 +276,7 @@ void fxlabClientShow(void)
 	};*/
 };
 
-void fxlabClientObjectDispatcher::Kill(void)
+void fxlabClientObjectDispatcher::Kill()
 {
 	list<fxlabGeneralObjectType*>::iterator p;
 
@@ -292,7 +292,7 @@ void fxlabClientObjectDispatcher::Kill(void)
 	};
 };
 
-void fxlabClientObjectDispatcher::Show(void)
+void fxlabClientObjectDispatcher::Show()
 {
 	list<fxlabGeneralObjectType*>::iterator p;
 	cInterfaceGraph3d *IGraph3d;
@@ -406,7 +406,7 @@ int fxlabLine2SphereDist(const Vect3f& r1,const Vect3f& c,float rad)
 
 //---------------------------------------------
 
-void fxlabClearDeltaPolygon(void)
+void fxlabClearDeltaPolygon()
 {
 	int i,j;
 	sPointTile* n;
@@ -431,7 +431,7 @@ void fxlabClearDeltaPolygon(void)
 
 extern int mchCurrentTrack;
 
-void fxlabCreateWaveGround(void)
+void fxlabCreateWaveGround()
 {
 	int i;
 	cPolyGrid *s;
@@ -481,57 +481,57 @@ void fxlabCreateWaveGround(void)
 
 //------------------------------------------
 
-int fxlabGetWorldReflectionEnable(void)
+int fxlabGetWorldReflectionEnable()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].ReflectionEnable;
 };
 
-int fxlabGetWaterRed(void)
+int fxlabGetWaterRed()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterRed;
 };
 
-int fxlabGetWaterRedDelta(void)
+int fxlabGetWaterRedDelta()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaRed;
 };
 
-int fxlabGetWaterGreen(void)
+int fxlabGetWaterGreen()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterGreen;
 };
 
-int fxlabGetWaterGreenDelta(void)
+int fxlabGetWaterGreenDelta()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaGreen;
 };
 
-int fxlabGetWaterBlue(void)
+int fxlabGetWaterBlue()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterBlue;
 };
 
-int fxlabGetWaterBlueDelta(void)
+int fxlabGetWaterBlueDelta()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaBlue;
 };
 
-int fxlabGetWaterAlpha(void)
+int fxlabGetWaterAlpha()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterAlpha;
 };
 
-int fxlabGetWaterDeltaAlpha(void)
+int fxlabGetWaterDeltaAlpha()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaAlpha;
 };
 
-int fxlabGetWaterDeltaHeight(void)
+int fxlabGetWaterDeltaHeight()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaHeight;
 };
 
-float fxlabGetWaterDeltaUV(void)
+float fxlabGetWaterDeltaUV()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaterDeltaUV;
 };
@@ -541,22 +541,22 @@ int fxlabGetDustID(int style)
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].DustStyle[style];
 };
 
-float fxlabGetTrackWaveRed(void)
+float fxlabGetTrackWaveRed()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaveRed;
 };
 
-float fxlabGetTrackWaveGreen(void)
+float fxlabGetTrackWaveGreen()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaveGreen;
 };
 
-float fxlabGetTrackWaveBlue(void)
+float fxlabGetTrackWaveBlue()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaveBlue;
 };
 
-float fxlabGetTrackWaveAlpha(void)
+float fxlabGetTrackWaveAlpha()
 {
 	return fxlabResourceD->WorldData[mchCurrentWorld]->TrackData[mchCurrentTrack].WaveAlpha;
 };
@@ -576,7 +576,7 @@ void fxlabFirePointInterface::Open(int id)
 	ID = id;
 };
 
-void fxlabFirePointInterface::Close(void)
+void fxlabFirePointInterface::Close()
 {
 	if(ClientPoint.Process)
 		ClientPoint.Process->SetAlive(0);
@@ -817,7 +817,7 @@ void fxShowBitmap(const int sx,const int sy,unsigned char* sbuf,int dx,int dy,un
 	};
 };
 
-void fxlabCreateBonusMarket(void)
+void fxlabCreateBonusMarket()
 {
 	XStream test_bonus(0);
 	fxlabGeneralObjectType* t;	
@@ -904,7 +904,7 @@ struct fxlabPointMarketTrigger
 const float FXLAB_STONE_ALTAR_RADIUS = 60.0f;
 const int FXLAB_STONE_ALTAR_FIRE = 7;
 
-void fxlabCreatePointMarket(void)
+void fxlabCreatePointMarket()
 {
 	int i,x,y;
 	float a,da;
@@ -1188,7 +1188,7 @@ struct fxlabPointLineTrigger
 const float FXLAB_BUBBLE_STREAM_STEP = 80;
 const float FXLAB_WIND_STREAM_STEP = 80;
 
-void fxlabCreateLineMarket(void)
+void fxlabCreateLineMarket()
 {
 	int i,n;
 	float d;
@@ -1389,7 +1389,7 @@ struct fxlabPolarMarketTrigger
 	};
 };
 
-void fxlabCreatePolarMarket(void)
+void fxlabCreatePolarMarket()
 {
 //	XStream test_point(0);
 	fxlabGeneralObjectType* t;	
@@ -1680,7 +1680,7 @@ int fxlabValideArcane(int id)
 	return 1;
 };
 
-void mchArcaneData::fxlabStart(void)
+void mchArcaneData::fxlabStart()
 { 
 	#ifndef _FINAL_VERSION_
 	if(xreal_log)
@@ -2809,7 +2809,7 @@ void mchArcaneData::fxlabStart(void)
 */
 };
 
-void mchArcaneData::fxlabStop(void)
+void mchArcaneData::fxlabStop()
 {
 	if(Interruption && !Status)
 		fxlabServerD->StopArcane(ID,ownerID);
@@ -2953,7 +2953,7 @@ void fxlabChargeMana(class mchMechosRacer* p,float power)
 
 extern int mchTurnBasedGame;
 
-void fxlabCreateController(void)
+void fxlabCreateController()
 {
 	mchRacer* mp;
 	fxlabGeneralObjectType* t;
@@ -3095,14 +3095,14 @@ void fxlabMechosGlowDestruction(Mechos* p)
 //	fxlabCreateSplinter(31,0,Vect3f(p->R()) + Vect3f(0,0,p->radius()),9,fxlabServerRND.UnitRND()*M_PI,M_PI*0.2f,M_PI * 0.1f,30.0f,10.0f,-1,-1,FXLAB_CLIENT_PROCESS_BODY_LINK,FXLAB_ID_KEY_MECHOS_BURN_SPLINTER_LINK,NULL,NULL);
 };
 
-fxlabMechosColorInformation::fxlabMechosColorInformation(void)
+fxlabMechosColorInformation::fxlabMechosColorInformation()
 {
 	RGBACount = 0;
 	Red = Green = Blue = Alpha = 0;
 	ColorEnable = 0;
 };
 
-fxlabMechosProcessInformation::fxlabMechosProcessInformation(void) : 
+fxlabMechosProcessInformation::fxlabMechosProcessInformation() : 
 	FireTimer(*new DurationTimer) , 
 	DustTimer(*new DurationTimer) ,
 	EnergyTimer(*new DurationTimer) ,
@@ -3116,7 +3116,7 @@ fxlabMechosProcessInformation::fxlabMechosProcessInformation(void) :
 };
 
 
-fxlabMechosProcessInformation::~fxlabMechosProcessInformation(void)
+fxlabMechosProcessInformation::~fxlabMechosProcessInformation()
 {
 	if(ArmorPoint.Process){
 		ArmorPoint.Process->SetAlive(0);
@@ -3278,7 +3278,7 @@ void fxlabBubbleBurst(Vect3f& v)
 
 //-------------------------------------------
 
-fxlabTeleportInterface::fxlabTeleportInterface(void)
+fxlabTeleportInterface::fxlabTeleportInterface()
 {
 	Status = 0;
 	WorldID = 0;
@@ -3299,7 +3299,7 @@ const int FXLAB_INTERFACE_TELEPORT_ACCESSIBLE = 1;
 const int FXLAB_INTERFACE_TELEPORT_OPEN = 2;
 const int FXLAB_INTERFACE_TELEPORT_PURCHASE = 3;
 
-void fxlabTeleportInterface::Open(void)
+void fxlabTeleportInterface::Open()
 {
 	fxlabGeneralObjectType* t;
 	Vect3f v;
@@ -3379,7 +3379,7 @@ void fxlabTeleportInterface::Open(void)
 		ErrH.Abort("Bad Open fxlabTeleportInterface");
 };
 
-void fxlabTeleportInterface::Close(void)
+void fxlabTeleportInterface::Close()
 {
 	if(ClientPoint1.Process)
 		ClientPoint1.Process->SetAlive(0);
@@ -3472,12 +3472,12 @@ void fxlabTeleportInterface::SetStatus(int status)
 
 //------------------------------------------
 
-void fxlabTeleportDispatcher::Init(void)
+void fxlabTeleportDispatcher::Init()
 {
 	fxlabTeleportList.reserve(100);
 };
 
-void fxlabTeleportDispatcher::Finit(void)
+void fxlabTeleportDispatcher::Finit()
 {
 	fxlabTeleportListType::iterator p;
 
@@ -3487,7 +3487,7 @@ void fxlabTeleportDispatcher::Finit(void)
 	fxlabTeleportList.clear();
 };
 
-void fxlabTeleportDispatcher::Open(void)
+void fxlabTeleportDispatcher::Open()
 {
 	fxlabTeleportListType::iterator p;
 	std::unordered_map<int,fxlabTeleportInterface>::iterator pp;
@@ -3501,7 +3501,7 @@ void fxlabTeleportDispatcher::Open(void)
 	};
 };
 
-void fxlabTeleportDispatcher::Close(void)
+void fxlabTeleportDispatcher::Close()
 {
 	fxlabTeleportListType::iterator p;
 	std::unordered_map<int,fxlabTeleportInterface>::iterator pp;
@@ -4176,12 +4176,12 @@ void fxlabMovieUpdateProcess(const char* name,const Vect3f& position,const Vect3
 	fxlabMovieD->UpdateProcess(name,position,velocity,status);
 };
 
-void fxlabMovieDestroy(void)
+void fxlabMovieDestroy()
 {
 	fxlabMovieD->Clear();
 };
 
-void fxlabMovieDispacther::Open(void)
+void fxlabMovieDispacther::Open()
 {
 	MovieList.reserve(300);
 	RegisterName("Kron_fire_first",FXLAB_CLIENT_PROCESS_SET_FACE_FIRE,FXLAB_ID_KEY_MOVIE_HEAD_SET);
@@ -4261,13 +4261,13 @@ void fxlabMovieDispacther::Open(void)
 //	RegisterName("LightningTest",FXLAB_CLIENT_PROCESS_LIGHTNING_LINE,FXLAB_ID_KEY_MOVIE_LIGHTNING_TEST);
 };
 
-void fxlabMovieDispacther::Close(void)
+void fxlabMovieDispacther::Close()
 {
 	Clear();
 	MovieList.clear();
 };
 
-void fxlabMovieDispacther::Clear(void)
+void fxlabMovieDispacther::Clear()
 {
 	std::unordered_map<std::string,fxlabMovieDataType>::iterator i_movie;
 
@@ -4314,7 +4314,7 @@ void fxlabMovieDispacther::UpdateProcess(const char* name,const Vect3f& position
 };
 
 
-int fxlabWorldIrradiate(void)
+int fxlabWorldIrradiate()
 {
 	fxlabGeneralObjectType* t;
 	mchRacer* p;
@@ -4360,7 +4360,7 @@ void fxlabPartWave(int x,int y)
 	};
 };
 
-void fxlabPartWaveQuant(void)
+void fxlabPartWaveQuant()
 {
 	if(!fxlabPartWaveTimer())
 		fxlabPartWaveTimer.start(400);

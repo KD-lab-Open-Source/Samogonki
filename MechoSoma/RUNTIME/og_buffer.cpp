@@ -102,42 +102,42 @@ ogBuffer& ogBuffer::operator< (unsigned char var)
 
 ogBuffer& ogBuffer::operator< (short var)
 {
-	char* s = port_itoa(var,wiConvertBuffer,radix);
+	const char* s = port_itoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned short var)
 {
-	char* s = port_ltoa(var,wiConvertBuffer,radix);
+	const char* s = port_ltoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (int var)
 {
-	char* s = port_itoa(var,wiConvertBuffer,radix);
+	const char* s = port_itoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned var)
 {
-	char* s = port_ultoa(var,wiConvertBuffer,radix);
+	const char* s = port_ultoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (long var)
 {
-	char* s = port_ltoa(var,wiConvertBuffer,radix);
+	const char* s = port_ltoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
 
 ogBuffer& ogBuffer::operator< (unsigned long var)
 {
-	char* s = port_ultoa(var,wiConvertBuffer,radix);
+	const char* s = port_ultoa(var,wiConvertBuffer,radix);
 	write(s,strlen(s));
 	return *this;
 }
