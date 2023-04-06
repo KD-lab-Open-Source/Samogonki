@@ -20,7 +20,7 @@ if (LINUX)
             --slang glsl330)
 endif (LINUX)
 
-
+add_compile_options(-funsigned-char)
 # add_compile_options(-Werror=shift-negative-value)
 # add_compile_options(-Werror=dangling-else)
 # add_compile_options(-Werror=parentheses)

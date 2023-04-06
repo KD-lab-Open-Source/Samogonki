@@ -40,11 +40,11 @@ FILE* open_file(const char* name, unsigned f)
 {
 	const char* mode;
 	if (f & XS_IN)
-		mode = "r";
+		mode = "rb";
 	if (f & XS_OUT)
-		mode = "w";
+		mode = "wb";
 	if (f & XS_APPEND)
-		mode = "a";
+		mode = "ab";
 
 	return fopen(name, mode);
 }

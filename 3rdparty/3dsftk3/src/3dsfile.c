@@ -392,8 +392,15 @@ file3ds *OpenFile3ds_buf(char3ds *buf, long3ds len)
    new->state = new->state | ReadFromFile;
 
 #ifdef __MINGW32__
+   char filename[] = "3dsXXXXXX";
+   int file = 0;
    new->istempfile = 1;
-   new->file = fdopen(mkstemp("3dsXXXXXX"), "rb+");
+   file = mkstemp(filename);
+   if (file == -1) {
+      printf("ERR! Unable to create temp file cause %d\n", errno);
+      abort();
+   }
+   new->file = fdopen(file, "rb+");
    fwrite(buf, 1, len, new->file);
    fseek(new->file, 0L, SEEK_SET);
 #else
