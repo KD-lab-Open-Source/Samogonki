@@ -98,51 +98,57 @@
 
 void WriteByte3ds(byte3ds x)
 {
-  if (fwrite(&x, ByteSize3ds, 1, GetFile3ds()) != 1)
-    SET_ERROR_RETURN(ERR_WRITING_FILE);     
+  SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 byte3ds ReadByte3ds()
 {
    byte3ds x;
    
-   if (fread(&x, ByteSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURNR(ERR_READING_FILE, 0);     
+   if ((GetContext3ds()->bufferposition + ByteSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&x, p, ByteSize3ds);
+   GetContext3ds()->bufferposition += ByteSize3ds;
 
    return(x);
 }
 
 void WriteUByte3ds(ubyte3ds x)
 {
-   if(fwrite(&x, ByteSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 ubyte3ds ReadUByte3ds()
 {
    ubyte3ds x;
 
-   if (fread(&x, ByteSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+   if ((GetContext3ds()->bufferposition + ByteSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&x, p, ByteSize3ds);
+   GetContext3ds()->bufferposition += ByteSize3ds;
+
    return(x);
 }
 
 void WriteShort3ds(short3ds x)
 {
-   short3ds intel;
-
-   N2IShort3ds(&x, &intel);
-
-   if(fwrite(&intel, ShortSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 short3ds ReadShort3ds()
 {
    short3ds native, intel;
 
-   if (fread(&intel, ShortSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURNR(ERR_READING_FILE, 0);     
+   if ((GetContext3ds()->bufferposition + ShortSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, ShortSize3ds);
+   GetContext3ds()->bufferposition += ShortSize3ds;
 
    I2NShort3ds(&intel, &native);
 
@@ -151,21 +157,20 @@ short3ds ReadShort3ds()
 
 void WriteUShort3ds(ushort3ds x)
 {
-  ushort3ds intel;
-
-  N2IShort3ds(&x, &intel);
-
-  if (fwrite(&intel, ShortSize3ds, 1, GetFile3ds()) != 1)
-    SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 ushort3ds ReadUShort3ds()
 {
    ushort3ds native, intel;
 
-   if (fread(&intel, ShortSize3ds, 1, GetFile3ds()) != 1)
-      SET_ERROR_RETURNR(ERR_READING_FILE, 0);     
-   
+   if ((GetContext3ds()->bufferposition + ShortSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, ShortSize3ds);
+   GetContext3ds()->bufferposition += ShortSize3ds;
+
    I2NShort3ds(&intel, &native);
 
    return(native);
@@ -173,21 +178,20 @@ ushort3ds ReadUShort3ds()
 
 void WriteLong3ds(long3ds x)
 {
-   long3ds intel;
-
-   N2ILong3ds(&x, &intel);
-   
-   if(fwrite(&intel, LongSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 long3ds ReadLong3ds()
 {
    long3ds native, intel;
 
-   if(fread(&intel, LongSize3ds, 1, GetFile3ds()) != 1)
-      SET_ERROR_RETURNR(ERR_READING_FILE, 0);          
-     
+   if ((GetContext3ds()->bufferposition + LongSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, LongSize3ds);
+   GetContext3ds()->bufferposition += LongSize3ds;
+
    I2NLong3ds(&intel, &native);
 
    return(native);
@@ -195,21 +199,20 @@ long3ds ReadLong3ds()
 
 void WriteULong3ds(ulong3ds x)
 {
-   ulong3ds intel;
-
-   N2ILong3ds(&x, &intel);
-
-   if(fwrite(&intel, LongSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 ulong3ds ReadULong3ds()
 {
    ulong3ds native, intel;
 
-   if(fread(&intel, LongSize3ds, 1, GetFile3ds()) != 1)
-      SET_ERROR_RETURNR(ERR_READING_FILE, 0);     
-     
+   if ((GetContext3ds()->bufferposition + LongSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, LongSize3ds);
+   GetContext3ds()->bufferposition += LongSize3ds;
+
    I2NLong3ds(&intel, &native);
 
    return(native);
@@ -217,20 +220,19 @@ ulong3ds ReadULong3ds()
 
 void WriteFloat3ds(float3ds x)
 {
-   float3ds intel;
-
-   N2IFloat3ds(&x, &intel);
-
-   if(fwrite(&intel, FloatSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 float3ds ReadFloat3ds()
 {
    float3ds native, intel;
 
-   if(fread(&intel, FloatSize3ds, 1, GetFile3ds()) != 1)
-      SET_ERROR_RETURNR(ERR_READING_FILE, 0.0F);     
+   if ((GetContext3ds()->bufferposition + FloatSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, FloatSize3ds);
+   GetContext3ds()->bufferposition += FloatSize3ds;
 
    I2NFloat3ds(&intel, &native);
 
@@ -239,21 +241,19 @@ float3ds ReadFloat3ds()
 
 void WriteDouble3ds(double3ds x)
 {
-   double3ds intel;
-
-   N2IDouble3ds(&x, &intel);
-
-   if(fwrite(&intel, DoubleSize3ds, 1, GetFile3ds()) != 1)
-     SET_ERROR_RETURN(ERR_WRITING_FILE);     
-
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 double3ds ReadDouble3ds()
 {
    double3ds native, intel;
 
-   if(fread(&intel, FloatSize3ds, 1, GetFile3ds()) != 1)
-      SET_ERROR_RETURNR(ERR_READING_FILE, 0.0);     
+   if ((GetContext3ds()->bufferposition + FloatSize3ds) > GetContext3ds()->buffersize)
+      SET_ERROR_RETURNR(ERR_READING_FILE, 0);
+
+   ubyte3ds *p = (ubyte3ds *)GetContext3ds()->buffer + GetContext3ds()->bufferposition;
+   memcpy(&intel, p, FloatSize3ds);
+   GetContext3ds()->bufferposition += FloatSize3ds;
 
    I2NDouble3ds(&intel, &native);
 
@@ -439,11 +439,7 @@ void ReadHeader3ds(chunktag3ds *chunktype, ulong3ds *size)
 
 void FinishHeader3ds(ulong3ds startpos, ulong3ds endpos)
 {
-   fseek(GetFile3ds(), startpos+2, SEEK_SET);
-   WriteULong3ds(endpos - startpos);
-   ON_ERROR_RETURN;
-
-   fseek(GetFile3ds(), endpos, SEEK_SET);
+   SET_ERROR_RETURN(ERR_WRITING_FILE);
 }
 
 void WritePoint3ds(const point3ds *p)

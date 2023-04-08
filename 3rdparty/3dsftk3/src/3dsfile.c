@@ -262,19 +262,6 @@ char3ds *GetFileName3ds()
    return((GetContext3ds())->filename);
 }
 
-void SetFile3ds(FILE *file)
-{
-  if (file == NULL)
-    SET_ERROR_RETURN(ERR_INVALID_ARG); 
-
-   GetContext3ds()->file = file;
-}
-
-FILE *GetFile3ds()
-{
-   return(GetContext3ds()->file);
-}
-
 void InitFile3ds(file3ds **file)
 {
 
@@ -289,6 +276,7 @@ void InitFile3ds(file3ds **file)
    (*file)->index = InvalidFileContext3ds;
    (*file)->buffer = NULL;
    (*file)->buffersize = 0;
+   (*file)->bufferposition = 0;
    (*file)->istempfile = False3ds;
 }
 
@@ -391,34 +379,24 @@ file3ds *OpenFile3ds_buf(char3ds *buf, long3ds len)
    new->istempfile = 0;
    new->state = new->state | ReadFromFile;
 
-#ifdef __MINGW32__
-   char filename[] = "3dsXXXXXX";
-   int file = 0;
-   new->istempfile = 1;
-   file = mkstemp(filename);
-   if (file == -1) {
-      printf("ERR! Unable to create temp file cause %d\n", errno);
-      abort();
-   }
-   new->file = fdopen(file, "rb+");
-   fwrite(buf, 1, len, new->file);
-   fseek(new->file, 0L, SEEK_SET);
-#else
-   new->file = fmemopen(buf, len, "rb");
-#endif
+   new->file = NULL;
+   new->buffer = buf;
+   new->buffersize = len;
+   new->bufferposition = 0;
 
    return new;
 }
 
 ulong3ds GetFilePosition3ds()
 {
-   return (long)(ftell(GetFile3ds()));
+   return GetContext3ds()->bufferposition;
 }
 
 short3ds FileSeek3ds(long3ds newposition)
 {
-   return (short3ds)fseek(GetFile3ds(), newposition, 0);
-}   
+   GetContext3ds()->bufferposition = newposition;
+   return 1;
+}
 
 void CloseAllFiles3ds()
 {
