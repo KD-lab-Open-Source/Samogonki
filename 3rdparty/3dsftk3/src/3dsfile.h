@@ -116,6 +116,7 @@ typedef struct
                           list */
    void *buffer;       /* Buffered I/O buffer */
    ulong3ds buffersize;
+   ulong3ds bufferposition;
    byte3ds istempfile; /* True3ds if file is a temp file */
 } file3ds;
 /* End Public */
@@ -135,8 +136,6 @@ void SetContext3ds(file3ds *file);
 file3ds *GetContext3ds();
 void SetFileName3ds(const char3ds *filename);
 char3ds *GetFileName3ds();
-void SetFile3ds(FILE *file);
-FILE *GetFile3ds();
 void InitFile3ds(file3ds **file);
 ulong3ds GetFilePosition3ds();
 short3ds FileSeek3ds(long3ds newposition);
