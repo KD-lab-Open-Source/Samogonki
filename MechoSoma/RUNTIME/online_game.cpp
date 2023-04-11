@@ -745,8 +745,8 @@ ogPlayerTurnInfo* ogTurnInfo::get_player_turn(int uid)
 
 int ogPacket::check_return(char* p)
 {
-	static char* return_str = "OK:KDLAB";
-	static char* next_turn_str = "NEXT_MOVE";
+	static const char* return_str = "OK:KDLAB";
+	static const char* next_turn_str = "NEXT_MOVE";
 
 	if(!stricmp(p,next_turn_str)) return 2;
 

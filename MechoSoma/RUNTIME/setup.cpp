@@ -101,7 +101,7 @@ extern int mchImgRTO_ActiveFlag;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-std::string win32_get_path_from_regkey(int key_id,char* subkey_name,char* value_name);
+std::string win32_get_path_from_regkey(int key_id,const char* subkey_name,const char* value_name);
 
 void acsCreateWater(void);
 void mchReInitGraph(int mode);

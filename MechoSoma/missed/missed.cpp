@@ -56,7 +56,7 @@ void* win32_load_icon(void) {
 void win32_shell_execute(char* command) {
 }
 
-std::string win32_get_path_from_regkey(int key_id,char* subkey_name,char* value_name) {
+std::string win32_get_path_from_regkey(int key_id,const char* subkey_name,const char* value_name) {
 	DWORD dwType = REG_SZ;
 	HKEY hKey = 0;
 	char value[1024];

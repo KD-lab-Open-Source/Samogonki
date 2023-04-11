@@ -136,7 +136,7 @@ struct sMKFrame : public sKFrame
 {
 	cMesh **key;							// ключи морфирования
 	sMKFrame(sMKFrame *kf=0);
-	~sMKFrame()								{ if(key) delete key; }
+	~sMKFrame()								{ if(key) delete[] key; }
 	void Set(cMesh **Morph,float *time,int nMorph);
 	void Get(void *Morph);
 };

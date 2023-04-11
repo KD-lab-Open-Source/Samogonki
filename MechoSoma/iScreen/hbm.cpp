@@ -53,7 +53,7 @@ hbm_Image::~hbm_Image(void)
 	free();
 }
 
-void hbm_Image::load(char* fname,int conv)
+void hbm_Image::load(const char* fname,int conv)
 {
 	XStream fh(fname,XS_IN);
 	load(fh,conv);
@@ -97,7 +97,7 @@ void hbm_Image::load(XStream& fh,int conv)
 	if(conv) build_frames();
 }
 
-void hbm_Image::save(char* fname)
+void hbm_Image::save(const char* fname)
 {
 	int i,sz;
 

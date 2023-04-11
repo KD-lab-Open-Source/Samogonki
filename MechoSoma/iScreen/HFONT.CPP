@@ -14,7 +14,7 @@ int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-static char* HFntSign = "HFNT 1.01";
+static const char* HFntSign = "HFNT 1.01";
 
 HFont::HFont(int sx,int sy,int sc,int ec)
 {

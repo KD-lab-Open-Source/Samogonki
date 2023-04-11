@@ -78,7 +78,7 @@ Dummy::Dummy(const Dummy& d)
 Dummy& Dummy::operator = (const Dummy& d)
 {
 	if(name)
-		delete name;
+		delete[] name;
 
 	(Vect3f&)*this = d;
 	name = new char[strlen(d.name) + 1];

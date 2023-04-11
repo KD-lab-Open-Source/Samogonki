@@ -108,7 +108,7 @@ inline void XTList<Type>::delete_all()
 	Type* p;
 	while((p = first()) != 0){
 		remove(p);
-		delete p;
+		delete[] p;
 		}
 }
 

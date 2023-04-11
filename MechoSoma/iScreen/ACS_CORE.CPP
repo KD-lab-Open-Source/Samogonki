@@ -142,8 +142,8 @@ char* acsBackupStr = NULL;
 aciScreenDispatcher* acsScrD;
 
 int acsNumFonts = 3;
-char* acsFontDir = "FONTS";
-char* acsFontPrefix = "font";
+const char* acsFontDir = "FONTS";
+const char* acsFontPrefix = "font";
 HFont** acsFntTable = NULL;
 
 const char* acsSTR_ON = "ON";

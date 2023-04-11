@@ -20,7 +20,7 @@
 #define TERRA_SHIFT_VX								(8-SHIFT_FRACTION_VX)
 
 inline int vMap_IsActive()							{ return vMap!=0; }
-inline void vMap_Prepare(char *WorldPrm,int world)	{ vMapPrepare(WorldPrm,world); }
+inline void vMap_Prepare(const char *WorldPrm,int world)	{ vMapPrepare(WorldPrm,world); }
 inline void	vMap_load3Buf(int x,int y,int track)	{ vMap->load3Buf(0,0,track); }
 inline void vMap_loadTrack(int track)				{ vMap->loadTrack(track); }
 inline int vMap_LevelH2O()							{ return vMap->LevelH2O; }

@@ -9,7 +9,7 @@ cUnknownClass* cVisGeneric::CreateWorld(const std::string &path,int number,int t
 {
 	if(LoadTerra)
 	{
-		char* WorldPrm = "worlds.prm";
+		const char* WorldPrm = "worlds.prm";
 		vMap_Prepare(WorldPrm,number);
 		vMap_load3Buf(0,0,track);
 	}

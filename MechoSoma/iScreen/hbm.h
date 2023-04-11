@@ -57,9 +57,9 @@ struct hbm_Image
 
 	unsigned palette16[256];
 
-	void load(char* fname,int conv = 0);
+	void load(const char* fname,int conv = 0);
 	void load(XStream& fh,int conv = 0);
-	void save(char* fname);
+	void save(const char* fname);
 	void free(void);
 
 	void convert_frameRGBA(int x,int y,int frame,void* buf,int pitch,int shift_r,int shift_g,int shift_b,int alpha_shift);

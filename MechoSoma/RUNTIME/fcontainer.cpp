@@ -95,7 +95,7 @@ void fContainer::load_idx(XStream& fh)
 
 	set_file(buf0 -> address() + buf0 -> tell());
 
-	delete buf;
+	delete[] buf;
 	delete buf0;
 }
 

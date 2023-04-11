@@ -45,7 +45,7 @@ sObjTri::sObjTri()
 }
 sObjTri::~sObjTri()												
 { 
-	if(p) delete p; p=0; 
+	if(p) delete[] p; p=0;
 }
 
 void sTile::CalcLOD()

@@ -494,7 +494,7 @@ int mchLoadTrackBTR(void)
 	}
 
 #ifdef _FCONTAINER_LOAD_
-	delete buf;
+	delete[] buf;
 #endif
 
 	return 1;

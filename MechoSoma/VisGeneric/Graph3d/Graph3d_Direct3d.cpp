@@ -53,7 +53,7 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,HINSTANCE hInst,TCHAR *szT
 #endif
 
 	HICON hic = NULL;
-	char* wnd_title = "";
+	char* wnd_title = nullptr;
 	int error, DriverMode=0,ColorBit;
 	if(GraphMode&GRAPH3D_MODE_RGB16) ColorBit=16;
 	else if(GraphMode&GRAPH3D_MODE_RGB32) ColorBit=32;
@@ -106,7 +106,7 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,HINSTANCE hInst,TCHAR *s
 	SwitchRenderScene=-1; 
 
 	HICON hic = NULL;
-	char* wnd_title = "";
+	char* wnd_title = nullptr;
 	int error, DriverMode=0,ColorBit;
 	if(GraphMode&GRAPH3D_MODE_RGB16) ColorBit=16;
 	else if(GraphMode&GRAPH3D_MODE_RGB32) ColorBit=32;
