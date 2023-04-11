@@ -547,7 +547,7 @@ void d3dSetDebugLevel( DWORD dwDebugLevel )
 void __d3dStartLogging()
 {
 	if( m_szLogFile ) {
-		m_fd = fopen( m_szLogFile, "w");
+		m_fd = fopen( m_szLogFile, "wb");
 		_ASSERTE( m_fd );
 	}
 }

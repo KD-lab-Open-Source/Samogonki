@@ -479,8 +479,8 @@ include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
-include_directories(ThirdParty/libjpeg-turbo/include)
-link_directories(ThirdParty/libjpeg-turbo/lib)
+# include_directories(ThirdParty/libjpeg-turbo/include)
+# link_directories(ThirdParty/libjpeg-turbo/lib)
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
