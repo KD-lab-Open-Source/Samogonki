@@ -103,7 +103,7 @@ struct ShowImageRTO : BaseRTO
 
 	int imageSX;
 	int imageSY;
-	void* imageData;
+	unsigned char* imageData;
 
 	virtual void Init(int id);
 	virtual int Quant(void);

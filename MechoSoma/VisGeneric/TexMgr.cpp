@@ -437,7 +437,13 @@ int cTextureBuffer::SaveTGA(const char *fname,void *buf,int x,int y,int fmt)
 	SetExtension(fname,"tga",NameTGA);
 	TGA_Image tga;
 	if(p) tga.Save(NameTGA,x,y,bpp,p);
-	if(p) delete p;
+	if(p) {
+                if (bpp == 16) {
+                        delete ((unsigned short*) p);
+                } else {
+                        delete ((unsigned char*) p);
+                }
+        }
 	return 1;
 }
 cTextureBuffer::~cTextureBuffer()

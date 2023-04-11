@@ -17,7 +17,7 @@ struct hbm_Frame
 	int SizeY;
 
 	int dataSize;
-	void* dataPtr;
+	char* dataPtr;
 
 	hbm_Image* ownerPtr;
 
@@ -53,7 +53,7 @@ struct hbm_Image
 	hbm_Frame** scr_frameTable;
 
 	int paletteSize;
-	void* palettePtr;
+	char* palettePtr;
 
 	unsigned palette16[256];
 

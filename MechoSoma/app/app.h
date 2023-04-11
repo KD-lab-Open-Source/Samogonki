@@ -7,6 +7,8 @@
 
 struct sapp_event;
 
+constexpr int max_textures_count = 2048;
+
 void onInit();
 void onFrame();
 void onCleanup();

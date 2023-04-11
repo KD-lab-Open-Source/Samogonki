@@ -3,6 +3,7 @@
 //
 
 #include "texture_manager.h"
+#include "app.h"
 
 #include <array>
 #include <algorithm>
@@ -11,6 +12,10 @@
 #include <iostream>
 
 using namespace graphics;
+
+namespace {
+  int texture_count = 0;
+}
 
 struct TTextureFormat {
   DWORD dwFormatID;
@@ -215,6 +220,7 @@ MD3DERROR TextureManager::d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUR
 }
 
 MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle) {
+  assert(texture_count < max_textures_count);
   assert(dwWidth == dwHeight);
   assert(GetMaskBitCount(dwWidth) == 1);
   assert(GetMaskBitCount(dwHeight) == 1);
@@ -243,14 +249,18 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
   _textures.push_back(std::make_unique<TextureEntry>(
       TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false}));
 
+  texture_count++;
   return MD3D_OK;
 }
 
 MD3DERROR TextureManager::d3dDeleteTexture(DWORD dwHandle) {
-  // TODO: @caiiiycuk why we not delete it?
   if (dwHandle >= _textures.size()) {
     return MD3DERR_ILLEGALCALL;
   }
+
+  // TODO: @caiiiycuk need to find way how to cleanup the array
+  // sg_destroy_image(_textures[dwHandle]->texture);
+  // texture_count--;
 
   return MD3D_OK;
 }

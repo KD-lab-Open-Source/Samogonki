@@ -374,7 +374,7 @@ void hbm_Frame::compress(int mode)
 	int i,j,idx0 = 0,fl,colors = ownerPtr -> colors;
 	unsigned char* cptr0,*cptr;
 	unsigned short* sptr;
-	void* tmp_ptr;
+	char* tmp_ptr;
 
 	if(flags & HBM_FRAME_ZIP_COMPRESSED) return;
 
@@ -494,10 +494,10 @@ void hbm_Frame::crop(void)
 				cp1 += sx;
 				cp0 += SizeX;
 			}
-			delete dataPtr;
+			delete[] dataPtr;
 
 			dataSize = sx * sy;
-			dataPtr = cp;
+			dataPtr = (char*) cp;
 			X += x0;
 			Y += y0 / SizeX;
 			SizeX = sx;
@@ -545,10 +545,10 @@ void hbm_Frame::crop(void)
 				sp1 += sx;
 				sp0 += SizeX;
 			}
-			delete dataPtr;
+			delete[] dataPtr;
 
 			dataSize = sx * sy * 2;
-			dataPtr = sp;
+			dataPtr = (char*) sp;
 			X += x0;
 			Y += y0 / SizeX;
 			SizeX = sx;
@@ -598,10 +598,10 @@ void hbm_Frame::crop(void)
 				cp1 += sx*3;
 				cp0 += SizeX*3;
 			}
-			delete dataPtr;
+			delete[] dataPtr;
 
 			dataSize = sx * sy * 3;
-			dataPtr = cp;
+			dataPtr = (char*) cp;
 			X += x0/3;
 			Y += y0 / SizeX / 3;
 			SizeX = sx;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "app.h"
 #include "KEYS.H"
 #include "renderer.h"
 #include "xgraph.h"
@@ -27,7 +28,7 @@ void onInit() {
   };
   sg_setup(sg_desc {
       .buffer_pool_size = 8,
-      .image_pool_size = 1024,
+      .image_pool_size = max_textures_count,
       .shader_pool_size = 1,
       .pipeline_pool_size = 1,
       .context = context,
