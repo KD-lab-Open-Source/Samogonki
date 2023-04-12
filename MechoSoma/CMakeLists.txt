@@ -479,8 +479,10 @@ include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
-# include_directories(ThirdParty/libjpeg-turbo/include)
-# link_directories(ThirdParty/libjpeg-turbo/lib)
+if (APPLE)
+    include_directories(../3rdparty/libjpeg-turbo/include)
+    link_directories(../3rdparty/libjpeg-turbo/lib)
+endif()
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
 target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
@@ -493,67 +495,33 @@ set_target_properties(
         CXX_EXTENSIONS NO
 )
 
-if (APPLE)
-    set(APPLICATION_SOURCES
-            macOS/GameViewController.mm
-            macOS/GameViewController.h
-            macOS/KeyboardCodeConversion.mm
-            macOS/KeyboardCodeConversion.h
-            macOS/Matrix.cpp
-            macOS/Matrix.h
-            macOS/Md3d.cpp
-            macOS/Ref.h
-            macOS/Renderer.mm
-            macOS/Renderer.h
-            macOS/RendererInterface.h
-            macOS/RenderState.h
-            macOS/ShaderCommon.h
-            macOS/TextureManager.mm
-            macOS/TextureManager.h
-            macOS/TextureManagerInterface.h
-            macOS/VertexType.h
-            macOS/main.mm
-            )
+include_directories(../3rdparty/sokol)
 
-    set(METAL_LIBRARY_AIR ${CMAKE_BINARY_DIR}/default.air)
-    set(METAL_LIBRARY ${CMAKE_BINARY_DIR}/default.metallib)
+set(APPLICATION_SOURCES
+        app/main.cpp
+        app/app.cpp
+        app/md3d.cpp
+        app/texture_manager.cpp
+        app/renderer.cpp
+        app/keyboard_codes.cpp
+        )
 
-    add_custom_command(OUTPUT ${METAL_LIBRARY_AIR}
-            COMMAND xcrun -sdk macosx metal -c ${CMAKE_SOURCE_DIR}/MechoSoma/macOS/Library.metal -o ${METAL_LIBRARY_AIR}
-            )
-
-    add_custom_command(OUTPUT ${METAL_LIBRARY}
-            COMMAND xcrun -sdk macosx metallib ${METAL_LIBRARY_AIR} -o ${METAL_LIBRARY}
-            DEPENDS ${METAL_LIBRARY_AIR}
-            )
-
-    add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${METAL_LIBRARY} ${APPLICATION_SOURCES})
-    target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++ "-framework CoreFoundation" "-framework Cocoa" "-framework Metal" "-framework MetalKit" "-framework Accelerate" objc ${LIBRARY_NAME})
-
-    # target_sources(${APPLICATION_NAME} PRIVATE ${METAL_LIBRARY})
-    set_source_files_properties(${METAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-else ()
-    include_directories(../3rdparty/sokol)
-
-    set(APPLICATION_SOURCES
-            app/main.cpp
-            app/app.cpp
-            app/md3d.cpp
-            app/texture_manager.cpp
-            app/renderer.cpp
-            app/keyboard_codes.cpp
-            )
-
+if (MINGW)
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
-
-    if (MINGW)
-        target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME})
-        target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
-        add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
-                COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${CMAKE_CURRENT_BINARY_DIR}"
-                COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
-    elseif (LINUX)
-        target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
-                X11 Xi Xcursor GL dl pthread)
-    endif(MINGW)
-endif (APPLE)
+    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME})
+    target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
+    add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
+            COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
+elseif (LINUX)
+    add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
+    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
+            X11 Xi Xcursor GL dl pthread)
+elseif (APPLE)
+    add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
+    target_compile_definitions(${APPLICATION_NAME} PRIVATE SOKOL_METAL)
+    target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
+    target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++
+            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework Metal"
+            "-framework MetalKit" "-framework Accelerate" objc ${LIBRARY_NAME})
+endif(MINGW)
