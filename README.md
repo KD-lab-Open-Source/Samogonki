@@ -19,6 +19,10 @@ Look into buildscripts:
 * [Linux](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/linux.yaml)
 * [Windows](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/windows.yaml)
 
+### macOS
+Download [libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo/files/2.1.0/libjpeg-turbo-ios-2.1.0.dmg/download)
+and unpack it to `3rdparty/libjpeg-turbo` folder.
+
 ## How to run
 
 Copy *moonshine-runners* binary into original folder of the game and run it.
