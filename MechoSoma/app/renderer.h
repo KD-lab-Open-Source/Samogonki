@@ -26,9 +26,6 @@ class Renderer final : public RendererInterface {
   Renderer& operator=(const Renderer&) = delete;
   Renderer& operator=(Renderer&&) = delete;
 
-  void begin();
-  void end();
-
   TextureManagerInterface& get_texture_manager() override;
 
   MD3DERROR d3dClear(DWORD dwColor) override;
@@ -48,8 +45,6 @@ class Renderer final : public RendererInterface {
                                  DWORD dwIndexCount, DWORD dwHandleTex0, DWORD dwHandleTex1) override;
 
  private:
-  void setup_depth_states();
-  void setup_pipeline_states();
   void prepare_render_state(size_t index_count);
   void add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index);
 

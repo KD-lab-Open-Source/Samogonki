@@ -13,10 +13,6 @@
 
 using namespace graphics;
 
-namespace {
-  int texture_count = 0;
-}
-
 struct TTextureFormat {
   DWORD dwFormatID;
   BOOL bSupported;
@@ -220,7 +216,7 @@ MD3DERROR TextureManager::d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUR
 }
 
 MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle) {
-  assert(texture_count < max_textures_count);
+  assert(_textures.size() < max_textures_count);
   assert(dwWidth == dwHeight);
   assert(GetMaskBitCount(dwWidth) == 1);
   assert(GetMaskBitCount(dwHeight) == 1);
@@ -243,41 +239,43 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
   description.usage = SG_USAGE_DYNAMIC;
   auto texture = sg_make_image(description);
 
-  *lpdwHandle = _textures.size();
+  *lpdwHandle = _lastTextureKey;
 
   const DWORD pitch = dwWidth * (p->dwRGBBitCount / 8);
-  _textures.push_back(std::make_unique<TextureEntry>(
-      TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false}));
+  auto t = std::make_unique<TextureEntry>(
+    TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false, false}
+  );
+  _textures.emplace(_lastTextureKey, std::move(t));
 
-  texture_count++;
+  _lastTextureKey++;
   return MD3D_OK;
 }
 
 MD3DERROR TextureManager::d3dDeleteTexture(DWORD dwHandle) {
-  if (dwHandle >= _textures.size()) {
+  const auto entry = _textures.find(dwHandle);
+  assert(entry != _textures.end());
+  if (entry == _textures.end()) {
     return MD3DERR_ILLEGALCALL;
   }
 
-  // TODO: @caiiiycuk need to find way how to cleanup the array
-  // sg_destroy_image(_textures[dwHandle]->texture);
-  // texture_count--;
-
+  entry->second->is_deleted = true;
   return MD3D_OK;
 }
 
 MD3DERROR TextureManager::d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWORD* lpPitch) {
-  if (dwHandle >= _textures.size()) {
+  const auto entry = _textures.find(dwHandle);
+  assert(entry != _textures.end());
+  if (entry == _textures.end()) {
     return MD3DERR_ILLEGALCALL;
   }
 
-  auto entry = _textures[dwHandle].get();
-  if (entry->is_locked) {
+  if (entry->second->is_locked) {
     return MD3DERR_ILLEGALCALL;
   }
-  entry->is_locked = true;
+  entry->second->is_locked = true;
 
-  *lplpTexture = reinterpret_cast<VOID*>(entry->lock_buffer.data());
-  *lpPitch = entry->pitch;
+  *lplpTexture = reinterpret_cast<VOID*>(entry->second->lock_buffer.data());
+  *lpPitch = entry->second->pitch;
 
   return MD3D_OK;
 }
@@ -288,17 +286,18 @@ MD3DERROR TextureManager::d3dLockTexture(DWORD dwHandle, DWORD dwLeft, DWORD dwT
 }
 
 MD3DERROR TextureManager::d3dUnlockTexture(DWORD dwHandle) {
-  if (dwHandle >= _textures.size()) {
+  const auto entry = _textures.find(dwHandle);
+  assert(entry != _textures.end());
+  if (entry == _textures.end()) {
     return MD3DERR_ILLEGALCALL;
   }
 
-  auto entry = _textures[dwHandle].get();
-  if (!entry->is_locked) {
+  if (!entry->second->is_locked) {
     return MD3DERR_ILLEGALCALL;
   }
 
-  update_texture(*entry);
-  entry->is_locked = false;
+  update_texture(*entry->second);
+  entry->second->is_locked = false;
 
   return MD3D_OK;
 }
@@ -409,8 +408,21 @@ void TextureManager::update_texture(TextureEntry& entry) {
 }
 
 sg_image* TextureManager::get(DWORD dwHandle) {
-  if (dwHandle >= _textures.size()) {
+  const auto entry = _textures.find(dwHandle);
+  assert(entry != _textures.end());
+  if (entry == _textures.end()) {
     return nullptr;
   }
-  return &_textures[dwHandle]->texture;
+  return &entry->second->texture;
+}
+
+void TextureManager::delete_textures() {
+  for (auto i = _textures.begin(); i != _textures.end(); ) {
+    if (i->second->is_deleted) {
+      sg_destroy_image(i->second->texture);
+      i = _textures.erase(i);
+    } else {
+      i++;
+    }
+  }
 }

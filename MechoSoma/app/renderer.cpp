@@ -16,9 +16,6 @@ using namespace graphics;
 float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far);
 
 Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
-  setup_depth_states();
-  setup_pipeline_states();
-
   {
     const auto length = _vertex_count * 3 * sizeof(float);
     _position_buffer.reset(new float[length]);
@@ -60,57 +57,10 @@ Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
   }
 }
 
-void Renderer::setup_depth_states() {}
-
-void Renderer::setup_pipeline_states() {
-  //  sg_pipeline_desc pipeline = {};
-  //
-  //  pipeline.shader = shader;
-  //  pipeline.layout.attrs[ATTR_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
-  //  pipeline.layout.attrs[ATTR_vs_pos].offset = 0;
-  //  pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
-  //
-  //  defaultPipeline = sg_make_pipeline(pipeline);
-
-  //  pipeline.layout.attrs[1].format = SG_VERTEXFORMAT_FLOAT4;
-  //  pipeline.layout.attrs[1].offset = 0;
-  //  pipeline.layout.attrs[1].buffer_index = 1;
-  //
-  //  pipeline.layout.attrs[2].format = SG_VERTEXFORMAT_FLOAT2;
-  //  pipeline.layout.attrs[2].offset = 0;
-  //  pipeline.layout.attrs[2].buffer_index = 2;
-  //
-  //  pipeline.layout.buffers[0].stride = 12;
-  //  pipeline.layout.buffers[0].step_func = SG_VERTEXSTEP_PER_VERTEX;
-  //
-  //  pipeline.layout.buffers[1].stride = 16;
-  //  pipeline.layout.buffers[1].step_func = SG_VERTEXSTEP_PER_VERTEX;
-  //
-  //  pipeline.layout.buffers[2].stride = 8;
-  //  pipeline.layout.buffers[2].step_func = SG_VERTEXSTEP_PER_VERTEX;
-  //
-  //  {
-  //    pipeline.colors[0].pixel_format = SG_PIXELFORMAT_BGRA8;
-  //    pipeline.depth.pixel_format = SG_PIXELFORMAT_DEPTH;
-  //    defaultPipeline = sg_make_pipeline(pipeline);
-  //  }
-  //
-  //  {
-  //    pipeline.colors[0].pixel_format = SG_PIXELFORMAT_BGRA8;
-  //    pipeline.depth.pixel_format = SG_PIXELFORMAT_DEPTH;
-  //    pipeline.colors[0].blend.enabled = true;
-  //    pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-  //    pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-  //
-  //    pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
-  //    pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-  //
-  //    blendingPipeline = sg_make_pipeline(pipeline);
-  //  }
-}
-
 MD3DERROR Renderer::d3dBeginScene() {
   _commands.clear();
+  _render_state.reset_texture_stage();
+  _texture_manager->delete_textures();
   return MD3D_OK;
 }
 
@@ -146,13 +96,6 @@ MD3DERROR Renderer::d3dEndScene() {
 
   // TODO: set actual screen size
   sg_begin_default_pass(defaultPassAction, 800, 600);
-
-  // prepare pipeline
-  //  [render_encoder setVertexBuffer:_position_buffer.get() offset:0 atIndex:0];
-  //  [render_encoder setVertexBuffer:_color_buffer.get() offset:0 atIndex:1];
-  //  [render_encoder setVertexBuffer:_uv_buffer.get() offset:0 atIndex:2];
-  //
-  //  [render_encoder setVertexBytes:&_uniforms length:sizeof(BasicUniforms) atIndex:3];
 
   sg_update_buffer(sg_position_buffer, sg_range{
                                            .ptr = _position_buffer.get(),
