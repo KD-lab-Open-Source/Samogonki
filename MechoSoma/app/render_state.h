@@ -32,6 +32,12 @@ class RenderState final {
 
   std::optional<DWORD> get_texture(DWORD stage) const { return _texture_stages[stage].texture_handle; }
 
+  void reset_texture_stage() {
+    for (auto &stage : _texture_stages) {
+      stage.texture_handle = std::nullopt;
+    }
+  }
+
   void set_texture_stage_state(DWORD stage, D3DTEXTURESTAGESTATETYPE state, DWORD value) {
     _texture_stages[stage].states[state] = value;
   }

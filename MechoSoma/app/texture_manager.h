@@ -7,9 +7,11 @@
 
 #include "texture_manager_interface.h"
 
-#include <sokol_gfx.h>
-#include <vector>
 #include <memory>
+#include <vector>
+#include <unordered_map>
+
+#include <sokol_gfx.h>
 
 namespace graphics
 {
@@ -17,8 +19,10 @@ namespace graphics
 class TextureManager final : public TextureManagerInterface
 {
  public:
-  explicit TextureManager();
+  TextureManager();
+
   sg_image* get(DWORD dwHandle);
+  void delete_textures();
 
   TextureManager(const TextureManager&) = delete;
   TextureManager(TextureManager&&) = delete;
@@ -44,17 +48,19 @@ class TextureManager final : public TextureManagerInterface
   struct TextureEntry
   {
     DWORD original_format_id;
-    sg_image texture;
+    sg_image texture{SG_INVALID_ID};
     std::vector<char> lock_buffer;
     DWORD pitch;
     bool is_locked;
+    bool is_deleted;
   };
 
   void update_texture(TextureEntry& entry);
 
  private:
   using TextureEntryPtr = std::unique_ptr<TextureEntry>;
-  std::vector<TextureEntryPtr> _textures;
+  std::unordered_map<uint32_t, TextureEntryPtr> _textures;
+  uint32_t _lastTextureKey = 0;
 
   std::vector<char> _rgba_buffer;
 };

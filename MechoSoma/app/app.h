@@ -7,7 +7,7 @@
 
 struct sapp_event;
 
-constexpr int max_textures_count = 2048;
+constexpr unsigned int max_textures_count = 2048;
 
 void onInit();
 void onFrame();
