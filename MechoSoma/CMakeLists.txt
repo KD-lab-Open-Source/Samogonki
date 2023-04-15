@@ -519,9 +519,9 @@ elseif (LINUX)
             X11 Xi Xcursor GL dl pthread)
 elseif (APPLE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
-    target_compile_definitions(${APPLICATION_NAME} PRIVATE SOKOL_METAL)
+    target_compile_definitions(${APPLICATION_NAME} PRIVATE SOKOL_GLCORE33)
     target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
     target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++
-            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework Metal"
-            "-framework MetalKit" "-framework Accelerate" objc ${LIBRARY_NAME})
+            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL"
+            objc ${LIBRARY_NAME})
 endif(MINGW)
