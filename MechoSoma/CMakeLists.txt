@@ -108,9 +108,16 @@ set(GAME_SOURCES
         IVisGeneric/VisGenericDefine.h
         IVisGeneric/World_id.h
         # Sound
-        Sound/MpegSound_port.cpp
+        Sound/audio_file.cpp
+        Sound/audio_file.h
+        Sound/music_player.cpp
+        Sound/music_player.h
         Sound/sound.cpp
+        Sound/sound.h
         Sound/sound_api.cpp
+        Sound/sound_api.h
+        Sound/sound_manager.cpp
+        Sound/sound_manager.h
         # Terra
         Terra/JPEG_FM.cpp
         Terra/LAND.CPP
@@ -257,6 +264,7 @@ set(GAME_SOURCES
         XTool/xgraph.cpp
         XTool/xgraph.h
         XTool/xerrhand.cpp
+        XTool/xerrhand.h
         XTool/xrecorder.cpp
         XTool/xutil.cpp
         XTool/xsound.cpp
@@ -484,27 +492,39 @@ if (APPLE)
     link_directories(../3rdparty/libjpeg-turbo/lib)
 endif()
 
+include_directories(../3rdparty/FFmpeg-n4.3.6/include)
+link_directories(../3rdparty/FFmpeg-n4.3.6/lib)
+
+include_directories(../3rdparty/miniaudio)
+
+find_package(ZLIB REQUIRED)
+find_package(Iconv REQUIRED)
+
+if (WIN32)
+    SET(BCRYPT_LIBRARY bcrypt)
+endif(WIN32)
+
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
+target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY})
 
 set_target_properties(
-        ${LIBRARY_NAME}
-        PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
+    ${LIBRARY_NAME}
+    PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
 )
 
 include_directories(../3rdparty/sokol)
 
 set(APPLICATION_SOURCES
-        app/main.cpp
-        app/app.cpp
-        app/md3d.cpp
-        app/texture_manager.cpp
-        app/renderer.cpp
-        app/keyboard_codes.cpp
-        )
+    app/app.cpp
+    app/keyboard_codes.cpp
+    app/main.cpp
+    app/md3d.cpp
+    app/renderer.cpp
+    app/texture_manager.cpp
+)
 
 if (MINGW)
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})

@@ -26,10 +26,6 @@
 
 #include "PlayWSC.h"
 
-#ifdef _MPPLUS_SOUNDTRACK_
-#include "PlayMpeg.h"
-#endif
-
 #include "mch_common.h" // For far target
 
 #pragma warning( disable : 4244 )
@@ -69,10 +65,6 @@ int sndCameraVolumeZ0 = 100;
 int sndCameraVolumeZ1 = 1000;
 int sndCameraVolumeV0 = 0;
 int sndCameraVolumeV1 = -3000;
-
-#ifdef _MPPLUS_SOUNDTRACK_
-MpegSound* mpeg_player = 0;
-#endif
 
 int sndMinVolume = 4000;
 
@@ -385,11 +377,7 @@ void sndMusicPlay(int track)
 	if(track < 10) buf < "0";
 	buf <= track < ".mp+";
 
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-
-	if(mpeg_player->OpenToPlay(buf.address(),sndTrackLoop[track]))
+	if(PlayMusic(buf.address(),sndTrackLoop[track]))
 		sndMPPlusCurTrack = track;
 	else
 		sndMPPlusCurTrack = 0;
@@ -401,10 +389,7 @@ void sndMusicPlay(int track)
 void sndMusicStop(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-	mpeg_player->Stop();
+	StopMusic();
 	sndMPPlusCurTrack = 0;
 #else
 	//xsStopCD();
@@ -414,10 +399,7 @@ void sndMusicStop(void)
 void sndMusicPause(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-	mpeg_player->Pause();
+	PauseMusic();
 #else
 	//xsPauseCD();
 #endif
@@ -426,11 +408,7 @@ void sndMusicPause(void)
 void sndMusicResume(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-	if(mpeg_player->IsPlay() == MPEG_PAUSE)
-		mpeg_player->Resume();
+	ResumeMusic();
 #else
 	//xsResumeCD();
 #endif
@@ -439,17 +417,7 @@ void sndMusicResume(void)
 int sndMusicStatus(void)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-	switch(mpeg_player->IsPlay()){
-		case MPEG_PLAY:
-			return XCD_PLAYING;
-		case MPEG_PAUSE:
-			return XCD_PAUSED;
-		default:
-			return XCD_STOPPED;
-	}
+        return GetMusicStatus();
 #else
 	//return xsGetStatusCD();
 	return 0;
@@ -478,10 +446,7 @@ int sndMusicNumTracks(void)
 void sndMusicSetVolume(int val)
 {
 #ifdef _MPPLUS_SOUNDTRACK_
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-	mpeg_player->SetVolume(val);
+        SetMusicVolume(val);
 #else
 	//xsSetVolumeCD(val);
 #endif

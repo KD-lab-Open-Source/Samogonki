@@ -13,6 +13,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: 'recursive'
+
     - name: mingw build
       uses: msys2/setup-msys2@v2
       with:
@@ -23,7 +24,38 @@ jobs:
           git
           mingw-w64-x86_64-toolchain
           mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-nasm
           mingw-w64-x86_64-libjpeg-turbo
+          unzip
+
+    - name: ffmpeg -- download
+      run: git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+    - name: ffmpeg -- configure
+      run: msys2 -c './configure
+        --prefix=build
+        --disable-programs
+        --disable-doc
+        --disable-avdevice
+        --disable-avfilter
+        --disable-network
+        --disable-pixelutils
+        --disable-everything
+        --enable-decoder=pcm_s16le,mpc7
+        --enable-demuxer=wav,mpc
+        --enable-protocol=file'
+      working-directory: ffmpeg
+    - name: ffmpeg -- build and install
+      run: |
+        msys2 -c 'mingw32-make -j4'
+        msys2 -c 'mingw32-make install'
+        mkdir -p ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6
+        cp -r build/include ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
+        cp -r build/lib ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
+      working-directory: ffmpeg
+
+    - name: Download miniaudio
+      run: git clone --depth 1 --branch 0.11.15 https://github.com/mackron/miniaudio.git ${{github.workspace}}/3rdparty/miniaudio
+
     - shell: msys2 {0}
       run: |
         mkdir build-mingw

@@ -64,6 +64,15 @@ void AVIdraw(void *avi);
 void AVIGetData(void *avi, void *data);
 void *AVIGetPalette(void *avi);
 
+bool PlayMusic(const char *filename, bool looping);
+void StopMusic();
+void PauseMusic();
+void ResumeMusic();
+int GetMusicStatus();
+int GetMusicVolume();
+void SetMusicVolume(int volume);
+int GetMusicLengthInSamples();
+
 /* --------------------- CD Management --------------------- */
 
 // xsGetStatusCD() return values...

@@ -1,101 +1,171 @@
 #include "xsound.h"
 
-int SoundInit(int maxHZ, int digMode, int channels)
-{
-	return 0;
+#include <cassert>
+#include <cstdio>
+
+#include "music_player.h"
+#include "sound_manager.h"
+
+std::unique_ptr<MusicPlayer> musicPlayer;
+std::unique_ptr<SoundManager> soundManager;
+
+int SoundInit(int maxHZ, int digMode, int channels) {
+  if (digMode != DIG_F_STEREO_16) {
+    return 0;
+  }
+
+  try {
+    soundManager = std::make_unique<SoundManager>(maxHZ, channels);
+    musicPlayer = std::make_unique<MusicPlayer>();
+    return 1;
+  } catch (const std::exception &e) {
+    printf("ERROR: %s\n", e.what());
+    return 0;
+  }
 }
 
-void SoundPlay(void *lpDSB, int channel, int priority, int cropos, int flags)
-{
+void SoundPlay(void *lpDSB, int channel, int priority, int cropos, int flags) {
+  if (soundManager) {
+    soundManager->playSound(lpDSB, channel, priority, cropos, flags);
+  }
 }
 
-void SoundRelease(void *lpDSB)
-{
+void SoundRelease(void *lpDSB) {
+  if (soundManager) {
+    soundManager->releaseSound(lpDSB);
+  }
 }
 
-void SoundStop(int channel)
-{
+void SoundStop(int channel) {
+  if (soundManager) {
+    soundManager->stopSound(channel);
+  }
 }
 
-void* GetSound(int channel)
-{
-    return nullptr;
+void *GetSound(int channel) { return soundManager ? soundManager->getSound(channel) : nullptr; }
+
+void SoundLoad(char *filename, void **lpDSB) {
+  assert(soundManager != nullptr);
+  try {
+    *lpDSB = soundManager->loadSound(filename);
+  } catch (const std::exception &e) {
+    printf("ERROR: %s\n", e.what());
+  }
 }
 
-void SoundLoad(char *filename, void **lpDSB)
-{
+void SoundFinit() { soundManager = nullptr; }
+
+void SoundVolume(int channel, int volume) {
+  if (soundManager) {
+    soundManager->setSoundVolume(channel, volume);
+  }
 }
 
-void SoundFinit(void)
-{
+void SetVolume(void *lpDSB, int volume) {
+  if (soundManager) {
+    soundManager->setVolume(lpDSB, volume);
+  }
 }
 
-void SoundVolume(int channel, int volume)
-{
+int GetVolume(void *lpDSB) {
+  if (soundManager) {
+    soundManager->getVolume(lpDSB);
+  }
+  return 0;
 }
 
-void SetVolume(void *lpDSB, int volume)
-{
+int GetSoundVolume(int channel) {
+  if (soundManager) {
+    return soundManager->getSoundVolume(channel);
+  }
+  return 0;
 }
 
-int GetVolume(void *lpDSB)
-{
-	return 0;
+void GlobalVolume(int volume) {
+  if (soundManager) {
+    soundManager->setGlobalVolume(volume);
+  }
 }
 
-int GetSoundVolume(int channel)
-{
-	return 0;
+void SoundPan(int channel, int panning) {
+  if (soundManager) {
+    soundManager->setSoundPan(channel, panning);
+  }
 }
 
-void GlobalVolume(int volume)
-{
+int SoundStatus(int channel) { return soundManager ? soundManager->getSoundStatus(channel) : 0; }
+
+int SoundStatus(void *lpDSB) { return soundManager ? soundManager->getSoundStatus(lpDSB) : 0; }
+
+int ChannelStatus(int channel) { return soundManager ? soundManager->getChannelStatus(channel) : -1; }
+
+int GetSoundFrequency(void *lpDSB) { return 0; }
+
+void SetSoundFrequency(void *lpDSB, int frq) {}
+
+void SoundStreamOpen(char *filename, void **strptr) {}
+
+void SoundStreamClose(void *stream) {}
+
+void SoundStreamRelease(void *stream) {}
+
+void xsInitCD() {}
+
+void xsMixerOpen() {}
+
+bool PlayMusic(const char *filename, bool looping) {
+  if (!musicPlayer) {
+    return false;
+  }
+
+  try {
+    return musicPlayer->play(filename, looping);
+  } catch (const std::exception &e) {
+    printf("ERROR: %s\n", e.what());
+    return false;
+  }
 }
 
-void SoundPan(int channel, int panning)
-{
+void StopMusic() {
+  if (musicPlayer) {
+    musicPlayer->stop();
+  }
 }
 
-int SoundStatus(int channel)
-{
-	return 0;
+void PauseMusic() {
+  if (musicPlayer) {
+    musicPlayer->pause();
+  }
 }
 
-int SoundStatus(void* lpDSB)
-{
-	return 0;
+void ResumeMusic() {
+  if (musicPlayer) {
+    musicPlayer->resume();
+  }
 }
 
-int ChannelStatus(int channel)
-{
-	return 0;
+int GetMusicStatus() {
+  if (musicPlayer) {
+    switch (musicPlayer->getStatus()) {
+      case MusicPlayer::Status::play:
+        return XCD_PLAYING;
+
+      case MusicPlayer::Status::pause:
+        return XCD_PAUSED;
+
+      case MusicPlayer::Status::stop:
+        return XCD_STOPPED;
+    }
+  }
+  return XCD_STOPPED;
 }
 
-int GetSoundFrequency(void *lpDSB)
-{
-	return 0;
+int GetMusicVolume() { return musicPlayer ? musicPlayer->getVolume() : 0; }
+
+void SetMusicVolume(int volume) {
+  if (musicPlayer) {
+    musicPlayer->setVolume(volume);
+  }
 }
 
-void SetSoundFrequency(void *lpDSB,int frq)
-{
-}
-
-void SoundStreamOpen(char *filename, void **strptr)
-{
-}
-
-void SoundStreamClose(void *stream)
-{
-}
-
-void SoundStreamRelease(void *stream)
-{
-}
-
-void xsInitCD(void)
-{
-}
-
-void xsMixerOpen(void)
-{
-}
+int GetMusicLengthInSamples() { return musicPlayer ? musicPlayer->getLengthInSamples() : 0; }

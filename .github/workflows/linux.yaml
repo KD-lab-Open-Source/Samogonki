@@ -18,7 +18,35 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install deps
-      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev
+      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev libz-dev nasm
+
+    - name: ffmpeg -- download
+      run: git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+    - name: ffmpeg -- configure
+      run: ./configure
+        --prefix=build
+        --disable-programs
+        --disable-doc
+        --disable-avdevice
+        --disable-avfilter
+        --disable-network
+        --disable-pixelutils
+        --disable-everything
+        --enable-decoder=pcm_s16le,mpc7
+        --enable-demuxer=wav,mpc
+        --enable-protocol=file
+      working-directory: ffmpeg
+    - name: ffmpeg -- build and install
+      run: |
+        make
+        make install
+        mkdir -p ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6
+        cp -r build/include ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
+        cp -r build/lib ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
+      working-directory: ffmpeg
+
+    - name: Download miniaudio
+      run: git clone --depth 1 --branch 0.11.15 https://github.com/mackron/miniaudio.git ${{github.workspace}}/3rdparty/miniaudio
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
