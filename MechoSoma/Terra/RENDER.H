@@ -1,7 +1,9 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
+#ifndef __forceinline
 #define __forceinline inline
+#endif
 
 //@caiiiycuk can't find defininition of SHIFT_FRACTION_VX
 #define SHIFT_FRACTION_VX 6

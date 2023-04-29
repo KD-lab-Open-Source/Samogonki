@@ -14,10 +14,6 @@
 #include "sound_api.h"
 #include "snd_def.h"
 
-#ifdef _MPPLUS_SOUNDTRACK_
-#include "PlayMpeg.h"
-#endif
-
 #include "mch_common.h" // For far target
 
 #pragma warning( disable : 4244 )
@@ -750,24 +746,11 @@ void mchInitSound(void)
 	mchSoundInitFlag = 1;
 	mch_sndD -> Load("RESOURCE\\SOUND\\mch_snd.scb",0);
 
-#ifdef _MPPLUS_SOUNDTRACK_
-	MpegInitLibrary(GetDS_Ptr());
-#endif
-
 	sndRndVal = clock();
 }
 
 void mchFinitSound(void)
 {
-	if(mchSoundInitFlag){
-//		xsSetVolumeWAVE(mchSoundVolumeBackup);
-
-#ifdef _MPPLUS_SOUNDTRACK_
-		MpegDeinitLibrary();;
-#else
-		//xsSetVolumeCD(mchMusicVolumeBackup);
-#endif
-	}
 	delete mch_sndD;
 }
 

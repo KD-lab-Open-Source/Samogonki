@@ -1,14 +1,15 @@
+#include "xerrhand.h"
+
 #include <cstdlib>
 #include <iostream>
-
-#include "xtool.h"
+#include <sstream>
 
 XErrorHandler ErrH;
 
 // TODO
-XErrorHandler::XErrorHandler(void) {}
+XErrorHandler::XErrorHandler() {}
 
-XErrorHandler::~XErrorHandler(void) {}
+XErrorHandler::~XErrorHandler() {}
 
 void XErrorHandler::SetFlags(unsigned f) {}
 
@@ -20,7 +21,7 @@ void XErrorHandler::SetPrefix(const char* s) {}
 
 void XErrorHandler::SetPostfix(const char* s) {}
 
-void XErrorHandler::SetRestore(void (*rf)(void)) {}
+void XErrorHandler::SetRestore(void (*rf)()) {}
 
 void XErrorHandler::Abort(const char* message, int code, int addval, const char* subj) {
   std::cout << "XErrorHandler: " << message << ", code " << code << ", addval " << addval;
@@ -31,8 +32,12 @@ void XErrorHandler::Abort(const char* message, int code, int addval, const char*
   abort();
 }
 
-void XErrorHandler::Exit(void) { exit(0); }
+void XErrorHandler::Exit() { exit(0); }
 
-void XErrorHandler::RTC(const char* file, unsigned int line, const char* expr) {}
+void XErrorHandler::RTC(const char* file, unsigned int line, const char* expr) {
+  std::stringstream message;
+  message << file << ", LINE: " << line << std::endl << expr;
+  Abort("RUN-TIME ERROR", XERR_USER, -1, message.str().c_str());
+}
 
 void XErrorHandler::WriteLog(char* error, char* msg) {}

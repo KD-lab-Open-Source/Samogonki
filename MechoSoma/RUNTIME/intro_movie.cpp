@@ -6,8 +6,8 @@
 #include "mch_script.h"
 
 #include "sound.h"
+#include "xsound.h"
 
-#include "PlayMpeg.h"
 #include "Md3d.h"
 
 #include "iText.h"
@@ -22,8 +22,6 @@
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */
-
-extern MpegSound* mpeg_player;
 
 extern cInterfaceGraph3d* gb_IGraph3d;
 extern float mchA_FontScaleX[];
@@ -564,18 +562,15 @@ void mchIntroMovieDispatcher::init_texts(void)
 
 		tm = 1000;
 		p1 = p;
-		if (!mpeg_player) {
-			mpeg_player = new MpegSound();
-		}
 		while(p1){
 			mpeg_name.init();
 			mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= i + 1 < "_" <= id + 1 < ".mp+";
-			int volume_temp = mpeg_player->GetVolume();
-			mpeg_player->SetVolume(0);
-			mpeg_player->OpenToPlay(mpeg_name, 0);
-			mpeg_player->Stop();
-			mpeg_player->SetVolume(volume_temp);
-			len = mpeg_player->GetLen();
+			int volume_temp = GetMusicVolume();
+			SetMusicVolume(0);
+			PlayMusic(mpeg_name, false);
+			StopMusic();
+			SetMusicVolume(volume_temp);
+			len = GetMusicLengthInSamples();
 
 			if(len != -1)
 				len = len * 1000 / 44100;
@@ -633,13 +628,9 @@ int mchIntroMovieDispatcher::skip(void)
 	p = acnList.search(id + 1 + 20);
 	if(!p) return 1;
 
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
-
 	if(curTxt){
 		if(!mchSoundMute)
-			mpeg_player->Stop();
+			StopMusic();
 		curTxt = NULL;
 	}
 
@@ -727,15 +718,11 @@ void mchIntroMovieText::start(void)
 { 
 	XBuffer mpeg_name(MAX_PATH);
 
-	cur_time = 0; 
-
-	if (!mpeg_player) {
-		mpeg_player = new MpegSound();
-	}
+	cur_time = 0;
 
 	mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= mpeg_actionID < "_" <= mpeg_phraseID < ".mp+";
 	if(!mchSoundMute)
-		mpeg_player->OpenToPlay(mpeg_name,0);
+		PlayMusic(mpeg_name, false);
 }
 
 void mchIntroMovieText::draw(void)
