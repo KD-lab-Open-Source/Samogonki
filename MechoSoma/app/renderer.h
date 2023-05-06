@@ -7,19 +7,25 @@
 
 #include <array>
 #include <memory>
+#include <vector>
+
+#include <sokol_gfx.h>
 
 #include "renderer_interface.h"
-#include "texture_manager.h"
 #include "render_state.h"
+#include "texture_manager_interface.h"
 
 namespace graphics {
+
+class BackBuffer;
+class TextureManager;
 
 class Renderer final : public RendererInterface {
  public:
   static std::unique_ptr<Renderer> shared;
 
   Renderer();
-  ~Renderer() override = default;
+  ~Renderer() override;
 
   Renderer(const Renderer&) = delete;
   Renderer(Renderer&&) = delete;
@@ -44,11 +50,18 @@ class Renderer final : public RendererInterface {
   MD3DERROR d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount, LPWORD lpwIndices,
                                  DWORD dwIndexCount, DWORD dwHandleTex0, DWORD dwHandleTex1) override;
 
+  MD3DERROR d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch) override;
+  MD3DERROR d3dUnlockBackBuffer() override;
+  MD3DERROR d3dFlushBackBuffer(RECT *lprcRect) override;
+
  private:
   void prepare_render_state(size_t index_count);
   void add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index);
 
   const size_t _vertex_count = 35000;
+
+  sg_shader _sceneShader;
+  sg_image _nullTexture;
 
   std::unique_ptr<float> _position_buffer;
   std::unique_ptr<float> _color_buffer;
@@ -60,6 +73,7 @@ class Renderer final : public RendererInterface {
   sg_buffer sg_uv_buffer;
   sg_buffer sg_index_buffer;
 
+  std::unique_ptr<BackBuffer> _backBuffer;
   std::unique_ptr<TextureManager> _texture_manager;
 
   sg_pass_action defaultPassAction = {};

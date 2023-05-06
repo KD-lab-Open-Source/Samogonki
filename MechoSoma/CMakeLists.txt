@@ -519,11 +519,22 @@ include_directories(../3rdparty/sokol)
 
 set(APPLICATION_SOURCES
     app/app.cpp
+    app/app.h
+    app/back_buffer.cpp
+    app/back_buffer.h
     app/keyboard_codes.cpp
+    app/keyboard_codes.h
     app/main.cpp
     app/md3d.cpp
+    app/render_state.h
     app/renderer.cpp
+    app/renderer.h
+    app/renderer_interface.h
+    app/sokol-shader.h
     app/texture_manager.cpp
+    app/texture_manager.h
+    app/texture_manager_interface.h
+    app/vertex_type.h
 )
 
 if (MINGW)

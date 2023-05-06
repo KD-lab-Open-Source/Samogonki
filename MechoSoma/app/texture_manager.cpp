@@ -237,6 +237,8 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
   description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
   assert(p->bPalette8 == false);
   description.usage = SG_USAGE_DYNAMIC;
+  description.min_filter = SG_FILTER_LINEAR;
+  description.mag_filter = SG_FILTER_LINEAR;
   auto texture = sg_make_image(description);
 
   *lpdwHandle = _lastTextureKey;

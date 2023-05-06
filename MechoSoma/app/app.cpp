@@ -29,7 +29,7 @@ void onInit() {
   sg_setup(sg_desc {
       .buffer_pool_size = 8,
       .image_pool_size = max_textures_count,
-      .shader_pool_size = 1,
+      .shader_pool_size = 2,
       .pipeline_pool_size = 1,
       .context = context,
   });

@@ -62,11 +62,17 @@ MD3DERROR d3dReleaseBackBuffer() { return MD3D_OK; }
 
 MD3DERROR d3dGetBackBufferFormat(DWORD *dwFormat) { return MD3D_OK; }
 
-MD3DERROR d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch) { return MD3D_OK; }
+MD3DERROR d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch) {
+  return graphics::get_renderer().d3dLockBackBuffer(lplpSurface, lpdwPitch);
+}
 
-MD3DERROR d3dUnlockBackBuffer() { return MD3D_OK; }
+MD3DERROR d3dUnlockBackBuffer() {
+  return graphics::get_renderer().d3dUnlockBackBuffer();
+}
 
-MD3DERROR d3dFlushBackBuffer(RECT *lprcRect) { return MD3D_OK; }
+MD3DERROR d3dFlushBackBuffer(RECT *lprcRect) {
+  return graphics::get_renderer().d3dFlushBackBuffer(lprcRect);
+}
 
 MD3DERROR d3dSetBackBufferColorKey(DWORD dwColor) { return MD3D_OK; }
 

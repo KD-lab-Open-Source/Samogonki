@@ -491,7 +491,7 @@ int xtInitApplication(void)
 	mch_imageRTO -> SetNumFiles(2);
 	mch_imageRTO -> SetFlag(0,IMG_RTO_INTRO_IMAGE | IMG_RTO_NO_IMAGE);
 //	mch_imageRTO -> SetName("INTRO\\1c_logo.jpg",1);
-	mch_imageRTO -> SetName("INTRO/splash.jpg",1);
+	mch_imageRTO -> SetName("INTRO\\splash.jpg",1);
 	mch_imageRTO -> SetFlag(1,IMG_RTO_START_MUSIC);
 
 	quantRTO = gPtr;
