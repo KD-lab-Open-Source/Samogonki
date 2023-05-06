@@ -4,10 +4,10 @@
 
 #include "renderer.h"
 
-#include <sokol_gfx.h>
-
 #include <cassert>
 
+#include "back_buffer.h"
+#include "texture_manager.h"
 #include "vertex_type.h"
 #include "xtool.h"
 
@@ -15,7 +15,28 @@ using namespace graphics;
 
 float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far);
 
-Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
+Renderer::Renderer() : _backBuffer(std::make_unique<BackBuffer>(800, 600)),
+                       _texture_manager(std::make_unique<TextureManager>()) {
+  _sceneShader = sg_make_shader(scene_shader_desc(sg_query_backend()));
+  if (_sceneShader.id == SG_INVALID_ID) {
+    XAssert("sg_make_shader");
+  }
+
+  {
+    sg_range data = {
+        .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f },
+        .size = 4,
+    };
+    sg_image_desc description = {
+      .width = 1,
+      .height = 1,
+      .usage = SG_USAGE_IMMUTABLE,
+      .pixel_format = SG_PIXELFORMAT_RGBA8,
+    };
+    description.data.subimage[0][0] = data;
+    _nullTexture = sg_make_image(description);
+  }
+
   {
     const auto length = _vertex_count * 3 * sizeof(float);
     _position_buffer.reset(new float[length]);
@@ -57,6 +78,8 @@ Renderer::Renderer() : _texture_manager(std::make_unique<TextureManager>()) {
   }
 }
 
+Renderer::~Renderer() {}
+
 MD3DERROR Renderer::d3dBeginScene() {
   _commands.clear();
   _render_state.reset_texture_stage();
@@ -68,24 +91,6 @@ MD3DERROR Renderer::d3dEndScene() {
   if (_commands.empty()) {
     return MD3D_OK;
   }
-
-  static sg_shader shader = sg_make_shader(samogonki_shader_desc(sg_query_backend()));
-  if (shader.id == SG_INVALID_ID) {
-    ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
-  }
-
-  static sg_range nullData = {
-      .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f},
-      .size = 4,
-  };
-  static sg_image_desc nullImageDesc = {
-    .width = 1,
-    .height = 1,
-    .usage = SG_USAGE_IMMUTABLE,
-    .pixel_format = SG_PIXELFORMAT_RGBA8,
-  };
-  nullImageDesc.data.subimage[0][0] = nullData;
-  static sg_image nullTexture = sg_make_image(nullImageDesc);
 
   auto projection_matrix = make_ortho_projection(0, 800, 600, 0, -1, 1);
   auto vs_params = vs_params_t {};
@@ -120,7 +125,7 @@ MD3DERROR Renderer::d3dEndScene() {
     sg_pipeline_desc pipeline = {};
     sg_bindings bindings = {};
 
-    pipeline.shader = shader;
+    pipeline.shader = _sceneShader;
     pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
 
     switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {
@@ -153,7 +158,7 @@ MD3DERROR Renderer::d3dEndScene() {
     }
 
     for (DWORD i = 0; i < 2; i++) {
-      bindings.fs_images[i] = nullTexture;
+      bindings.fs_images[i] = _nullTexture;
 
       auto texture_handle = command.render_state.get_texture(i);
       if (texture_handle) {
@@ -170,14 +175,14 @@ MD3DERROR Renderer::d3dEndScene() {
         .color_operation_2 = (int) parameters.color_operation_2,
     };
 
-    pipeline.layout.attrs[ATTR_vs_pos].buffer_index = 0;
-    pipeline.layout.attrs[ATTR_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
+    pipeline.layout.attrs[ATTR_scene_vs_pos].buffer_index = 0;
+    pipeline.layout.attrs[ATTR_scene_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
 
-    pipeline.layout.attrs[ATTR_vs_color0].buffer_index = 1;
-    pipeline.layout.attrs[ATTR_vs_color0].format = SG_VERTEXFORMAT_FLOAT4;
+    pipeline.layout.attrs[ATTR_scene_vs_color0].buffer_index = 1;
+    pipeline.layout.attrs[ATTR_scene_vs_color0].format = SG_VERTEXFORMAT_FLOAT4;
 
-    pipeline.layout.attrs[ATTR_vs_uv0].buffer_index = 2;
-    pipeline.layout.attrs[ATTR_vs_uv0].format = SG_VERTEXFORMAT_FLOAT2;
+    pipeline.layout.attrs[ATTR_scene_vs_uv0].buffer_index = 2;
+    pipeline.layout.attrs[ATTR_scene_vs_uv0].format = SG_VERTEXFORMAT_FLOAT2;
 
     bindings.vertex_buffers[0] = sg_position_buffer;
     bindings.vertex_buffers[1] = sg_color_buffer;
@@ -220,6 +225,7 @@ MD3DERROR Renderer::d3dEndScene() {
 
   sg_end_pass();
   sg_commit();
+
   return MD3D_OK;
 }
 
@@ -338,6 +344,23 @@ MD3DERROR Renderer::d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, LPVOID lpvVerti
   d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
   return result;
+}
+
+MD3DERROR Renderer::d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch) {
+  const auto address = _backBuffer->lock();
+  *lplpSurface = address.address;
+  *lpdwPitch = address.pitch;
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::d3dUnlockBackBuffer() {
+  _backBuffer->unlock();
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::d3dFlushBackBuffer(RECT *lprcRect) {
+  _backBuffer->flush();
+  return MD3D_OK;
 }
 
 void Renderer::prepare_render_state(size_t index_count) {

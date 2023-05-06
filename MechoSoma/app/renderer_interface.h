@@ -27,6 +27,10 @@ struct RendererInterface {
   virtual MD3DERROR d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount,
                                          LPWORD lpwIndices, DWORD dwIndexCount, DWORD dwHandleTex0,
                                          DWORD dwHandleTex1) = 0;
+
+  virtual MD3DERROR d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch) = 0;
+  virtual MD3DERROR d3dUnlockBackBuffer() = 0;
+  virtual MD3DERROR d3dFlushBackBuffer(RECT *lprcRect) = 0;
 };
 
 RendererInterface& get_renderer();

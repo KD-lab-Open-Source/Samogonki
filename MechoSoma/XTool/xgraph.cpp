@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 void xtRegisterSysMsgFnc(void (*fPtr)(void*),int id);
 
@@ -523,6 +524,72 @@ void XGR_Screen::capture_screen(char* bmp_name,char* pal_name)
 // HiColor functions...
 void XGR_Screen::putspr16(int x,int y,int sx,int sy,void* p,int mode)
 {
+	int i,j,_x,_y,_x2,_x1,_y1,_sx,_sy,_sx2,sx2,dx = 0,dy = 0,yoffs;
+
+	unsigned short* s_scrBuf,*s_pBuf;
+	unsigned char* c_scrBuf,*c_pBuf;
+
+	if(ClipMode == XGR_CLIP_ALL) mode |= XGR_CLIPPED;
+
+	if(mode & XGR_CLIPPED && !(mode & XGR_NOCLIP)){
+		_x = (x > clipLeft) ? x : clipLeft;
+		_y = (y > clipTop) ? y : clipTop;
+
+		dx = _x - x;
+		dy = _y - y;
+
+		_x1 = (x + sx < clipRight) ? (x + sx) : clipRight;
+		_y1 = (y + sy < clipBottom) ? (y + sy) : clipBottom;
+
+		_sx = _x1 - _x;
+		_sy = _y1 - _y;
+	}
+	else {
+		_x = x;
+		_y = y;
+		_sx = sx;
+		_sy = sy;
+	}
+	if(_sx <= 0 || _sy <= 0) return;
+
+	_x2 = _x << 1;
+	_sx2 = _sx << 1;
+	sx2 = sx << 1;
+
+	if(mode & XGR_BLACK_FON){
+		if(mode & XGR_BOTTOM_UP){
+			c_scrBuf = ScreenBuf + yOffsTable[_y + _sy - 1] + _x2;
+			c_pBuf = ((unsigned char*)p) + (dx << 1) + dy * sx2;
+			for(i = 0; i < _sy; i ++){
+				memcpy(c_scrBuf,c_pBuf,_sx2);
+				c_scrBuf -= yStrOffs;
+				c_pBuf += sx2;
+			}
+		}
+		else {
+			c_scrBuf = ScreenBuf + yOffsTable[_y] + _x2;
+			c_pBuf = ((unsigned char*)p) + (dx << 1) + dy * sx2;
+			for(i = 0; i < _sy; i ++){
+				memcpy(c_scrBuf,c_pBuf,_sx2);
+				c_scrBuf += yStrOffs;
+				c_pBuf += sx2;
+			}
+		}
+	}
+	else {
+		yoffs = yStrOffs >> 1;
+		s_scrBuf = (unsigned short*)(ScreenBuf + yOffsTable[_y]) + _x;
+		s_pBuf = ((unsigned short*)p) + dx + dy * sx;
+		for(i = 0; i < _sy; i ++){
+			for(j = 0; j < _sx; j ++){
+				if(s_pBuf[j]){
+					s_scrBuf[j] = s_pBuf[j];
+				}
+			}
+			s_scrBuf += yoffs;
+			s_pBuf += sx;
+		}
+	}
 }
 
 void XGR_Screen::putspr16a(int x,int y,int sx,int sy,void* p,int mode,int alpha)
