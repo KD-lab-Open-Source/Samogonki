@@ -109,7 +109,7 @@ struct MusicPlayer::Internal {
 
     const auto result = ma_engine_init(&config, &engine);
     if (result != MA_SUCCESS) {
-      throw std::runtime_error("ma_engine_init");
+      XAssert("ma_engine_init");
     }
   }
 

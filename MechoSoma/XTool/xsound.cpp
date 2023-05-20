@@ -1,7 +1,6 @@
 #include "xsound.h"
 
 #include <cassert>
-#include <cstdio>
 
 #include "music_player.h"
 #include "sound_manager.h"
@@ -14,14 +13,10 @@ int SoundInit(int maxHZ, int digMode, int channels) {
     return 0;
   }
 
-  try {
-    soundManager = std::make_unique<SoundManager>(maxHZ, channels);
-    musicPlayer = std::make_unique<MusicPlayer>();
-    return 1;
-  } catch (const std::exception &e) {
-    printf("ERROR: %s\n", e.what());
-    return 0;
-  }
+  soundManager = std::make_unique<SoundManager>(maxHZ, channels);
+  musicPlayer = std::make_unique<MusicPlayer>();
+
+  return 1;
 }
 
 void SoundPlay(void *lpDSB, int channel, int priority, int cropos, int flags) {
@@ -46,11 +41,7 @@ void *GetSound(int channel) { return soundManager ? soundManager->getSound(chann
 
 void SoundLoad(char *filename, void **lpDSB) {
   assert(soundManager != nullptr);
-  try {
-    *lpDSB = soundManager->loadSound(filename);
-  } catch (const std::exception &e) {
-    printf("ERROR: %s\n", e.what());
-  }
+  *lpDSB = soundManager->loadSound(filename);
 }
 
 void SoundFinit() { soundManager = nullptr; }
@@ -114,16 +105,7 @@ void xsInitCD() {}
 void xsMixerOpen() {}
 
 bool PlayMusic(const char *filename, bool looping) {
-  if (!musicPlayer) {
-    return false;
-  }
-
-  try {
-    return musicPlayer->play(filename, looping);
-  } catch (const std::exception &e) {
-    printf("ERROR: %s\n", e.what());
-    return false;
-  }
+  return musicPlayer ? musicPlayer->play(filename, looping) : false;
 }
 
 void StopMusic() {

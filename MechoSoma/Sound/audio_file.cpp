@@ -95,7 +95,7 @@ struct AudioFile::Internal {
   unsigned int getAudioStreamIndex() {
     const auto result = avformat_find_stream_info(context, nullptr);
     if (result < 0) {
-      throw std::runtime_error("avformat_find_stream_info");
+      XAssert("avformat_find_stream_info");
     }
 
     for (unsigned int i = 0; i < context->nb_streams; i++) {
