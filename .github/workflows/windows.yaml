@@ -53,9 +53,6 @@ jobs:
         cp -r build/lib ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
       working-directory: ffmpeg
 
-    - name: Download miniaudio
-      run: git clone --depth 1 --branch 0.11.15 https://github.com/mackron/miniaudio.git ${{github.workspace}}/3rdparty/miniaudio
-
     - shell: msys2 {0}
       run: |
         mkdir build-mingw
