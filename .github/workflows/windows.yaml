@@ -60,6 +60,10 @@ jobs:
         cmake -G "Unix Makefiles" ..
         make -j4
         cd ..
+    - name: prepare release folder
+      run: |
+        msys2 -c 'cp /mingw64/bin/libiconv-2.dll build-mingw/MechoSoma/'
+        msys2 -c 'cp /mingw64/bin/zlib1.dll build-mingw/MechoSoma/'
     - name: publish artifact
       uses: actions/upload-artifact@v2
       with:
