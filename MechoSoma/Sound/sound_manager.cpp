@@ -89,11 +89,11 @@ struct BufferDataSource final {
 
     channels = file.getChannels();
     if (channels != 1) {
-      XAssert("moni audio expected");
+      throw std::runtime_error("mono audio expected");
     }
     sampleRate = file.getSampleRate();
     if (sampleRate != 22050) {
-      XAssert("22050 sample rate expected");
+      throw std::runtime_error("22050 sample rate expected");
     }
   }
 
