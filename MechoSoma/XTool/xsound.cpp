@@ -13,7 +13,7 @@ int SoundInit(int maxHZ, int digMode, int channels) {
     return 0;
   }
 
-  soundManager = std::make_unique<SoundManager>(maxHZ, channels);
+  soundManager = std::make_unique<SoundManager>(maxHZ, 32);
   musicPlayer = std::make_unique<MusicPlayer>();
 
   return 1;
@@ -41,7 +41,11 @@ void *GetSound(int channel) { return soundManager ? soundManager->getSound(chann
 
 void SoundLoad(char *filename, void **lpDSB) {
   assert(soundManager != nullptr);
-  *lpDSB = soundManager->loadSound(filename);
+  try {
+    *lpDSB = soundManager->loadSound(filename);
+  } catch (const std::exception &e) {
+    *lpDSB = nullptr;
+  }
 }
 
 void SoundFinit() { soundManager = nullptr; }
