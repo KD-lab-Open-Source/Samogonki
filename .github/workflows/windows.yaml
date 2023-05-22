@@ -64,6 +64,7 @@ jobs:
       run: |
         msys2 -c 'cp /mingw64/bin/libiconv-2.dll build-mingw/MechoSoma/'
         msys2 -c 'cp /mingw64/bin/zlib1.dll build-mingw/MechoSoma/'
+        msys2 -c 'cp /mingw64/bin/libgcc_s_seh-1.dll vangers/bin/'
     - name: publish artifact
       uses: actions/upload-artifact@v2
       with:
