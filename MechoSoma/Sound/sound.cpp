@@ -738,7 +738,7 @@ void mchInitSound(void)
 	if(!XGR_hWnd) d3dGetWindowHandle(&(HWND&)XGR_hWnd);
 
 	mch_sndD = new mchSoundDispatcher;
-	if(!SoundInit(EFFECT_KHZ,DIG_F_STEREO_16,16)){
+	if(!SoundInit(EFFECT_KHZ,DIG_F_STEREO_16,32)){
 		XCon < "\nInitialization of sound failed, mute mode accepted...\n";
 		mchSoundMute = 1;
 		return;
