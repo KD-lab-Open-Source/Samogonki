@@ -14,6 +14,7 @@ class AudioFile final {
 
   int getSampleRate() const;
   int getChannels() const;
+  int getLengthInSamples() const;
 
  private:
   struct Internal;

@@ -15,7 +15,6 @@ class MusicPlayer final {
   enum class Status { stop, play, pause };
   Status getStatus();
 
-  int getVolume();
   void setVolume(int volume);
   int getLengthInSamples();
 

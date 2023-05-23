@@ -565,11 +565,7 @@ void mchIntroMovieDispatcher::init_texts(void)
 		while(p1){
 			mpeg_name.init();
 			mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= i + 1 < "_" <= id + 1 < ".mp+";
-			int volume_temp = GetMusicVolume();
-			SetMusicVolume(0);
 			PlayMusic(mpeg_name, false);
-			StopMusic();
-			SetMusicVolume(volume_temp);
 			len = GetMusicLengthInSamples();
 
 			if(len != -1)
