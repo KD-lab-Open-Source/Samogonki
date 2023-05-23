@@ -174,7 +174,13 @@ SoundManager::SoundManager(int sampleRate, int channels)
 
 SoundManager::~SoundManager() {}
 
-void *SoundManager::loadSound(const char *filename) { return _internal->loadSound(filename); }
+void *SoundManager::loadSound(const char *filename) {
+  try {
+    return _internal->loadSound(filename);
+  } catch (const std::exception &e) {
+    return nullptr;
+  }
+}
 
 void SoundManager::playSound(void *soundAddress, int channelIndex, int priority, int cropos, int flags) {
   assert(soundAddress != nullptr);
