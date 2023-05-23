@@ -146,8 +146,6 @@ int GetMusicStatus() {
   return XCD_STOPPED;
 }
 
-int GetMusicVolume() { return musicPlayer ? musicPlayer->getVolume() : 0; }
-
 void SetMusicVolume(int volume) {
   if (musicPlayer) {
     musicPlayer->setVolume(volume);

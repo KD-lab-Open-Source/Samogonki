@@ -106,6 +106,10 @@ struct Sound {
 
   explicit Sound(const std::string &path) : dataSource(path) {}
 
+  ~Sound() {
+    ma_sound_uninit(&sound);
+  }
+
   void setVolume(int volume) {
     // value is measured in hundredths of a decibel (dB), in the range of -10000 to 10000
     auto gain = static_cast<float>(volume) + 10000.0f;
@@ -212,6 +216,7 @@ void SoundManager::playSound(void *soundAddress, int channelIndex, int priority,
 
 void SoundManager::releaseSound(void *soundAddress) {
   assert(soundAddress != nullptr);
+  printf("SoundManager::releaseSound\n");
 
   auto sound = static_cast<Sound *>(soundAddress);
   auto found = std::find_if(_internal->sounds.begin(), _internal->sounds.end(),
@@ -284,6 +289,7 @@ void SoundManager::setSoundPan(int channelIndex, int panning) {
 
 void SoundManager::stopSound(int channelIndex) {
   assert(channelIndex < _internal->channels.size());
+  printf("SoundManager::stopSound\n");
 
   auto &channel = _internal->channels[channelIndex];
   if (channel.sound) {

@@ -69,7 +69,6 @@ void StopMusic();
 void PauseMusic();
 void ResumeMusic();
 int GetMusicStatus();
-int GetMusicVolume();
 void SetMusicVolume(int volume);
 int GetMusicLengthInSamples();
 

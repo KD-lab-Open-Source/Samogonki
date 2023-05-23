@@ -157,6 +157,8 @@ struct AudioFile::Internal {
   int getSampleRate() const { return context->streams[streamIndex]->codecpar->sample_rate; }
 
   int getChannels() const { return context->streams[streamIndex]->codecpar->channels; }
+
+  int getLengthInSamples() const { return static_cast<int>(context->duration) / AV_TIME_BASE * getSampleRate(); }
 };
 
 AudioFile::AudioFile(const std::filesystem::path &path) : _internal(std::make_unique<Internal>(path)) {}
@@ -168,3 +170,5 @@ bool AudioFile::read(std::vector<float> &buffer) { return _internal->read(buffer
 int AudioFile::getSampleRate() const { return _internal->getSampleRate(); }
 
 int AudioFile::getChannels() const { return _internal->getChannels(); }
+
+int AudioFile::getLengthInSamples() const { return _internal->getLengthInSamples(); }

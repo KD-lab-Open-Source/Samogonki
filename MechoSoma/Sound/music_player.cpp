@@ -94,6 +94,10 @@ struct File {
 
   explicit File(const std::string &path) : dataSource(path) {}
 
+  ~File() {
+      ma_sound_uninit(&sound);
+  }
+
   ma_sound *get_sound() { return &sound; }
 };
 
@@ -123,7 +127,6 @@ struct MusicPlayer::Internal {
   void play(const std::string &path, bool looping) {
     stop();
 
-    ma_engine_stop(&engine);
     file = std::make_unique<File>(path);
 
     const auto result = ma_sound_init_from_data_source(&engine, &file->dataSource, 0, nullptr, &file->sound);
@@ -133,8 +136,6 @@ struct MusicPlayer::Internal {
 
     ma_sound_set_looping(file->get_sound(), looping);
     ma_sound_start(file->get_sound());
-
-    ma_engine_start(&engine);
   }
 
   void stop() {
@@ -178,14 +179,6 @@ void MusicPlayer::resume() {
 
 MusicPlayer::Status MusicPlayer::getStatus() { return _status; }
 
-int MusicPlayer::getVolume() {
-  if (_internal->file) {
-    const auto volume = ma_sound_get_volume(_internal->file->get_sound());
-    return static_cast<int>(volume * 255.0f);
-  }
-  return 0;
-}
-
 void MusicPlayer::setVolume(int volume) {
   if (_internal->file) {
     // 0..255
@@ -195,8 +188,7 @@ void MusicPlayer::setVolume(int volume) {
 
 int MusicPlayer::getLengthInSamples() {
   if (_internal->file) {
-    const auto length = ma_sound_get_time_in_pcm_frames(_internal->file->get_sound());
-    return static_cast<int>(length);
+    return _internal->file->dataSource.file.getLengthInSamples();
   }
   return 0;
 }
