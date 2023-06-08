@@ -526,6 +526,8 @@ set(APPLICATION_SOURCES
     app/keyboard_codes.h
     app/main.cpp
     app/md3d.cpp
+    app/offscreen_buffer.cpp
+    app/offscreen_buffer.h
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
