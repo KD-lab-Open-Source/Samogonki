@@ -16,6 +16,7 @@
 int _id;
 int _previous_id;
 XRuntimeObject* _current_rto;
+int _last_clock = 0;
 
 std::unique_ptr<graphics::Renderer> graphics::Renderer::shared;
 
@@ -29,7 +30,7 @@ void onInit() {
   sg_setup(sg_desc {
       .buffer_pool_size = 8,
       .image_pool_size = max_textures_count,
-      .shader_pool_size = 2,
+      .shader_pool_size = 3,
       .pipeline_pool_size = 1,
       .context = context,
   });
@@ -37,6 +38,8 @@ void onInit() {
     ErrH.Abort("sg_setup", XERR_USER, 0, "");
   }
   graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
+
+  initclock();
 
   _previous_id = 0;
   _id = xtInitApplication();
@@ -48,13 +51,26 @@ void onFrame() {
     _current_rto->Init(_previous_id);
     _previous_id = _id;
     _id = 0;
+    _last_clock = clocki();
   } else {
-    _id = _current_rto->Quant();
+    if (_current_rto->Timer) {
+      const auto clock_now = clocki();
+      const auto clock_delta = clock_now - _last_clock;
+      if (clock_delta >= _current_rto->Timer) {
+        _last_clock = clock_now - (clock_delta - _current_rto->Timer) % _current_rto->Timer;
+        _id = _current_rto->Quant();
+      }
+    } else {
+      _id = _current_rto->Quant();
+    }
+
     if (_id) {
       _current_rto->Finit();
       _current_rto = xtGetRuntimeObject(_id);
     }
   }
+
+  graphics::Renderer::shared->flush();
 }
 
 void onCleanup() {}

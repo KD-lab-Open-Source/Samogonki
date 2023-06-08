@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include "back_buffer.h"
+#include "offscreen_buffer.h"
 #include "texture_manager.h"
 #include "vertex_type.h"
 #include "xtool.h"
@@ -15,7 +16,8 @@ using namespace graphics;
 
 float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far);
 
-Renderer::Renderer() : _backBuffer(std::make_unique<BackBuffer>(800, 600)),
+Renderer::Renderer() : _offscreenBuffer(std::make_unique<OffscreenBuffer>(800, 600)),
+                       _backBuffer(std::make_unique<BackBuffer>(800, 600)),
                        _texture_manager(std::make_unique<TextureManager>()) {
   _sceneShader = sg_make_shader(scene_shader_desc(sg_query_backend()));
   if (_sceneShader.id == SG_INVALID_ID) {
@@ -80,6 +82,10 @@ Renderer::Renderer() : _backBuffer(std::make_unique<BackBuffer>(800, 600)),
 
 Renderer::~Renderer() {}
 
+void Renderer::flush() {
+  _offscreenBuffer->flush();
+}
+
 MD3DERROR Renderer::d3dBeginScene() {
   _commands.clear();
   _render_state.reset_texture_stage();
@@ -99,8 +105,12 @@ MD3DERROR Renderer::d3dEndScene() {
   }
   delete[] projection_matrix;
 
-  // TODO: set actual screen size
-  sg_begin_default_pass(defaultPassAction, 800, 600);
+  sg_begin_pass(_offscreenBuffer->getRenderingPass(), defaultPassAction);
+
+  if (_is_back_buffer_flush) {
+    _backBuffer->flush();
+    _is_back_buffer_flush = false;
+  }
 
   sg_update_buffer(sg_position_buffer, sg_range{
                                            .ptr = _position_buffer.get(),
@@ -150,11 +160,54 @@ MD3DERROR Renderer::d3dEndScene() {
 
     if (command.render_state.get_option(D3DRENDERSTATE_ALPHABLENDENABLE)) {
       pipeline.colors[0].blend.enabled = true;
-      pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+
+      const auto source_blend = command.render_state.get_option(D3DRENDERSTATE_SRCBLEND);
+      switch (source_blend) {
+        case D3DBLEND_SRCALPHA:
+          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
+          break;
+
+        case D3DBLEND_INVSRCALPHA:
+          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+          break;
+
+        case D3DBLEND_ONE:
+          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE;
+          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
+          break;
+
+        default:
+          break;
+      }
+
+      const auto destination_blend = command.render_state.get_option(D3DRENDERSTATE_DESTBLEND);
+      switch (destination_blend) {
+        case D3DBLEND_SRCALPHA:
+          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
+          break;
+
+        case D3DBLEND_INVSRCALPHA:
+      pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
       pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
 
       pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
-      pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+
+      pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
+          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+          break;
+
+        case D3DBLEND_ONE:
+          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE;
+          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
+          break;
+
+        default:
+          break;
+      }
     }
 
     for (DWORD i = 0; i < 2; i++) {
@@ -253,6 +306,7 @@ MD3DERROR Renderer::d3dSetTextureStageState(DWORD dwStage, D3DTEXTURESTAGESTATET
   _render_state.set_texture_stage_state(dwStage, dwState, dwValue);
   return MD3D_OK;
 }
+
 MD3DERROR Renderer::d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount) {
   // The system uses vertices v2, v3, and v1 to draw the first triangle;
   // v3, v4, and v1 to draw the second triangle; v4, v5, and v1 to draw the third triangle; and so on.
@@ -272,6 +326,7 @@ MD3DERROR Renderer::d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, D
 
   return MD3D_OK;
 }
+
 MD3DERROR Renderer::d3dTrianglesIndexed(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount,
                                         LPWORD lpwIndices, DWORD dwIndexCount) {
   prepare_render_state(dwVertexCount);
@@ -359,7 +414,7 @@ MD3DERROR Renderer::d3dUnlockBackBuffer() {
 }
 
 MD3DERROR Renderer::d3dFlushBackBuffer(RECT *lprcRect) {
-  _backBuffer->flush();
+  _is_back_buffer_flush = true;
   return MD3D_OK;
 }
 

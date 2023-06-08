@@ -58,9 +58,9 @@ void main() {
 
 @program scene scene_vs scene_fs
 
-// Back Buffer program
+// Quad vertex shader
 
-@vs back_buffer_vs
+@vs quad_vs
 
 out vec2 uv;
 
@@ -81,6 +81,8 @@ void main() {
     uv = triangle_uv(gl_VertexIndex);
 }
 @end
+
+// Back Buffer program
 
 @fs back_buffer_fs
 
@@ -115,4 +117,21 @@ void main() {
 
 @end
 
-@program back_buffer back_buffer_vs back_buffer_fs
+@program back_buffer quad_vs back_buffer_fs
+
+// Flush program
+
+@fs flush_fs
+
+in vec2 uv;
+
+uniform sampler2D offscreen_texture;
+
+out vec4 result_color;
+void main() {
+    result_color = texture(offscreen_texture, uv);
+}
+
+@end
+
+@program flush quad_vs flush_fs

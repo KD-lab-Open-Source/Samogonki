@@ -14,19 +14,18 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
     XAssert("sg_make_shader");
   }
 
-  sg_image_desc description = {
-      .width = width,
-      .height = height,
-      .usage = SG_USAGE_DYNAMIC,
-      .pixel_format = SG_PIXELFORMAT_R16UI
-  };
+  sg_image_desc description = {};
+  description.width = width;
+  description.height = height;
+  description.usage = SG_USAGE_DYNAMIC;
+  description.pixel_format = SG_PIXELFORMAT_R16UI;
   _texture = sg_make_image(description);
 
-  _dummyBuffer = sg_make_buffer(sg_buffer_desc{
-      .size = 1,
-      .type = SG_BUFFERTYPE_VERTEXBUFFER,
-      .usage = SG_USAGE_DYNAMIC,
-  });
+  sg_buffer_desc buffer_description{};
+  buffer_description.size = 1;
+  buffer_description.type = SG_BUFFERTYPE_VERTEXBUFFER;
+  buffer_description.usage = SG_USAGE_DYNAMIC;
+  _dummyBuffer = sg_make_buffer(buffer_description);
 }
 
 BackBuffer::Address BackBuffer::lock() {
@@ -51,9 +50,6 @@ void BackBuffer::unlock() {
 void BackBuffer::flush() {
   assert(!_isLocked);
 
-  sg_pass_action defaultPassAction = {};
-  sg_begin_default_pass(defaultPassAction, _width, _height);
-
   sg_pipeline_desc description = {};
   description.shader = _quadShader;
   description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
@@ -68,7 +64,4 @@ void BackBuffer::flush() {
   sg_apply_bindings(bindings);
   sg_draw(0, 3, 1);
   sg_destroy_pipeline(pipeline);
-
-  sg_end_pass();
-  sg_commit();
 }

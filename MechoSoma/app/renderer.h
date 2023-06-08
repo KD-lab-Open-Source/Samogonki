@@ -18,6 +18,7 @@
 namespace graphics {
 
 class BackBuffer;
+class OffscreenBuffer;
 class TextureManager;
 
 class Renderer final : public RendererInterface {
@@ -31,6 +32,8 @@ class Renderer final : public RendererInterface {
   Renderer(Renderer&&) = delete;
   Renderer& operator=(const Renderer&) = delete;
   Renderer& operator=(Renderer&&) = delete;
+
+  void flush();
 
   TextureManagerInterface& get_texture_manager() override;
 
@@ -73,13 +76,11 @@ class Renderer final : public RendererInterface {
   sg_buffer sg_uv_buffer;
   sg_buffer sg_index_buffer;
 
+  std::unique_ptr<OffscreenBuffer> _offscreenBuffer;
   std::unique_ptr<BackBuffer> _backBuffer;
   std::unique_ptr<TextureManager> _texture_manager;
 
   sg_pass_action defaultPassAction = {};
-  sg_pipeline defaultPipeline;
-  sg_pipeline blendingPipeline;
-
   d3d::RenderState _render_state;
 
   struct BufferView
@@ -106,6 +107,7 @@ class Renderer final : public RendererInterface {
   };
 
   std::vector<DrawCommand> _commands;
+  bool _is_back_buffer_flush = false;
 };
 
 }  // namespace graphics
