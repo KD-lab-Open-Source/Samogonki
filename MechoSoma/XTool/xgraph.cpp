@@ -5,9 +5,11 @@
 #include <cstdlib>
 #include <cstring>
 
-void xtRegisterSysMsgFnc(void (*fPtr)(void*),int id);
+#include <SDL2/SDL.h>
 
-void XGR_MouseFnc(void* p);
+void xtRegisterSysMsgFnc(void (*fPtr)(SDL_Event *), int id);
+
+void XGR_MouseFnc(SDL_Event *p);
 
 XGR_Screen XGR_Obj;
 XGR_Mouse XGR_MouseObj;
@@ -156,7 +158,7 @@ void XGR_Mouse::Init(int x, int y, int sx, int sy, int num, void* p)
 
 	if (!XGR_SysMsgFlag)
 	{
-		// TODO xtRegisterSysMsgFnc(XGR_MouseFnc, 0);
+		xtRegisterSysMsgFnc(XGR_MouseFnc, 0);
 		XGR_SysMsgFlag = 1;
 	}
 
@@ -642,7 +644,52 @@ void XGR_OutText(int x,int y,int col,const char* text,int font,int hspace,int vs
 {
 }
 
-void XGR_MouseFnc(void* p)
+void XGR_MouseFnc(SDL_Event *p)
 {
-	// TODO
+	if (p->type == SDL_MOUSEMOTION) {
+		const auto x = p->motion.x;
+		const auto y = p->motion.y;
+
+		const auto x1 = XGR_MouseObj.PosX;
+		const auto y1 = XGR_MouseObj.PosY;
+
+		XGR_MouseObj.InitPos(x, y);
+
+		XGR_MouseObj.MovementX = x - x1;
+		XGR_MouseObj.MovementY = y - y1;
+
+		XGR_MouseObj.Move(0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+		if (XGR_MouseVisible()) {
+			XGR_MouseRedraw();
+		}
+	} else if (p->type == SDL_MOUSEBUTTONDOWN || p->type == SDL_MOUSEBUTTONUP) {
+		const auto x = p->motion.x;
+		const auto y = p->motion.y;
+
+		int button = 0;
+		switch (p->button.button) {
+			case SDL_BUTTON_LEFT:
+				button = XGM_LEFT_BUTTON;
+				break;
+
+			case SDL_BUTTON_MIDDLE:
+				button = XGM_MIDDLE_BUTTON;
+				break;
+
+			case SDL_BUTTON_RIGHT:
+				button = XGM_RIGHT_BUTTON;
+				break;
+
+			default:
+				break;
+		}
+
+		XGR_MouseInitPos(x, y);
+		if (p->type == SDL_MOUSEBUTTONDOWN) {
+			XGR_MousePress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+		}
+		if (p->type == SDL_MOUSEBUTTONUP) {
+			XGR_MouseUnPress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+		}
+	}
 }

@@ -19,7 +19,7 @@ void KBD_init(void)
 	if(!KeyBuf)
 		KeyBuf = new KeyBuffer;
 
-	// XKey.init(key,unpress_key);
+	XKey.init(reinterpret_cast<void*>(key),reinterpret_cast<void*>(unpress_key));
 }
 
 void key(int key)

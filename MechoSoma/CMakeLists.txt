@@ -492,6 +492,20 @@ if (APPLE)
     link_directories(../3rdparty/libjpeg-turbo/lib)
 endif()
 
+add_library(${LIBRARY_NAME} ${GAME_SOURCES})
+target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
+
+set_target_properties(${LIBRARY_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
+
+include_directories(../3rdparty/sokol)
+
+include_directories(../3rdparty/SDL-2.26.5/include)
+link_directories(../3rdparty/SDL-2.26.5/lib)
+
 include_directories(../3rdparty/FFmpeg-n4.3.6/include)
 link_directories(../3rdparty/FFmpeg-n4.3.6/lib)
 
@@ -501,29 +515,15 @@ find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
 
 if (WIN32)
-    SET(BCRYPT_LIBRARY bcrypt)
+    set(BCRYPT_LIBRARY bcrypt)
+    set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32)
 endif(WIN32)
 
-add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY})
-
-set_target_properties(
-    ${LIBRARY_NAME}
-    PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
-
-include_directories(../3rdparty/sokol)
+set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES})
 
 set(APPLICATION_SOURCES
-    app/app.cpp
-    app/app.h
     app/back_buffer.cpp
     app/back_buffer.h
-    app/keyboard_codes.cpp
-    app/keyboard_codes.h
     app/main.cpp
     app/md3d.cpp
     app/offscreen_buffer.cpp
@@ -531,30 +531,29 @@ set(APPLICATION_SOURCES
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
-    app/renderer_interface.h
     app/sokol-shader.h
     app/texture_manager.cpp
     app/texture_manager.h
-    app/texture_manager_interface.h
     app/vertex_type.h
 )
 
 if (MINGW)
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
-    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME})
+    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})
     target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
     add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
             COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${CMAKE_CURRENT_BINARY_DIR}"
             COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
 elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
-    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME}
+    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES}
             X11 Xi Xcursor GL dl pthread)
 elseif (APPLE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
-    target_compile_definitions(${APPLICATION_NAME} PRIVATE SOKOL_GLCORE33)
     target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
     target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++
-            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL"
-            objc ${LIBRARY_NAME})
+            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL" 
+            "-framework CoreAudio" "-framework AudioToolbox" "-framework ForceFeedback" "-framework CoreHaptics"
+            "-framework GameController" "-framework IOKit" "-framework Carbon" "-framework Metal"
+            objc ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})
 endif(MINGW)

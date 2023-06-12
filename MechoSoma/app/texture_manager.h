@@ -5,19 +5,22 @@
 #ifndef MOONSHINE_RUNNERS_TEXTURE_MANAGER_H
 #define MOONSHINE_RUNNERS_TEXTURE_MANAGER_H
 
-#include "texture_manager_interface.h"
-
 #include <memory>
 #include <vector>
 #include <unordered_map>
 
 #include <sokol_gfx.h>
 
+#include "Md3d.h"
+
 namespace graphics
 {
 
-class TextureManager final : public TextureManagerInterface
+class TextureManager final
 {
+ public:
+  static constexpr unsigned int max_textures_count = 2048;
+
  public:
   TextureManager();
 
@@ -29,10 +32,10 @@ class TextureManager final : public TextureManagerInterface
   TextureManager& operator=(const TextureManager&) = delete;
   TextureManager& operator=(TextureManager&&) = delete;
 
-  MD3DERROR d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUREFORMAT* pData) override;
-  MD3DERROR d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle) override;
-  MD3DERROR d3dDeleteTexture(DWORD dwHandle) override;
-  MD3DERROR d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWORD* lpPitch) override;
+  MD3DERROR d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUREFORMAT* pData);
+  MD3DERROR d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle);
+  MD3DERROR d3dDeleteTexture(DWORD dwHandle);
+  MD3DERROR d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWORD* lpPitch);
   MD3DERROR d3dLockTexture(
       DWORD dwHandle,
       DWORD dwLeft,
@@ -41,8 +44,8 @@ class TextureManager final : public TextureManagerInterface
       DWORD dwBottom,
       VOID** lplpTexture,
       DWORD* lpPitch
-  ) override;
-  MD3DERROR d3dUnlockTexture(DWORD dwHandle) override;
+  );
+  MD3DERROR d3dUnlockTexture(DWORD dwHandle);
 
  private:
   struct TextureEntry

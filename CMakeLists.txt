@@ -38,9 +38,8 @@ add_subdirectory(3rdparty/iniparser)
 
 add_subdirectory(MechoSoma)
 
-set_target_properties(${APPLICATION_NAME}
-        PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
-        )
+set_target_properties(${APPLICATION_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)

@@ -3,7 +3,6 @@
 //
 
 #include "texture_manager.h"
-#include "app.h"
 
 #include <array>
 #include <algorithm>

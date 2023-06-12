@@ -60,7 +60,7 @@ struct AudioFile::Internal {
     }
 
     if (context != nullptr) {
-      avformat_free_context(context);
+      avformat_close_input(&context);
     }
   }
 
