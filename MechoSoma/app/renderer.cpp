@@ -12,13 +12,34 @@
 #include "vertex_type.h"
 #include "xtool.h"
 
+void graphics::setupRenderer() {
+  graphics::Renderer::shared = std::make_unique<graphics::Renderer>();
+}
+
 using namespace graphics;
 
 float* make_ortho_projection(float left, float right, float bottom, float top, float near, float far);
 
-Renderer::Renderer() : _offscreenBuffer(std::make_unique<OffscreenBuffer>(800, 600)),
-                       _backBuffer(std::make_unique<BackBuffer>(800, 600)),
-                       _texture_manager(std::make_unique<TextureManager>()) {
+Renderer::Renderer() {
+  auto context = sg_context_desc {
+    .color_format = SG_PIXELFORMAT_RGBA8,
+    .depth_format = SG_PIXELFORMAT_DEPTH
+  };
+  sg_setup(sg_desc {
+    .buffer_pool_size = 8,
+    .image_pool_size = TextureManager::max_textures_count,
+    .shader_pool_size = 3,
+    .pipeline_pool_size = 1,
+    .context = context
+  });
+  if (!sg_isvalid()) {
+    ErrH.Abort("sg_setup", XERR_USER, 0, "");
+  }
+
+  _offscreenBuffer = std::make_unique<OffscreenBuffer>(800, 600);
+  _backBuffer = std::make_unique<BackBuffer>(800, 600);
+  _texture_manager = std::make_unique<TextureManager>();
+
   _sceneShader = sg_make_shader(scene_shader_desc(sg_query_backend()));
   if (_sceneShader.id == SG_INVALID_ID) {
     XAssert("sg_make_shader");
@@ -82,8 +103,12 @@ Renderer::Renderer() : _offscreenBuffer(std::make_unique<OffscreenBuffer>(800, 6
 
 Renderer::~Renderer() {}
 
-void Renderer::flush() {
+TextureManager& Renderer::get_texture_manager() { return *_texture_manager; }
+
+MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
   _offscreenBuffer->flush();
+  swapWindow();
+  return MD3D_OK;
 }
 
 MD3DERROR Renderer::d3dBeginScene() {
@@ -488,8 +513,6 @@ void Renderer::add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index) {
 
   last_command.vertex_buffer_view.length += 1;
 }
-
-TextureManagerInterface& Renderer::get_texture_manager() { return *_texture_manager; }
 
 float* matrix_make_rows(float m00, float m10, float m20, float m30, float m01, float m11, float m21, float m31,
                         float m02, float m12, float m22, float m32, float m03, float m13, float m23, float m33) {
