@@ -1,7 +1,7 @@
 // Scene program
 
 @vs scene_vs
-uniform vs_params {
+uniform scene_vs_params {
     mat4 projection_matrix;
 };
 
@@ -13,16 +13,19 @@ out vec4 color;
 out vec2 uv;
 
 void main() {
-    gl_Position = projection_matrix * vec4(pos, 1.0f);
+    gl_Position = projection_matrix * vec4(pos.x, pos.y, 0.0f, 1.0f);
+    gl_Position.z = pos.z;
     color = color0;
     uv = uv0;
 }
 @end
 
 @fs scene_fs
-uniform fs_params {
+uniform scene_fs_params {
     int color_operation_1;
     int color_operation_2;
+    int alpha_test_enabled;
+    int alpha_reference;
 };
 
 in vec4 color;
@@ -52,6 +55,10 @@ void main() {
     // s_clamp
     if (color_operation_2 == 2 /* Modulate */) {
         result_color *= texture(texture_2, uv);
+    }
+
+    if (alpha_test_enabled != 0 && (255.0f * result_color.a) < alpha_reference) {
+        discard;
     }
 }
 @end
@@ -121,6 +128,20 @@ void main() {
 
 // Flush program
 
+@vs flush_vs
+uniform flush_vs_params {
+    float max_x;
+};
+
+out vec2 uv;
+void main() {
+    uv.x = float(((uint(gl_VertexIndex) + 2u) / 3u) % 2u);
+    uv.y = float(((uint(gl_VertexIndex) + 1u) / 3u) % 2u);
+    gl_Position = vec4(clamp(-1.0f + 2.0f * uv.x, -max_x, max_x), -1.0f + 2.0f * uv.y, 0, 1.0f);
+}
+
+@end
+
 @fs flush_fs
 
 in vec2 uv;
@@ -134,4 +155,4 @@ void main() {
 
 @end
 
-@program flush quad_vs flush_fs
+@program flush flush_vs flush_fs

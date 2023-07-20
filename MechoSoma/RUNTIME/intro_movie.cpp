@@ -57,9 +57,9 @@ const float IMG_SCALE_Y = 480.0f / (256.0f * float(IMG_PY)) + 0.005f;
 mchIntroMovieDispatcher* mch_introMovieD = NULL;
 RandomGenerator im_random_generator;
 
-DWORD im_d3dTexMode = D3DTEXFMT_RGB565;
+uint32_t im_d3dTexMode = D3DTEXFMT_RGB565;
 M3DTEXTUREFORMAT im_d3dTexFmt;
-DWORD im_d3dSprite[IMG_PX * IMG_PY * 2];
+uint32_t im_d3dSprite[IMG_PX * IMG_PY * 2];
 
 int mchIntroMovieActive = 0;
 
@@ -126,7 +126,7 @@ void mchIntroMovieImage::load_image(int sl)
 
 	fh.close();
 
-	DWORD pitch;
+	uint32_t pitch;
 	void* spr_buf;
 
 	unsigned short* uspr_buf;

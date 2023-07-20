@@ -2557,7 +2557,7 @@ void ShowImageRTO::Init(int id)
 
 	unsigned short* ptr;
 
-	HWND hWnd;
+	void *hWnd;
 
 	txtScrollY = 0;
 	txtScrollDelta = 10.0f;
@@ -2611,7 +2611,7 @@ void ShowImageRTO::Init(int id)
 		}
 		mch_imgVideoObj.Open(fileNames[curFile]);
 
-		hWnd=(HWND)XGR_hWnd;
+		hWnd=XGR_hWnd;
 		if(!hWnd) d3dGetWindowHandle(&hWnd);
 
 		if(Flags[curFile] & IMG_RTO_AVI_FULLSCREEN){

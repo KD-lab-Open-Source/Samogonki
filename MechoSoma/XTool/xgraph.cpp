@@ -37,6 +37,9 @@ int XGR_COLOR_MASK_B = 0;
 int XGR_HighColorMode = 0;
 int XGR_SysMsgFlag = 0;
 
+float XGR_WindowScaleX = 0.0f;
+float XGR_WindowScaleY = 0.0f;
+
 #define XGR_MOUSE_DEFSIZE_X		12
 #define XGR_MOUSE_DEFSIZE_Y		20
 static unsigned char XGR_MouseDefFrame[240] =
@@ -646,25 +649,30 @@ void XGR_OutText(int x,int y,int col,const char* text,int font,int hspace,int vs
 
 void XGR_MouseFnc(SDL_Event *p)
 {
+	auto getScaledMouseMotion = [p]() -> SDL_MouseMotionEvent {
+		auto motion = p->motion;
+		motion.x *= XGR_WindowScaleX;
+		motion.y *= XGR_WindowScaleY;
+		return motion;
+	};
+
 	if (p->type == SDL_MOUSEMOTION) {
-		const auto x = p->motion.x;
-		const auto y = p->motion.y;
+		const auto motion = getScaledMouseMotion();
 
 		const auto x1 = XGR_MouseObj.PosX;
 		const auto y1 = XGR_MouseObj.PosY;
 
-		XGR_MouseObj.InitPos(x, y);
+		XGR_MouseObj.InitPos(motion.x, motion.y);
 
-		XGR_MouseObj.MovementX = x - x1;
-		XGR_MouseObj.MovementY = y - y1;
+		XGR_MouseObj.MovementX = motion.x - x1;
+		XGR_MouseObj.MovementY = motion.y - y1;
 
 		XGR_MouseObj.Move(0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
 		if (XGR_MouseVisible()) {
 			XGR_MouseRedraw();
 		}
 	} else if (p->type == SDL_MOUSEBUTTONDOWN || p->type == SDL_MOUSEBUTTONUP) {
-		const auto x = p->motion.x;
-		const auto y = p->motion.y;
+		const auto motion = getScaledMouseMotion();
 
 		int button = 0;
 		switch (p->button.button) {
@@ -684,7 +692,7 @@ void XGR_MouseFnc(SDL_Event *p)
 				break;
 		}
 
-		XGR_MouseInitPos(x, y);
+		XGR_MouseInitPos(motion.x, motion.y);
 		if (p->type == SDL_MOUSEBUTTONDOWN) {
 			XGR_MousePress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
 		}

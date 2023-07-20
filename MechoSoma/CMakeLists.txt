@@ -551,6 +551,7 @@ elseif (LINUX)
             X11 Xi Xcursor GL dl pthread)
 elseif (APPLE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
+    set_property(TARGET ${APPLICATION_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Info.plist.in")
     target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
     target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++
             "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL" 

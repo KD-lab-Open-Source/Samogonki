@@ -6,18 +6,6 @@
 
 #include "xtool.h"
 
-namespace graphics
-{
-
-extern void setupRenderer();
-
-SDL_Window *window;
-void swapWindow() {
-  SDL_GL_SwapWindow(window);
-}
-
-}
-
 int xtSysQuantDisabled = 0;
 
 #ifndef _WIN32
@@ -37,18 +25,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-  graphics::window = SDL_CreateWindow(
-    "Moonshine Runners",
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    800,
-    600,
-    SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-  );
-  SDL_GLContext glContext = SDL_GL_CreateContext(graphics::window);
-
-  graphics::setupRenderer();
 
   initclock();
 
@@ -88,8 +64,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   }
   xtDoneApplication();
 
-  SDL_GL_DeleteContext(glContext);
-  SDL_DestroyWindow(graphics::window);
   SDL_Quit();
 
   return 0;
