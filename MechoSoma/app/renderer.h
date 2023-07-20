@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include <SDL2/SDL.h>
 #include <sokol_gfx.h>
 
 #include "Md3d.h"
@@ -18,18 +19,11 @@ namespace graphics {
 
 class BackBuffer;
 class OffscreenBuffer;
-
-void setupRenderer();
-extern void swapWindow();
-
 class TextureManager;
 
 class Renderer final {
  public:
-  static inline std::unique_ptr<Renderer> shared;
-
- public:
-  Renderer();
+  Renderer(int width, int height, bool isFullScreen);
   ~Renderer();
 
   Renderer(const Renderer&) = delete;
@@ -38,41 +32,47 @@ class Renderer final {
   Renderer& operator=(Renderer&&) = delete;
 
   TextureManager& get_texture_manager();
+  void setVideoMode(int width, int height, bool isFullScreen);
 
-  MD3DERROR d3dClear(DWORD dwColor);
+  MD3DERROR d3dClear(uint32_t dwColor);
   MD3DERROR d3dFlip(bool WaitVerticalBlank);
   MD3DERROR d3dBeginScene();
   MD3DERROR d3dEndScene();
-  MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, DWORD dwRenderState);
-  MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, DWORD* lpdwRenderState);
-  MD3DERROR d3dSetTextureStageState(DWORD dwStage, D3DTEXTURESTAGESTATETYPE dwState, DWORD dwValue);
-  MD3DERROR d3dTriangleFan(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount);
-  MD3DERROR d3dTrianglesIndexed(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount, LPWORD lpwIndices,
-                                DWORD dwIndexCount);
+  MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
+  MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
+  MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
+  MD3DERROR d3dTriangleFan(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount);
+  MD3DERROR d3dTrianglesIndexed(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices,
+                                uint32_t dwIndexCount);
 
-  MD3DERROR d3dSetTexture(DWORD dwHandle, DWORD dwStage);
+  MD3DERROR d3dSetTexture(uint32_t dwHandle, uint32_t dwStage);
   MD3DERROR d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
 
-  MD3DERROR d3dTrianglesIndexed2(DWORD dwVertexTypeDesc, LPVOID lpvVertices, DWORD dwVertexCount, LPWORD lpwIndices,
-                                 DWORD dwIndexCount, DWORD dwHandleTex0, DWORD dwHandleTex1);
+  MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t *lpwIndices,
+                                 uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1);
 
-  MD3DERROR d3dLockBackBuffer(VOID **lplpSurface, DWORD *lpdwPitch);
+  MD3DERROR d3dLockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
   MD3DERROR d3dUnlockBackBuffer();
-  MD3DERROR d3dFlushBackBuffer(RECT *lprcRect);
+  MD3DERROR d3dFlushBackBuffer(MD3DRECT* lprcRect);
 
  private:
   void prepare_render_state(size_t index_count);
-  void add_vertex(DWORD vertex_type, LPVOID vertices, DWORD index);
+  void add_vertex(uint32_t vertex_type, void* vertices, uint32_t index);
 
-  const size_t _vertex_count = 35000;
+private:
+  const size_t _vertex_count = 65000;
+
+  SDL_Window *_window = nullptr;
+  SDL_GLContext _context = nullptr;
+  std::array<float, 16> _projectionMatrix;
 
   sg_shader _sceneShader;
   sg_image _nullTexture;
 
-  std::unique_ptr<float> _position_buffer;
-  std::unique_ptr<float> _color_buffer;
-  std::unique_ptr<float> _uv_buffer;
-  std::unique_ptr<uint32_t> _index_buffer;
+  std::vector<float> _position_buffer;
+  std::vector<float> _color_buffer;
+  std::vector<float> _uv_buffer;
+  std::vector<uint32_t> _index_buffer;
 
   sg_buffer sg_position_buffer;
   sg_buffer sg_color_buffer;

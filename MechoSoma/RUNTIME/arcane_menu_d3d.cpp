@@ -38,7 +38,7 @@ extern cInterfaceGraph3d	*gb_IGraph3d;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-MD3DERROR d3dSetClipRect(RECT* lprcClipRect);
+MD3DERROR d3dSetClipRect(MD3DRECT* lprcClipRect);
 
 void mchA_d3dLoadBmp(int x,int y,int idx,int ch_idx,mchArcaneBMP* p);
 
@@ -61,8 +61,8 @@ MD3DERROR mchA_d3dCreateChildSprite(int parent_id,int x,int y,int sx,int sy,int 
 #endif
 
 int mchA_d3dMaxSpr = 0;
-DWORD mchA_d3dSprParent[4];
-DWORD mchA_d3dSpr[AE_D3DSPR_MAX];
+uint32_t mchA_d3dSprParent[4];
+uint32_t mchA_d3dSpr[AE_D3DSPR_MAX];
 
 #ifdef AE_D3D_DEBUG
 int mchA_d3dSprX[AE_D3DSPR_MAX];
@@ -74,7 +74,7 @@ int mchA_d3dSprSY[AE_D3DSPR_MAX];
 unsigned mchA_d3dPalStart = 0;
 unsigned mchA_d3dPal[32];
 
-DWORD mchA_d3dTexMode = D3DTEXFMT_ARGB4444;
+uint32_t mchA_d3dTexMode = D3DTEXFMT_ARGB4444;
 M3DTEXTUREFORMAT mchA_d3dTexFmt;
 
 int mchA_d3dAlphaRef = 0;
@@ -98,7 +98,7 @@ void mchA_d3dInit(void)
 	HFont* p = acsFntTable[AE_D3D_FONT];
 	XStream fh;
 
-	DWORD pitch;
+	uint32_t pitch;
 	void* spr_buf;
 	char* buf;
 
@@ -408,7 +408,7 @@ void mchA_d3dPrepare(void)
 
 void mchA_d3dLoadBmp(int x,int y,int idx,int ch_idx,mchArcaneBMP* p)
 {
-	DWORD pitch;
+	uint32_t pitch;
 	void* spr_buf;
 
 	d3dLockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
@@ -538,7 +538,7 @@ void mchA_d3dSprPutpixel(int x,int y,int idx,unsigned r,unsigned g,unsigned b)
 {
 	unsigned cl = 0,alpha,br;
 	void* spr_buf;
-	DWORD pitch;
+	uint32_t pitch;
 
 	br = (r + g + b) / 3;
 
@@ -562,11 +562,11 @@ void mchA_d3dSetClip(int x,int y,int sx,int sy)
 {
 //	gb_IGraph3d->EndScene();
 
-	RECT r = {
-		LONG(round((float)x * mchA_d3dResX)),
-		LONG(round((float)y * mchA_d3dResY)),
-		LONG(round(float(x + sx) * mchA_d3dResX)),
-		LONG(round(float(y + sy) * mchA_d3dResY))
+	MD3DRECT r = {
+		int32_t(round((float)x * mchA_d3dResX)),
+		int32_t(round((float)y * mchA_d3dResY)),
+		int32_t(round(float(x + sx) * mchA_d3dResX)),
+		int32_t(round(float(y + sy) * mchA_d3dResY))
 	};
 	if(!sx || !sy) return;
 
@@ -579,7 +579,7 @@ void mchA_d3dClearClip(void)
 {
 	gb_IGraph3d->EndScene();
 
-	RECT r = { 0, 0, XGR_MAXX,XGR_MAXY };
+	MD3DRECT r = { 0, 0, XGR_MAXX,XGR_MAXY };
 
 //	d3dSetClipRect(&r);
 
@@ -593,7 +593,7 @@ void mchA_d3dScreenShot(void* buf,int sz)
 
 void mchA_d3dCreateBackBuffer(void)
 {
-	DWORD fmt;
+	uint32_t fmt;
 
 	if(mchA_d3dBackBufferFlag)
 		return;
@@ -615,8 +615,8 @@ void mchA_d3dCreateBackBuffer(void)
 
 void mchA_d3dLockBackBuffer(void)
 {
-	VOID* p;
-	DWORD pitch;
+	void* p;
+	uint32_t pitch;
 
 	d3dLockBackBuffer(&p,&pitch);
 
@@ -642,7 +642,7 @@ void mchA_d3dReleaseBackBuffer(void)
 
 void mchA_d3dFlushBackBuffer(int x,int y,int sx,int sy)
 {
-	RECT r = { x,y,x + sx,y + sy };
+	MD3DRECT r = { x,y,x + sx,y + sy };
 	if(!mchA_d3dBackBufferFlag || !sx || !sy) return;
 
 	int err=gb_IGraph3d->FlushBackBuffer(&r);
@@ -665,10 +665,10 @@ void mchA_d3dToggleColorKey(int value)
 {
 	if(value){
 		d3dSetBackBufferColorKey(mchA_d3dColorKey);
-		d3dEnableBackBufferColorKey(TRUE);
+		d3dEnableBackBufferColorKey(true);
 	}
 	else {
-		d3dEnableBackBufferColorKey(FALSE);
+		d3dEnableBackBufferColorKey(false);
 	}
 }
 
@@ -776,7 +776,7 @@ float mchA_d3dGetGamma(void)
 
 void mchA_d3dLockSprite(int handle,void** p,unsigned& pitch)
 {
-	DWORD pt;
+	uint32_t pt;
 	d3dLockSprite(handle,p,&pt);
 
 	pitch = pt;
@@ -789,7 +789,7 @@ void mchA_d3dUnlockSprite(int handle)
 
 int mchA_d3dCreateSlot(int sx,int sy)
 {
-	DWORD handle = 0;
+	uint32_t handle = 0;
 
 	if(RenderMode == DIRECT3D_HICOLOR)
 		d3dCreateSprite(sx,sy,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&handle);
@@ -898,35 +898,35 @@ void mchA_d3dClipSprite(int handle,float l,float t,float r,float b)
 
 
 struct VERT_DIFFUSE {
-	D3DVALUE	x,y,z,rhw;
-	DWORD		rgba;
-	DWORD		srgba;
-	D3DVALUE	u,v;
+	float	x,y,z,rhw;
+	uint32_t		rgba;
+	uint32_t		srgba;
+	float	u,v;
 };
 
 void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarkness)
 {
 	int i;
 
-	DWORD dwAlphaBlendEnable;
-	DWORD dwSrcFactor;
-	DWORD dwDestFactor;
-	DWORD dwZEnable;
-	DWORD dwZWriteEnable;
+	uint32_t dwAlphaBlendEnable;
+	uint32_t dwSrcFactor;
+	uint32_t dwDestFactor;
+	uint32_t dwZEnable;
+	uint32_t dwZWriteEnable;
 
 	VERT_DIFFUSE Quad[4];
 
-	Quad[0].x = D3DVALUE( dwLeft );
-	Quad[0].y = D3DVALUE( dwTop );
+	Quad[0].x = float( dwLeft );
+	Quad[0].y = float( dwTop );
 
-	Quad[1].x = D3DVALUE( dwRight );
-	Quad[1].y = D3DVALUE( dwTop );
+	Quad[1].x = float( dwRight );
+	Quad[1].y = float( dwTop );
 
-	Quad[2].x = D3DVALUE( dwRight );
-	Quad[2].y = D3DVALUE( dwBottom );
+	Quad[2].x = float( dwRight );
+	Quad[2].y = float( dwBottom );
 
-	Quad[3].x = D3DVALUE( dwLeft );
-	Quad[3].y = D3DVALUE( dwBottom );
+	Quad[3].x = float( dwLeft );
+	Quad[3].y = float( dwBottom );
 
 	for(i = 0; i < 4; i++ ){
 		Quad[i].z = 0.0001f;
@@ -947,13 +947,13 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 
 	// Set render states
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, TRUE );
+	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
 	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
 	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
 
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
+	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
 	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, FALSE );
+	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 
 	d3dSetTextureBlendMode( MD3DTB_DIFFUSE, MD3DTB_DIFFUSE );
 
@@ -1005,7 +1005,7 @@ int mchA_d3dCheckMode(int mode,int color_depth)
 				break;
 		}
 		for(i = 0; i < mchA_d3dNumModes; i ++){
-			if(mchA_d3dModes[i].dx == sx && mchA_d3dModes[i].dy == sy && mchA_d3dModes[i].bitperpixel == color_depth)
+			if(mchA_d3dModes[i].dx == sx && mchA_d3dModes[i].dy == sy && mchA_d3dModes[i].bitPerPixel == color_depth)
 				return 1;
 		}
 		return 0;

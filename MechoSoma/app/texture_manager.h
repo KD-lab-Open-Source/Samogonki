@@ -24,36 +24,36 @@ class TextureManager final
  public:
   TextureManager();
 
-  sg_image* get(DWORD dwHandle);
-  void delete_textures();
-
   TextureManager(const TextureManager&) = delete;
   TextureManager(TextureManager&&) = delete;
   TextureManager& operator=(const TextureManager&) = delete;
   TextureManager& operator=(TextureManager&&) = delete;
 
-  MD3DERROR d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUREFORMAT* pData);
-  MD3DERROR d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle);
-  MD3DERROR d3dDeleteTexture(DWORD dwHandle);
-  MD3DERROR d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWORD* lpPitch);
+  sg_image* get(uint32_t dwHandle);
+  void delete_textures();
+
+  MD3DERROR d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
+  MD3DERROR d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle);
+  MD3DERROR d3dDeleteTexture(uint32_t dwHandle);
+  MD3DERROR d3dLockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch);
   MD3DERROR d3dLockTexture(
-      DWORD dwHandle,
-      DWORD dwLeft,
-      DWORD dwTop,
-      DWORD dwRight,
-      DWORD dwBottom,
-      VOID** lplpTexture,
-      DWORD* lpPitch
+      uint32_t dwHandle,
+      uint32_t dwLeft,
+      uint32_t dwTop,
+      uint32_t dwRight,
+      uint32_t dwBottom,
+      void** lplpTexture,
+      uint32_t* lpPitch
   );
-  MD3DERROR d3dUnlockTexture(DWORD dwHandle);
+  MD3DERROR d3dUnlockTexture(uint32_t dwHandle);
 
  private:
   struct TextureEntry
   {
-    DWORD original_format_id;
+    uint32_t original_format_id;
     sg_image texture{SG_INVALID_ID};
     std::vector<char> lock_buffer;
-    DWORD pitch;
+    uint32_t pitch;
     bool is_locked;
     bool is_deleted;
   };

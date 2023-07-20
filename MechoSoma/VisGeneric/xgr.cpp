@@ -64,7 +64,7 @@ void Null_SetClip(int left,int top,int right,int bottom)
 			break;
 		case DIRECT3D_HICOLOR:
 			{
-				RECT rect={left,top,right,bottom};
+				MD3DRECT rect={left,top,right,bottom};
 //				d3dSetClipRect(&rect);
 			}
 			break;

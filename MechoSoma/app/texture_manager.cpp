@@ -13,27 +13,27 @@
 using namespace graphics;
 
 struct TTextureFormat {
-  DWORD dwFormatID;
-  BOOL bSupported;
+  uint32_t dwFormatID;
+  bool bSupported;
 
-  DWORD dwRGBAlphaBitMask;
-  DWORD dwRBitMask;
-  DWORD dwGBitMask;
-  DWORD dwBBitMask;
+  uint32_t dwRGBAlphaBitMask;
+  uint32_t dwRBitMask;
+  uint32_t dwGBitMask;
+  uint32_t dwBBitMask;
 
   // This is used for matching
-  DWORD dwRGBBitCount;
-  BOOL bPalette8;
-  DWORD dwRBitCount;
-  DWORD dwGBitCount;
-  DWORD dwBBitCount;
-  DWORD dwAlphaBitCount;
+  uint32_t dwRGBBitCount;
+  bool bPalette8;
+  uint32_t dwRBitCount;
+  uint32_t dwGBitCount;
+  uint32_t dwBBitCount;
+  uint32_t dwAlphaBitCount;
 
   // Calculated shifts for RGBA
-  DWORD dwRBitShift;
-  DWORD dwGBitShift;
-  DWORD dwBBitShift;
-  DWORD dwAlphaBitShift;
+  uint32_t dwRBitShift;
+  uint32_t dwGBitShift;
+  uint32_t dwBBitShift;
+  uint32_t dwAlphaBitShift;
 };
 
 /* clang-format off */
@@ -42,13 +42,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
             {
                 D3DTEXFMT_RGB565,
-                TRUE,
+                true,
                 0,
                 0b0000000000011111,
                 0b0000011111100000,
                 0b1111100000000000,
                 16,
-                FALSE,
+                false,
                 5,
                 6,
                 5,
@@ -61,13 +61,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
             {
                 D3DTEXFMT_RGB555,
-                FALSE,
+                false,
                 0,
                 0,
                 0,
                 0,
                 16,
-                FALSE,
+                false,
                 5,
                 5,
                 5,
@@ -80,13 +80,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
             {
                 D3DTEXFMT_ARGB4444,
-                TRUE,
+                true,
                 0b1111000000000000,
                 0b0000000000001111,
                 0b0000000011110000,
                 0b0000111100000000,
                 16,
-                FALSE,
+                false,
                 4,
                 4,
                 4,
@@ -99,13 +99,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
         {
             D3DTEXFMT_ARGB1555,
-            TRUE,
+            true,
             0b1000000000000000,
             0b0000000000011111,
             0b0000001111100000,
             0b0111110000000000,
             16,
-            FALSE,
+            false,
             5,
             5,
             5,
@@ -118,13 +118,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
         {
             D3DTEXFMT_RGBA8888,
-            TRUE,
+            true,
             0x000000FF,
             0x0000FF00,
             0x00FF0000,
             0xFF000000,
             32,
-            FALSE,
+            false,
             8,
             8,
             8,
@@ -137,13 +137,13 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
         {
             D3DTEXFMT_PAL8,
-            TRUE,
+            true,
             0,
             0,
             0,
             0,
             8,
-            TRUE,
+            true,
             0,
             0,
             0,
@@ -156,12 +156,12 @@ static std::array<TTextureFormat, 6> texture_formats
     };
 /* clang-format on */
 
-constexpr DWORD GetMaskBitShift(DWORD dwBits) {
+constexpr uint32_t GetMaskBitShift(uint32_t dwBits) {
   if (0 == dwBits) {
     return 0;
   }
 
-  DWORD dwShift = 0;
+  uint32_t dwShift = 0;
   for (; (dwBits & 1) == 0; dwBits >>= 1) {
     dwShift++;
   }
@@ -169,8 +169,8 @@ constexpr DWORD GetMaskBitShift(DWORD dwBits) {
   return dwShift;
 }
 
-constexpr DWORD GetMaskBitCount(DWORD dwBits) {
-  DWORD dwBitCount = 0;
+constexpr uint32_t GetMaskBitCount(uint32_t dwBits) {
+  uint32_t dwBitCount = 0;
   for (; dwBits; dwBits >>= 1) {
     dwBitCount += (dwBits & 0x1);
   }
@@ -187,7 +187,7 @@ TextureManager::TextureManager() {
   }
 }
 
-MD3DERROR TextureManager::d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUREFORMAT* pData) {
+MD3DERROR TextureManager::d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData) {
   for (const auto& format : texture_formats) {
     if (format.dwFormatID == dwTexFormatID && format.bSupported) {
       pData->dwTotalBitCount = format.dwRGBBitCount;
@@ -214,7 +214,7 @@ MD3DERROR TextureManager::d3dGetTextureFormatData(DWORD dwTexFormatID, M3DTEXTUR
   return MD3DERR_ILLEGALCALL;
 }
 
-MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD dwTexFormatID, DWORD* lpdwHandle) {
+MD3DERROR TextureManager::d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle) {
   assert(_textures.size() < max_textures_count);
   assert(dwWidth == dwHeight);
   assert(GetMaskBitCount(dwWidth) == 1);
@@ -242,7 +242,7 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
 
   *lpdwHandle = _lastTextureKey;
 
-  const DWORD pitch = dwWidth * (p->dwRGBBitCount / 8);
+  const uint32_t pitch = dwWidth * (p->dwRGBBitCount / 8);
   auto t = std::make_unique<TextureEntry>(
     TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false, false}
   );
@@ -252,7 +252,7 @@ MD3DERROR TextureManager::d3dCreateTexture(DWORD dwWidth, DWORD dwHeight, DWORD 
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dDeleteTexture(DWORD dwHandle) {
+MD3DERROR TextureManager::d3dDeleteTexture(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -263,7 +263,7 @@ MD3DERROR TextureManager::d3dDeleteTexture(DWORD dwHandle) {
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWORD* lpPitch) {
+MD3DERROR TextureManager::d3dLockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -275,18 +275,18 @@ MD3DERROR TextureManager::d3dLockTexture(DWORD dwHandle, VOID** lplpTexture, DWO
   }
   entry->second->is_locked = true;
 
-  *lplpTexture = reinterpret_cast<VOID*>(entry->second->lock_buffer.data());
+  *lplpTexture = reinterpret_cast<void*>(entry->second->lock_buffer.data());
   *lpPitch = entry->second->pitch;
 
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dLockTexture(DWORD dwHandle, DWORD dwLeft, DWORD dwTop, DWORD dwRight, DWORD dwBottom,
-                                         VOID** lplpTexture, DWORD* lpPitch) {
+MD3DERROR TextureManager::d3dLockTexture(uint32_t dwHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwRight, uint32_t dwBottom,
+                                         void** lplpTexture, uint32_t* lpPitch) {
   return d3dLockTexture(dwHandle, lplpTexture, lpPitch);
 }
 
-MD3DERROR TextureManager::d3dUnlockTexture(DWORD dwHandle) {
+MD3DERROR TextureManager::d3dUnlockTexture(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -362,7 +362,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
         result[0] = (r * 527 + 23) >> 6;
         result[1] = (g * 527 + 23) >> 6;
         result[2] = (b * 527 + 23) >> 6;
-        result[3] =1;
+        result[3] = a;
       }
     } break;
 
@@ -408,7 +408,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
   sg_update_image(entry.texture, imageData);
 }
 
-sg_image* TextureManager::get(DWORD dwHandle) {
+sg_image* TextureManager::get(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {

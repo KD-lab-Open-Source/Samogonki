@@ -85,7 +85,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 			int RenderAttribute=MAT_COLOR_ADD_DIFFUSE|MAT_ALPHA_MOD_DIFFUSE|RENDER_COLOR_MOD_DIFFUSE;
 			if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
 			InitFix(RenderAttribute,round((NumberAngle+1)*(limit+limit+dlimit)/dlimit));
-			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			int CurrentPoint=0,PreviousPoints=0;
 			Vect3f pw(0,0,0),pv,pe;
 			ConvertorObjectToScreen.ConvertPoint(pw,pv,pe);
@@ -115,7 +115,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 					AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+i+1,PreviousPoints+i);
 			}
 			Draw(Camera,RenderDevice);
-			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 }
 inline int GetAttributePoint(int xg,int yg,int zg)
@@ -319,7 +319,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			ConvertorObjectToScreen.BuildMatrix(Mesh->GetScale());
 			ConvertorObjectToScreen.SetProjection(Camera,Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE));
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
-				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			// собственно расчет координат и освещенности
 			for(int i=0;i<Mesh->GetNumberTile();i++)
 				{
@@ -479,7 +479,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					Draw(Camera,RenderDevice);
 				}
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
-				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 }
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
@@ -959,14 +959,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cWorldPolyGrid *WorldPolyG
 		int xView=Cycl(CameraPosScale.x+GlobalWorldSize.x*GlobalWorldScale.x/2,GlobalWorldSize.x*GlobalWorldScale.x),
 			yView=Cycl(CameraPosScale.y+GlobalWorldSize.y*GlobalWorldScale.y/2,GlobalWorldSize.y*GlobalWorldScale.y),
 			iView=xView/WorldPolyGrid->xstep+1, jView=yView/WorldPolyGrid->ystep+1;
-		Graph3d->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+		Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 		Graph3d->SetRenderState(RENDERSTATE_CULLMODE,RENDERSTATE_CULL_CW);
 		DrawTilePolyGrid(RenderDevice,Camera,WorldPolyGrid,0,0,iView,jView,Material);
 		DrawTilePolyGrid(RenderDevice,Camera,WorldPolyGrid,iView,0,WorldPolyGrid->xsize+1,jView,Material);
 		DrawTilePolyGrid(RenderDevice,Camera,WorldPolyGrid,0,jView,iView,WorldPolyGrid->ysize+1,Material);
 		DrawTilePolyGrid(RenderDevice,Camera,WorldPolyGrid,iView,jView,WorldPolyGrid->xsize+1,WorldPolyGrid->ysize+1,Material);
 		Graph3d->SetRenderState(RENDERSTATE_CULLMODE,RENDERSTATE_CULL_NONE);
-		Graph3d->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+		Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 	}
 }
 //////////////////// SURFACEREFLECTION RASTERIZATION ////////////////////
@@ -1074,7 +1074,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 			}
 
 			int CurrentPoint=0,PreviousPoints=0;
-			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			int NumberAngle=(int)(RadiusLight/50)+8,NumberPlane=(int)(RadiusLight/40)+3;
 			float KoofAttenuation=1.2f/(NumberPlane-1);
 			int rc=Sun.GetSpecular().GetR(),gc=Sun.GetSpecular().GetG(),bc=Sun.GetSpecular().GetB();
@@ -1107,7 +1107,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 					AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+i+1,PreviousPoints+i);
 			}
 			Draw(Camera,RenderDevice);
-			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 	}
 }
@@ -1380,9 +1380,9 @@ void cPolyDispatcher::AttachCenter(const Vect2f &pos,sSpriteFX *SpriteFX,int idT
 }
 void cPolyDispatcher::EndList()
 {
-	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,false);
 	Draw(CurrentCamera,GetRenderDevice(0));
-	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
 	CurrentCamera=0;
 	AlphaForSprite=255;
 }
@@ -1409,8 +1409,8 @@ void cPolyDispatcher::SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffus
 	SetPointFix(3,pe,rMul,gMul,bMul,aMul,rAdd,gAdd,bAdd,aAdd,pv);
 	AddPolygonFixTestPointFix(0,2,1);
 	AddPolygonFixTestPointFix(0,3,2);
-	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,FALSE);
+	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,false);
 	Draw(Camera,GetRenderDevice(0));
-	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,TRUE);
+	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
 }
 //#endif _ONLY_DIRECT3D_

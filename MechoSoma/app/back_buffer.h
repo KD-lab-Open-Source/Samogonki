@@ -9,7 +9,7 @@ namespace graphics {
 class BackBuffer final {
  public:
   BackBuffer(int width, int height);
-  ~BackBuffer() = default;
+  ~BackBuffer();
 
   struct Address {
     uint16_t *address = nullptr;

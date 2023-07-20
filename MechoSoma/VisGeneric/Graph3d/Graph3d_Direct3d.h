@@ -9,8 +9,8 @@ public:
 	cGraph3dDirect3D();
 	~cGraph3dDirect3D();
 	
-	virtual int Init(int xScr,int yScr,int mode,HINSTANCE hInst,TCHAR *szTitle,HICON hIcon=NULL);
-	virtual int ReInit(int xScr,int yScr,int mode,HINSTANCE hInst,TCHAR *szTitle,HICON hIcon=NULL);
+	virtual int Init(int xScr,int yScr,int mode,void *hInst,char *szTitle,void *hIcon=NULL);
+	virtual int ReInit(int xScr,int yScr,int mode,void *hInst,char *szTitle,void *hIcon=NULL);
 	virtual int GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax);
 	virtual int SetClipRect(int xmin,int ymin,int xmax,int ymax);
 	virtual int NullClipRect();
@@ -38,27 +38,27 @@ public:
 	virtual int DeleteTexture(int hTexture);
 
 	// начало прочие функции
-	virtual int CreateSprite(DWORD dwWidth,DWORD dwHeight,DWORD dwFormat, 
-							  DWORD dwFlags,DWORD* lpdwHandle );
-	virtual int CreateChildSprite(DWORD dwParentHandle,DWORD dwLeft,DWORD dwTop, 
-							   DWORD dwWidth,DWORD dwHeight,DWORD* lpdwHandle );
-	virtual int DeleteSprite(DWORD dwHandle );
-	virtual int LockSprite(DWORD dwHandle,void **lplpSprite,DWORD *lplpPitch );
-	virtual int UnlockSprite(DWORD dwHandle );
-	virtual int SetSpriteMode(DWORD dwHandle,DWORD dwMode,DWORD dwValue );
-	virtual int DrawSprite(DWORD dwHandle,float dvX,float dvY,DWORD dwOrigin,
+	virtual int CreateSprite(uint32_t dwWidth,uint32_t dwHeight,uint32_t dwFormat, 
+							  uint32_t dwFlags,uint32_t* lpdwHandle );
+	virtual int CreateChildSprite(uint32_t dwParentHandle,uint32_t dwLeft,uint32_t dwTop, 
+							   uint32_t dwWidth,uint32_t dwHeight,uint32_t* lpdwHandle );
+	virtual int DeleteSprite(uint32_t dwHandle );
+	virtual int LockSprite(uint32_t dwHandle,void **lplpSprite,uint32_t *lplpPitch );
+	virtual int UnlockSprite(uint32_t dwHandle );
+	virtual int SetSpriteMode(uint32_t dwHandle,uint32_t dwMode,uint32_t dwValue );
+	virtual int DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t dwOrigin,
 						float dvScaleX,float dvScaleY,float dvRotate );
-	virtual int DrawSpriteZ(DWORD dwHandle,float dvX,float dvY,float dvZ, 
-						 DWORD dwOrigin,float dvScaleX,float dvScaleY, 
+	virtual int DrawSpriteZ(uint32_t dwHandle,float dvX,float dvY,float dvZ, 
+						 uint32_t dwOrigin,float dvScaleX,float dvScaleY, 
 						 float dvRotate );
 	virtual int CreateBackBuffer();
 	virtual int ReleaseBackBuffer();
-	virtual int GetBackBufferFormat(DWORD *dwFormat);
-	virtual int LockBackBuffer(void **lplpSurface,DWORD *lpdwPitch);
+	virtual int GetBackBufferFormat(uint32_t *dwFormat);
+	virtual int LockBackBuffer(void **lplpSurface,uint32_t *lpdwPitch);
 	virtual int UnlockBackBuffer();
-	virtual int FlushBackBuffer(RECT *lprcRect);
-	virtual int SetBackBufferColorKey(DWORD dwColor);
-	virtual int EnableBackBufferColorKey(BOOL bEnable);
+	virtual int FlushBackBuffer(MD3DRECT *lprcRect);
+	virtual int SetBackBufferColorKey(uint32_t dwColor);
+	virtual int EnableBackBufferColorKey(bool bEnable);
 
 	virtual int QueryGammaSupport( MD3DGAMMASUPPORT *gmGammaSupport);
 	virtual int CalibrateGamma( DDGAMMARAMP *lpRampData);
@@ -69,8 +69,8 @@ public:
 	virtual int SetGammaFxShadow( float fRShadow, float fGShadow, float fBShadow);
 	virtual int GetGammaFxShadow( float *pfRShadow, float *pfGShadow, float *pfBShadow);
 
-	virtual int ScreenShot(VOID *lpBuffer,DWORD dwSize);
-	virtual int GetWindowHandle( HWND *hWnd );
+	virtual int ScreenShot(void *lpBuffer,uint32_t dwSize);
+	virtual int GetWindowHandle( void **hWnd );
 	// конец прочие функции
 	virtual int SetViewColor(int r,int g,int b,int alfa);
 

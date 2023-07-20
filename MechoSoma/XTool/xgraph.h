@@ -529,6 +529,9 @@ extern char* XGraphWndID;
 
 extern int XGR_HighColorMode;
 
+extern float XGR_WindowScaleX;
+extern float XGR_WindowScaleY;
+
 #endif /* __XGRAPH_H */
 
 

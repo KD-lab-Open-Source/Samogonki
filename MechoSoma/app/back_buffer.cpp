@@ -11,7 +11,7 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
                                                 _width(width), _height(height) {
   _quadShader = sg_make_shader(back_buffer_shader_desc(sg_query_backend()));
   if (_quadShader.id == SG_INVALID_ID) {
-    XAssert("sg_make_shader");
+    ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
   }
 
   sg_image_desc description = {};
@@ -26,6 +26,12 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
   buffer_description.type = SG_BUFFERTYPE_VERTEXBUFFER;
   buffer_description.usage = SG_USAGE_DYNAMIC;
   _dummyBuffer = sg_make_buffer(buffer_description);
+}
+
+BackBuffer::~BackBuffer() {
+  sg_destroy_buffer(_dummyBuffer);
+  sg_destroy_image(_texture);
+  sg_destroy_shader(_quadShader);
 }
 
 BackBuffer::Address BackBuffer::lock() {

@@ -21,23 +21,23 @@
  
 struct TVertex
 {
-	D3DVALUE	x,y,z,rhw;
-	DWORD		rgba;
-	D3DVALUE	u,v;
+	float	x,y,z,rhw;
+	uint32_t rgba;
+	float	u,v;
 };
 
 typedef struct {
 
-	DWORD dwHandle;			// If the 31-st bit is 1, it's a child sprite
+	uint32_t dwHandle;			// If the 31-st bit is 1, it's a child sprite
 							// otherwise it's a parent. 0 means the slot is free.
 
-	DWORD dwWidth;			// Width of the sprite
-	DWORD dwHeight;			// Height of the sprite
+	uint32_t dwWidth;			// Width of the sprite
+	uint32_t dwHeight;			// Height of the sprite
 
-	DWORD dwFlags;			// Sprite modes etc.
-	DWORD dwAlphaRef;		
-	DWORD dwAlphaFactor;
-	DWORD dwColorFactor;
+	uint32_t dwFlags;			// Sprite modes etc.
+	uint32_t dwAlphaRef;		
+	uint32_t dwAlphaFactor;
+	uint32_t dwColorFactor;
 
 	TVertex Vertices[4];	// Vertices for the triangle fan
 
@@ -45,41 +45,41 @@ typedef struct {
 
 		// Parent sprite
 		struct {
-		DWORD dwChildrenCount;		// Number of children for this parent
-		DWORD dwTexHandle;			// Texture handle
+		uint32_t dwChildrenCount;		// Number of children for this parent
+		uint32_t dwTexHandle;			// Texture handle
 		};
 
 		// Child sprite 
 		struct {
-		DWORD dwParentHandle;		// Handle of the parent sprite
-		DWORD dwLeft;				// Coordinates of the upper-left corner 
-		DWORD dwTop;				// on the parent sprite
+		uint32_t dwParentHandle;		// Handle of the parent sprite
+		uint32_t dwLeft;				// Coordinates of the upper-left corner 
+		uint32_t dwTop;				// on the parent sprite
 		};
 	};
 } TSpriteSlot;
 
 
 // Local prototypes
-static DWORD FindUnusedSlot();
-static DWORD CreateNewSlot();
+static uint32_t FindUnusedSlot();
+static uint32_t CreateNewSlot();
 
 // Md3d globals
-extern BOOL		g_bInScene;			// TRUE when in BeginScene/EndScene bracket
+extern bool		g_bInScene;			// TRUE when in BeginScene/EndScene bracket
 
 
 // Local vars
 
-BOOL g_SpriteMgrInitialized = FALSE;
-static D3DVALUE m_dvSpriteZ;
-static BOOL	m_bSpriteZEnable = FALSE;
+bool g_SpriteMgrInitialized = false;
+static float m_dvSpriteZ;
+static bool	m_bSpriteZEnable = false;
 
 
 #define SLOTS_INITIAL_SIZE 200
 #define SLOTS_EXPAND_CHUNK 50
 
 TSpriteSlot* m_lpSpriteSlots = NULL;
-DWORD m_dwSpriteSlotsCount = 0;
-DWORD m_dwSpriteSlotsUsed = 0;
+uint32_t m_dwSpriteSlotsCount = 0;
+uint32_t m_dwSpriteSlotsUsed = 0;
 
 
 //-----------------------------------------------------------------------------
@@ -88,7 +88,7 @@ DWORD m_dwSpriteSlotsUsed = 0;
 //-----------------------------------------------------------------------------
 MD3DERROR __d3dInitSpriteManager()
 {
-	_ASSERTE( FALSE == g_SpriteMgrInitialized );
+	_ASSERTE( false == g_SpriteMgrInitialized );
 
 	// Initialize sprite slots
 
@@ -102,10 +102,10 @@ MD3DERROR __d3dInitSpriteManager()
 	m_dwSpriteSlotsCount = SLOTS_INITIAL_SIZE;
 	m_dwSpriteSlotsUsed = 1;	// First slot is never used
 
-	m_bSpriteZEnable = FALSE;
+	m_bSpriteZEnable = false;
 
 	// Init done.
-	g_SpriteMgrInitialized = TRUE;
+	g_SpriteMgrInitialized = true;
 
 	return MD3D_OK;
 }
@@ -126,7 +126,7 @@ MD3DERROR __d3dCloseSpriteManager()
 	m_dwSpriteSlotsUsed = 0;
 
 	// Deinit done.
-	g_SpriteMgrInitialized = FALSE;
+	g_SpriteMgrInitialized = false;
 
 	return MD3D_OK;
 }
@@ -136,14 +136,14 @@ MD3DERROR __d3dCloseSpriteManager()
 // Name: d3dCreateSprite
 // Desc: Create a new (parent) sprite and return a handle to it
 //-----------------------------------------------------------------------------
-MD3DERROR d3dCreateSprite( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat, 
-						   DWORD dwFlags, DWORD* lpdwHandle )
+MD3DERROR d3dCreateSprite( uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, 
+						   uint32_t dwFlags, uint32_t* lpdwHandle )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 //	_ASSERTE( FALSE == g_bInScene );
 
 	// Try to find an unused slot.
-	DWORD dwSlot;
+	uint32_t dwSlot;
 	if( 0 == ( dwSlot = FindUnusedSlot() ) )
 	{
 		// No unused slots. Try to create a new one.
@@ -160,10 +160,10 @@ MD3DERROR d3dCreateSprite( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat,
 
 	// Create the texture
 
-	DWORD hr;
-	DWORD dwTexHandle;
+	uint32_t hr;
+	uint32_t dwTexHandle;
 
-	if( FAILED( hr = d3dCreateTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) ) ) {
+	if( ( hr = d3dCreateTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) ) < 0 ) {
 		_RPT0( _CRT_ERROR, "MD3D: unable to create texture for a sprite.\n" );
 		*lpdwHandle = 0;
 		return hr;
@@ -184,7 +184,7 @@ MD3DERROR d3dCreateSprite( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat,
 
 	// Vertices
 
-	for( DWORD i = 0; i < 4; i++ ) {
+	for( uint32_t i = 0; i < 4; i++ ) {
 		lpSprite->Vertices[i].x = 0.0f;
 		lpSprite->Vertices[i].y = 0.0f;
 		lpSprite->Vertices[i].z = 0.0f;
@@ -211,8 +211,8 @@ MD3DERROR d3dCreateSprite( DWORD dwWidth, DWORD dwHeight, DWORD dwFormat,
 // Name: d3dCreateChildSprite
 // Desc: Create a new child sprite and return a handle to it
 //-----------------------------------------------------------------------------
-MD3DERROR d3dCreateChildSprite( DWORD dwParentHandle, DWORD dwLeft, DWORD dwTop, 
-							    DWORD dwWidth, DWORD dwHeight, DWORD* lpdwHandle )
+MD3DERROR d3dCreateChildSprite( uint32_t dwParentHandle, uint32_t dwLeft, uint32_t dwTop, 
+							    uint32_t dwWidth, uint32_t dwHeight, uint32_t* lpdwHandle )
 {
 
 	_ASSERTE( g_SpriteMgrInitialized );
@@ -224,7 +224,7 @@ MD3DERROR d3dCreateChildSprite( DWORD dwParentHandle, DWORD dwLeft, DWORD dwTop,
 
 
 	// Try to find an unused slot.
-	DWORD dwSlot;
+	uint32_t dwSlot;
 	if( 0 == ( dwSlot = FindUnusedSlot() ) )
 	{
 		// No unused slots. Try to create a new one.
@@ -258,7 +258,7 @@ MD3DERROR d3dCreateChildSprite( DWORD dwParentHandle, DWORD dwLeft, DWORD dwTop,
 	lpSprite->dwAlphaFactor = lpParentSprite->dwAlphaFactor;
 	lpSprite->dwColorFactor = lpParentSprite->dwColorFactor;
 
-	for( DWORD i = 0; i < 4; i++ ) {
+	for( uint32_t i = 0; i < 4; i++ ) {
 		lpSprite->Vertices[i].x = 0.0f;
 		lpSprite->Vertices[i].y = 0.0f;
 		lpSprite->Vertices[i].z = 0.0f;
@@ -266,10 +266,10 @@ MD3DERROR d3dCreateChildSprite( DWORD dwParentHandle, DWORD dwLeft, DWORD dwTop,
 		lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
 	}
 
-	D3DVALUE dvLeft = D3DVALUE(lpSprite->dwLeft) / D3DVALUE(lpParentSprite->dwWidth);
-	D3DVALUE dvTop = D3DVALUE(lpSprite->dwTop) / D3DVALUE(lpParentSprite->dwHeight);
-	D3DVALUE dvRight = D3DVALUE(lpSprite->dwLeft + lpSprite->dwWidth) / D3DVALUE(lpParentSprite->dwWidth);
-	D3DVALUE dvBottom = D3DVALUE(lpSprite->dwTop + lpSprite->dwHeight) / D3DVALUE(lpParentSprite->dwHeight);
+	float dvLeft = float(lpSprite->dwLeft) / float(lpParentSprite->dwWidth);
+	float dvTop = float(lpSprite->dwTop) / float(lpParentSprite->dwHeight);
+	float dvRight = float(lpSprite->dwLeft + lpSprite->dwWidth) / float(lpParentSprite->dwWidth);
+	float dvBottom = float(lpSprite->dwTop + lpSprite->dwHeight) / float(lpParentSprite->dwHeight);
 
 	lpSprite->Vertices[0].u = dvLeft;
 	lpSprite->Vertices[0].v = dvTop;
@@ -295,7 +295,7 @@ MD3DERROR d3dCreateChildSprite( DWORD dwParentHandle, DWORD dwLeft, DWORD dwTop,
 // Name: d3dDeleteSprite
 // Desc: Delete a sprite by handle
 //-----------------------------------------------------------------------------
-MD3DERROR d3dDeleteSprite( DWORD dwHandle )
+MD3DERROR d3dDeleteSprite( uint32_t dwHandle )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 //	_ASSERTE( FALSE == g_bInScene );
@@ -323,7 +323,7 @@ MD3DERROR d3dDeleteSprite( DWORD dwHandle )
 	// First, free all the children if any
 	if( 0 != lpSprite->dwChildrenCount ) {
 		
-		DWORD dwSlot;
+		uint32_t dwSlot;
 		for( dwSlot = 1; dwSlot < m_dwSpriteSlotsUsed; dwSlot++ )
 		{
 			if( (m_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
@@ -341,7 +341,7 @@ MD3DERROR d3dDeleteSprite( DWORD dwHandle )
 	}
 
 	// Free the texture handle 
-	DWORD hr;
+	uint32_t hr;
 	hr = d3dDeleteTexture( lpSprite->dwTexHandle );
 	_ASSERT( 0 == hr );
 
@@ -356,7 +356,7 @@ MD3DERROR d3dDeleteSprite( DWORD dwHandle )
 // Name: d3dLockSprite
 // Desc: Lock the sprite texture in system memory
 //-----------------------------------------------------------------------------
-MD3DERROR d3dLockSprite( DWORD dwHandle, VOID **lplpSprite, DWORD *lplpPitch )
+MD3DERROR d3dLockSprite( uint32_t dwHandle, void **lplpSprite, uint32_t *lplpPitch )
 {
 
 	_ASSERTE( g_SpriteMgrInitialized );
@@ -369,20 +369,20 @@ MD3DERROR d3dLockSprite( DWORD dwHandle, VOID **lplpSprite, DWORD *lplpPitch )
 	TSpriteSlot *lpSprite = &m_lpSpriteSlots[dwHandle];
 
 	// Lock the sprite texture
-	DWORD hr;
+	uint32_t hr;
 	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
 		// It's a parent sprite
 		hr = d3dLockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch );
 	} else {
 		// It's a child sprite
-		DWORD dwTexHandle = m_lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+		uint32_t dwTexHandle = m_lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
 		hr = d3dLockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
 							 lpSprite->dwLeft + lpSprite->dwWidth-1, 
 							 lpSprite->dwTop + lpSprite->dwHeight-1,	
 							 lplpSprite, lplpPitch );
 	}
 
-	if( FAILED(hr) ){
+	if( hr < 0 ){
 		*lplpSprite = 0;
 		*lplpPitch = 0;
 		return hr;
@@ -396,7 +396,7 @@ MD3DERROR d3dLockSprite( DWORD dwHandle, VOID **lplpSprite, DWORD *lplpPitch )
 // Name: d3dUnlockSprite
 // Desc: Unlock the sprite texture in system memory
 //-----------------------------------------------------------------------------
-MD3DERROR d3dUnlockSprite( DWORD dwHandle )
+MD3DERROR d3dUnlockSprite( uint32_t dwHandle )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 
@@ -409,7 +409,7 @@ MD3DERROR d3dUnlockSprite( DWORD dwHandle )
 	TSpriteSlot *lpSprite = &m_lpSpriteSlots[dwHandle];
 
 	// Get the texture handle
-	DWORD dwTexHandle;
+	uint32_t dwTexHandle;
 	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
 		// It's a parent sprite
 		dwTexHandle = lpSprite->dwTexHandle;
@@ -426,7 +426,7 @@ MD3DERROR d3dUnlockSprite( DWORD dwHandle )
 // Name: d3dSetSpriteMode
 // Desc: Set sprite drawing modes
 //-----------------------------------------------------------------------------
-MD3DERROR d3dSetSpriteMode( DWORD dwHandle, DWORD dwMode, DWORD dwValue )
+MD3DERROR d3dSetSpriteMode( uint32_t dwHandle, uint32_t dwMode, uint32_t dwValue )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 
@@ -436,7 +436,7 @@ MD3DERROR d3dSetSpriteMode( DWORD dwHandle, DWORD dwMode, DWORD dwValue )
 
 	// Pointer to this sprite
 	TSpriteSlot *lpSprite = &m_lpSpriteSlots[dwHandle];
-	DWORD i;
+	uint32_t i;
 
 	// Set mode for this sprite
 
@@ -480,7 +480,7 @@ MD3DERROR d3dSetSpriteMode( DWORD dwHandle, DWORD dwMode, DWORD dwValue )
 	// See if this sprite has children
 
 	if( (lpSprite->dwHandle & 0x80000000) == 0 && lpSprite->dwChildrenCount != 0) {
-		for( DWORD dwSlot = 1; dwSlot < m_dwSpriteSlotsUsed; dwSlot++ )
+		for( uint32_t dwSlot = 1; dwSlot < m_dwSpriteSlotsUsed; dwSlot++ )
 		{
 			if( (m_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
 				 m_lpSpriteSlots[dwSlot].dwParentHandle == dwHandle ) {
@@ -538,7 +538,7 @@ MD3DERROR d3dSetSpriteMode( DWORD dwHandle, DWORD dwMode, DWORD dwValue )
 // Name: d3dSetSpriteRect
 // Desc: Set sprite drawing rectangle
 //-----------------------------------------------------------------------------
-MD3DERROR d3dSetSpriteRect( DWORD dwHandle, D3DVALUE dvLeft, D3DVALUE dvTop, D3DVALUE dvRight, D3DVALUE dvBottom )
+MD3DERROR d3dSetSpriteRect( uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 
@@ -575,8 +575,8 @@ MD3DERROR d3dSetSpriteRect( DWORD dwHandle, D3DVALUE dvLeft, D3DVALUE dvTop, D3D
 // Name: d3dDrawSprite
 // Desc: Draw the sprite
 //-----------------------------------------------------------------------------
-MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOrigin,
-						 D3DVALUE dvScaleX, D3DVALUE dvScaleY, D3DVALUE dvRotate )
+MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOrigin,
+						 float dvScaleX, float dvScaleY, float dvRotate )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
 	_ASSERTE( g_bInScene );
@@ -589,32 +589,32 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 	TSpriteSlot *lpSprite = &m_lpSpriteSlots[dwHandle];
 
 	// Texutre handle
-	DWORD dwTexHandle;
+	uint32_t dwTexHandle;
 	if( (lpSprite->dwHandle & 0x80000000) == 0 )
 		dwTexHandle = lpSprite->dwTexHandle;
 	else
 		dwTexHandle = m_lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
 
-	DWORD hr;
+	uint32_t hr;
 
 	// Set current texture to the sprite texture
 	hr = d3dSetTexture( dwTexHandle );
-	if( FAILED(hr) )
+	if( hr < 0 )
 		return hr;
 
 	// Calculate coordinates
 
-	D3DVALUE dvWidth, dvHeight;
-	D3DVALUE dvLeft, dvTop, dvRight, dvBottom;
+	float dvWidth, dvHeight;
+	float dvLeft, dvTop, dvRight, dvBottom;
 
 	if( lpSprite->dwHandle & 0x80000000 )
 	{
 		// Child
-		dvWidth = D3DVALUE(lpSprite->dwWidth);
-		dvHeight = D3DVALUE(lpSprite->dwHeight);
+		dvWidth = float(lpSprite->dwWidth);
+		dvHeight = float(lpSprite->dwHeight);
 	} else {
-		dvWidth = D3DVALUE(lpSprite->dwWidth) * (lpSprite->Vertices[1].u - lpSprite->Vertices[0].u);
-		dvHeight = D3DVALUE(lpSprite->dwHeight) * (lpSprite->Vertices[2].v - lpSprite->Vertices[1].v);
+		dvWidth = float(lpSprite->dwWidth) * (lpSprite->Vertices[1].u - lpSprite->Vertices[0].u);
+		dvHeight = float(lpSprite->dwHeight) * (lpSprite->Vertices[2].v - lpSprite->Vertices[1].v);
 	}
 
 	switch(dwOrigin) {
@@ -669,14 +669,14 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 	// See if we have to rotate the sprite
 
 	if( dvRotate != 0.0f ) {
-		D3DVALUE sin_a = (float)sin(dvRotate);
-		D3DVALUE cos_a = (float)cos(dvRotate);
+		float sin_a = (float)sin(dvRotate);
+		float cos_a = (float)cos(dvRotate);
 
-		D3DVALUE xc = (dvRight+dvLeft)/2.0f;
-		D3DVALUE yc = (dvBottom+dvTop)/2.0f;
-		D3DVALUE x;
-		D3DVALUE y;
-		for( DWORD i = 0; i < 4; i++ ) {
+		float xc = (dvRight+dvLeft)/2.0f;
+		float yc = (dvBottom+dvTop)/2.0f;
+		float x;
+		float y;
+		for( uint32_t i = 0; i < 4; i++ ) {
 			x = lpSprite->Vertices[i].x - xc;
 			y = lpSprite->Vertices[i].y - yc;
 			lpSprite->Vertices[i].x = x*cos_a - y*sin_a + xc;
@@ -686,7 +686,7 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 
 	// If Z is enabled, set z values in the vertices
 	if( m_bSpriteZEnable ) {
-		for( DWORD i = 0; i < 4; i++ ) {
+		for( uint32_t i = 0; i < 4; i++ ) {
 			lpSprite->Vertices[i].z = m_dvSpriteZ;
 		}
 	}
@@ -694,14 +694,14 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 
 	// Save current render states
 
-	DWORD dwAlphaTestEnable;
-	DWORD dwAlphaFunc;
-	DWORD dwAlphaRef;
-	DWORD dwAlphaBlendEnable;
-	DWORD dwSrcFactor;
-	DWORD dwDestFactor;
-	DWORD dwZEnable;
-	DWORD dwZWriteEnable;
+	uint32_t dwAlphaTestEnable;
+	uint32_t dwAlphaFunc;
+	uint32_t dwAlphaRef;
+	uint32_t dwAlphaBlendEnable;
+	uint32_t dwSrcFactor;
+	uint32_t dwDestFactor;
+	uint32_t dwZEnable;
+	uint32_t dwZWriteEnable;
 
 	d3dGetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, &dwAlphaTestEnable );
 	d3dGetRenderState( D3DRENDERSTATE_ALPHAFUNC, &dwAlphaFunc );
@@ -717,35 +717,35 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 	// Set render states
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, TRUE );
+		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, true );
 		d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL );
 		d3dSetRenderState( D3DRENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
 	} else {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, FALSE );
+		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, false );
 		d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_ALWAYS );
 	}
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, TRUE );
+		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
 		d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
 		d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
 	} else {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, FALSE );
+		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, false );
 	}
 
 	if( m_bSpriteZEnable ) {
 		d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, FALSE );
+		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 	} else {
 		d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, FALSE );
+		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 	}
 
 	d3dSetTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
 				//MD3DTB_TEXTURE1);//Для совсем слабеньких карточек
 				MD3DTB_TEXTURE1_MOD_DIFFUSE );
 
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
+	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
 
 //	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CCW);
 	d3dTriangleFan( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, &(lpSprite->Vertices), 4 );
@@ -773,18 +773,18 @@ MD3DERROR d3dDrawSprite( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, DWORD dwOri
 // Name: d3dDrawSpriteZ
 // Desc: Draw a sprite with Z
 //-----------------------------------------------------------------------------
-MD3DERROR d3dDrawSpriteZ( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, D3DVALUE dvZ, 
-						  DWORD dwOrigin, D3DVALUE dvScaleX, D3DVALUE dvScaleY, 
-						  D3DVALUE dvRotate )
+MD3DERROR d3dDrawSpriteZ( uint32_t dwHandle, float dvX, float dvY, float dvZ, 
+						  uint32_t dwOrigin, float dvScaleX, float dvScaleY, 
+						  float dvRotate )
 {
 
 	m_dvSpriteZ = dvZ;
-	m_bSpriteZEnable = TRUE;
+	m_bSpriteZEnable = true;
 
 	MD3DERROR hr;
 	hr = d3dDrawSprite( dwHandle, dvX, dvY, dwOrigin, dvScaleX, dvScaleY, dvRotate );
 
-	m_bSpriteZEnable = FALSE;
+	m_bSpriteZEnable = false;
 
 	return hr;
 }
@@ -794,9 +794,9 @@ MD3DERROR d3dDrawSpriteZ( DWORD dwHandle, D3DVALUE dvX, D3DVALUE dvY, D3DVALUE d
 // Helper functions for managing sprite slots 
 //-----------------------------------------------------------------------------
 
-static DWORD FindUnusedSlot() 
+static uint32_t FindUnusedSlot() 
 {
-	DWORD dwSlot;
+	uint32_t dwSlot;
 
 	for( dwSlot = 1; dwSlot < m_dwSpriteSlotsUsed; dwSlot++ )
 	{
@@ -809,7 +809,7 @@ static DWORD FindUnusedSlot()
 }
 
 
-static DWORD CreateNewSlot()
+static uint32_t CreateNewSlot()
 {
 	if( m_dwSpriteSlotsUsed < m_dwSpriteSlotsCount )
 	{

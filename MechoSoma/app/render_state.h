@@ -24,13 +24,13 @@ struct FragmentShaderParameters {
 
 class RenderState final {
  public:
-  void set_option(D3DRENDERSTATETYPE type, DWORD value) { _options[type] = value; }
+  void set_option(D3DRENDERSTATETYPE type, uint32_t value) { _options[type] = value; }
 
-  DWORD get_option(D3DRENDERSTATETYPE type) const { return _options.at(type); }
+  uint32_t get_option(D3DRENDERSTATETYPE type) const { return _options.at(type); }
 
-  void set_texture(DWORD handle, DWORD stage) { _texture_stages[stage].texture_handle = handle; }
+  void set_texture(uint32_t handle, uint32_t stage) { _texture_stages[stage].texture_handle = handle; }
 
-  std::optional<DWORD> get_texture(DWORD stage) const { return _texture_stages[stage].texture_handle; }
+  std::optional<uint32_t> get_texture(uint32_t stage) const { return _texture_stages[stage].texture_handle; }
 
   void reset_texture_stage() {
     for (auto &stage : _texture_stages) {
@@ -38,11 +38,11 @@ class RenderState final {
     }
   }
 
-  void set_texture_stage_state(DWORD stage, D3DTEXTURESTAGESTATETYPE state, DWORD value) {
+  void set_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state, uint32_t value) {
     _texture_stages[stage].states[state] = value;
   }
 
-  DWORD get_texture_stage_state(DWORD stage, D3DTEXTURESTAGESTATETYPE state) const {
+  uint32_t get_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state) const {
     return _texture_stages[stage].states.at(state);
   }
 
@@ -90,11 +90,11 @@ class RenderState final {
   }
 
  private:
-  std::unordered_map<D3DRENDERSTATETYPE, DWORD> _options;
+  std::unordered_map<D3DRENDERSTATETYPE, uint32_t> _options;
 
   struct TextureStage {
-    std::optional<DWORD> texture_handle;
-    std::unordered_map<D3DTEXTURESTAGESTATETYPE, DWORD> states;
+    std::optional<uint32_t> texture_handle;
+    std::unordered_map<D3DTEXTURESTAGESTATETYPE, uint32_t> states;
 
     TextureStage() : texture_handle(std::nullopt) {}
 

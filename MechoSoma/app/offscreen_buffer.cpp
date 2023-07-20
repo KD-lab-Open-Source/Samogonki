@@ -5,10 +5,11 @@
 
 using namespace graphics;
 
-OffscreenBuffer::OffscreenBuffer(int width, int height) : _width(width), _height(height) {
+OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int drawableHeight) 
+  : _width(width), _height(height), _drawableWidth(drawableWidth), _drawableHeight(drawableHeight) {
   _shader = sg_make_shader(flush_shader_desc(sg_query_backend()));
   if (_shader.id == SG_INVALID_ID) {
-    XAssert("sg_make_shader");
+    ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
   }
 
   sg_image_desc image_description{};
@@ -28,7 +29,7 @@ OffscreenBuffer::OffscreenBuffer(int width, int height) : _width(width), _height
   pass_description.depth_stencil_attachment.image = depth_image;
   _renderingPass = sg_make_pass(pass_description);
   if (_renderingPass.id == SG_INVALID_ID) {
-    XAssert("sg_make_pass");
+    ErrH.Abort("sg_make_pass", XERR_USER, 0, "");
   }
 
   sg_buffer_desc buffer_description{};
@@ -36,6 +37,15 @@ OffscreenBuffer::OffscreenBuffer(int width, int height) : _width(width), _height
   buffer_description.type = SG_BUFFERTYPE_VERTEXBUFFER;
   buffer_description.usage = SG_USAGE_DYNAMIC;
   _dummyBuffer = sg_make_buffer(buffer_description);
+
+  _clipSpaceMaxX = 1.0f * width / height * drawableHeight / drawableWidth;
+}
+
+OffscreenBuffer::~OffscreenBuffer() {
+  sg_destroy_buffer(_dummyBuffer);
+  sg_destroy_pass(_renderingPass);
+  sg_destroy_image(_colorTexture);
+  sg_destroy_shader(_shader);
 }
 
 sg_pass OffscreenBuffer::getRenderingPass() const {
@@ -44,7 +54,9 @@ sg_pass OffscreenBuffer::getRenderingPass() const {
 
 void OffscreenBuffer::flush() {
   sg_pass_action defaultPassAction = {};
-  sg_begin_default_pass(defaultPassAction, _width, _height);
+  defaultPassAction.colors[0].action = SG_ACTION_CLEAR;
+  defaultPassAction.colors[0].value = {0, 0, 0, 1};
+  sg_begin_default_pass(defaultPassAction, _drawableWidth, _drawableHeight);
 
   sg_pipeline_desc description = {};
   description.shader = _shader;
@@ -58,7 +70,13 @@ void OffscreenBuffer::flush() {
   auto pipeline = sg_make_pipeline(description);
   sg_apply_pipeline(pipeline);
   sg_apply_bindings(bindings);
-  sg_draw(0, 3, 1);
+
+  auto vs_params = flush_vs_params_t{
+    .max_x = _clipSpaceMaxX
+  };
+  sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_flush_vs_params, SG_RANGE(vs_params));
+
+  sg_draw(0, 6, 1);
   sg_destroy_pipeline(pipeline);
 
   sg_end_pass();

@@ -12,7 +12,7 @@
 namespace graphics {
 
 struct VertexType {
-  explicit VertexType(DWORD vertex_type) {
+  explicit VertexType(uint32_t vertex_type) {
     if (vertex_type & D3DFVF_XYZRHW) {
       // float, float, float, float
       _offsets[0] = 4 * sizeof(float);
@@ -27,13 +27,13 @@ struct VertexType {
 
     if (vertex_type & D3DFVF_DIFFUSE) {
       // DWORD in ARGB order
-      _offsets[1] = sizeof(DWORD);
+      _offsets[1] = sizeof(uint32_t);
       _vertex_size += _offsets[1];
     }
 
     if (vertex_type & D3DFVF_SPECULAR) {
       // DWORD in ARGB order
-      _offsets[2] = sizeof(DWORD);
+      _offsets[2] = sizeof(uint32_t);
       _vertex_size += _offsets[2];
     }
 
@@ -44,7 +44,7 @@ struct VertexType {
     }
   }
 
-  size_t get_offset(DWORD vertex_type) const {
+  size_t get_offset(uint32_t vertex_type) const {
     if (vertex_type & D3DFVF_XYZRHW) {
       return _offsets[0];
     }
