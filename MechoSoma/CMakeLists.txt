@@ -269,6 +269,7 @@ set(GAME_SOURCES
         XTool/xutil.cpp
         XTool/xsound.cpp
         XTool/Statistics.cpp
+        XTool/xnames.cpp
         # Xreal
         Xreal/AnimalArcansPrm.h
         Xreal/AnimalsPrm.h
