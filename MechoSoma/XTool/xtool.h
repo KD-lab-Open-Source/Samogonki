@@ -731,7 +731,7 @@ struct XKeyStruct
 extern XKeyStruct XKey;
 
 int xtGetKeyName(int vkey,int shift,int russian = 0);
-char* xtGetKeyNameText(int key);
+const char* xtGetKeyNameText(int key);
 
 int xtGetKeyState(int vk);
 

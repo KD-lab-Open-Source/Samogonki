@@ -49,7 +49,7 @@ int mchGetKeyID(int key,int config = -1);
 int mchGetKeyID_First(int key,int config = -1);
 int mchGetKeyID_Next(void);
 
-char* mchGetKeyNameText(int code);
+const char* mchGetKeyNameText(int code);
 
 void mchA_d3dPrepare(void);
 unsigned mch_toupper(unsigned ch);
@@ -2565,7 +2565,7 @@ void aciScreenScroller::init(void)
 void aciScreenDispatcher::InputQuant(int code,int chr)
 {
 	int sz;
-	char* p;
+	const char* p;
 	unsigned char* ptr = NULL;
 	HFont* hfnt = NULL;
 

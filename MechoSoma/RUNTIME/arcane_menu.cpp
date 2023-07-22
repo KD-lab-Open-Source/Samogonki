@@ -192,7 +192,7 @@ void mchSetNextQuantRTO(void);
 void mchA_DrawTips(void);
 
 int acsGetKeyName(int vkey,int shift,int lng_flag);
-char* mchGetKeyNameText(int code);
+const char* mchGetKeyNameText(int code);
 
 void acsStrLen3D(const void* str,int fnt,int space,int& sx,int& sy);
 void mchA_StrLen3D(const void* str,int fnt,int space,int& sx,int& sy);
@@ -6815,7 +6815,7 @@ void mchA_DrawTips(void)
 	int x,y,fnt,dy;
 	if(!mchEnableTips || !mchTurnBasedGame || !mch_arcScrD -> Visible) return;
 
-	char* enterStr,*spaceStr,*insStr,*altStr,*delStr,*pgupStr,*pgdnStr;
+	const char* enterStr,*spaceStr,*insStr,*altStr,*delStr,*pgupStr,*pgdnStr;
 
 	const float sc = 0.75f;
 /*

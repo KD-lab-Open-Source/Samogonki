@@ -123,8 +123,3 @@ int xtGetKeyName(int vkey,int shift,int russian)
 {
 	return 0;
 }
-
-char* xtGetKeyNameText(int key)
-{
-	return nullptr;
-}

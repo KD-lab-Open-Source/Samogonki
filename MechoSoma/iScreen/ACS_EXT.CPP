@@ -220,7 +220,7 @@ void acsScrollSaveSlots(int dir);
 
 int acsInitSaveSlots(void);
 
-char* mchGetKeyNameText(int code);
+const char* mchGetKeyNameText(int code);
 void acsInitEssenceScreen(void);
 void acsEssenceEvent(int id);
 
@@ -2741,7 +2741,7 @@ void acsJoyQuant(void)
 	acsJoyY_Axis = 0;
 }
 
-char* mchGetKeyNameText(int code)
+const char* mchGetKeyNameText(int code)
 {
 	static XBuffer XBuf;
 
