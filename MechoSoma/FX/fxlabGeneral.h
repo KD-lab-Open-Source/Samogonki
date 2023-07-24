@@ -154,8 +154,8 @@ struct fxlabGeneralObjectType
 
 struct fxlabGeneralObjectDispatcher
 {
-	list<fxlabGeneralObjectType*> ObjectList;
-	list<fxlabGeneralObjectType*> CreateList;
+	std::list<fxlabGeneralObjectType*> ObjectList;
+	std::list<fxlabGeneralObjectType*> CreateList;
 
 	virtual void Open();
 	virtual void Close();
@@ -181,7 +181,7 @@ struct fxlabGeneralActionType
 struct fxlabServerObjectDispatcher : fxlabGeneralObjectDispatcher
 {
 	float Time;
-	list<fxlabGeneralActionType> ActionList;
+	std::list<fxlabGeneralActionType> ActionList;
 	int LockList;
 	int RootID;
 

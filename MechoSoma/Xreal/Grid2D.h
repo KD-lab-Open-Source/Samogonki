@@ -306,7 +306,7 @@ public:
 				int x2 = xr >> 16;
 
 				if(x1 > x2)
-					swap(x1, x2);
+					std::swap(x1, x2);
 
 				while(x1 <= x2)
 					process_cell(x1++, Y, op);

@@ -28,7 +28,7 @@ protected:
 	friend class SystemResourceDispatcher;
 };
 
-class ResourceDispatcher : public list<PtrHandle<ResourceUser> >
+class ResourceDispatcher : public std::list<PtrHandle<ResourceUser> >
 {
 public:
 	void attach(ResourceUser* user) { push_back(0); back() = user; user -> init_time(global_time()); }

@@ -86,7 +86,7 @@ struct DragonPoint : FirePoint
 };
 
 
-class FirePointList : public vector<PtrHandle<FirePoint> >
+class FirePointList : public std::vector<PtrHandle<FirePoint> >
 {
 public:
 	FirePointList(){}

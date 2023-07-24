@@ -96,7 +96,7 @@ public:
 	LCP_Solver();
 
 	void save_problem(char* name);
-	void save_problem(ofstream& f);
+	void save_problem(std::ofstream& f);
 
 #ifdef _LCPSolverTest_
 	void load_problem(char* name);

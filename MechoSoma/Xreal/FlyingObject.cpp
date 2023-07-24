@@ -28,7 +28,7 @@ void FlyingObject::setHeight(float relative_height_)
 
 float FlyingObject::currentHeight()
 {
-	vector<Vect3f> points(5);
+	std::vector<Vect3f> points(5);
 	points[0] = R();
 	Vect3f dx(width()/2, 0, 0);
 	Vect3f dy(0, length()/2, 0);
@@ -38,7 +38,7 @@ float FlyingObject::currentHeight()
 	pose().xformPoint(-dx - dy, points[4]);
 
 	float hmax = 0;
-	vector<Vect3f>::const_iterator i;
+	std::vector<Vect3f>::const_iterator i;
 	FOR_EACH(points, i){
 		float x = i -> x;
 		float y = i -> y;

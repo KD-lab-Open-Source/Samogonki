@@ -65,8 +65,8 @@ struct Contact : ContactProperty
 	void show() const;
 };
 
-class ContactList : public vector<Contact> {};
-class TotalContactList : public vector<Contact*> {};
+class ContactList : public std::vector<Contact> {};
+class TotalContactList : public std::vector<Contact*> {};
 
 // In order to avoid vector<> reallocation problem
 class ContactRef
@@ -78,6 +78,6 @@ public:
 	Contact* operator->() { return contacts -> data() + index; }
 };
 
-typedef vector<ContactRef> ContactList2;
+typedef std::vector<ContactRef> ContactList2;
 
 #endif //__CONTACT_H__

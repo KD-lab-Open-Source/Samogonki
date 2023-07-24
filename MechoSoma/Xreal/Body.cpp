@@ -182,9 +182,9 @@ void Body::createBound()
 			break;
 		case FloatsBound: {
 			xassert(spheres_radius_parameter);
-			vector<Vect3f> floats_;
-			geometry -> Dummies.Query("float", back_insert_iterator<vector<Vect3f> >(floats_));
-			vector<Vect3f>::iterator fi;
+			std::vector<Vect3f> floats_;
+			geometry -> Dummies.Query("float", std::back_insert_iterator<std::vector<Vect3f> >(floats_));
+			std::vector<Vect3f>::iterator fi;
 			FOR_EACH(floats_, fi)
 				spheres.push_back(Sphere(*fi, spheres_radius_parameter));	       
 			return;
@@ -455,7 +455,7 @@ cFrame& Body::findFrame()
 {
 	cFrame* frame = geometry ? geometry -> FindFrame() : 0;
 	if(!frame){
-		cerr << "Frame not found: "<< typeid(*this).name() << endl;
+		std::cerr << "Frame not found: "<< typeid(*this).name() << endl;
 		ErrH.Abort("Frame not found");
 		}
 	return *frame;

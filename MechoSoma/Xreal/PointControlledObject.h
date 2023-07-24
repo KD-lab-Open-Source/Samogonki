@@ -9,7 +9,7 @@
 class PointControlledObject : virtual public ControlledObject 
 {
 protected:
-	typedef list<Vect3f> ControlPointList;
+	typedef std::list<Vect3f> ControlPointList;
 
 	ControlPointList control_points;
 
@@ -37,7 +37,7 @@ protected:
 	// States //////////
 	float traction_avr;
 	float velocity_y_avr;
-	string control_description;
+	std::string control_description;
 
 	// Controls /////////
 	AverageConditionTimer backward_maneuver_obstacle_timer;

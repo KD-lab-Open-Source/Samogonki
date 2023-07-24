@@ -11,8 +11,6 @@
   for((iterator) = (list).begin(); (iterator) != (list).end(); ++(iterator))
 #endif
 
-using namespace std;
-
 unsigned int CalcType(const char* NameMesh);
 
 struct Dummy : Vect3f
@@ -30,7 +28,7 @@ struct Dummy : Vect3f
   	void Translate(float dx,float dy,float dz)				{ x+=dx; y+=dy; z+=dz; }
 };
 
-class DummyList : public vector<Dummy>
+class DummyList : public std::vector<Dummy>
 {
 public:
 	int Add(const Vect3f& v, const char* n);
@@ -46,7 +44,7 @@ public:
 	Dummy* Search(unsigned int Type);
 	Dummy* Search(const char* name);
 	
-	iterator Iterator(const char* name_mask);
+	std::vector<Dummy>::iterator Iterator(const char* name_mask);
 		
 	template <class InputIter>									   
 	int Query(const char* name_mask, InputIter result)

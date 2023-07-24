@@ -163,7 +163,7 @@ FeaturesList& BodyFeatureHT::operator()(const Body& b1, const Body& b2)
 	if(i != end())
 		return i -> second;
 
-	FeaturesList& features = insert(pair<const BodyPair, FeaturesList> (p, FeaturesList()) ).first -> second;
+	FeaturesList& features = insert(std::pair<const BodyPair, FeaturesList> (p, FeaturesList()) ).first -> second;
 	features.insert(features.end(), b1.spheres.size()*b2.polyhedrons.size(), 0);
 	return features;
 }

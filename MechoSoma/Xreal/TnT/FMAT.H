@@ -189,7 +189,7 @@ class Fortran_Matrix
     Fortran_Matrix(Subscript M, Subscript N, char *s)
     {
 	initialize(M,N);
-	istrstream ins(s);
+	std::istrstream ins(s);
 
 	Subscript i, j;
 

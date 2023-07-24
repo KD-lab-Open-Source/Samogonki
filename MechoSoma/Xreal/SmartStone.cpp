@@ -85,7 +85,7 @@ void SmartStoneRacer::quant()
 				state = Rolling;
 				break;
 			}
-		swap(geometry, effect_geometry);
+		std::swap(geometry, effect_geometry);
 		xrealM3D -> Attach(geometry); 
 		xrealM3D -> Detach(effect_geometry); 
 		++track;

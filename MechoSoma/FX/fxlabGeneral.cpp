@@ -53,7 +53,7 @@ void fxlabGeneralObjectDispatcher::Open()
 
 void fxlabGeneralObjectDispatcher::Close()
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	p = CreateList.begin();
 	while(p != CreateList.end()){
@@ -83,7 +83,7 @@ extern int fxlabStopTime;
 
 void fxlabGeneralObjectDispatcher::Quant()
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	if(mchFreezeTime || fxlabStopTime){
 		p = ObjectList.begin();
@@ -103,8 +103,8 @@ void fxlabGeneralObjectDispatcher::Quant()
 
 void fxlabGeneralObjectDispatcher::CreateQuant()
 {
-	list<fxlabGeneralObjectType*> tmp_list;
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*> tmp_list;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	tmp_list = CreateList;
 	CreateList.clear();
@@ -143,7 +143,7 @@ fxlabGeneralObjectType* fxlabGeneralObjectDispatcher::CreateObject(int type)
 
 fxlabGeneralObjectType* fxlabGeneralObjectDispatcher::SearchObject(int type)
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	FOR_EACH(ObjectList,p){
 		if((*p)->Type == type)
@@ -190,7 +190,7 @@ void fxlabServerObjectDispatcher::Start()
 
 void fxlabServerObjectDispatcher::Quant()
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	if(!mchFreezeTime && !fxlabStopTime){
 		mch_raceD->ClearTrackFlags(0);
@@ -495,8 +495,8 @@ void fxlabServerObjectDispatcher::ActionQuant()
 {
 	fxlabGeneralObjectType* l;
 	fxlabGeneralObjectType* own;
-	list<fxlabGeneralObjectType* >::iterator p;
-	list<fxlabGeneralActionType>::iterator ev;
+	std::list<fxlabGeneralObjectType* >::iterator p;
+	std::list<fxlabGeneralActionType>::iterator ev;
 	int id;
 
 	l = NULL;
@@ -535,7 +535,7 @@ void fxlabServerObjectDispatcher::ActionOpen()
 
 void fxlabServerObjectDispatcher::ActionClose()
 {
-	list<fxlabGeneralActionType>::iterator ev;
+	std::list<fxlabGeneralActionType>::iterator ev;
 
 	ev = ActionList.begin();
 	while(ev != ActionList.end()){
@@ -545,7 +545,7 @@ void fxlabServerObjectDispatcher::ActionClose()
 
 void fxlabServerObjectDispatcher::StopArcane(int id,int owner_id)
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	FOR_EACH(ObjectList,p){
 		if((*p)->GetType() > FXLAB_SERVER_PROCESS_ARCANE)

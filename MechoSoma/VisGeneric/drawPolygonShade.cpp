@@ -475,7 +475,7 @@ int sTracePolygon::GetAttribute(int xe1,int ye1,int xe2,int ye2,int xe3,int ye3)
 }
 void sTracePolygon::SaveAttribute(char *fname)
 {
-	fstream f(fname,ios::out);
+	std::fstream f(fname,std::ios::out);
 	for(int j=0;j<2048;j+=2)
 		for(int i=0;i<2048;i+=2)
 		{
@@ -510,7 +510,7 @@ void sTracePolygon::SaveAttribute(char *fname)
 }
 void sTracePolygon::SaveVoxel(char *fname)
 {
-	fstream f(fname,ios::out);
+	std::fstream f(fname,std::ios::out);
 	for(int j=0;j<2048;j+=2)
 		for(int i=0;i<2048;i+=2)
 		{

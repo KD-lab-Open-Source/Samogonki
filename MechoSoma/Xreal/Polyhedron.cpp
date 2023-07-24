@@ -14,15 +14,15 @@ struct std::hash<const Vertex*> {
 Polyhedron::Polyhedron(const Polyhedron& poly, const Vect3f& scale, const Vect3f& displace)
 {
 	std::unordered_map<const Vertex*, Vertex*> indexedVerts(poly.verts().size()*2);
-	list<Vertex>::const_iterator vi;
+	std::list<Vertex>::const_iterator vi;
 	FOR_EACH(poly.verts(), vi)
 		indexedVerts[&*vi] = addVertex(vi -> name(), vi -> coords()*scale + displace );
 		
-	vector<Vertex*> facelist(MAX_VERTS_PER_FACE);
-	list<Face>::const_iterator fi;
+	std::vector<Vertex*> facelist(MAX_VERTS_PER_FACE);
+	std::list<Face>::const_iterator fi;
 	FOR_EACH(poly.faces(), fi){
 		facelist.clear();
-		list<FaceConeNode>::const_iterator fcn;
+		std::list<FaceConeNode>::const_iterator fcn;
 		FOR_EACH(fi -> cone, fcn){
 			const Edge* e = fcn -> nbr;
 			facelist.push_back(indexedVerts[e -> left == &*fi ? e -> tail : e -> head]);
@@ -50,10 +50,10 @@ static inline void quantize(Vect3f& v, float eps)
 
 void Polyhedron::setMesh(cMesh& mesh, int recursive)
 {
-	string name = mesh.GetFileName() ? mesh.GetFileName().ptr() : mesh.GetGeneralParent() -> GetFileName().ptr();
+	std::string name = mesh.GetFileName() ? mesh.GetFileName().ptr() : mesh.GetGeneralParent() -> GetFileName().ptr();
 	int dot_pos = name.find(".");
 	int slash_pos = name.rfind("\\", dot_pos);
-	name.replace(dot_pos, 4, recursive ? string(".hul") : string("_") + string(mesh.GetName()) + ".hul");
+	name.replace(dot_pos, 4, recursive ? std::string(".hul") : std::string("_") + std::string(mesh.GetName()) + ".hul");
 	name.replace(slash_pos, 1, "\\Hulls\\");
 	Vect3f scale(mesh.xmaxTotal() - mesh.xminTotal(), mesh.ymaxTotal() - mesh.yminTotal(), mesh.zmaxTotal() - mesh.zminTotal());
 
@@ -121,17 +121,17 @@ void Polyhedron::save(const char* fname)
 
 	int counter = 0;
 	out < (int) verts().size();
-	list<Vertex>::iterator vi;
+	std::list<Vertex>::iterator vi;
 	FOR_EACH(verts_, vi){
 		out < vi -> coords_;
 		vi -> index = counter++;
 		}
 	
 	out < (int) faces().size();
-	list<Face>::const_iterator fi;
+	std::list<Face>::const_iterator fi;
 	FOR_EACH(faces(), fi){
 		out < (int) fi -> cone.size();
-		list<FaceConeNode>::const_iterator fcn;
+		std::list<FaceConeNode>::const_iterator fcn;
 		FOR_EACH(fi -> cone, fcn){
 			const Edge* e = fcn -> nbr;
 			out < (e -> left == &*fi ? e -> tail -> index: e -> head -> index);
@@ -171,7 +171,7 @@ void Polyhedron::load(const char* fname, const Vect3f& scale)
 		
 	int n_faces;
 	in > n_faces;
-	vector<Vertex*> facelist(MAX_VERTS_PER_FACE);
+	std::vector<Vertex*> facelist(MAX_VERTS_PER_FACE);
 	for(i = 0;i < n_faces; i++){
 		facelist.clear();
 		int face_size;

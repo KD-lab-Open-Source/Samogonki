@@ -176,7 +176,7 @@ class Vector
     Vector(Subscript N, char *s) :  v_(0), vm1_(0), n_(0)
     {
 	initialize(N);
-	istrstream ins(s);
+	std::istrstream ins(s);
 
 	Subscript i;
 

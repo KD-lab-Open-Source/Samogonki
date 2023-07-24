@@ -6,7 +6,7 @@
 
 #include <map>
 
-class PolyhedronLibrary : public map<int, ShareHandle<Polyhedron> >
+class PolyhedronLibrary : public std::map<int, ShareHandle<Polyhedron> >
 {
 	class cMeshLibrary& mesh_lib;
 public:

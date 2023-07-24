@@ -366,7 +366,7 @@ int check_if_file_exist(const char* name)
 
 void append_message_to_file(const char* message, const char* fname)
 {
-	ofstream ff(fname, ios::app);
+	std::ofstream ff(fname, std::ios::app);
 	ff << "\n\n=========================================================================================\n";
 	time_t aclock;
 	time( &aclock );                 /* Get time in seconds */

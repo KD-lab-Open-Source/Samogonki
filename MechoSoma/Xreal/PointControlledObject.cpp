@@ -109,7 +109,7 @@ public:
 		left = Curvature(x + dx, y);
 		right = Curvature(x - dx, y);
 		if(left > right)
-			swap(left, right);
+			std::swap(left, right);
 	}
 
 	int intersect(const CurvatureInterval& ci)

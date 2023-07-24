@@ -1792,9 +1792,9 @@ void Mechos::show() const
 		}
 
 	if(features() & IRON_HIP){
-		vector<Vect3f> fires;
+		std::vector<Vect3f> fires;
 		part_by_type(M3D_FRONT) -> GetGlobalDummy("fireb", fires);
-		vector<Vect3f>::iterator fi;
+		std::vector<Vect3f>::iterator fi;
 		FOR_EACH(fires, fi)
 			show_vector(*fi, iron_hip_radius, XCOL(GREEN, 200));
 		}

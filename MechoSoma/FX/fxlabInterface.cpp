@@ -278,7 +278,7 @@ void fxlabClientShow()
 
 void fxlabClientObjectDispatcher::Kill()
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 
 	p = ObjectList.begin();
 	while(p != ObjectList.end()){
@@ -294,7 +294,7 @@ void fxlabClientObjectDispatcher::Kill()
 
 void fxlabClientObjectDispatcher::Show()
 {
-	list<fxlabGeneralObjectType*>::iterator p;
+	std::list<fxlabGeneralObjectType*>::iterator p;
 	cInterfaceGraph3d *IGraph3d;
 	cInterfaceVisGeneric *IVisGeneric=CreateIVisGeneric();
 	IGraph3d = (cInterfaceGraph3d*)xrealIVG -> GetIGraph3d();

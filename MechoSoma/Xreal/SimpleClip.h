@@ -154,7 +154,7 @@ struct Sphere : Vect3f
 		
 };
 
-class SphereList : public vector<Sphere> {}; 
+class SphereList : public std::vector<Sphere> {}; 
 
 
 //////////////////////////////////////////

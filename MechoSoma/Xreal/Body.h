@@ -353,7 +353,7 @@ protected:
 		int index;
 		int body_index;
 	};
-	vector<NormalContact> normal_contacts;
+	std::vector<NormalContact> normal_contacts;
 
 	struct TangentContact
 	{
@@ -361,7 +361,7 @@ protected:
 		int index;
 		int local_index;
 	};
-	vector<TangentContact> tangent_contacts;
+	std::vector<TangentContact> tangent_contacts;
 
 	class Mass_Matrix_Array* mass_matrix_array;
 

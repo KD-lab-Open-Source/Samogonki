@@ -387,8 +387,8 @@ public:
 	void CreateCopyMesh(unsigned int type,cMesh *Mesh,cMesh *MeshParent=0);
 	void Alignment();
 	char TypeMesh()									{ return (Type&0xFFFF0000)!=0; }
-	void GetGlobalGeometry(vector<Vect3f>& verts, vector<int>& faces, int recursive); // vectors must be cleared
-	void GetGlobalDummy(const char* name_mask, vector<Vect3f>& dummies, int recursive = 1); // vectors must be cleared
+	void GetGlobalGeometry(std::vector<Vect3f>& verts, std::vector<int>& faces, int recursive); // vectors must be cleared
+	void GetGlobalDummy(const char* name_mask, std::vector<Vect3f>& dummies, int recursive = 1); // vectors must be cleared
 	cList* AddChild(cMesh *child);
 	void Displace(float x,float y,float z);
 	void ReCalcMatrix()										{ GetGeneralParent()->CalcMatrix(); }

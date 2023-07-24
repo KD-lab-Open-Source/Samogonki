@@ -22,8 +22,6 @@
 #include <iostream.h>
 #include <strstrea.h>
 
-using namespace std;
-
 namespace TNT
 {
 

@@ -79,11 +79,11 @@ void LCP_Solver::finit_frictional()
 
 void LCP_Solver::save_problem(char* name)
 {
-	ofstream f(name);
+	std::ofstream f(name);
 	save_problem(f);
 }
 
-void LCP_Solver::save_problem(ofstream& out)
+void LCP_Solver::save_problem(std::ofstream& out)
 {
 	out.precision(17);
 	out << size << endl;
