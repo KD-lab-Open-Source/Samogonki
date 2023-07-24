@@ -756,7 +756,7 @@ void fxlabClientWildClaw::Open()
 void fxlabClientWildClaw::Start()
 {
 	int i;
-	list<Vect3f>::iterator p;
+	std::list<Vect3f>::iterator p;
 	fxlabGeneralObjectType* t;
 
 	fxlabClientRemoteAim::Start();
@@ -794,7 +794,7 @@ void fxlabClientWildClaw::Quant()
 {
 	int i;
 	Vect3f v;
-	list<Vect3f>::iterator p;
+	std::list<Vect3f>::iterator p;
 	fxlabGeneralObjectType* t;
 
 	fxlabClientRemoteAim::Quant();

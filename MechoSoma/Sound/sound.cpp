@@ -544,7 +544,7 @@ void mchSoundDispatcher::StartEFF(int id,int x,int y,float vol,float speed)
 	mchSoundEFF* p = NULL;
 	
 	std::unordered_multimap<int,mchSoundEFF*>::iterator si;
-	pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
+	std::pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
 
 	eff_size = map_localEFF.count(id);
 
@@ -1024,7 +1024,7 @@ int mchSoundDispatcher::GetStatusEFF(int id)
 	mchSoundEFF* p = NULL;
 
 	std::unordered_multimap<int,mchSoundEFF*>::iterator si;
-	pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
+	std::pair<std::unordered_multimap<int,mchSoundEFF*>::iterator,std::unordered_multimap<int,mchSoundEFF*>::iterator> pr;
 
 	eff_size = map_localEFF.count(id);
 

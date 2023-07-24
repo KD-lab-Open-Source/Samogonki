@@ -29,7 +29,7 @@ public:
                 std::string s = t.ptr();
 
 		int pos = s.rfind("\\");
-		if(pos != string::npos)
+		if(pos != std::string::npos)
 			s.erase(0, pos + 1);
 		iterator it = find(s);
 		return it == end() ? 0 : it -> second;

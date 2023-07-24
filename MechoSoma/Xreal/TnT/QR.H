@@ -99,7 +99,7 @@ int QR_factor(MatrixType &A, Vector& C, Vector &D)
 
 	if (eta == 0)		// matrix is singular
 	{
-	    cerr << "QR: k=" << k << "\n";
+	    std::cerr << "QR: k=" << k << "\n";
 	    return 1;
 	}
 

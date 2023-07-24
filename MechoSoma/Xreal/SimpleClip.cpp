@@ -372,7 +372,7 @@ void TriangleMap::load(const char* name)
 	ff.close();
 
 	// read vertices
-	vector<Vect3f> verts;
+	std::vector<Vect3f> verts;
 	verts.reserve(20000); 
 	while (1) {
 		char c = 0;
@@ -424,7 +424,7 @@ void TriangleMap::loadSpots(const char* name)
 	SpotReader spots(name);
 	SpotReader::iterator si;
 	FOR_EACH(spots, si)
-		spot_map.insert(pair<const int, Spot>(si -> m3d_number, Spot(si -> type, si -> x, si -> y)));
+		spot_map.insert(std::pair<const int, Spot>(si -> m3d_number, Spot(si -> type, si -> x, si -> y)));
 }
 
 void TriangleMap::load(cM3D& M3D)
@@ -479,10 +479,10 @@ void TriangleMap::load(cM3D& M3D)
 	
 void TriangleMap::load(cMesh& mesh)
 {
-	vector<Vect3f> verts;
-	vector<int> faces;
+	std::vector<Vect3f> verts;
+	std::vector<int> faces;
 	mesh.GetGlobalGeometry(verts, faces, 1);
-	vector<int>::iterator fi;
+	std::vector<int>::iterator fi;
 	FOR_EACH(faces, fi){
 		int i0 = *fi;
 		int i1 = *++fi;

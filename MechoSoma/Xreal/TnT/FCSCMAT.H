@@ -22,8 +22,6 @@
 #include "tnt.h"
 #include "vec.h"
 
-using namespace std;
-
 namespace TNT
 {
 

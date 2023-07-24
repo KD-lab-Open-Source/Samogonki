@@ -153,7 +153,7 @@ struct fxlabCrazyTwister : fxlabParticleFear
 struct fxlabRubberSnake : fxlabParticleFear
 {
 	float Conversion;
-	list<Vect3f>* Spline;
+	std::list<Vect3f>* Spline;
 
 	void Open() override;
 

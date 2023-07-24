@@ -558,7 +558,7 @@ void fxlabRubberSnake::CoreGenerate()
 	Vect3f pos,vel;
 	fxlabParticleType* p;
 	HermitIterator<Vect3f> warp;
-	list<Vect3f>::iterator n;
+	std::list<Vect3f>::iterator n;
 	int cnt1,cnt2;
 	Vect3f vd,vp;
 
@@ -612,7 +612,7 @@ void fxlabRubberSnake::SetConversion(int conv)
 
 void fxlabRubberSnake::SetSplineOwner(void* point)
 {
-	Spline = (list<Vect3f>*)(point);
+	Spline = (std::list<Vect3f>*)(point);
 };
 
 
@@ -1558,9 +1558,9 @@ void fxlabSplineWay::Show()
 	cInterfaceVisGeneric *IVisGeneric;
 	Vect3f pos;
 	Vect3f vc,vp,vl;
-	list<Vect3f>::iterator p;
+	std::list<Vect3f>::iterator p;
 	HermitIterator<Vect3f> warp;
-	list<Vect3f> spline;
+	std::list<Vect3f> spline;
 	mchControlPoint* s;
 
 	if(mchTurnBasedGame && mchFreezeTime && Owner && (Owner->flags & MCH_ACTIVE_RACER)){

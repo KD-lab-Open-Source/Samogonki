@@ -43,7 +43,7 @@ FirePoint* FountainConstructor(const Vect3f& dummyA, const Vect3f& dummyB)
 //////////////////////////////////////////////////////////////////////////
 struct FirePointType
 {
-	string dummyB;
+	std::string dummyB;
 	FirePointConstructor constructor;
 	
 	FirePointType(){}
@@ -75,7 +75,7 @@ int FirePointList::parseDummy(DummyList& dummies)
 	FOR_EACH(dummies, ia){
 		FirePointType* t = fire_point_types.look(ia -> name);
 		if(t){
-			string nb(ia -> name);
+			std::string nb(ia -> name);
 			nb.replace(0, t -> dummyB.size(), t -> dummyB);
 			push_back( t -> constructor(*ia, dummies.Find((char*)nb.c_str())) );
 			i++;

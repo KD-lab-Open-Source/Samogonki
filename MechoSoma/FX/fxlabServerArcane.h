@@ -378,7 +378,7 @@ struct fxlabArcaneLightningSeed : fxlabExternalMindArcane
 
 struct fxlabArcaneCrystalSpike : fxlabExternalMindArcane
 {
-	vector<ShareHandle<Body> > SpikePoint;
+	std::vector<ShareHandle<Body> > SpikePoint;
 
 	void Start() override;
 	void Close() override;
@@ -389,7 +389,7 @@ struct fxlabArcaneCrystalSpike : fxlabExternalMindArcane
 
 struct fxlabArcaneMortarMine : fxlabExternalMindArcane
 {
-	vector<ShareHandle<Body> > MortarPoint;
+	std::vector<ShareHandle<Body> > MortarPoint;
 	fxlabProcessInterface* ClientPoint;
 
 	void Start() override;
@@ -403,7 +403,7 @@ const int FXLAB_PETARD_BONUS_NUM = 5;
 
 struct fxlabArcanePetard : fxlabExternalMindArcane
 {
-	vector<ShareHandle<Body> > BonusPoint;
+	std::vector<ShareHandle<Body> > BonusPoint;
 	fxlabProcessInterface ClientPoint[FXLAB_PETARD_BONUS_NUM];
 	fxlabProcessInterface PetardPoint;
 	Vect3f ExplodePosition;

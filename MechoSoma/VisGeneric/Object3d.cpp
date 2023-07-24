@@ -1239,7 +1239,7 @@ void cMesh::SetFrame()
 		}
 }
 
-void cMesh::GetGlobalGeometry(vector<Vect3f>& verts, vector<int>& faces, int recursive)
+void cMesh::GetGlobalGeometry(std::vector<Vect3f>& verts, std::vector<int>& faces, int recursive)
 {
 	AssertValid();
 	cMatrix m = GlobalMatrix;
@@ -1284,7 +1284,7 @@ void cMesh::GetGlobalGeometry(vector<Vect3f>& verts, vector<int>& faces, int rec
 			startList -> Mesh -> GetGlobalGeometry(verts, faces, recursive);
 }
 
-void cMesh::GetGlobalDummy(const char* name_mask, vector<Vect3f>& dummies, int recursive)
+void cMesh::GetGlobalDummy(const char* name_mask, std::vector<Vect3f>& dummies, int recursive)
 {
 	AssertValid();
 	DummyList::iterator i;

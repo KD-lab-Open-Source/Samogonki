@@ -1900,7 +1900,7 @@ void fxlabArcaneCrystalSpike::Start()
 
 void fxlabArcaneCrystalSpike::Close()
 {
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	FOR_EACH(SpikePoint, it){
 		if(*it && (*it)->alive())
@@ -1944,7 +1944,7 @@ void fxlabArcaneCrystalSpike::InterruptAction()
 void fxlabArcaneCrystalSpike::Condition()
 {
 	int cnt;
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	fxlabExternalMindArcane::Condition();
 	if(!InterruptEnable){
@@ -1998,7 +1998,7 @@ void fxlabArcaneMortarMine::Start()
 void fxlabArcaneMortarMine::Close()
 {
 	int i;
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	for(i = 0;i < InterruptNum;i++){
 		if(ClientPoint[i].Process)
@@ -2058,7 +2058,7 @@ void fxlabArcaneMortarMine::InterruptAction()
 void fxlabArcaneMortarMine::Condition()
 {
 	int cnt;
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	fxlabExternalMindArcane::Condition();
 	if(!InterruptEnable){
@@ -2084,7 +2084,7 @@ void fxlabArcanePetard::Start()
 void fxlabArcanePetard::Close()
 {
 	int i;
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	for(i = 0;i < FXLAB_PETARD_BONUS_NUM;i++){
 		if(ClientPoint[i].Process)
@@ -2214,7 +2214,7 @@ void fxlabArcanePetard::InterruptAction()
 void fxlabArcanePetard::Condition()
 {
 	int cnt;
-	vector<ShareHandle<Body> >::iterator it;
+	std::vector<ShareHandle<Body> >::iterator it;
 
 	fxlabExternalMindArcane::Condition();
 	if(!InterruptEnable){

@@ -83,7 +83,7 @@ struct CameraCoords
 class CameraCoordsSpline 
 {
 	int n;
-	list<CameraCoords> points;
+	std::list<CameraCoords> points;
 	CameraCoords P[4];
 	float t, weight;
 

@@ -106,7 +106,7 @@ void Mechos::startEffect(Effect effect)
 		runEffect(effect);
 		return;
 		}
-	list<Effect>::iterator ei;
+	std::list<Effect>::iterator ei;
 	FOR_EACH(effects_queue, ei)
 		if(*ei == effect)
 			return;

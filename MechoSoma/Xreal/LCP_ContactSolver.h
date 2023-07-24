@@ -30,7 +30,7 @@ private:
 	ContactingBodies* bodies_;
 	TotalContactList total_contacts;
 	TotalContactList frictional_contacts;
-	vector<int> frictional_contacts_indices;
+	std::vector<int> frictional_contacts_indices;
 	int M_is_calculated;
 	int frictional_bodies;
 };

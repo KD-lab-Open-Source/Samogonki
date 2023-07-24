@@ -68,9 +68,9 @@ public:
 
 protected: 
 	// Types
-	typedef list<ShareHandle<Body> > BodyList;
-	typedef vector<Body*> TmpBodyList;
-	typedef vector<ShareHandle<BaseObject> > BaseObjectDispatcher;
+	typedef std::list<ShareHandle<Body> > BodyList;
+	typedef std::vector<Body*> TmpBodyList;
+	typedef std::vector<ShareHandle<BaseObject> > BaseObjectDispatcher;
 
 	// Data
 	BodyList total_bodies;

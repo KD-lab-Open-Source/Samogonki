@@ -8,19 +8,19 @@
 
 template <class Vector>
 class HermitIterator {
-	typedef typename list<Vector>::iterator iterator;
+	typedef typename std::list<Vector>::iterator iterator;
 	float t;
 	Vector P[4];
-	list<Vector>* points;
+	std::list<Vector>* points;
 	iterator segment;
 	int is_out;
 	int check(int assign);
 public:
-		HermitIterator(list<Vector> &points_);
+		HermitIterator(std::list<Vector> &points_);
 		HermitIterator();
 
 	HermitIterator& set(const iterator &i_, float t_);
-	HermitIterator& set(list<Vector>* points_,const iterator &i_, float t_);
+	HermitIterator& set(std::list<Vector>* points_,const iterator &i_, float t_);
 	HermitIterator& operator += (const float &dt);	
 	HermitIterator& operator -= (const float &dt);	
 	Vector operator()();   // function
@@ -33,7 +33,7 @@ public:
 //		Implementation
 ////////////////////////////////////////////////////////////////////////////////
 template <class Vector>
-inline HermitIterator<Vector>::HermitIterator(list<Vector> &points_)
+inline HermitIterator<Vector>::HermitIterator(std::list<Vector> &points_)
 {
 	t = 0;
 	points = &points_;
@@ -58,7 +58,7 @@ inline HermitIterator<Vector>& HermitIterator<Vector>::set(const iterator &i_, f
 }
 
 template <class Vector>
-inline HermitIterator<Vector>& HermitIterator<Vector>::set(list<Vector> *points_,const iterator &i_, float t_)
+inline HermitIterator<Vector>& HermitIterator<Vector>::set(std::list<Vector> *points_,const iterator &i_, float t_)
 {
 	points = points_;
 	t = t_;

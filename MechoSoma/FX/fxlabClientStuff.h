@@ -190,7 +190,7 @@ enum fxlabClientWildClawDataField
 struct fxlabClientWildClaw : fxlabClientRemoteAim
 {
 	Vect3f Point[4];
-	list<Vect3f> Spline;
+	std::list<Vect3f> Spline;
 	fxlabProcessInterface SplinePoint;
 
 	DurationTimer ErectionTimer;

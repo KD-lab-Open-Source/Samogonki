@@ -16,7 +16,7 @@ struct BodyPair
 	int operator==(const BodyPair &p) const { return first == p.first && second == p.second; }
 };
 
-struct BodyPairHasher : unary_function<BodyPair, size_t> 
+struct BodyPairHasher : std::unary_function<BodyPair, size_t> 
 {
 	size_t operator() (const BodyPair &p) const
 	{

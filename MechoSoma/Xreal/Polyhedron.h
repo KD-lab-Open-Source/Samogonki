@@ -100,7 +100,7 @@ public:
 };
 
 
-typedef vector<const Feature*> FeaturesList;
+typedef std::vector<const Feature*> FeaturesList;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ class Vertex : private Feature
 public:
 
   Vect3f coords_;
-  list<VertConeNode> cone;
+  std::list<VertConeNode> cone;
   union {
 	VertFaceName name_;
 	int index;
@@ -172,7 +172,7 @@ public:
 
   int sides;	 // number of edges around boundary
   Plane plane;
-  list<FaceConeNode> cone;
+  std::list<FaceConeNode> cone;
   VertFaceName name_;
 
   Face() {type_ = FACE;}
@@ -194,9 +194,9 @@ class Polyhedron
 
   int handleCount; 
 
-  list<Vertex> verts_;
-  list<Edge  > edges_;
-  list<Face  > faces_;
+  std::list<Vertex> verts_;
+  std::list<Edge  > edges_;
+  std::list<Face  > faces_;
 
   // Volume integrals, relative to this Polyhedron's reference frame
   Real vol_;   // volume:				 vol	= int(dV)
@@ -228,16 +228,16 @@ public:
 	
   // construction
   inline Vertex* addVertex(const char *name, const Vect3f& coords);
-  void addFace(const char* name, vector<Vertex*>& verts, int clockwise = 0);
+  void addFace(const char* name, std::vector<Vertex*>& verts, int clockwise = 0);
   
   // transforming
   void xform(const MatXf& X);
 
   // examination
   ostream& print(ostream &os) const;
-  const list<Vertex> &verts() const {return verts_;}
-  const list<Edge  > &edges() const {return edges_;}
-  const list<Face  > &faces() const {return faces_;}
+  const std::list<Vertex> &verts() const {return verts_;}
+  const std::list<Edge  > &edges() const {return edges_;}
+  const std::list<Face  > &faces() const {return faces_;}
 
   // volume integrals
   const Real& vol()  const {return vol_;}
@@ -259,7 +259,7 @@ public:
 //  class PolyTree
 ///////////////////////////////////////////////////////////////////////////////
 
-class PolyTree : public list<ShareHandle<Polyhedron> >
+class PolyTree : public std::list<ShareHandle<Polyhedron> >
 {
 
   // Volume integrals, relative to this PolyTree's reference frame

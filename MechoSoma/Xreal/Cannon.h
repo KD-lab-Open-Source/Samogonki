@@ -16,7 +16,7 @@ public:
 	void show()  const;
 };
 
-class Fortress : public BaseObject, public vector<Cannon> {
+class Fortress : public BaseObject, public std::vector<Cannon> {
 	DurationTimer latency;
 	cMesh* model;
 public:

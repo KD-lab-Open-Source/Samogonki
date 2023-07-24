@@ -247,7 +247,7 @@ protected:
 
 	// Quants and forces
 	typedef int (Mechos::*QuantFunction)();
-	typedef list<QuantFunction> QuantList;
+	typedef std::list<QuantFunction> QuantList;
 	QuantList quants;
 	QuantList forces;
 
@@ -273,7 +273,7 @@ protected:
 	float swing_phase;
 	Effect current_effect;
 	EffectData current_effect_data;
-	list<Effect> effects_queue;
+	std::list<Effect> effects_queue;
 	ResourceDispatcher events_dispatcher;
 	AverageConditionTimer non_colliding_timer;
 	DurationTimer resting_disturb_timer;

@@ -112,7 +112,7 @@ public:
 		float d;
 		const Face* fmax;
 		float face_dist = -DBL_INF;
-		list<Face>::const_iterator fi;
+		std::list<Face>::const_iterator fi;
 		FOR_EACH(polyhedron.faces(), fi)
 			if((d = fi -> plane.dist(point)) > face_dist){
 				face_dist = d;
@@ -144,7 +144,7 @@ void Vertex::clip(PolyhedronClipOp& op) const
 {
 	if(op.check())
 		return;
-	list<VertConeNode>::const_iterator cni;
+	std::list<VertConeNode>::const_iterator cni;
 	float d; 
 	FOR_EACH(cone, cni)
 		if((d = cni -> plane -> dist(op.point)) < 0){
@@ -184,7 +184,7 @@ void Face::clip(PolyhedronClipOp& op) const
 {
 	if(op.check())
 		return;
-	list<FaceConeNode>::const_iterator cni;
+	std::list<FaceConeNode>::const_iterator cni;
 	float d;
 	FOR_EACH(cone, cni)
 		if((d = cni -> plane -> dist(op.point)) < 0){

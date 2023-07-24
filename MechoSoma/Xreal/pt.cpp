@@ -21,7 +21,7 @@ char edgeName[2 * VF_NAME_SZ];	// space for 2 Vertex names, :, and \0.
 // Output a Plane
 ostream& Plane::print(ostream &os) const
 {
-  auto oldFlags = os.setf(ios::showpos);
+  auto oldFlags = os.setf(std::ios::showpos);
   os << normal_.x << " x " << normal_.y << " y  "
      << normal_.z << " z " << offset_ << " >= 0";
   os.flags(oldFlags);
@@ -50,13 +50,13 @@ const char *Edge::name() const
 
 ostream& VertConeNode::print(ostream &os) const
 {
-  return os << setw(16) << (nbr ? nbr->name() : "?") << "]  " << *plane;
+  return os << std::setw(16) << (nbr ? nbr->name() : "?") << "]  " << *plane;
 }
 
 
 ostream& FaceConeNode::print(ostream &os) const
 {
-  return os << setw(16) << (nbr ? nbr->name() : "?") << "]  " << *plane;
+  return os << std::setw(16) << (nbr ? nbr->name() : "?") << "]  " << *plane;
 }
 
 
@@ -72,8 +72,8 @@ ostream& FaceConeNode::print(ostream &os) const
 
 void Polyhedron::processEdge(Face *f, Vertex *tail, Vertex *head)
 {
-  list<VertConeNode>::iterator vci;
-  list<FaceConeNode>::iterator fci;
+  std::list<VertConeNode>::iterator vci;
+  std::list<FaceConeNode>::iterator fci;
   VertConeNode vcn;
   FaceConeNode fcn;
 
@@ -130,12 +130,12 @@ void Polyhedron::processEdge(Face *f, Vertex *tail, Vertex *head)
 
 // No checking done, but numVerts better be at least 3!
 void Polyhedron::addFace(const char *name,
-			 vector<Vertex *> &verts, int clockwise)
+			 std::vector<Vertex *> &verts, int clockwise)
 {
   int i;
   Face f0, *f;
-  vector<Vertex *>::iterator vi;
-  list<FaceConeNode>::iterator cni;
+  std::vector<Vertex *>::iterator vi;
+  std::list<FaceConeNode>::iterator cni;
   FaceConeNode *last;
   Vect3f u, v, normal;
 
@@ -180,11 +180,11 @@ ostream& Polyhedron::print(ostream &os) const
   const Vertex *v;
   const Edge *e;
   const Face *f;
-  list<VertConeNode>::const_iterator vcni;
-  list<FaceConeNode>::const_iterator fcni;
-  list<Vertex>::const_iterator vi;
-  list<Edge  >::const_iterator ei;
-  list<Face  >::const_iterator fi;
+  std::list<VertConeNode>::const_iterator vcni;
+  std::list<FaceConeNode>::const_iterator fcni;
+  std::list<Vertex>::const_iterator vi;
+  std::list<Edge  >::const_iterator ei;
+  std::list<Face  >::const_iterator fi;
   //typename faces_.const_iterator fi;
 
   os << verts_.size() << " verts :  ";
@@ -210,13 +210,13 @@ ostream& Polyhedron::print(ostream &os) const
   FOR_EACH(edges_, ei) {
     e = &*ei;
     os << "edge " << e->name() << " " <<  e->dir << endl;
-    os << "tail: " << setw(16) << e->tail->name() << "]  "
+    os << "tail: " << std::setw(16) << e->tail->name() << "]  "
        << e->tplane << endl;
-    os << "head: " << setw(16) << e->head->name() << "]  "
+    os << "head: " << std::setw(16) << e->head->name() << "]  "
        << e->hplane << endl;
-    os << "left: " << setw(16) << e->left->name() << "]  "
+    os << "left: " << std::setw(16) << e->left->name() << "]  "
        << e->lplane << endl;
-    os << "rght: " << setw(16) << e->right->name() << "]  "
+    os << "rght: " << std::setw(16) << e->right->name() << "]  "
        << e->rplane << endl;
     os << endl;
   }
@@ -244,9 +244,9 @@ int Polyhedron::check() const
   int nv, ne, nf;
   const Edge *e, *e1, *e2;
   const Face *f;
-  list<FaceConeNode>::const_iterator cni;
-  list<Edge>::const_iterator ei;
-  list<Face>::const_iterator fi;
+  std::list<FaceConeNode>::const_iterator cni;
+  std::list<Edge>::const_iterator ei;
+  std::list<Face>::const_iterator fi;
   Real dp;
   Vect3f v;
 
@@ -258,7 +258,7 @@ int Polyhedron::check() const
     v.cross(e->lplane.normal(), e->rplane.normal());
     if ((dp = dot(e->dir, v)) >= 0) {
       error = 1;
-      cerr << "\anonconvex edge:  "
+      std::cerr << "\anonconvex edge:  "
 	   << " tail=" << e->tail->name_
 	   << " head=" << e->head->name_
 	   << " left=" << e->left->name_
@@ -277,7 +277,7 @@ int Polyhedron::check() const
       if ((e1->tail == e2->tail || e1->head == e2->head)) v.negate();
       if ((dp = dot(f->plane.normal(), v)) <= 0) {
 	error = 1;
-	cerr << "\anonconvex face:  " << f->name_
+	std::cerr << "\anonconvex face:  " << f->name_
 	     << "  vertex=" << (e1->left == f ? e1->head : e1->tail)->name_
 	     << "  angle=" << asin(-dp) << endl;
       }
@@ -291,7 +291,7 @@ int Polyhedron::check() const
   nf = faces_.size();
   if (nv - ne + nf - 2) {
     error = 1;
-    cout << "\apolyhedral Euler formula failure: "
+    std::cout << "\apolyhedral Euler formula failure: "
 	 << "nv=" << nv << " ne=" << ne << " nf=" << nf << endl;
   }
 
@@ -322,8 +322,8 @@ void Polyhedron::compVolInts()
   int a, b, c;
   Edge *e;
   const Face *f;
-  list<Face>::const_iterator fi;
-  list<FaceConeNode>::const_iterator cni;
+  std::list<Face>::const_iterator fi;
+  std::list<FaceConeNode>::const_iterator cni;
   Real a0, a1, da;
   Real b0, b1, db;
   Real a0_2, a0_3, a0_4, b0_2, b0_3, b0_4;
@@ -465,7 +465,7 @@ void Polyhedron::compVolInts()
 
   Vect3f cent = center();
   rmax_ = rad_ = 0.0;
-  list<Vertex>::iterator vi;
+  std::list<Vertex>::iterator vi;
   FOR_EACH(verts_, vi){
 	Real d = cent.distance2(vi -> coords_);
 	if(d > rad_) 
@@ -548,11 +548,11 @@ void Plane::xform(const MatXf& X)
 
 void Polyhedron::xform(const MatXf& X)
 {
-	list<Vertex>::iterator vi;
+	std::list<Vertex>::iterator vi;
 	FOR_EACH(verts_, vi)
 		X.xformPoint(vi -> coords_);
 
-	list<Edge>::iterator ei;
+	std::list<Edge>::iterator ei;
 	FOR_EACH(edges_, ei){
 		Edge& e = *ei;
 		e.dir.sub(e.head->coords_, e.tail->coords_);
@@ -564,7 +564,7 @@ void Polyhedron::xform(const MatXf& X)
 		e.rplane.xform(X);
 		}
 
-	list<Face>::iterator fi;
+	std::list<Face>::iterator fi;
 	FOR_EACH(faces_, fi)
 		fi -> plane.xform(X);
 }

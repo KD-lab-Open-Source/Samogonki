@@ -160,9 +160,9 @@ int Mechos::iron_hip_quant()
 	post_quant();
 	cMesh* front = part_by_type(M3D_FRONT);
 	front -> SetFirstAnimation(0, iron_hip_timer()/iron_hip_period);
-	vector<Vect3f> fires;
+	std::vector<Vect3f> fires;
 	front -> GetGlobalDummy("fireb", fires);
-	vector<Vect3f>::iterator fi;
+	std::vector<Vect3f>::iterator fi;
 	FOR_EACH(fires, fi){
 		Vect3f v = *fi;
 		Body* victim = Mdisp -> searchBody(v, MECHOS, this);

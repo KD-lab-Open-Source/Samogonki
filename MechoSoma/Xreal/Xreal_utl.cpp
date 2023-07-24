@@ -123,10 +123,10 @@ void show_vector(const Vect3f& vg, float radius, int color)
 	clip_circle(vs.xi(), vs.yi(), k*radius ,color);
 }
 
-void draw(const list<const Face*> &faces, int color)
+void draw(const std::list<const Face*> &faces, int color)
 {
-	list<const Face*>::const_iterator fi;
-	list<FaceConeNode>::const_iterator cni;
+	std::list<const Face*>::const_iterator fi;
+	std::list<FaceConeNode>::const_iterator cni;
 	FOR_EACH(faces, fi) {
 		const Face* f = *fi;
 		FOR_EACH(f->cone, cni) {
@@ -144,8 +144,8 @@ void Polyhedron::draw(const MatXf& Xlg, int color) const
 	Vect3f t,h;
 	const Face* f;
 	const Edge* e;
-	list<Face>::const_iterator fi;
-	list<FaceConeNode>::const_iterator cni;
+	std::list<Face>::const_iterator fi;
+	std::list<FaceConeNode>::const_iterator cni;
 
 	FOR_EACH(faces_, fi) {
 		f = &*fi;

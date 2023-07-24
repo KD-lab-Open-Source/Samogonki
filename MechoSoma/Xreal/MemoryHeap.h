@@ -155,8 +155,8 @@ private:
 	const char* title;
 	int used_memory, allocated_memory;
 	int max_blocks;
-	vector<MemoryHeapBlock> blocks;
-	vector<MemoryHeapMark> stack;
+	std::vector<MemoryHeapBlock> blocks;
+	std::vector<MemoryHeapMark> stack;
 
 #ifdef _MEMORY_HEAP_STATISTICS_
 	StatisticalAnalizator allocated_memory_stat;
