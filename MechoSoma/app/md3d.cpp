@@ -99,7 +99,10 @@ MD3DERROR d3dCreateBackBuffer() { return MD3D_OK; }
 
 MD3DERROR d3dReleaseBackBuffer() { return MD3D_OK; }
 
-MD3DERROR d3dGetBackBufferFormat(uint32_t *dwFormat) { return MD3D_OK; }
+MD3DERROR d3dGetBackBufferFormat(uint32_t *dwFormat) {
+  *dwFormat = MD3DBBFORMAT_RGB565;
+  return MD3D_OK;
+}
 
 MD3DERROR d3dLockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch) {
   return renderer->d3dLockBackBuffer(lplpSurface, lpdwPitch);
