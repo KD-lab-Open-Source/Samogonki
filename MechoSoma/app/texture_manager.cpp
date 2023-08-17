@@ -44,9 +44,9 @@ static std::array<TTextureFormat, 6> texture_formats
                 D3DTEXFMT_RGB565,
                 true,
                 0,
-                0b0000000000011111,
-                0b0000011111100000,
                 0b1111100000000000,
+                0b0000011111100000,
+                0b0000000000011111,
                 16,
                 false,
                 5,
@@ -78,18 +78,18 @@ static std::array<TTextureFormat, 6> texture_formats
                 0
             },
         TTextureFormat
-            {
-                D3DTEXFMT_ARGB4444,
-                true,
-                0b1111000000000000,
-                0b0000000000001111,
-                0b0000000011110000,
-                0b0000111100000000,
-                16,
-                false,
-                4,
-                4,
-                4,
+        {
+            D3DTEXFMT_ARGB4444,
+            true,
+            0b1111000000000000,
+            0b0000111100000000,
+            0b0000000011110000,
+            0b0000000000001111,
+            16,
+            false,
+            4,
+            4,
+            4,
             4,
             0,
             0,
@@ -101,9 +101,9 @@ static std::array<TTextureFormat, 6> texture_formats
             D3DTEXFMT_ARGB1555,
             true,
             0b1000000000000000,
-            0b0000000000011111,
-            0b0000001111100000,
             0b0111110000000000,
+            0b0000001111100000,
+            0b0000000000011111,
             16,
             false,
             5,
@@ -118,11 +118,11 @@ static std::array<TTextureFormat, 6> texture_formats
         TTextureFormat
         {
             D3DTEXFMT_RGBA8888,
-            true,
+            false,
             0x000000FF,
-            0x0000FF00,
-            0x00FF0000,
             0xFF000000,
+            0x00FF0000,
+            0x0000FF00,
             32,
             false,
             8,
@@ -316,18 +316,18 @@ void TextureManager::update_texture(TextureEntry& entry) {
       auto output = reinterpret_cast<uint32_t*>(_rgba_buffer.data());
 
       // clang-format off
-      const uint16_t red_mask =   0b0000000000011111;
+      const uint16_t red_mask =   0b1111100000000000;
       const uint16_t green_mask = 0b0000011111100000;
-      const uint16_t blue_mask =  0b1111100000000000;
+      const uint16_t blue_mask =  0b0000000000011111;
       // clang-format on
 
       const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
       for (size_t i = 0; i < count; i++) {
         const auto color = input[i];
 
-        uint8_t r = color & red_mask;
+        uint8_t r = (color & red_mask) >> 11;
         uint8_t g = (color & green_mask) >> 5;
-        uint8_t b = (color & blue_mask) >> 11;
+        uint8_t b = color & blue_mask;
 
         auto result = (uint8_t*)(output + i);
         result[0] = (r * 527 + 23) >> 6;
@@ -344,9 +344,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
 
       // clang-format off
       const uint16_t alpha_mask = 0b1000000000000000;
-      const uint16_t red_mask =   0b0000000000011111;
+      const uint16_t red_mask =   0b0111110000000000;
       const uint16_t green_mask = 0b0000001111100000;
-      const uint16_t blue_mask =  0b0111110000000000;
+      const uint16_t blue_mask =  0b0000000000011111;
       // clang-format on
 
       const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
@@ -354,9 +354,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
         const auto color = input[i];
 
         uint8_t a = (color & alpha_mask) > 0 || entry.original_format_id == D3DTEXFMT_RGB555 ? 255 : 0;
-        uint8_t r = color & red_mask;
+        uint8_t r = (color & red_mask) >> 10;
         uint8_t g = (color & green_mask) >> 5;
-        uint8_t b = (color & blue_mask) >> 10;
+        uint8_t b = color & blue_mask;
 
         auto result = (uint8_t*)(output + i);
         result[0] = (r * 527 + 23) >> 6;
@@ -372,9 +372,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
 
       // clang-format off
       const uint16_t alpha_mask = 0b1111000000000000;
-      const uint16_t blue_mask =  0b0000111100000000;
+      const uint16_t red_mask =   0b0000111100000000;
       const uint16_t green_mask = 0b0000000011110000;
-      const uint16_t red_mask =   0b0000000000001111;
+      const uint16_t blue_mask =  0b0000000000001111;
       // clang-format on
 
       const size_t count = entry.lock_buffer.size() / sizeof(uint16_t);
@@ -382,9 +382,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
         const uint16_t color = input[i];
 
         uint8_t a = (color & alpha_mask) >> 12;
-        uint8_t r = (color & red_mask);
+        uint8_t r = (color & red_mask) >> 8;
         uint8_t g = (color & green_mask) >> 4;
-        uint8_t b = (color & blue_mask) >> 8;
+        uint8_t b = color & blue_mask;
 
         auto rgba = (uint8_t*)(output + i);
         rgba[0] = (r * 255 + 7) / 15;
