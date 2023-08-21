@@ -58,7 +58,10 @@ jobs:
         key: ${{ runner.os }}-ffmpeg-n4.3.6
     - name: ffmpeg -- download
       if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
-      run: git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+      run: |
+        git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+        cd ffmpeg
+        git apply ${{github.workspace}}/avcodec-x86-mathops.patch
     - name: ffmpeg -- configure
       if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
       run: msys2 -c './configure
