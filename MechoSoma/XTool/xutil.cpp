@@ -6,6 +6,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "filesystem.h"
+
 static const std::unordered_map<SDL_Keycode, int> keycodeMap{
     { SDLK_UNKNOWN          , VK_UNKNOWN         },
     { SDLK_SPACE            , VK_SPACE           },
@@ -137,6 +139,9 @@ xtList<xtMsgHandlerObject> XSysHandlerLst;
 static bool hXActiveWndEvent = true;
 static bool hXNeedExitEvent = false;
 
+file::FileFinder fileFinder;
+std::string foundFilePath;
+
 XList::XList(void)
 {
 	ClearList();
@@ -203,12 +208,16 @@ void XList::RemoveElement(XListElement* p)
 
 char* XFindFirst(const char* mask)
 {
-	return nullptr;
+	const auto result = fileFinder.find_first(mask);
+	foundFilePath = result ? result->u8string() : "";
+	return foundFilePath.empty() ? nullptr : foundFilePath.data();
 }
 
 char* XFindNext(void)
 {
-	return nullptr;
+	const auto result = fileFinder.find_next();
+	foundFilePath = result ? result->u8string() : "";
+	return foundFilePath.empty() ? nullptr : foundFilePath.data();
 }
 
 void xtDeleteFile(const char* fname)
@@ -395,15 +404,6 @@ void mchGraphicsSetup(void)
 std::string win32_get_path_from_regkey(int key_id,const char* subkey_name,const char* value_name)
 {
 	return "";
-}
-
-int win32_GetKeybLayoutID(void)
-{
-    return 0;
-}
-
-void win32_InitLocale(void)
-{
 }
 
 void* win32_load_icon(void)
