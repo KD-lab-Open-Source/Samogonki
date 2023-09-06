@@ -7,10 +7,14 @@
 
 #include "mch_common.h" // For far target
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 
-extern char* mchLocalINI;
+extern const char* mchLocalINI;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
@@ -18,12 +22,12 @@ void win32_InitLocale(void);
 void win32_ChangeKeybLayout(void);
 int win32_GetKeybLayoutID(void);
 
-char* getIniKey(char* fname,char* section,char* key);
+const char* getIniKey(const char* fname,const char* section,const char* key);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
-/*
-static int lv_primaryLangID[]
+#ifdef _WIN32
+static int lv_primaryLangID[] = 
 {
 	LANG_AFRIKAANS,		// 0
 	LANG_ALBANIAN,		// 1
@@ -97,27 +101,33 @@ static int lv_primaryLangID[]
 	LANG_UZBEK,		// 69
 	LANG_VIETNAMESE		// 70
 };
+#endif
 
 int lv_curPrimaryLangID = 16;
 
 void win32_InitLocale(void)
 {
+#ifdef _WIN32
 	int lang_id = atoi(getIniKey(mchLocalINI,"language","primary_lang_id"));
-	char* locale_str = getIniKey(mchLocalINI,"language","locale");
+	const char* locale_str = getIniKey(mchLocalINI,"language","locale");
 
 	setlocale(LC_CTYPE,locale_str);
 
 	if(lang_id) 
 		lv_curPrimaryLangID = lang_id;
+#endif
 }
 
 void win32_ChangeKeybLayout(void)
 {
+#ifdef _WIN32
 	ActivateKeyboardLayout((HKL)HKL_NEXT,0);
+#endif
 }
 
 int win32_GetKeybLayoutID(void)
 {
+#ifdef _WIN32
 	int lang_id,primary_lang_id;
 	static char name_str[KL_NAMELENGTH];
 
@@ -132,8 +142,9 @@ int win32_GetKeybLayoutID(void)
 		return 1;
 
 	return 2;
+#endif
+	return 0;
 }
-*/
 
 void lvInit(void)
 {
@@ -144,6 +155,14 @@ void lvInit(void)
 
 unsigned mch_toupper(unsigned ch)
 {
+#ifdef _WIN32
 	return toupper(ch);
+#endif
+	// CP1251 character table
+	if (ch >= 0xE0 && ch <= 0xFF)
+	{
+		return 0xC0 + (ch - 0xE0); 
+	}
+	return ch;
 }
 
