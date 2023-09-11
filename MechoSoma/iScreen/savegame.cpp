@@ -22,11 +22,19 @@
 
 #define DBGCHECK
 
-#include "mch_common.h" // For far target
+// TODO: @caiiiycuk implement
+char *_strtime(char *timestr)
+{
+	return nullptr;
+}
 
-#ifndef _WIN32
-#include <ctime>
-#endif
+// TODO: @caiiiycuk implement
+char *_strdate(char *timestr)
+{
+	return nullptr;
+}
+
+#include "mch_common.h" // For far target
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 
@@ -180,18 +188,10 @@ void acsSaveSlot::save(void)
 	mchRacerStats* p = mch_racerLst.search(0);
 	if(!p) return;
 
-#ifdef _WIN32
 	_strtime(tm);
 	_strdate(dt);
-#endif
 	time_t curTime = timeVal;
 	time(&curTime);
-
-#ifndef _WIN32
-	const auto localTime = std::localtime(&curTime);
-	std::strftime(tm, sizeof(tm), "%T", localTime);
-	std::strftime(dt, sizeof(dt), "%D", localTime);
-#endif
 
 	sprintf(timeString,"%s, %s",tm,dt);
 

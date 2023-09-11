@@ -1,13 +1,13 @@
 #include "filesystem.h"
 
+#include <filesystem>
 #include <algorithm>
-#include <cstring>
 #include <locale>
 #include <stdexcept>
 
-namespace fs = std::filesystem;
-
 std::string file::normalize_path(const char* input) {
+  namespace fs = std::filesystem;
+
   const auto current_locale = std::locale();
   auto comparator = [&current_locale](char left, char right) {
     return std::tolower(left, current_locale) == std::tolower(right, current_locale);
@@ -51,58 +51,4 @@ std::string file::normalize_path(const char* input) {
   }
 
   return result_path.string();
-}
-
-using namespace file;
-
-std::optional<fs::path> FileFinder::find_first(const std::string &path) {
-  _path = path;
-  _iterator = fs::directory_iterator(fs::current_path());
-  return find_next();
-}
-
-std::optional<fs::path> FileFinder::find_next() {
-  while (_iterator != std::filesystem::end(_iterator)) {
-    if (_iterator->is_regular_file() && match(_path.c_str(), _iterator->path().filename().string().c_str())) {
-      const auto p = _iterator->path();
-      _iterator++;
-      return p.filename();
-    }
-    _iterator++;
-  }
-  return std::nullopt;
-}
-
-// https://stackoverflow.com/questions/3300419/file-name-matching-with-wildcard
-bool FileFinder::match(char const *needle, char const *haystack) {
-  for (; *needle != '\0'; ++needle) {
-    switch (*needle) {
-    case '?':
-      if (*haystack == '\0') {
-        return false;
-      }
-      ++haystack;
-      break;
-
-    case '*': {
-      if (needle[1] == '\0') {
-        return true;
-      }
-      size_t max = std::strlen(haystack);
-      for (size_t i = 0; i < max; i++) {
-        if (match(needle + 1, haystack + i)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    default:
-      if (*haystack != *needle) {
-        return false;
-      }
-      ++haystack;
-    }
-  }
-  return *haystack == '\0';
 }

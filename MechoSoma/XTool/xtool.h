@@ -35,8 +35,6 @@
 #define XAVI_SYSOBJ_ID		0x03
 #define XD3D_SYSOBJ_ID		0x04
 
-#include <cstdint>
-
 #include "xerrhand.h"
 
 struct XListElement
@@ -257,12 +255,12 @@ struct XBuffer
         XBuffer& operator< (char* v) { return this->operator<((const char*) v); };
 	XBuffer& operator< (char v) { return write(v); }
 	XBuffer& operator< (unsigned char v) { return write(v); }
-	XBuffer& operator< (short v) { return write(static_cast<int16_t>(v)); }
-	XBuffer& operator< (unsigned short v) { return write(static_cast<uint16_t>(v)); }
+	XBuffer& operator< (short v) { return write(v); }
+	XBuffer& operator< (unsigned short v) { return write(v); }
 	XBuffer& operator< (int v ) { return write(v); }
 	XBuffer& operator< (unsigned int v) { return write(v); }
-	XBuffer& operator< (long v) { return write(static_cast<int32_t>(v)); }
-	XBuffer& operator< (unsigned long v) { return write(static_cast<uint32_t>(v)); }
+	XBuffer& operator< (long v) { return write(v); }
+	XBuffer& operator< (unsigned long v) { return write(v); }
 	XBuffer& operator< (float v) { return write(v); }
 	XBuffer& operator< (double v) { return write(v); }
 	XBuffer& operator< (long double v) { return write(v); }
@@ -270,12 +268,12 @@ struct XBuffer
 	XBuffer& operator> (char* v);
 	XBuffer& operator> (char& v) { return read(v); }
 	XBuffer& operator> (unsigned char& v) { return read(v); }
-	XBuffer& operator> (short& v) { int16_t t = 0; read(t); v = t; return *this; }
-	XBuffer& operator> (unsigned short& v) { uint16_t t = 0; read(t); v = t; return *this; }
+	XBuffer& operator> (short& v) { return read(v); }
+	XBuffer& operator> (unsigned short& v) { return read(v); }
 	XBuffer& operator> (int& v) { return read(v); }
 	XBuffer& operator> (unsigned int& v) { return read(v); }
-	XBuffer& operator> (long& v) { int32_t t = 0; read(t); v = t; return *this; }
-	XBuffer& operator> (unsigned long& v) { uint32_t t = 0; read(t); v = t; return *this; }
+	XBuffer& operator> (long& v) { return read(v); }
+	XBuffer& operator> (unsigned long& v) { return read(v); }
 	XBuffer& operator> (float& v) { return read(v); }
 	XBuffer& operator> (double& v) { return read(v); }
 	XBuffer& operator> (long double& v) { return read(v); }
