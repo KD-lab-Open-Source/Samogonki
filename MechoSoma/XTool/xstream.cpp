@@ -92,9 +92,7 @@ int XStream::open(const char* name, unsigned f)
 		pos = ftell(file);
 		eofFlag = 0;
 	} else {
-		#ifdef XSTREAM_DEBUG
-			std::cerr << "ERR: XStream::open(\"" << name << "\", 0x" << std::hex << f << ")" << std::endl;
-		#endif
+        std::cerr << "ERR: XStream::open(\"" << name << "\", 0x" << std::hex << f << ")" << std::endl;
 		if(ErrHUsed)
 			ErrH.Abort(openMSG,XERR_USER,0,"");
 		else
