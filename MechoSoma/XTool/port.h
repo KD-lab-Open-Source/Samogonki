@@ -16,7 +16,7 @@ const char* port_ltoa( long value, char* result, int base );
 
 const char* port_ultoa( unsigned long value, char* result, int base );
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(EMSCRIPTEN)
 char *strupr(char *string);
 #endif
 

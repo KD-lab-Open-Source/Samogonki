@@ -11,7 +11,12 @@
 #include <unordered_map>
 
 #include "Md3d.h"
+
+#ifdef EMSCRIPTEN
+#include "sokol-shader-em.h"
+#else
 #include "sokol-shader.h"
+#endif
 
 namespace graphics::d3d {
 

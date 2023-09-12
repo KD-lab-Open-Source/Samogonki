@@ -66,6 +66,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
   _context = SDL_GL_CreateContext(_window);
   if (_context == nullptr) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_GL_CreateContext(): %s\n", SDL_GetError());
     ErrH.Abort("SDL_GL_CreateContext", XERR_USER, 0, "");
   }
 

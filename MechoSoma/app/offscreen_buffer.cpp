@@ -1,6 +1,11 @@
 #include "offscreen_buffer.h"
 
+#ifdef EMSCRIPTEN
+#include "sokol-shader-em.h"
+#else
 #include "sokol-shader.h"
+#endif
+
 #include "xerrhand.h"
 
 using namespace graphics;

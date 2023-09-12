@@ -2,7 +2,12 @@
 
 #include <cassert>
 
+#ifdef EMSCRIPTEN
+#include "sokol-shader-em.h"
+#else
 #include "sokol-shader.h"
+#endif
+
 #include "xtool.h"
 
 using namespace graphics;

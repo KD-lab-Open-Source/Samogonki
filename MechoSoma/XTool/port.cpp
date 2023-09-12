@@ -11,6 +11,7 @@
 #include "xtool.h"
 #include "xINI_File.h"
 
+#ifndef EMSCRIPTEN
 char *strupr(char *string) {
       char *s;
 
@@ -20,6 +21,7 @@ char *strupr(char *string) {
       }
       return string;
 }
+#endif
 
 /**
 
