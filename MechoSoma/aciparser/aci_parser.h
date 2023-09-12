@@ -3,6 +3,7 @@
 #define __ACI_PARSER_H__
 
 #include <filesystem>
+#include <string>
 
 #include "xtool.h"
 
