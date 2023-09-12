@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #ifdef EMSCRIPTEN
+#include <emscripten.h>
 #define SOKOL_GLES3
 #else
 #define SOKOL_GLCORE33
@@ -67,6 +68,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
       if (xtNeedExit()) {
         ErrH.Exit();
       }
+
+#ifdef EMSCRIPTEN
+       emscripten_sleep(0);
+#endif
     }
 
     XObj->Finit();
