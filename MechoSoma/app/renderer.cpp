@@ -95,14 +95,19 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
         .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f },
         .size = 4,
     };
-    sg_image_desc description = {
-      .width = 1,
-      .height = 1,
-      .usage = SG_USAGE_IMMUTABLE,
-      .pixel_format = SG_PIXELFORMAT_RGBA8,
-    };
+    sg_image_desc description{};
+    description.width = 1;
+    description.height = 1;
+    description.num_slices = 1;
+    description.num_mipmaps = 1;
+    description.usage = SG_USAGE_IMMUTABLE;
+    description.pixel_format = SG_PIXELFORMAT_RGBA8;
+    description.sample_count = 1;
     description.data.subimage[0][0] = data;
     _nullTexture = sg_make_image(description);
+    if (_nullTexture.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+    }
   }
 
   {
@@ -139,6 +144,24 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
         .type = SG_BUFFERTYPE_INDEXBUFFER,
         .usage = SG_USAGE_DYNAMIC,
     });
+  }
+
+  {
+    sg_sampler_desc description;
+    description.min_filter = SG_FILTER_LINEAR;
+    description.mag_filter = SG_FILTER_LINEAR;
+    description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+    description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+    _clamp_sampler = sg_make_sampler(description);
+  }
+
+  {
+    sg_sampler_desc description;
+    description.min_filter = SG_FILTER_LINEAR;
+    description.mag_filter = SG_FILTER_LINEAR;
+    description.wrap_u = SG_WRAP_REPEAT;
+    description.wrap_v = SG_WRAP_REPEAT;
+    _repeat_sampler = sg_make_sampler(description);
   }
 
   _texture_manager = std::make_unique<TextureManager>();
@@ -315,15 +338,33 @@ MD3DERROR Renderer::d3dEndScene() {
     const auto alpha_reference = command.render_state.get_option(D3DRENDERSTATE_ALPHAREF);
 
     for (uint32_t i = 0; i < 2; i++) {
-      bindings.fs_images[i] = _nullTexture;
+      bindings.fs.images[i] = _nullTexture;
 
       auto texture_handle = command.render_state.get_texture(i);
       if (texture_handle) {
         auto texture = _texture_manager->get(*texture_handle);
         if (texture != nullptr) {
-          bindings.fs_images[i] = *texture;
+          bindings.fs.images[i] = *texture;
         }
       }
+    }
+
+    const auto texture_address = command.render_state.get_texture_stage_state(0, D3DTSS_ADDRESS);
+    if (texture_address) {
+      switch (*texture_address) {
+        case D3DTADDRESS_CLAMP:
+          bindings.fs.samplers[0] = _clamp_sampler;
+          break;
+
+        case D3DTADDRESS_WRAP:
+          bindings.fs.samplers[0] = _repeat_sampler;
+          break;
+
+        default:
+          break;
+      }
+    } else {
+      bindings.fs.samplers[0] = _repeat_sampler;
     }
 
     auto parameters = command.render_state.get_fragment_shader_parameters();
@@ -393,8 +434,8 @@ MD3DERROR Renderer::d3dClear(uint32_t dwColor) {
   const auto green = static_cast<float>((dwColor >> 8) & 0xFF) / 255.0f;
   const auto blue = static_cast<float>(dwColor & 0xFF) / 255.0f;
 
-  defaultPassAction.colors[0].action = SG_ACTION_CLEAR;
-  defaultPassAction.colors[0].value = {red, green, blue, 1};
+  defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
+  defaultPassAction.colors[0].clear_value = {red, green, blue, 1};
   return MD3D_OK;
 }
 

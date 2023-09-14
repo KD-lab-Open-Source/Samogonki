@@ -78,6 +78,8 @@ private:
   sg_buffer sg_color_buffer;
   sg_buffer sg_uv_buffer;
   sg_buffer sg_index_buffer;
+  sg_sampler _clamp_sampler;
+  sg_sampler _repeat_sampler;
 
   std::unique_ptr<OffscreenBuffer> _offscreenBuffer;
   std::unique_ptr<BackBuffer> _backBuffer;

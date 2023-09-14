@@ -47,13 +47,17 @@ class RenderState final {
     _texture_stages[stage].states[state] = value;
   }
 
-  uint32_t get_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state) const {
-    return _texture_stages[stage].states.at(state);
+  std::optional<uint32_t> get_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state) const {
+    const auto p = _texture_stages[stage].states.find(state);
+    if (p == _texture_stages[stage].states.end()) {
+      return std::nullopt;
+    }
+    return p->second;
   }
 
   FragmentShaderParameters get_fragment_shader_parameters() const {
     FragmentShaderParameters result;
-    switch (get_texture_stage_state(0, D3DTSS_COLOROP)) {
+    switch (_texture_stages[0].states.at(D3DTSS_COLOROP)) {
       case D3DTOP_DISABLE:
         result.color_operation_1 = TextureColorOperation::Disable;
         break;
@@ -72,7 +76,7 @@ class RenderState final {
       }
     }
 
-    switch (get_texture_stage_state(1, D3DTSS_COLOROP)) {
+    switch (_texture_stages[1].states.at(D3DTSS_COLOROP)) {
       case D3DTOP_DISABLE:
         result.color_operation_2 = TextureColorOperation::Disable;
         break;

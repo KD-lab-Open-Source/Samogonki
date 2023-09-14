@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "xerrhand.h"
+
 using namespace graphics;
 
 struct TTextureFormat {
@@ -40,43 +42,43 @@ struct TTextureFormat {
 static std::array<TTextureFormat, 6> texture_formats
     {
         TTextureFormat
-            {
-                D3DTEXFMT_RGB565,
-                true,
-                0,
-                0b1111100000000000,
-                0b0000011111100000,
-                0b0000000000011111,
-                16,
-                false,
-                5,
-                6,
-                5,
-                0,
-                0,
-                0,
-                0,
-                0
-            },
+        {
+            D3DTEXFMT_RGB565,
+            true,
+            0,
+            0b1111100000000000,
+            0b0000011111100000,
+            0b0000000000011111,
+            16,
+            false,
+            5,
+            6,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+        },
         TTextureFormat
-            {
-                D3DTEXFMT_RGB555,
-                false,
-                0,
-                0,
-                0,
-                0,
-                16,
-                false,
-                5,
-                5,
-                5,
-                0,
-                0,
-                0,
-                0,
-                0
-            },
+        {
+            D3DTEXFMT_RGB555,
+            false,
+            0,
+            0,
+            0,
+            0,
+            16,
+            false,
+            5,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0
+        },
         TTextureFormat
         {
             D3DTEXFMT_ARGB4444,
@@ -228,23 +230,25 @@ MD3DERROR TextureManager::d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, 
     return MD3DERR_ILLEGALCALL;
   }
 
-  auto dataSize = dwWidth * dwHeight * (p->bPalette8 ? 1 : 4);
-  auto data = std::vector<char>(dataSize);
   sg_image_desc description = {};
   description.width = dwWidth;
   description.height = dwHeight;
+  description.num_slices = 1;
+  description.num_mipmaps = 1;
   description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
+  description.sample_count = 1;
   assert(p->bPalette8 == false);
   description.usage = SG_USAGE_DYNAMIC;
-  description.min_filter = SG_FILTER_LINEAR;
-  description.mag_filter = SG_FILTER_LINEAR;
   auto texture = sg_make_image(description);
+  if (texture.id == SG_INVALID_ID) {
+    ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+  }
 
   *lpdwHandle = _lastTextureKey;
 
   const uint32_t pitch = dwWidth * (p->dwRGBBitCount / 8);
   auto t = std::make_unique<TextureEntry>(
-    TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false, false}
+    TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false, false, false}
   );
   _textures.emplace(_lastTextureKey, std::move(t));
 
@@ -297,14 +301,14 @@ MD3DERROR TextureManager::d3dUnlockTexture(uint32_t dwHandle) {
     return MD3DERR_ILLEGALCALL;
   }
 
-  update_texture(*entry->second);
+  entry->second->is_need_update = true;
   entry->second->is_locked = false;
 
   return MD3D_OK;
 }
 
 void TextureManager::update_texture(TextureEntry& entry) {
-  auto info = sg_query_image_info(entry.texture);
+  const auto info = sg_query_image_desc(entry.texture);
   const auto image_height = info.height;
   const auto image_width = info.width;
   const size_t size = 4 * image_width * image_height;
@@ -414,6 +418,12 @@ sg_image* TextureManager::get(uint32_t dwHandle) {
   if (entry == _textures.end()) {
     return nullptr;
   }
+
+  if (entry->second->is_need_update) {
+    update_texture(*entry->second);
+    entry->second->is_need_update = false;
+  }
+
   return &entry->second->texture;
 }
 

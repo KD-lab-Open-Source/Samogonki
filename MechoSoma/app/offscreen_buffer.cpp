@@ -17,14 +17,26 @@ OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int 
     ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
   }
 
+  {
+    sg_sampler_desc description{};
+    description.min_filter = SG_FILTER_NEAREST;
+    description.mag_filter = SG_FILTER_NEAREST;
+    description.wrap_u = SG_WRAP_REPEAT;
+    description.wrap_v = SG_WRAP_REPEAT;
+    _sampler = sg_make_sampler(description);
+  }
+
   sg_image_desc image_description{};
   image_description.render_target = true;
   image_description.width = width;
   image_description.height = height;
+  image_description.num_slices = 1;
+  image_description.num_mipmaps = 1;
   image_description.sample_count = 1;
-  image_description.min_filter = SG_FILTER_LINEAR;
-  image_description.mag_filter = SG_FILTER_LINEAR;
   _colorTexture = sg_make_image(&image_description);
+  if (_colorTexture.id == SG_INVALID_ID) {
+    ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+  }
 
   image_description.pixel_format = SG_PIXELFORMAT_DEPTH;
   sg_image depth_image = sg_make_image(&image_description);
@@ -49,6 +61,7 @@ OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int 
 OffscreenBuffer::~OffscreenBuffer() {
   sg_destroy_buffer(_dummyBuffer);
   sg_destroy_pass(_renderingPass);
+  sg_destroy_sampler(_sampler);
   sg_destroy_image(_colorTexture);
   sg_destroy_shader(_shader);
 }
@@ -59,8 +72,8 @@ sg_pass OffscreenBuffer::getRenderingPass() const {
 
 void OffscreenBuffer::flush() {
   sg_pass_action defaultPassAction = {};
-  defaultPassAction.colors[0].action = SG_ACTION_CLEAR;
-  defaultPassAction.colors[0].value = {0, 0, 0, 1};
+  defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
+  defaultPassAction.colors[0].clear_value = {0, 0, 0, 1};
   sg_begin_default_pass(defaultPassAction, _drawableWidth, _drawableHeight);
 
   sg_pipeline_desc description = {};
@@ -69,7 +82,8 @@ void OffscreenBuffer::flush() {
   description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
 
   sg_bindings bindings = {};
-  bindings.fs_images[0] = _colorTexture;
+  bindings.fs.images[0] = _colorTexture;
+  bindings.fs.samplers[0] = _sampler;
   bindings.vertex_buffers[0] = _dummyBuffer;
 
   auto pipeline = sg_make_pipeline(description);

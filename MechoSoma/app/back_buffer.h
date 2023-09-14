@@ -25,6 +25,7 @@ class BackBuffer final {
   sg_shader _quadShader;
   sg_buffer _dummyBuffer;
   sg_image _texture;
+  sg_sampler _sampler;
   std::vector<uint16_t> _buffer;
   uint32_t _pitch;
   bool _isLocked = false;

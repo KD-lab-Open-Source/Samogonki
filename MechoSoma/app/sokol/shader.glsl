@@ -31,8 +31,10 @@ uniform scene_fs_params {
 in vec4 color;
 in vec2 uv;
 
-uniform sampler2D texture_1;
-uniform sampler2D texture_2;
+uniform texture2D texture_1;
+uniform texture2D texture_2;
+
+uniform sampler sampler_1;
 
 out vec4 result_color;
 void main() {
@@ -42,10 +44,10 @@ void main() {
             result_color = color;
         } break;
         case 1: /* Texture */ {
-            result_color = texture(texture_1, uv);
+            result_color = texture(sampler2D(texture_1, sampler_1), uv);
         } break;
         case 2: /* Modulate */ {
-            result_color = texture(texture_1, uv) * color;
+            result_color = texture(sampler2D(texture_1, sampler_1), uv) * color;
         } break;
         default: {
             result_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -54,7 +56,7 @@ void main() {
 
     // s_clamp
     if (color_operation_2 == 2 /* Modulate */) {
-        result_color *= texture(texture_2, uv);
+        result_color *= texture(sampler2D(texture_2, sampler_1), uv);
     }
 
     if (alpha_test_enabled != 0 && (255.0f * result_color.a) < alpha_reference) {
@@ -95,7 +97,8 @@ void main() {
 
 in vec2 uv;
 
-uniform usampler2D input_texture;
+uniform utexture2D input_texture;
+uniform sampler sampler_1;
 
 vec4 from_rgb565(uint color) {
     const uint red_mask = 0xF800; // 0b1111100000000000
@@ -118,7 +121,7 @@ vec4 from_rgb565(uint color) {
 out vec4 result_color;
 void main() {
     // DirectX vertical axis flip
-    uint color = texture(input_texture, vec2(uv.x, 1.0f - uv.y)).r;
+    uint color = texture(usampler2D(input_texture, sampler_1), vec2(uv.x, 1.0f - uv.y)).r;
     result_color = from_rgb565(color);
 }
 
@@ -146,11 +149,12 @@ void main() {
 
 in vec2 uv;
 
-uniform sampler2D offscreen_texture;
+uniform texture2D offscreen_texture;
+uniform sampler sampler_1;
 
 out vec4 result_color;
 void main() {
-    result_color = texture(offscreen_texture, uv);
+    result_color = texture(sampler2D(offscreen_texture, sampler_1), uv);
 }
 
 @end
