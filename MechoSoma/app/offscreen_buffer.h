@@ -22,6 +22,7 @@ class OffscreenBuffer final {
   sg_shader _shader;
   sg_pass _renderingPass;
   sg_image _colorTexture;
+  sg_sampler _sampler;
   sg_buffer _dummyBuffer;  
 };
 

@@ -19,12 +19,29 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
     ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
   }
 
-  sg_image_desc description = {};
-  description.width = width;
-  description.height = height;
-  description.usage = SG_USAGE_DYNAMIC;
-  description.pixel_format = SG_PIXELFORMAT_R16UI;
-  _texture = sg_make_image(description);
+  {
+    sg_image_desc description = {};
+    description.width = width;
+    description.height = height;
+    description.num_slices = 1;
+    description.num_mipmaps = 1;
+    description.usage = SG_USAGE_DYNAMIC;
+    description.pixel_format = SG_PIXELFORMAT_R16UI;
+    description.sample_count = 1;
+    _texture = sg_make_image(description);
+    if (_texture.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+    }
+  }
+
+  {
+    sg_sampler_desc description{};
+    description.min_filter = SG_FILTER_NEAREST;
+    description.mag_filter = SG_FILTER_NEAREST;
+    description.wrap_u = SG_WRAP_REPEAT;
+    description.wrap_v = SG_WRAP_REPEAT;
+    _sampler = sg_make_sampler(description);
+  }
 
   sg_buffer_desc buffer_description{};
   buffer_description.size = 1;
@@ -35,6 +52,7 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
 
 BackBuffer::~BackBuffer() {
   sg_destroy_buffer(_dummyBuffer);
+  sg_destroy_sampler(_sampler);
   sg_destroy_image(_texture);
   sg_destroy_shader(_quadShader);
 }
@@ -67,7 +85,8 @@ void BackBuffer::flush() {
   description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
 
   sg_bindings bindings = {};
-  bindings.fs_images[0] = _texture;
+  bindings.fs.images[0] = _texture;
+  bindings.fs.samplers[0] = _sampler;
   bindings.vertex_buffers[0] = _dummyBuffer;
 
   auto pipeline = sg_make_pipeline(description);

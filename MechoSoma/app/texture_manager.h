@@ -56,6 +56,7 @@ class TextureManager final
     uint32_t pitch;
     bool is_locked;
     bool is_deleted;
+    bool is_need_update;
   };
 
   void update_texture(TextureEntry& entry);

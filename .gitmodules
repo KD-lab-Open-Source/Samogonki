@@ -1,7 +1,7 @@
-[submodule "MechoSoma/ThirdParty/sokol"]
+[submodule "3rdparty/sokol"]
 	path = 3rdparty/sokol
 	url = https://github.com/floooh/sokol.git
-[submodule "MechoSoma/sokol-tools-bin"]
+[submodule "3rdparty/sokol-tools-bin"]
 	path = 3rdparty/sokol-tools-bin
 	url = https://github.com/floooh/sokol-tools-bin.git
 [submodule "3rdparty/miniaudio"]
