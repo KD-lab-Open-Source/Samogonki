@@ -20,7 +20,7 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
   }
 
   {
-    sg_image_desc description = {};
+    sg_image_desc description{};
     description.width = width;
     description.height = height;
     description.num_slices = 1;

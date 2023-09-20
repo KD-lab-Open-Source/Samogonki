@@ -147,7 +147,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    sg_sampler_desc description;
+    sg_sampler_desc description{};
     description.min_filter = SG_FILTER_LINEAR;
     description.mag_filter = SG_FILTER_LINEAR;
     description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
@@ -156,7 +156,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    sg_sampler_desc description;
+    sg_sampler_desc description{};
     description.min_filter = SG_FILTER_LINEAR;
     description.mag_filter = SG_FILTER_LINEAR;
     description.wrap_u = SG_WRAP_REPEAT;
