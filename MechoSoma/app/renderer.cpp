@@ -164,6 +164,8 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     _repeat_sampler = sg_make_sampler(description);
   }
 
+  defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
+
   _texture_manager = std::make_unique<TextureManager>();
   setVideoMode(width, height, isFullScreen);
 }
@@ -213,6 +215,7 @@ void Renderer::setVideoMode(int width, int height, bool isFullScreen) {
 }
 
 MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
+  defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   _offscreenBuffer->flush();
   SDL_GL_SwapWindow(_window);
   return MD3D_OK;
@@ -425,6 +428,10 @@ MD3DERROR Renderer::d3dEndScene() {
 
   sg_end_pass();
   sg_commit();
+
+  if (defaultPassAction.colors[0].load_action == SG_LOADACTION_CLEAR) {
+    defaultPassAction.colors[0].load_action = SG_LOADACTION_DONTCARE;
+  }
 
   return MD3D_OK;
 }
