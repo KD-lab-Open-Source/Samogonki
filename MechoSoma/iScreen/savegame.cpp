@@ -319,8 +319,8 @@ void acsSaveSlot::unpack(void)
 	fh.write(buf1,buf_sz1);
 	fh.close();
 
-	delete buf;
-	delete buf1;
+	delete[] buf;
+	delete[] buf1;
 }
 
 void acsSaveSlot::load(void)
@@ -379,7 +379,7 @@ void acsSaveSlot::load(void)
 	mch_trackD -> Load(xb,ver);
 	iworld_D -> Load(xb,ver);
 
-	delete buf;
+	delete[] buf;
 
 	pack();
 }

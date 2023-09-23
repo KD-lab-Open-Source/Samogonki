@@ -2078,7 +2078,7 @@ void mchScreenShot(int mode)
 	tgaPtr = new tgaFile(XGR_MAXX,XGR_MAXY,24,buf,ID);
 	tgaPtr -> write(fname);
 	delete tgaPtr;
-	delete buf;
+	delete[] buf;
 
 	mchScreenShotCount ++;
 }

@@ -1835,7 +1835,7 @@ void fxlabArcaneLightningSeed::Close()
 		if(ServerPoint[i].Process)
 			ServerPoint[i].Process->SetAlive(0);
 	};
-	delete ServerPoint;
+	delete[] ServerPoint;
 	fxlabExternalMindArcane::Close();
 };
 
@@ -2010,7 +2010,7 @@ void fxlabArcaneMortarMine::Close()
 			(*it) -> kill();
 	};
 	MortarPoint.clear();
-	delete ClientPoint;
+	delete[] ClientPoint;
 
 	fxlabExternalMindArcane::Close();
 };
@@ -2253,8 +2253,8 @@ void fxlabArcaneScarletTrack::Close()
 		if(ClientPoint[i].Process)
 			ClientPoint[i].Process->SetAlive(0);
 	};
-	delete ServerPoint;
-	delete ClientPoint;
+	delete[] ServerPoint;
+	delete[] ClientPoint;
 	fxlabExternalMindArcane::Close();
 };
 
