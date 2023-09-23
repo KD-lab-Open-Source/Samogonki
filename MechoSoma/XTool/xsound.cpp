@@ -2,93 +2,89 @@
 
 #include <cassert>
 
-#include "music_player.h"
 #include "sound_manager.h"
 
-std::unique_ptr<MusicPlayer> musicPlayer;
-std::unique_ptr<SoundManager> soundManager;
+std::unique_ptr<game::sound::SoundManager> soundManager;
 
 int SoundInit(int maxHZ, int digMode, int channels) {
   if (digMode != DIG_F_STEREO_16) {
     return 0;
   }
 
-  soundManager = std::make_unique<SoundManager>(maxHZ, channels);
-  musicPlayer = std::make_unique<MusicPlayer>();
-
+  soundManager = std::make_unique<game::sound::SoundManager>(44100, channels);
   return 1;
 }
 
 void SoundPlay(void *lpDSB, int channel, int priority, int cropos, int flags) {
   if (soundManager) {
-    soundManager->playSound(lpDSB, channel, priority, cropos, flags);
+    soundManager->samplePlayer().playSound(lpDSB, channel, priority, cropos, flags);
   }
 }
 
 void SoundRelease(void *lpDSB) {
   if (soundManager) {
-    soundManager->releaseSound(lpDSB);
+    soundManager->samplePlayer().releaseSound(lpDSB);
   }
 }
 
 void SoundStop(int channel) {
   if (soundManager) {
-    soundManager->stopSound(channel);
+    soundManager->samplePlayer().stopSound(channel);
   }
 }
 
-void *GetSound(int channel) { return soundManager ? soundManager->getSound(channel) : nullptr; }
+void *GetSound(int channel) { return soundManager ? soundManager->samplePlayer().getSound(channel) : nullptr; }
 
 void SoundLoad(char *filename, void **lpDSB) {
   assert(soundManager != nullptr);
-  *lpDSB = soundManager->loadSound(filename);
+  *lpDSB = soundManager->samplePlayer().loadSound(filename);
 }
 
 void SoundFinit() { soundManager = nullptr; }
 
 void SoundVolume(int channel, int volume) {
   if (soundManager) {
-    soundManager->setSoundVolume(channel, volume);
+    soundManager->samplePlayer().setSoundVolume(channel, volume);
   }
 }
 
 void SetVolume(void *lpDSB, int volume) {
   if (soundManager) {
-    soundManager->setVolume(lpDSB, volume);
+    soundManager->samplePlayer().setVolume(lpDSB, volume);
   }
 }
 
 int GetVolume(void *lpDSB) {
   if (soundManager) {
-    soundManager->getVolume(lpDSB);
+    soundManager->samplePlayer().getVolume(lpDSB);
   }
   return 0;
 }
 
 int GetSoundVolume(int channel) {
   if (soundManager) {
-    return soundManager->getSoundVolume(channel);
+    return soundManager->samplePlayer().getSoundVolume(channel);
   }
   return 0;
 }
 
 void GlobalVolume(int volume) {
   if (soundManager) {
-    soundManager->setGlobalVolume(volume);
+    soundManager->samplePlayer().setGlobalVolume(volume);
   }
 }
 
 void SoundPan(int channel, int panning) {
   if (soundManager) {
-    soundManager->setSoundPan(channel, panning);
+    soundManager->samplePlayer().setSoundPan(channel, panning);
   }
 }
 
-int SoundStatus(int channel) { return soundManager ? soundManager->getSoundStatus(channel) : 0; }
+int SoundStatus(int channel) { return soundManager ? soundManager->samplePlayer().getSoundStatus(channel) : 0; }
 
-int SoundStatus(void *lpDSB) { return soundManager ? soundManager->getSoundStatus(lpDSB) : 0; }
+int SoundStatus(void *lpDSB) { return soundManager ? soundManager->samplePlayer().getSoundStatus(lpDSB) : 0; }
 
-int ChannelStatus(int channel) { return soundManager ? soundManager->getChannelStatus(channel) : -1; }
+int ChannelStatus(int channel) { return soundManager ? soundManager->samplePlayer().getChannelStatus(channel) : -1; }
 
 int GetSoundFrequency(void *lpDSB) { return 0; }
 
@@ -105,37 +101,37 @@ void xsInitCD() {}
 void xsMixerOpen() {}
 
 bool PlayMusic(const char *filename, bool looping) {
-  return musicPlayer ? musicPlayer->play(filename, looping) : false;
+  return soundManager ? soundManager->musicPlayer().play(filename, looping) : false;
 }
 
 void StopMusic() {
-  if (musicPlayer) {
-    musicPlayer->stop();
+  if (soundManager) {
+    soundManager->musicPlayer().stop();
   }
 }
 
 void PauseMusic() {
-  if (musicPlayer) {
-    musicPlayer->pause();
+  if (soundManager) {
+    soundManager->musicPlayer().pause();
   }
 }
 
 void ResumeMusic() {
-  if (musicPlayer) {
-    musicPlayer->resume();
+  if (soundManager) {
+    soundManager->musicPlayer().resume();
   }
 }
 
 int GetMusicStatus() {
-  if (musicPlayer) {
-    switch (musicPlayer->getStatus()) {
-      case MusicPlayer::Status::play:
+  if (soundManager) {
+    switch (soundManager->musicPlayer().getStatus()) {
+      case game::sound::MusicPlayer::Status::play:
         return XCD_PLAYING;
 
-      case MusicPlayer::Status::pause:
+      case game::sound::MusicPlayer::Status::pause:
         return XCD_PAUSED;
 
-      case MusicPlayer::Status::stop:
+      case game::sound::MusicPlayer::Status::stop:
         return XCD_STOPPED;
     }
   }
@@ -143,9 +139,9 @@ int GetMusicStatus() {
 }
 
 void SetMusicVolume(int volume) {
-  if (musicPlayer) {
-    musicPlayer->setVolume(volume);
+  if (soundManager) {
+    soundManager->musicPlayer().setVolume(volume);
   }
 }
 
-int GetMusicLengthInSamples() { return musicPlayer ? musicPlayer->getLengthInSamples() : 0; }
+int GetMusicLengthInSamples() { return soundManager ? soundManager->musicPlayer().getLengthInSamples() : 0; }

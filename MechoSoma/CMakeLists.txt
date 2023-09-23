@@ -110,8 +110,6 @@ set(GAME_SOURCES
         # Sound
         Sound/audio_file.cpp
         Sound/audio_file.h
-        Sound/music_player.cpp
-        Sound/music_player.h
         Sound/sound.cpp
         Sound/sound.h
         Sound/sound_api.cpp
