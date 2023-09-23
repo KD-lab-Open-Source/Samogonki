@@ -124,7 +124,7 @@ struct AudioFile::Internal {
 
       if (frame->format == AV_SAMPLE_FMT_S16) {
         const auto p = reinterpret_cast<const int16_t *>(frame->extended_data[0]);
-        for (size_t i = 0; i < frame->nb_samples; i++) {
+        for (size_t i = 0; i < frame->nb_samples * 2; i++) {
           const auto value = static_cast<float>(p[i]) / std::numeric_limits<int16_t>::max();
           buffer.push_back(value);
         }
