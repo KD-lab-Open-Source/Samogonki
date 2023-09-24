@@ -101,7 +101,7 @@ extern int mchImgRTO_ActiveFlag;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-std::string win32_get_path_from_regkey(int key_id,const char* subkey_name,const char* value_name);
+const char* win32_get_path_from_regkey(int key_id,const char* subkey_name,const char* value_name);
 
 void acsCreateWater(void);
 void mchReInitGraph(int mode);
@@ -261,7 +261,7 @@ void mchSetup(void)
 
 	xINI_Init();
 
-	const char* p = win32_get_path_from_regkey(1,"Software\\SamoGonki","SourcePath").c_str();
+	const char* p = win32_get_path_from_regkey(1,"Software\\SamoGonki","SourcePath");
 	if(p)
 		fcPath = strdup(p);
 
