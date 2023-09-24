@@ -329,7 +329,7 @@ public:
 				break;
 		if(number>=length()) return;
 		length()--;
-		memcpy(&Base[number],&Base[number+1],(length()-number)*sizeof(cBase*));
+		memmove(&Base[number],&Base[number+1],(length()-number)*sizeof(cBase*));
 	}
 
 private:

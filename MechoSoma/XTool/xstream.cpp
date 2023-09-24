@@ -675,6 +675,6 @@ char* XStream::getline(char* buf, unsigned len)
 	if(eof())
 		buf[i] = '\0';
 	else
-		buf[i - 1] = '\0';
+		buf[i == 0 ? i : i - 1] = '\0';
 	return buf;
 }
