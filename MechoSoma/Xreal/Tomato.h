@@ -10,7 +10,7 @@
 
 #pragma warning( disable : 4250 )  
 
-class Tomato : virtual public Body, GrowingBody, public OwnerProtection, ArcaneStatisticsService 
+class Tomato : public GrowingBody, public OwnerProtection, ArcaneStatisticsService 
 {
 	Vect3f R0;
 public:

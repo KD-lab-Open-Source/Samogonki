@@ -7,7 +7,7 @@
 #include "HydrophobicObject.h"
 #pragma warning( disable : 4250 )  
 
-class LittleSpider : public CrawlingObject, public OwnerProtection, ArcaneStatisticsService, HydrophobicObject
+class LittleSpider : public CrawlingObject, public OwnerProtection, ArcaneStatisticsService, public HydrophobicObject
 {
 	DurationTimer target_timer;
 	DurationTimer time_to_live;
