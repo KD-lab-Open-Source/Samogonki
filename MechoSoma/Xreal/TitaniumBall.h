@@ -11,7 +11,7 @@
 
 #pragma warning( disable : 4250 )  
 
-class TitaniumBall : virtual public Body, GrowingBody, public OwnerProtection, ArcaneStatisticsService 
+class TitaniumBall : public GrowingBody, public OwnerProtection, ArcaneStatisticsService 
 {
 public:
 	TitaniumBall(const Vect3f& R_, const Vect3f& V_, float damage__, int owner_ID);

@@ -16,7 +16,7 @@ public:
 	void body_overlap_reaction(Body& body);
 };
 
-class Caterpillar : public CrawlingObject, public OwnerProtection, ArcaneStatisticsService, HydrophobicObject
+class Caterpillar : public CrawlingObject, public OwnerProtection, ArcaneStatisticsService, public HydrophobicObject
 {
 	DurationTimer rudder_latency;
 	DurationTimer time_to_live;

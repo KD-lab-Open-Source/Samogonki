@@ -1,26 +1,21 @@
-// Author: @caiiiycuk
-#ifndef OWNER_PROTECTION
-#define OWNER_PROTECTION
+//////////////////////////////////////////////////////////////////
+// База для создания арканных объектов
+//	- защита хозяина
+//////////////////////////////////////////////////////////////////
+#ifndef __OwnerProtection_H__
+#define __OwnerProtection_H__
 
-class OwnerProtection {
+class OwnerProtection
+{
+	enum { default_duration = 2000 };
+	int owner_ID;
+	DurationTimer duration_;
 public:
-    int ID;
-	int time;
-    OwnerProtection(int ID): ID(ID) {}
-    OwnerProtection(): ID(0) {}
-    int owner() const {
-        return ID;
-    }
-    void reset_owner() {
-        ID = 0;
-    }
-    void set_owner(int ID, int time) {
-		this->ID = ID;
-		this->time = time;
-    }
-	int duration() {
-		return time;
-	}
+	OwnerProtection(int ID = 0) { owner_ID = ID; duration_.start(default_duration); }
+	virtual void set_owner(int ID, int duration__ = default_duration) { owner_ID = ID; duration_.start(duration__); }
+	void reset_owner() { owner_ID = 0; }
+	int owner() const { return duration_() ? owner_ID : 0; }
+	time_type duration(){ return duration_(); };
 };
 
-#endif
+#endif //__OwnerProtection_H__

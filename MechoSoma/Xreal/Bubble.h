@@ -8,7 +8,7 @@
 
 #pragma warning( disable : 4250 )  
 
-class Bubble :  virtual public Body, public GrowingBody, public OwnerProtection, ArcaneStatisticsService 
+class Bubble :  public GrowingBody, public OwnerProtection, ArcaneStatisticsService 
 {
 	ShareHandle<BubbleFieldSource> attractor;
 	Vect3f F_wind;
