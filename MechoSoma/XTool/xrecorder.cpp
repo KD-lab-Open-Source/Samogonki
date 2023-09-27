@@ -21,6 +21,8 @@ void XRecorder::Quant(void)
         }
     }
 
+    xtSysQuant();
+
     xtClearMessageQueue();
 }
 

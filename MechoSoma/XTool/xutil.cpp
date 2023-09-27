@@ -123,7 +123,15 @@ struct xtMsgHandlerObject
 	xtMsgHandlerObject(void (*p)(SDL_Event *), int id);
 };
 
+void xtSysQuant(void);
+
+void xtAddSysObj(XList* lstPtr,void (*fPtr)(void),int id);
+void xtDeleteSysObj(XList* lstPtr,int id);
+void xtDeactivateSysObj(XList* lstPtr,int id);
+
 void* XGR_hWnd;
+
+typedef void (*XFNC)();
 
 #define XT_DEFAULT_TABLE_SIZE 32
 
@@ -390,12 +398,90 @@ void xtRegisterSysMsgFnc(void (*fPtr)(SDL_Event *), int id)
 	XSysHandlerLst.append(p);
 }
 
+void xtRegisterSysQuant(void (*qPtr)(void),int id)
+{
+	xtAddSysObj(&XSysQuantLst,qPtr,id);
+}
+
+void xtUnRegisterSysQuant(int id)
+{
+	xtDeleteSysObj(&XSysQuantLst,id);
+}
+
 void xtRegisterSysFinitFnc(void (*fPtr)(void),int id)
 {
+	xtAddSysObj(&XSysFinitLst,fPtr,id);
 }
 
 void xtDeactivateSysFinitFnc(int id)
 {
+	xtDeactivateSysObj(&XSysFinitLst,id);
+}
+
+void xtUnRegisterSysFinitFnc(int id)
+{
+	xtDeleteSysObj(&XSysFinitLst,id);
+}
+
+void xtDeleteSysObj(XList* lstPtr,int id)
+{
+	XSysObject* p = (XSysObject*)lstPtr -> fPtr;
+	while(p){
+		if(p -> ID == id){
+			lstPtr -> RemoveElement((XListElement*)p);
+			delete p;
+			return;
+		}
+		p = (XSysObject*)p -> next;
+	}
+}
+
+void xtDeactivateSysObj(XList* lstPtr,int id)
+{
+	XSysObject* p = (XSysObject*)lstPtr -> fPtr;
+
+	while(p){
+		if(p -> ID == id)
+			p -> flags |= XSYS_OBJ_INACTIVE;
+		p = (XSysObject*)p -> next;
+	}
+}
+
+void xtAddSysObj(XList* lstPtr,void (*fPtr)(void),int id)
+{
+	XSysObject* p = (XSysObject*)lstPtr -> fPtr;
+
+	while(p){
+		if(p -> ID == id) return;
+		p = (XSysObject*)p -> next;
+	}
+
+	p = new XSysObject;
+	p -> ID = id;
+	p -> QuantPtr = reinterpret_cast<void*>(fPtr);
+
+	lstPtr -> AddElement((XListElement*)p);
+}
+
+void xtSysQuant(void)
+{
+	XSysObject* p = (XSysObject*)XSysQuantLst.fPtr;
+	while(p){
+		(*(XFNC)(p -> QuantPtr))();
+		p = (XSysObject*)p -> next;
+	}
+}
+
+void xtSysFinit(void)
+{
+	int i,sz = XSysFinitLst.ListSize;
+	XSysObject* p = (XSysObject*)XSysFinitLst.lPtr;
+	for(i = 0; i < sz; i ++){
+		if(!(p -> flags & XSYS_OBJ_INACTIVE))
+			(*(XFNC)(p -> QuantPtr))();
+		p = (XSysObject*)p -> prev;
+	}
+	XRec.Close();
 }
 
 void mchGraphicsSetup(void)
