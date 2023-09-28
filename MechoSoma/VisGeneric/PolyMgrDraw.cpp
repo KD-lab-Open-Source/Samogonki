@@ -1129,10 +1129,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		int j=(int)(TangentTrail->Pos.y/(1<<TileMap->_SizeTileY()));
 		if((TileMap->GetTile(i,j)->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)==0)
 			continue;
-                if (TangentTrail->MaterialArray.length() == 0) {
-                   continue;
-                }
-		cMaterial *Material=&TangentTrail->MaterialArray[0];
+		cMaterial *Material=TangentTrail->MaterialArray.length() == 0 ? nullptr : &TangentTrail->MaterialArray[0];
 		sColor4f &Diffuse1=TangentTrail->Diffuse1,&Diffuse2=TangentTrail->Diffuse2;
 		float Phase=TangentTrail->Timer()/TangentTrail->Duration,Intensity=255.f;
 //		float Phase=TangentTrail->CurrentTime/TangentTrail->FinishTime,Intensity=255.f;
