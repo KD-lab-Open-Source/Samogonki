@@ -5,32 +5,22 @@
 #include "M3d_effects.h"
 #include "Mesh3ds.h"
 #include "Xreal_utl.h"
-#include <xmath.h>
-#pragma hdrstop
-
-#define M3D_VECTOR_A		(1<< 14)
-#define M3D_VECTOR_B		(1<< 15)
-#define KFRAME_STOP		(1<<8)
 
 ////////////////////////////////////////////////////////////////////
-//	�����
+//	Пушка
 ////////////////////////////////////////////////////////////////////
 Cannon::Cannon(cMesh* model_)
 {
 	model = model_;
 	assert(model);
 
-	//A = model -> Dummies.Find(M3D_VECTOR_A);
-	//B = model -> Dummies.Find(M3D_VECTOR_B);
+	A = model -> Dummies.Find("vectora");
+	B = model -> Dummies.Find("vectorb");
 
-	//@caiiiycuk
-	//model -> SetFrame(KFRAME_STOP);
-	model->SetFrame();
+	model -> SetAnimation(0);
 }
 
-void fxCannonFire(Vect3f pos,Vect3f vel,float pow)
-{
-}
+void fxlabCannonFire(const Vect3f& pos,const Vect3f& vel,float pow);
 
 void Cannon::fire()
 {
@@ -41,7 +31,7 @@ void Cannon::fire()
 	Vect3f dir = B_- A_;
 	dir.normalize();
 
-	fxCannonFire(B_,dir*(3 + fabsRnd(3)),2000);
+	fxlabCannonFire(Vect3f(B_),Vect3f(dir*(3 + fabsRnd(3))),2000);
 
 //	Body* bolid = new Meteorite(M3D_CANNON_BALL, B_, dir*(30 + fabsRnd(100)), 3);
 //	Mdisp -> attachBody(bolid);
@@ -59,12 +49,12 @@ void Cannon::show() const
 	const MatXf& Xlg = model -> GlobalMatrix;
 	Xlg.xformPoint(A, A_);
 	Xlg.xformPoint(B, B_);
-	show_vector(A_, 45);
-	show_vector(B_, (63<< 6) | 31);
+	show_vector(A_, XCOL(CYAN, 100));
+	show_vector(B_, XCOL(CYAN, 100));
 }
 
 ////////////////////////////////////////////////////////////////////
-//	��������26gg2
+//	Крепость
 ////////////////////////////////////////////////////////////////////
 Fortress::Fortress(cMesh* model_)
  {
@@ -76,10 +66,7 @@ Fortress::Fortress(cMesh* model_)
 
 void Fortress::quant()
 {
-	//@caiiiycuk
-	//model -> SetFrame(KFRAME_STOP, 0, clockf()/15425);
-	model->SetFrame();
-	model -> ReCalcMatrix();
+	model -> SetAnimation(0, global_time()/15425.f);
 	if(!latency()){
 		iterator ci;
 		FOR_EACH(*this, ci)
@@ -90,15 +77,14 @@ void Fortress::quant()
 
 void Fortress::show() const
 {
-	Fortress* self = const_cast<Fortress*>(this);
-	iterator ci;
-	FOR_EACH(*self, ci)
+	const_iterator ci;
+	FOR_EACH(*this, ci)
 		ci -> show();
 }
 
 
 ////////////////////////////////////////////////////////////////////
-//	Fucking�����
+//	FuckingНасос
 ////////////////////////////////////////////////////////////////////
 WaterPump::WaterPump(cMesh* model_) : FirePointList(model_)
 {
@@ -107,9 +93,6 @@ WaterPump::WaterPump(cMesh* model_) : FirePointList(model_)
 
 void WaterPump::quant()
 {
-//@caiiiycuk
-//	model -> SetFrame(KFRAME_STOP, 0, clockf()/ /*15425*/ 30000);
-	model->SetFrame();
-	model -> ReCalcMatrix();
+	model -> SetAnimation(0, global_time()/30000.f);
 	fire(model -> GlobalMatrix);
 }

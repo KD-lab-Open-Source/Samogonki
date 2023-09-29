@@ -133,7 +133,7 @@ struct fxlabMechosProcessInformation
 };
 
 
-void fxlabCannonFire(class Vect3f& pos,class Vect3f& vel,float pow);
+void fxlabCannonFire(const Vect3f& pos,const Vect3f& vel,float pow);
 void fxlabRacerEvent(int type,struct mchRacer* point);
 
 float triangleMapH(int x, int y, float z);
