@@ -107,6 +107,7 @@ static const std::unordered_map<SDL_Keycode, int> keycodeMap{
     { SDLK_RCTRL            , VK_RCONTROL        },
 
     { SDLK_MENU             , VK_MENU            },
+    { SDLK_PERIOD           , VK_OEM_PERIOD      },
 };
 
 struct xtMsgHandlerObject
