@@ -29,7 +29,7 @@ struct FirePoint : Vect3f {
 	};
 };
 
-void fxlabCannonFire(const Vect3f& pos,Vect3f& vel,float pow);
+void fxlabCannonFire(const Vect3f& pos,const Vect3f& vel,float pow);
 
 struct CannonPoint : FirePoint
 {

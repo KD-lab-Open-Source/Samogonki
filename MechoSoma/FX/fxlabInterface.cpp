@@ -700,7 +700,7 @@ void fxlabFirePointInterface::Update(const class Vect3f& pos,const class Mat3f& 
 
 const float FXLAB_CANNON_FIRE_BULLET_SPEED = 20.0f;
 
-void fxlabCannonFire(Vect3f& pos,Vect3f& vel,float pow)
+void fxlabCannonFire(const Vect3f& pos,const Vect3f& vel,float pow)
 {
 	fxlabGeneralObjectType* t;
 
@@ -711,13 +711,13 @@ void fxlabCannonFire(Vect3f& pos,Vect3f& vel,float pow)
 	t->SetVelocity(vel);
 	t->Start();
 
-	vel *= FXLAB_CANNON_FIRE_BULLET_SPEED;
+	const auto newVel = vel * FXLAB_CANNON_FIRE_BULLET_SPEED;
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_TAIL);
 	t->SetStartTime(fxlabClientD->GetTime());
 	t->SetKeyID(FXLAB_ID_KEY_CANNON_FIRE);
 	t->SetPosition(pos);
-	t->SetVelocity(vel);
+	t->SetVelocity(newVel);
 	t->Start();
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_CONTROL_OMNI);
@@ -727,7 +727,7 @@ void fxlabCannonFire(Vect3f& pos,Vect3f& vel,float pow)
 	t->Start();
 
 //!!!!
-	fxlabCreateBolide<fxlabCannonBomb>(FXLAB_MODEL_INTERFACE_ID_CANNON_START,FXLAB_MODEL_INTERFACE_ID_CANNON_NOISE,pos,vel,pow,FXLAB_CLIENT_PROCESS_BOMB_EXPLODE_LINK,NULL,NULL,NULL);
+	fxlabCreateBolide<fxlabCannonBomb>(FXLAB_MODEL_INTERFACE_ID_CANNON_START,FXLAB_MODEL_INTERFACE_ID_CANNON_NOISE,pos,newVel,pow,FXLAB_CLIENT_PROCESS_BOMB_EXPLODE_LINK,NULL,NULL,NULL);
 
 	t = fxlabClientD->CreateObject(FXLAB_CLIENT_PROCESS_SOUND_SPACE_IMPULSE);
 	t->SetStartTime(fxlabClientD->GetTime());
