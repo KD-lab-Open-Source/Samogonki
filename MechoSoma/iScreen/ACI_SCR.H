@@ -279,18 +279,15 @@ struct aciScreenEventLine
 #define ACS_BLACK_FON		0x20		
 #define ACS_MOVED_OBJECT	0x40
 #define ACS_ALPHA_MASK		0x80
-#define ACS_TEXT			0x100
-#define ACS_BLOCKED			0x200
-#define ACS_HIDDEN			0x400
+#define ACS_TEXT		0x100
+#define ACS_BLOCKED		0x200
+#define ACS_HIDDEN		0x400
 #define ACS_MOUSE_SELECT	0x800
+#define ACS_NO_RESIZE		0x1000
+#define ACS_KEYB_SELECT		0x2000
 
 struct aciScreenObject : XListElement
 {
-	//@caiiiycuk
-	int objIndex[4];
-	int align_x, align_y;
-	int PosX0, PosY0, SizeX0, SizeY0;
-
 	int ID;
 	int type;
 
@@ -300,6 +297,14 @@ struct aciScreenObject : XListElement
 	int SizeX;
 	int SizeY;
 
+	int PosX0;
+	int PosY0;
+
+	int SizeX0;
+	int SizeY0;
+
+	int align_x;
+	int align_y;
 
 	int flags;
 
@@ -310,6 +315,8 @@ struct aciScreenObject : XListElement
 	int ResID;
 	aciScreenResource* resPtr;
 
+	int objIndex[4];
+
 	int PalID;
 	aciScreenResource* palPtr;
 
@@ -319,13 +326,33 @@ struct aciScreenObject : XListElement
 	XList* events;
 
 	virtual void init(void);
-	virtual void redraw(int flag = 0);
-	virtual void Quant(int mx = 0, int my = 0);
+	virtual void redraw(int flag2d = 0);
+	virtual void Quant(int mx = -1,int my = -1);
 
 	virtual void change_coords(int dx,int dy){ PosX += dx; PosY += dy; }
+	virtual void backup_coords(void){ 
+		PosX0 = PosX;
+		PosY0 = PosY;
+
+		SizeX0 = SizeX;
+		SizeY0 = SizeY;
+	}
+
+	virtual void scale_coords(float dx,float dy);
+
+	virtual void scale(float dx,float dy){ 
+		PosX = round((float)PosX0 * dx);
+		PosY = round((float)PosY0 * dy);
+
+		SizeX = round((float)SizeX0 * dx);
+		SizeY = round((float)SizeY0 * dy);
+	}
+
 	virtual int CheckXY(int x,int y);
 
 	int isActive(void);
+
+	virtual void AdjustSize(void){ };
 
 	void prepare(void);
 	void StopEvents(void);
@@ -341,23 +368,6 @@ struct aciScreenObject : XListElement
 #ifdef _ACS_MOVE_OBJECTS_
 	void show_bound(void);
 #endif
-
-	virtual void AdjustSize(void) {
-		//@caiiiycuk?
-	};
-	virtual void scale_coords(float x,float y);
-	virtual void Scale(float dx,float dy) {
-		if (PosX0 == -1) {
-			PosX0 = PosX;
-			PosY0 = PosY;
-			SizeX0 = SizeX;
-			SizeY0 = SizeY;
-		}
-		PosX = PosX0 * dx;
-		PosY = PosY0 * dy;
-		SizeX = SizeX0 * dx;
-		SizeY = SizeY0 * dy;
-	}
 
 	aciScreenObject(void);
 	~aciScreenObject(void);
@@ -500,19 +510,19 @@ struct aciScreen : XListElement
 	~aciScreen(void);
 };
 
+#define ACS_KEY_INPUT_MODE	1
+#define ACS_NUM_INPUT_MODE	2
+
 // aciScreenDispatcher::flags...
 #define ACS_FORCED_REDRAW	0x01
 #define ACS_FIRST_REDRAW	0x02
 #define ACS_NEED_EXIT		0x04
 #define ACS_FULLSCR_FLUSH	0x08
 #define ACS_FULL_REDRAW		0x10
+#define ACS_NO_BACKGROUND	0x20
 
 struct aciScreenDispatcher
 {
-	//@caiiiycuk
-	int nextScrID;
-	aciScreen* nextScr;
-
 	int flags;
 	int QuantCode;
 
@@ -520,6 +530,9 @@ struct aciScreenDispatcher
 
 	int curScrID;
 	aciScreen* curScr;
+
+	int nextScrID;
+	aciScreen* nextScr;
 
 	XList* resources;
 
@@ -543,10 +556,14 @@ struct aciScreenDispatcher
 	void alloc_mem(void);
 	void free_mem(void);
 
-	int Quant();
+	void MouseQuant(void);
+	int Quant(void);
 	void EventQuant(void);
-	int ObjectQuant(int mx = 0, int my = 0);
+	int ObjectQuant(int mx = -1,int my = -1);
 	void FlushEvents(void);
+	void ActiveInputQuant(void);
+
+	void RedrawQuant(int flush_log = 1);
 
 	int redraw(void);
 	void flush(void);
@@ -557,10 +574,14 @@ struct aciScreenDispatcher
 	void DoneInput(void);
 
 	void ChangeCoords(int dx,int dy);
+	void ScaleCoords(float dx,float dy);
+	void Scale(float dx,float dy);
 
 	void SetResource(int obj_id,int res_id,int fr);
 	void SetSequence(int obj_id,int seq_id);
 	void ChangeScroller(int obj_id,int x);
+	void DecScroller(int obj_id);
+	void IncScroller(int obj_id);
 	void SetScroller(int obj_id,int v,int max_v);
 
 	int GetObjectValue(int obj_id,int flag = 0);
@@ -569,13 +590,7 @@ struct aciScreenDispatcher
 
 	void ChangeScreen(int id);
 	void PrepareChangeScreen(int id);
-	virtual void DecScroller(int obj_id);
-	virtual void IncScroller(int obj_id);
-	virtual void RedrawQuant(int flush_log = 0);
-	virtual void ActiveInputQuant(void);
-	virtual void Scale(float dx,float dy);
-	virtual void ScaleCoords(float dx,float dy);
-	virtual void MouseQuant(void);
+
 #ifdef _ACS_MOVE_OBJECTS_
 	void DumpMovedObjects(void);
 	aciScreenObject* GetMouseObject(void);

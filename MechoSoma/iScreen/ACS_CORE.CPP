@@ -1776,8 +1776,7 @@ void aciScreen::Scale(float dx,float dy)
 	aciScreenObject* obj = (aciScreenObject*)objList -> fPtr;
 	while(obj){
 		if(obj -> PosX != -1){
-			//@caiiiycuk was scale
-			obj -> Scale(dx,dy);
+			obj -> scale(dx,dy);
 			obj -> AdjustSize();
 		}
 		obj = (aciScreenObject*)obj -> next;
@@ -1978,10 +1977,10 @@ int aciScreenDispatcher::ObjectQuant(int mx,int my)
 {
 	int ret = 0;
 
-//	if(mx == -1 || my == -1){
+	if(mx == -1 || my == -1){
 		mx = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 		my = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
-//	}
+	}
 
 	aciScreenObject* p = (aciScreenObject*)curScr -> objList -> fPtr;
 	while(p){

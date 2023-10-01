@@ -6,6 +6,8 @@
 
 #include "port.h"
 
+#include <algorithm>
+
 //////////////////////////////////////////////////////////////////////////
 // Hash-table для определения типов дамми
 //////////////////////////////////////////////////////////////////////////
@@ -181,9 +183,7 @@ struct dummy_comp
 
 void DummyList::SortByName()
 {
-	// TODO: @caiiiycuk: not implemeted
-	// sort(begin(), end(), dummy_comp());
-	abort();
+	std::sort(begin(), end(), dummy_comp());
 }
 
 DummyList::iterator DummyList::Iterator(const char* name_mask)
