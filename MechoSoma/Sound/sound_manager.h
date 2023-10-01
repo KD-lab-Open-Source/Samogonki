@@ -12,6 +12,8 @@ struct SamplePlayer
   virtual void releaseSound(void *soundAddress) = 0;
   virtual void setVolume(void *soundAddress, int volume) = 0;
   virtual int getVolume(void *soundAddress) = 0;
+  virtual void setSoundFrequency(void *soundAddress, int frequency) = 0;
+  virtual int getSoundFrequency(void *soundAddress) = 0;
   virtual int getSoundStatus(void *soundAddress) = 0;
 
   virtual void *getSound(int channelIndex) = 0;
@@ -44,6 +46,8 @@ class SoundManager final {
 
   SamplePlayer &samplePlayer();
   MusicPlayer &musicPlayer();
+
+  void quant();
 
  private:
   struct Internal;

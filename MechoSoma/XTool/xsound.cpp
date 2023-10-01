@@ -3,6 +3,13 @@
 #include <cassert>
 
 #include "sound_manager.h"
+#include "xtool.h"
+
+void xtRegisterSysFinitFnc(void (*fPtr)(void), int id);
+void xtUnRegisterSysFinitFnc(int id);
+void xtDeactivateSysFinitFnc(int id);
+
+void XSoundQuantFnc();
 
 std::unique_ptr<game::sound::SoundManager> soundManager;
 
@@ -12,6 +19,11 @@ int SoundInit(int maxHZ, int digMode, int channels) {
   }
 
   soundManager = std::make_unique<game::sound::SoundManager>(44100, channels);
+
+	xtUnRegisterSysFinitFnc(XSOUND_SYSOBJ_ID);
+	xtRegisterSysFinitFnc(SoundFinit, XSOUND_SYSOBJ_ID);
+	xtRegisterSysQuant(XSoundQuantFnc, XSOUND_SYSOBJ_ID);
+
   return 1;
 }
 
@@ -40,7 +52,14 @@ void SoundLoad(char *filename, void **lpDSB) {
   *lpDSB = soundManager->samplePlayer().loadSound(filename);
 }
 
-void SoundFinit() { soundManager = nullptr; }
+void SoundFinit() {
+  if (soundManager != nullptr) {
+    soundManager = nullptr;
+
+    xtUnRegisterSysQuant(XSOUND_SYSOBJ_ID);
+    xtDeactivateSysFinitFnc(XSOUND_SYSOBJ_ID);
+  }
+}
 
 void SoundVolume(int channel, int volume) {
   if (soundManager) {
@@ -86,9 +105,13 @@ int SoundStatus(void *lpDSB) { return soundManager ? soundManager->samplePlayer(
 
 int ChannelStatus(int channel) { return soundManager ? soundManager->samplePlayer().getChannelStatus(channel) : -1; }
 
-int GetSoundFrequency(void *lpDSB) { return 0; }
+int GetSoundFrequency(void *lpDSB) { return soundManager ? soundManager->samplePlayer().getSoundFrequency(lpDSB) : 0; }
 
-void SetSoundFrequency(void *lpDSB, int frq) {}
+void SetSoundFrequency(void *lpDSB, int frequency) {
+  if (soundManager) {
+    soundManager->samplePlayer().setSoundFrequency(lpDSB, frequency);
+  }
+}
 
 void SoundStreamOpen(char *filename, void **strptr) {}
 
@@ -145,3 +168,9 @@ void SetMusicVolume(int volume) {
 }
 
 int GetMusicLengthInSamples() { return soundManager ? soundManager->musicPlayer().getLengthInSamples() : 0; }
+
+void XSoundQuantFnc(void) {
+  if (soundManager) {
+    soundManager->quant();
+  }
+}

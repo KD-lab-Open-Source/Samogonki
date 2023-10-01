@@ -212,6 +212,16 @@ struct Sound {
     return static_cast<int>(gain - 10000.0f);
   }
 
+  void setFrequency(int frequency) {
+    const auto pitch = 1.0f * frequency / getFrequency();
+    ma_sound_set_pitch(&sound, pitch);
+  }
+
+  int getFrequency() {
+    const auto pitch = ma_sound_get_pitch(&sound);
+    return static_cast<int>(44100.0f * pitch);
+  }
+
   ma_sound *getObject() { return &sound; }
 };
 
@@ -316,6 +326,20 @@ public:
     return sound->getVolume();
   }
 
+  void setSoundFrequency(void *soundAddress, int frequency) override {
+    assert(soundAddress != nullptr);
+
+    auto sound = static_cast<Sound *>(soundAddress);
+    sound->setFrequency(frequency);
+  }
+
+  int getSoundFrequency(void *soundAddress) override {
+    assert(soundAddress != nullptr);
+
+    auto sound = static_cast<Sound *>(soundAddress);
+    return sound->getFrequency();
+  }
+
   int getSoundStatus(void *soundAddress) override {
     assert(soundAddress != nullptr);
 
@@ -391,6 +415,17 @@ public:
 
     auto &channel = _channels[channelIndex];
     return channel.sound ? channel.priority : -1;
+  }
+
+  void quant() {
+    for (auto &channel : _channels) {
+      if (channel.sound != nullptr && !getSoundStatus(channel.sound)) {
+        channel.sound = nullptr;
+        channel.priority = 0;
+        channel.flags = 0;
+        channel.cropos = 0;
+      }
+    }
   }
 
 private:
@@ -504,4 +539,8 @@ game::sound::SamplePlayer &SoundManager::samplePlayer() {
 
 game::sound::MusicPlayer &SoundManager::musicPlayer() {
   return *_internal->musicPlayer;
+}
+
+void SoundManager::quant() {
+  _internal->samplerPlayer->quant();
 }
