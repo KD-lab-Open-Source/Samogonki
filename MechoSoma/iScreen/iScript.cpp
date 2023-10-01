@@ -316,8 +316,7 @@ aciScreenObject* acsCreateObject(scrDataBlock* p)
 		}
 		b = b -> next;
 	}
-	//@caiiiycuk: no impl
-	//obj -> backup_coords();
+	obj -> backup_coords();
 	return obj;
 }
 
