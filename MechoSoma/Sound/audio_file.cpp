@@ -146,6 +146,13 @@ struct AudioFile::Internal {
     }
   }
 
+  void seekToStart() {
+    const auto result = av_seek_frame(context, streamIndex, 0, AVSEEK_FLAG_FRAME);
+    if (result < 0) {
+      XAssert("av_seek_frame");
+    }
+  }
+
   bool read(std::vector<float> &buffer) {
     if (av_read_frame(context, &packet) >= 0) {
       decodePacket(buffer);
@@ -164,6 +171,8 @@ struct AudioFile::Internal {
 AudioFile::AudioFile(const std::filesystem::path &path) : _internal(std::make_unique<Internal>(path)) {}
 
 AudioFile::~AudioFile() {}
+
+void AudioFile::seekToStart() { _internal->seekToStart(); }
 
 bool AudioFile::read(std::vector<float> &buffer) { return _internal->read(buffer); }
 
