@@ -139,7 +139,15 @@ struct StreamDataSource final {
   }
 
   // Seek to a specific PCM frame here. Return MA_NOT_IMPLEMENTED if seeking is not supported.
-  static ma_result seek(ma_data_source *, ma_uint64) { return MA_NOT_IMPLEMENTED; }
+  static ma_result seek(ma_data_source *dataSource, ma_uint64 frame) {
+    if (frame == 0) {
+      auto source = static_cast<StreamDataSource *>(dataSource);
+      source->file.seekToStart();
+      source->buffer.clear();
+      return MA_SUCCESS;
+    }
+    return MA_NOT_IMPLEMENTED;
+  }
 
   // Return the format of the data here.
   static ma_result getDataFormat(ma_data_source *dataSource, ma_format *format, ma_uint32 *channels,

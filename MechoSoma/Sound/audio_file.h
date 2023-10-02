@@ -10,6 +10,7 @@ class AudioFile final {
   explicit AudioFile(const std::filesystem::path &path);
   ~AudioFile();
 
+  void seekToStart();
   bool read(std::vector<float> &buffer);
 
   int getSampleRate() const;
