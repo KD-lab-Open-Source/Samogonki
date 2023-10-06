@@ -13,8 +13,7 @@ out vec4 color;
 out vec2 uv;
 
 void main() {
-    gl_Position = projection_matrix * vec4(pos.x, pos.y, 0.0f, 1.0f);
-    gl_Position.z = pos.z;
+    gl_Position = projection_matrix * vec4(pos.x, pos.y, pos.z, 1.0f);
     color = color0;
     uv = uv0;
 }

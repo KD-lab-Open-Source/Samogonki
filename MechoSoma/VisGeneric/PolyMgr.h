@@ -194,7 +194,6 @@ private:
 	inline int AssertValid();
 	// PolygonFix
 	inline int  AddPolygonFix(int p1,int p2,int p3);		// добавление в конец
-	inline void DelPolygonFix(int i);						// удаление полигона из позиции
 	inline void MovPolygonFix(int i);						// перемещение из положения i в конец
 	inline void SetPolygonFix(int i,int p1,int p2,int p3);	// установка значений полигона
 
@@ -209,9 +208,6 @@ private:
 	// pop
 	inline int PopPolygonFix(int ofs)			{ int tmp=PolygonFix.length(); PolygonFix.Base=&PolygonFix.Base[-(PolygonFix.length()=ofs)]; return tmp; }
 	inline int PopPointFix(int ofs)				{ int tmp=PointFix.length(); PointFix.Base=&PointFix.Base[-(PointFix.length()=ofs)]; PointAttribute.Base=&PointAttribute.Base[-(PointAttribute.length()=ofs)]; return tmp; }
-
-	void Clip_PolygonFix(int i,sPlane4f &PlaneClip3d,int mask);
-	void ClipPolygonFix(cCamera *Camera);
 
 	void CreateTexture565(cMaterial *Material,cRenderDevice *RenderDevice);
 	void CreateTexture1555(cMaterial *Material,cRenderDevice *RenderDevice);
@@ -249,65 +245,6 @@ __forceinline void cPolyDispatcher::AddPolygonFixTestPointFix(int i1,int i2,int 
 		sPolygonFix &pFix=NextPolygonFix();
 		SET_POLYGONFIX(pFix,i1,i2,i3);
 	}
-	else return;
-	if((Attribute&RENDER_CLIPPING3D)==0) return;
-	int start=PolygonFix.length()-1,end=PolygonFix.length();
-	int i;
-	for(i=start;i<end;i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		int a1=PointAttribute[p.p1].clip, a2=PointAttribute[p.p2].clip, a3=PointAttribute[p.p3].clip;
-		if(a1&a2&a3&CLIP_ZMIN) 
-		{ DelPolygonFix(i--); end--; }
-		else if((a1|a2|a3)&CLIP_ZMIN)
-			Clip_PolygonFix(i,PlaneClip3d[0],CLIP_ZMIN);
-	}
-	end=PolygonFix.length();
-	for(i=start;i<end;i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		int a1=PointAttribute[p.p1].clip, a2=PointAttribute[p.p2].clip, a3=PointAttribute[p.p3].clip;
-		if(a1&a2&a3&CLIP_XMIN) 
-		{ DelPolygonFix(i--); end--; }
-		else if((a1|a2|a3)&CLIP_XMIN)
-			Clip_PolygonFix(i,PlaneClip3d[1],CLIP_XMIN);
-	}
-	end=PolygonFix.length();
-	for(i=start;i<end;i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		int a1=PointAttribute[p.p1].clip, a2=PointAttribute[p.p2].clip, a3=PointAttribute[p.p3].clip;
-		if(a1&a2&a3&CLIP_XMAX) 
-		{ DelPolygonFix(i--); end--; }
-		else if((a1|a2|a3)&CLIP_XMAX)
-			Clip_PolygonFix(i,PlaneClip3d[2],CLIP_XMAX);
-	}
-	end=PolygonFix.length();
-	for(i=start;i<end;i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		int a1=PointAttribute[p.p1].clip, a2=PointAttribute[p.p2].clip, a3=PointAttribute[p.p3].clip;
-		if(a1&a2&a3&CLIP_YMIN) 
-		{ DelPolygonFix(i--); end--; }
-		else if((a1|a2|a3)&CLIP_YMIN)
-			Clip_PolygonFix(i,PlaneClip3d[3],CLIP_YMIN);
-	}
-	end=PolygonFix.length();
-	for(i=start;i<end;i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		int a1=PointAttribute[p.p1].clip, a2=PointAttribute[p.p2].clip, a3=PointAttribute[p.p3].clip;
-		if(a1&a2&a3&CLIP_YMAX) 
-		{ DelPolygonFix(i--); end--; }
-		else if((a1|a2|a3)&CLIP_YMAX)
-			Clip_PolygonFix(i,PlaneClip3d[4],CLIP_YMAX);
-	}
-}
-inline void cPolyDispatcher::DelPolygonFix(int i)
-{
-	int end=PolygonFix.length()-1;
-	if(i!=end) SWAP_POLYGONFIX(PolygonFix[i],PolygonFix[end]);
-	PolygonFix.CurrentSize--; 
 }
 inline void cPolyDispatcher::SetPolygonFix(int i,int p1,int p2,int p3)
 {
