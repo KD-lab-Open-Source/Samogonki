@@ -38,6 +38,8 @@ class Renderer final {
   MD3DERROR d3dFlip(bool WaitVerticalBlank);
   MD3DERROR d3dBeginScene();
   MD3DERROR d3dEndScene();
+  MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
+  MD3DERROR d3dResetProjectionMatrix();
   MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
   MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
   MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);

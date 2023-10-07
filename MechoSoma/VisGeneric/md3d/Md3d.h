@@ -11,6 +11,7 @@
 #define STRICT 1
 #endif
 
+#include <algorithm>
 #include <cstdint>
 
 //#define _PROFILE_D3D
@@ -285,6 +286,26 @@ typedef uint32_t D3DCOLOR;
 #define RGB_MAKE(r, g, b)       ((D3DCOLOR) (((r) << 16) | ((g) << 8) | (b)))
 #define RGBA_MAKE(r, g, b, a)   ((D3DCOLOR) (((a) << 24) | ((r) << 16) | ((g) << 8) | (b)))
 
+struct D3DMATRIX {
+  float        _11, _12, _13, _14;
+  float        _21, _22, _23, _24;
+  float        _31, _32, _33, _34;
+  float        _41, _42, _43, _44;
+
+  bool operator==(const D3DMATRIX& other) const {
+    return std::equal(&_11, &_11 + 16, &other._11);
+  }
+};
+
+typedef struct _D3DVIEWPORT7 {
+  uint32_t dwX;
+  uint32_t dwY;
+  uint32_t dwWidth;
+  uint32_t dwHeight;
+  float    dvMinZ;
+  float    dvMaxZ;
+} D3DVIEWPORT7, *LPD3DVIEWPORT7;
+
 typedef uint32_t MD3DERROR;
 
 struct M3DTEXTUREFORMAT {
@@ -398,6 +419,8 @@ MD3DERROR d3dScreenShot(void *lpBuffer, uint32_t dwSize);
 MD3DERROR d3dEndScene();
 MD3DERROR d3dBeginScene();
 MD3DERROR d3dTestCooperativeLevel();
+MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
+MD3DERROR d3dResetProjectionMatrix();
 
 #ifdef _PROFILE_D3D
 void d3dGetTransferMemoryVideo(DWORD& byte_per_frame, DWORD& n256,DWORD& n128,DWORD& n64,DWORD& n32);

@@ -15,11 +15,60 @@
 #include "TileWater.h"
 #endif //_USE_TILEMAP_
 
+#include "Graph3d_Direct3d.h"
+
 float gb_LodValue=0.01f;
 #define LOD_VALUE						0.01f
 //#define LOD_VALUE						gb_LodValue
 
 extern void ResetTextureMultiMaterialSurface565(cInterfaceGraph3d *IGraph3d,cMaterial *Material,cSurfaceReflectionMultiMaterial *Surface);
+
+void SetProjectionMatrix(cCamera *Camera, cGraph3dDirect3D *Graph3d, bool isRenderReflection)
+{
+	const float d = ((float)Graph3d->xScr) / Graph3d->yScr;
+	float xmin = (Camera->GetCenter().x + Camera->GetClipping().xmin() * Camera->GetFocus().x) * Graph3d->xScr;
+	float ymin = (Camera->GetCenter().y + Camera->GetClipping().ymin() * Camera->GetFocus().y * d) * Graph3d->yScr;
+	float xmax = (Camera->GetCenter().x + Camera->GetClipping().xmax() * Camera->GetFocus().x) * Graph3d->xScr;
+	float ymax = (Camera->GetCenter().y + Camera->GetClipping().ymax() * Camera->GetFocus().y * d) * Graph3d->yScr;
+	if (xmin < Graph3d->xScrMin) xmin = Graph3d->xScrMin;
+	if (xmax >= Graph3d->xScrMax) xmax = Graph3d->xScrMax - 1;
+	if (ymin < Graph3d->yScrMin) ymin = Graph3d->yScrMin;
+	if (ymax >= Graph3d->yScrMax) ymax = Graph3d->yScrMax - 1;
+
+	D3DVIEWPORT7 vp{
+		static_cast<uint32_t>(xmin),
+		static_cast<uint32_t>(ymin),
+		static_cast<uint32_t>(xmax - xmin),
+		static_cast<uint32_t>(ymax - ymin),
+		0,
+		1
+	};
+
+	const float dx = ((float)(2 * Graph3d->xScr)) / vp.dwWidth;
+	const float dy = ((float)(2 * Graph3d->xScr)) / vp.dwHeight;
+
+	D3DMATRIX mat;
+	memset(&mat, 0, sizeof(D3DMATRIX));
+
+	mat._11 = +Camera->GetFocus().x * dx;
+	mat._22 = -Camera->GetFocus().y * dy;
+	mat._31 = 2 * (Camera->GetCenter().x * Graph3d->xScr - vp.dwX) / vp.dwWidth - 1;
+	mat._32 = 1 - 2 * (Camera->GetCenter().y * Graph3d->yScr - vp.dwY) / vp.dwHeight;
+	mat._34 = 1;
+
+	if (isRenderReflection)
+	{
+		mat._33 = 1;
+		mat._43 = -(1 - Camera->GetZBufferScale().y) * Camera->GetZPlane().x;
+	}
+	else
+	{
+		mat._33 = Camera->GetZBufferScale().y;
+		mat._43 = -(Camera->GetZBufferScale().y - Camera->GetZBufferScale().x) * Camera->GetZPlane().x;
+	}
+
+	d3dSetProjectionMatrix(mat);
+}
 
 int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,int hTexture,int hLightMap)
 {
@@ -27,33 +76,27 @@ int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,in
 	assert(URenderDevice->GetKind(KIND_RENDERDEVICE));
 	cCamera *Camera=(cCamera*)UCamera;
 	if(PolygonFix.length()<=0) return 0;
+
 	sPointAttribute *pa=&PointAttribute[0];
-	Vect2f &zPlane=Camera->GetZPlane(),zBufferScale;
-	Vect2f focus=Focus;
-	if((Attribute&RENDER_REFLECTION)==0) zBufferScale=Camera->GetZBufferScale(); 
-	else zBufferScale.set(Camera->GetZBufferScale().y,1.f), focus=Focus*0.995f;
-//	if((Attribute&RENDER_MULTICANAL)==0)
-		for(sVertexFix *bp=&PointFix[0],*ep=&PointFix[PointFix.length()];bp<ep;bp++,pa++)
-		{
-			bp->xe=Center.x+focus.x*bp->xe; bp->ye=Center.y+focus.y*bp->ye;
-			bp->w=bp->z*POINT_SCALE_W/FLOAT_CONST_PREC; 
-#ifndef _ZBUFFER_LINEAR_
-			//bp->z=zBufferScale.max()-(zBufferScale.max()-zBufferScale.min())*zPlane.min()*bp->z/FLOAT_CONST_PREC;
-			bp->z=zBufferScale.y-(zBufferScale.y-zBufferScale.x)*zPlane.x*bp->z/FLOAT_CONST_PREC;
-#else //_ZBUFFER_LINEAR_
-			bp->z=pa->pv.z/65535;
-#endif //_ZBUFFER_LINEAR_
-//				assert(((zBufferScale.min()-0.0001f)<bp->z)&&(bp->z<(zBufferScale.max()+0.0001f)));
-//				assert((0<bp->w)&&(bp->w<1));
-		}
+	for(sVertexFix *bp=&PointFix[0],*ep=&PointFix[PointFix.length()];bp<ep;bp++,pa++)
+	{
+		bp->xe = pa->pv.x;
+		bp->ye = pa->pv.y;
+		bp->z = pa->pv.z;
+	}
 
 	cRenderDevice *RenderDevice=(cRenderDevice*)URenderDevice;
 	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
+
+	SetProjectionMatrix(Camera, static_cast<cGraph3dDirect3D*>(Graph3d), Attribute & RENDER_REFLECTION);
+
 	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
 	if((Attribute&RENDER_MULTICANAL)==0)
 		Graph3d->PolygonIndexed(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length());
 	else
 		Graph3d->PolygonIndexed2(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length(),hTexture,hLightMap);
+
+	d3dResetProjectionMatrix();
 	return 1;
 }
 
@@ -335,7 +378,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(tile->GetAttribute(ATTRMAT_TEXTURE_PAL)) 
 					{
 						if(tile->Texture->nTexture==0) CreateTexture((cMaterial*)tile,RenderDevice);
-						Graph3d->SetTexture(tile->Texture->nTexture); // óñòàíîâêà òåêñòóðû
+						Graph3d->SetTexture(tile->Texture->nTexture); // установка текстуры
 					}
 					sColor4s MulTile(round(tile->MulCol.r*MulMesh.r),round(tile->MulCol.g*MulMesh.g),
 						round(tile->MulCol.b*MulMesh.b),round(Alpha*tile->MulCol.a)),

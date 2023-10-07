@@ -41,6 +41,7 @@ class RenderState final {
     for (auto &stage : _texture_stages) {
       stage.texture_handle = std::nullopt;
     }
+    _projection_matrix = std::nullopt;
   }
 
   void set_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state, uint32_t value) {
@@ -94,8 +95,20 @@ class RenderState final {
     return result;
   }
 
+  void set_projection_matrix(const D3DMATRIX& matrix) {
+    _projection_matrix = matrix;
+  }
+
+  std::optional<D3DMATRIX> get_projection_matrix() const {
+    return _projection_matrix;
+  }
+
+  void reset_projection_matrix() {
+    _projection_matrix = std::nullopt;
+  }
+
   bool operator==(const RenderState& other) const {
-    return _options == other._options && _texture_stages == other._texture_stages;
+    return _options == other._options && _texture_stages == other._texture_stages && _projection_matrix == other._projection_matrix;
   }
 
  private:
@@ -112,6 +125,8 @@ class RenderState final {
     }
   };
   std::array<TextureStage, 10> _texture_stages;
+
+  std::optional<D3DMATRIX> _projection_matrix;
 };
 }  // namespace graphics::d3d
 #endif  // MOONSHINE_RUNNERS_RENDER_STATE_H

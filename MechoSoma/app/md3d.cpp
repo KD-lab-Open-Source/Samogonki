@@ -144,6 +144,14 @@ MD3DERROR d3dBeginScene() {
 
 MD3DERROR d3dTestCooperativeLevel() { return MD3D_OK; }
 
+MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
+  return renderer->d3dSetProjectionMatrix(matrix);
+}
+
+MD3DERROR d3dResetProjectionMatrix() {
+  return renderer->d3dResetProjectionMatrix();
+}
+
 MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
   return renderer->d3dSetRenderState(dwRenderStateType, dwRenderState);
 }

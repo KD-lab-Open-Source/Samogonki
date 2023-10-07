@@ -4,6 +4,7 @@
 
 #include "renderer.h"
 
+#include <algorithm>
 #include <cassert>
 
 #include "back_buffer.h"
@@ -233,11 +234,6 @@ MD3DERROR Renderer::d3dEndScene() {
     return MD3D_OK;
   }
 
-  auto vs_params = scene_vs_params_t {};
-  for (int i = 0; i < 16; ++i) {
-    vs_params.projection_matrix[i] = _projectionMatrix[i];
-  }
-
   sg_begin_pass(_offscreenBuffer->getRenderingPass(), defaultPassAction);
 
   if (_is_back_buffer_flush) {
@@ -270,6 +266,14 @@ MD3DERROR Renderer::d3dEndScene() {
 
     pipeline.shader = _sceneShader;
     pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
+
+    auto vs_params = scene_vs_params_t {};
+    const auto m = command.render_state.get_projection_matrix();
+    if (m) {
+      std::copy(&m->_11, &m->_11 + 16, vs_params.projection_matrix);
+    } else {
+      std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), vs_params.projection_matrix);
+    }
 
     switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {
       case D3DCULL_CW: {
@@ -433,6 +437,16 @@ MD3DERROR Renderer::d3dEndScene() {
     defaultPassAction.colors[0].load_action = SG_LOADACTION_DONTCARE;
   }
 
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
+  _render_state.set_projection_matrix(matrix);
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::d3dResetProjectionMatrix() {
+  _render_state.reset_projection_matrix();
   return MD3D_OK;
 }
 
