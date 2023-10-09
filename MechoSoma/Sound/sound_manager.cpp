@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -22,6 +23,9 @@
 
 namespace game::sound
 {
+
+const auto doubleValue = 10.0f;
+const auto minimumAttenuation = std::pow(1.0f / 2.0f, 100.0f / doubleValue);
 
 struct BufferDataSource final {
   ma_data_source_base base;
@@ -208,20 +212,22 @@ struct Sound {
   }
 
   void setVolume(int volume) {
-    // value is measured in hundredths of a decibel (dB), in the range of -10000 to 10000
-    auto gain = static_cast<float>(volume) + 10000.0f;
-    gain *= 0.0001f;
+    // volume is measured in hundredths of a decibel (dB), in the range of -10000 to 0
+    const auto decibels = volume / 100.0f;
+    const auto attenuation = std::exp(decibels / doubleValue * log(2.0f));
+    const auto gain = (attenuation - minimumAttenuation) / (1.0f - minimumAttenuation);
     ma_sound_set_volume(&sound, gain);
   }
 
   int getVolume() {
-    auto gain = ma_sound_get_volume(&sound);
-    gain *= 10000.0f;
-    return static_cast<int>(gain - 10000.0f);
+    const auto gain = ma_sound_get_volume(&sound);
+    const auto attenuation = minimumAttenuation + gain * (1.0f - minimumAttenuation);
+    const auto decibels = doubleValue * log(attenuation) / log(2.0f);
+    return static_cast<int>(decibels * 100.0f);
   }
 
   void setFrequency(int frequency) {
-    const auto pitch = 1.0f * frequency / getFrequency();
+    const auto pitch = frequency / 44100.0f;
     ma_sound_set_pitch(&sound, pitch);
   }
 
