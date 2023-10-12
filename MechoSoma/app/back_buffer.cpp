@@ -38,8 +38,8 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
     sg_sampler_desc description{};
     description.min_filter = SG_FILTER_NEAREST;
     description.mag_filter = SG_FILTER_NEAREST;
-    description.wrap_u = SG_WRAP_REPEAT;
-    description.wrap_v = SG_WRAP_REPEAT;
+    description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+    description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
     _sampler = sg_make_sampler(description);
   }
 
