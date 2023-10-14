@@ -42,6 +42,7 @@ class RenderState final {
       stage.texture_handle = std::nullopt;
     }
     _projection_matrix = std::nullopt;
+    _viewport = std::nullopt;
   }
 
   void set_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state, uint32_t value) {
@@ -107,8 +108,22 @@ class RenderState final {
     _projection_matrix = std::nullopt;
   }
 
+  void set_viewport(const MD3DRECT& viewport) {
+    _viewport = viewport;
+  }
+
+  std::optional<MD3DRECT> get_viewport() const {
+    return _viewport;
+  }
+
+  void reset_viewport() {
+    _viewport = std::nullopt;
+  }
+
   bool operator==(const RenderState& other) const {
-    return _options == other._options && _texture_stages == other._texture_stages && _projection_matrix == other._projection_matrix;
+    return _options == other._options && _texture_stages == other._texture_stages
+      && _projection_matrix == other._projection_matrix
+      && _viewport == other._viewport;
   }
 
  private:
@@ -127,6 +142,7 @@ class RenderState final {
   std::array<TextureStage, 10> _texture_stages;
 
   std::optional<D3DMATRIX> _projection_matrix;
+  std::optional<MD3DRECT> _viewport;
 };
 }  // namespace graphics::d3d
 #endif  // MOONSHINE_RUNNERS_RENDER_STATE_H

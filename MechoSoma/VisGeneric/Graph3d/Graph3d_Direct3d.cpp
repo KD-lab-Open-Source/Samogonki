@@ -176,12 +176,8 @@ int cGraph3dDirect3D::EndScene()
 }
 int cGraph3dDirect3D::NullClipRect()
 {
-// TODO: @caiiiycuk investigate this
-#ifdef WTF
-	extern LPDIRECT3DDEVICE7    g_pd3dDevice;       // The D3D device
-	D3DVIEWPORT7 vp={xScrMin,yScrMin,xScrMax-xScrMin,yScrMax-yScrMin,0,1};
-	g_pd3dDevice->SetViewport(&vp);
-#endif
+	MD3DRECT viewport{ xScrMin, yScrMin, xScrMax - xScrMin, yScrMax - yScrMin };
+	d3dSetClipRect(viewport);
 	return 0;
 }
 int cGraph3dDirect3D::GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax)

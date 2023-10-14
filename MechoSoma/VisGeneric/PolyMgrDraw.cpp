@@ -35,25 +35,24 @@ void SetProjectionMatrix(cCamera *Camera, cGraph3dDirect3D *Graph3d, bool isRend
 	if (ymin < Graph3d->yScrMin) ymin = Graph3d->yScrMin;
 	if (ymax >= Graph3d->yScrMax) ymax = Graph3d->yScrMax - 1;
 
-	D3DVIEWPORT7 vp{
-		static_cast<uint32_t>(xmin),
-		static_cast<uint32_t>(ymin),
-		static_cast<uint32_t>(xmax - xmin),
-		static_cast<uint32_t>(ymax - ymin),
-		0,
-		1
+	MD3DRECT viewport{
+		static_cast<int32_t>(xmin),
+		static_cast<int32_t>(ymin),
+		static_cast<int32_t>(xmax - xmin),
+		static_cast<int32_t>(ymax - ymin)
 	};
+	d3dSetClipRect(viewport);
 
-	const float dx = ((float)(2 * Graph3d->xScr)) / vp.dwWidth;
-	const float dy = ((float)(2 * Graph3d->xScr)) / vp.dwHeight;
+	const float dx = ((float)(2 * Graph3d->xScr)) / viewport.right;
+	const float dy = ((float)(2 * Graph3d->xScr)) / viewport.bottom;
 
 	D3DMATRIX mat;
 	memset(&mat, 0, sizeof(D3DMATRIX));
 
 	mat._11 = +Camera->GetFocus().x * dx;
 	mat._22 = -Camera->GetFocus().y * dy;
-	mat._31 = 2 * (Camera->GetCenter().x * Graph3d->xScr - vp.dwX) / vp.dwWidth - 1;
-	mat._32 = 1 - 2 * (Camera->GetCenter().y * Graph3d->yScr - vp.dwY) / vp.dwHeight;
+	mat._31 = 2 * (Camera->GetCenter().x * Graph3d->xScr - viewport.left) / viewport.right - 1;
+	mat._32 = 1 - 2 * (Camera->GetCenter().y * Graph3d->yScr - viewport.top) / viewport.bottom;
 	mat._34 = 1;
 
 	if (isRenderReflection)
@@ -96,6 +95,7 @@ int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,in
 	else
 		Graph3d->PolygonIndexed2(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length(),hTexture,hLightMap);
 
+	d3dResetClipRect();
 	d3dResetProjectionMatrix();
 	return 1;
 }

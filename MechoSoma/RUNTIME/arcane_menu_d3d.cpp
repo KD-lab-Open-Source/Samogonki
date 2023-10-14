@@ -38,7 +38,7 @@ extern cInterfaceGraph3d	*gb_IGraph3d;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-MD3DERROR d3dSetClipRect(MD3DRECT* lprcClipRect);
+MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
 
 void mchA_d3dLoadBmp(int x,int y,int idx,int ch_idx,mchArcaneBMP* p);
 
@@ -570,7 +570,7 @@ void mchA_d3dSetClip(int x,int y,int sx,int sy)
 	};
 	if(!sx || !sy) return;
 
-	d3dSetClipRect(&r);
+	d3dSetClipRect(r);
 
 //	gb_IGraph3d->BeginScene();
 }

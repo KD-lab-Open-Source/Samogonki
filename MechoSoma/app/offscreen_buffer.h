@@ -12,6 +12,9 @@ class OffscreenBuffer final {
   sg_pass getRenderingPass() const;
   void flush();
 
+  int getWidth() const;
+  int getHeight() const;
+
  private:
   const int _width;
   const int _height;

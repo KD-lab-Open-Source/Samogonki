@@ -42,9 +42,9 @@ namespace graphics
     float bottom, float top,
     float near, float far) {
     return matrix_make_rows(
-        2.0f / (right - left), 0, 0, (left + right) / (left - right),
-        0, 2.0f / (top - bottom), 0, (top + bottom) / (bottom - top),
-        0, 0, 1.0f / (far - near), near / (near - far),
+        2.0f / (right - left), 0, 0, -(left + right) / (right - left),
+        0, 2.0f / (top - bottom), 0, -(top + bottom) / (top - bottom),
+        0, 0, -2.0f / (far - near), -(far + near) / (far - near),
         0, 0, 0, 1.0f
     );
   }
@@ -112,7 +112,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    _position_buffer.resize(_vertex_count * 3);
+    _position_buffer.resize(max_vertex_count * 3);
     sg_position_buffer = sg_make_buffer(sg_buffer_desc{
         .size = _position_buffer.size() * sizeof(float),
         .type = SG_BUFFERTYPE_VERTEXBUFFER,
@@ -121,7 +121,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    _color_buffer.resize(_vertex_count * 4);
+    _color_buffer.resize(max_vertex_count * 4);
     sg_color_buffer = sg_make_buffer(sg_buffer_desc{
         .size = _color_buffer.size() * sizeof(float),
         .type = SG_BUFFERTYPE_VERTEXBUFFER,
@@ -130,7 +130,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    _uv_buffer.resize(_vertex_count * 2);
+    _uv_buffer.resize(max_vertex_count * 2);
     sg_uv_buffer = sg_make_buffer(sg_buffer_desc{
         .size = _uv_buffer.size() * sizeof(float),
         .type = SG_BUFFERTYPE_VERTEXBUFFER,
@@ -139,7 +139,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    _index_buffer.resize(_vertex_count * 3);
+    _index_buffer.resize(max_vertex_count * 3);
     sg_index_buffer = sg_make_buffer(sg_buffer_desc{
         .size = _index_buffer.size() * sizeof(uint32_t),
         .type = SG_BUFFERTYPE_INDEXBUFFER,
@@ -222,6 +222,16 @@ MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
   return MD3D_OK;
 }
 
+MD3DERROR Renderer::d3dSetClipRect(const MD3DRECT &lprcClipRect) {
+  _render_state.set_viewport(lprcClipRect);
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::d3dResetClipRect() {
+  _render_state.reset_viewport();
+  return MD3D_OK;
+}
+
 MD3DERROR Renderer::d3dBeginScene() {
   _commands.clear();
   _render_state.reset_texture_stage();
@@ -242,23 +252,21 @@ MD3DERROR Renderer::d3dEndScene() {
   }
 
   sg_update_buffer(sg_position_buffer, sg_range{
-                                           .ptr = _position_buffer.data(),
-                                           .size = _vertex_count * 3 * sizeof(float),
-                                       });
+      .ptr = _position_buffer.data(),
+      .size = _position_buffer.size() * sizeof(float),
+  });
   sg_update_buffer(sg_color_buffer, sg_range{
-                                        .ptr = _color_buffer.data(),
-                                        .size = _vertex_count * 4 * sizeof(float),
-                                    });
-
+      .ptr = _color_buffer.data(),
+      .size = _color_buffer.size() * sizeof(float),
+  });
   sg_update_buffer(sg_uv_buffer, sg_range{
-                                     .ptr = _uv_buffer.data(),
-                                     .size = _vertex_count * 2 * sizeof(float),
-                                 });
-
+      .ptr = _uv_buffer.data(),
+      .size = _uv_buffer.size() * sizeof(float),
+  });
   sg_update_buffer(sg_index_buffer, sg_range{
-                                        .ptr = _index_buffer.data(),
-                                        .size = _vertex_count * 3 * sizeof(uint32_t),
-                                    });
+      .ptr = _index_buffer.data(),
+      .size = _index_buffer.size() * sizeof(uint32_t),
+  });
 
   for (const auto& command : _commands) {
     sg_pipeline_desc pipeline = {};
@@ -273,6 +281,13 @@ MD3DERROR Renderer::d3dEndScene() {
       std::copy(&m->_11, &m->_11 + 16, vs_params.projection_matrix);
     } else {
       std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), vs_params.projection_matrix);
+    }
+
+    const auto viewport = command.render_state.get_viewport();
+    if (viewport) {
+      sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
+    } else {
+      sg_apply_viewport(0, 0, _offscreenBuffer->getWidth(), _offscreenBuffer->getHeight(), true);
     }
 
     switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {

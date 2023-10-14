@@ -101,3 +101,11 @@ void OffscreenBuffer::flush() {
   sg_end_pass();
   sg_commit();
 }
+
+int OffscreenBuffer::getWidth() const {
+  return _width;
+}
+
+int OffscreenBuffer::getHeight() const {
+  return _height;
+}

@@ -2609,8 +2609,6 @@ void mchArcaneScreenDispatcher::Quant(void)
 
 	mchArcaneScreenElement* p;
 
-	mchA_SprD -> Quant();
-
 	if(mch_demoD.is_enabled())
 		ToggleVisible(0);
 

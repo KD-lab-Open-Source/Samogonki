@@ -2,37 +2,10 @@
 #ifndef __SPRITEDISPATCHER_H__
 #define __SPRITEDISPATCHER_H__
 
-struct mchA_SpriteSlot
-{
-	int ID;
-
-	int SizeX;
-	int SizeY;
-
-	int spriteID;
-	int inactiveTimer;
-
-	unsigned d3dHandle;
-
-	void* list;
-	mchA_SpriteSlot* next;
-	mchA_SpriteSlot* prev;
-
-	void loadSprite(void* p,int id);
-	void loadSprite(int x,int y,int sx,int sy,void* p,int id);
-
-	void init(int sx,int sy);
-
-	mchA_SpriteSlot(int id = 0);
-	mchA_SpriteSlot(int id,int handle,int sx,int sy);
-	~mchA_SpriteSlot(void);
-};
-
 struct mchA_Sprite
 {
 	int ID;
 
-	int slotID;
 	int slotX;
 	int slotY;
 
@@ -42,7 +15,7 @@ struct mchA_Sprite
 	int bound[4];
 
 	char* fileName;
-	char* data;
+	int d3dHandle;
 
 	void* list;
 	mchA_Sprite* prev;
@@ -50,7 +23,7 @@ struct mchA_Sprite
 
 	void load(void);
 	void load(char* fname);
-	void calc_bound(void);
+	void calc_bound(char* data);
 
 	mchA_Sprite(int id = 0);
 
@@ -61,16 +34,10 @@ struct mchA_Sprite
 struct mchA_SpriteDispatcher
 {
 	xtList<mchA_Sprite> spriteLst;
-	xtList<mchA_SpriteSlot> slotLst;
-
-	void Quant(void);
 
 	void LoadScript(const char* fname);
 
-	void AddSlot(int sx,int sy,int id);
 	void AddSprite(int id,const char* fname);
-
-	int GetSlot(int spriteID);
 
 	void DrawSprite(int x,int y,float sx,float sy,int id,int col = -1,int alpha = 255,float angle = 0.0f,int center = 0);
 	void DrawSpriteClip(int x,int y,float sx,float sy,float l,float t,float r,float b,int id,int col = -1,int alpha = 255,float angle = 0.0f,int center = 0);
