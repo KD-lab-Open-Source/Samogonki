@@ -240,7 +240,13 @@ MD3DERROR d3dSetFocusLossBehavior(bool bSleep) { return MD3D_OK; }
 
 bool d3dIsActive() { return g_bActive; }
 
-MD3DERROR d3dSetClipRect(MD3DRECT* lprcClipRect) { return MD3D_OK; }
+MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect) {
+  return renderer->d3dSetClipRect(lprcClipRect);
+}
+
+MD3DERROR d3dResetClipRect() {
+  return renderer->d3dResetClipRect();
+}
 
 MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices, uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1) {
   assert(g_bInitialized);

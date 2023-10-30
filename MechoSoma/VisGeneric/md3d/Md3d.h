@@ -297,15 +297,6 @@ struct D3DMATRIX {
   }
 };
 
-typedef struct _D3DVIEWPORT7 {
-  uint32_t dwX;
-  uint32_t dwY;
-  uint32_t dwWidth;
-  uint32_t dwHeight;
-  float    dvMinZ;
-  float    dvMaxZ;
-} D3DVIEWPORT7, *LPD3DVIEWPORT7;
-
 typedef uint32_t MD3DERROR;
 
 struct M3DTEXTUREFORMAT {
@@ -342,6 +333,10 @@ struct MD3DRECT {
   int32_t top;
   int32_t right;
   int32_t bottom;
+
+  bool operator==(const MD3DRECT& other) const {
+    return std::equal(&left, &left + 4, &other.left);
+  }
 };
 
 // For pixel format conversion
@@ -464,6 +459,8 @@ MD3DERROR d3dGetGammaFxHighlight(float *pfRHilight, float *pfGHilight, float *pf
 MD3DERROR d3dSetGammaFxShadow(float fRShadow, float fGShadow, float fBShadow);
 MD3DERROR d3dGetGammaFxShadow(float *pfRShadow, float *pfGShadow, float *pfBShadow);
 
+MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
+MD3DERROR d3dResetClipRect();
 MD3DERROR d3dSetProjectionMatrix(float fFOV, float fNearPlane, float fFarPlane);
 MD3DERROR d3dSetProjectionMatrixToIdentity();
 

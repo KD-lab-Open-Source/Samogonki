@@ -36,6 +36,8 @@ class Renderer final {
 
   MD3DERROR d3dClear(uint32_t dwColor);
   MD3DERROR d3dFlip(bool WaitVerticalBlank);
+  MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
+  MD3DERROR d3dResetClipRect();
   MD3DERROR d3dBeginScene();
   MD3DERROR d3dEndScene();
   MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
@@ -62,7 +64,7 @@ class Renderer final {
   void add_vertex(uint32_t vertex_type, void* vertices, uint32_t index);
 
 private:
-  const size_t _vertex_count = 65000;
+  const size_t max_vertex_count = 100000;
 
   SDL_Window *_window = nullptr;
   SDL_GLContext _context = nullptr;

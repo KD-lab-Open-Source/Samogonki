@@ -26,122 +26,34 @@ void mchLoadTGA(XStream& fh,void** p,int& sx,int& sy,int& colors);
 
 mchA_SpriteDispatcher* mchA_SprD = NULL;
 
-mchA_SpriteSlot::mchA_SpriteSlot(int id,int handle,int sx,int sy)
-{
-	ID = id;
-	d3dHandle = handle;
-
-	spriteID = -1;
-
-	inactiveTimer = 0;
-
-	SizeX = sx;
-	SizeY = sy;
-
-	list = NULL;
-}
-
-mchA_SpriteSlot::mchA_SpriteSlot(int id)
-{
-	ID = id;
-	SizeX = SizeY = 0;
-
-	spriteID = -1;
-
-	list = NULL;
-
-	d3dHandle = 0;
-}
-
-mchA_SpriteSlot::~mchA_SpriteSlot(void)
-{
-}
-
-void mchA_SpriteSlot::init(int sx,int sy)
-{
-	SizeX = sx;
-	SizeY = sy;
-
-	d3dHandle = mchA_d3dCreateSlot(sx,sy);
-}
-
-void mchA_SpriteSlot::loadSprite(void* p,int id)
-{
-	int i,idx = 0;
-	spriteID = id;
-
-	unsigned pitch;
-	void* spr_buf;
-
-	if(RenderMode == XGRAPH_HICOLOR) return;
-
-//	mchA_d3dEndScene();
-	mchA_d3dLockSprite(d3dHandle,&spr_buf,pitch);
-	for(i = 0; i < SizeY; i ++){
-		memcpy((char*)spr_buf + idx,(char*)p + idx,SizeX * 2); 
-		idx += pitch;
-	}
-	mchA_d3dUnlockSprite(d3dHandle);
-//	mchA_d3dBeginScene();
-}
-
-void mchA_SpriteSlot::loadSprite(int x,int y,int sx,int sy,void* p,int id)
-{
-	int i,idx,src_idx = 0;
-	spriteID = id;
-
-	unsigned pitch;
-	void* spr_buf;
-
-	if(RenderMode == XGRAPH_HICOLOR) return;
-
-//	mchA_d3dEndScene();
-	mchA_d3dLockSprite(d3dHandle,&spr_buf,pitch);
-
-	idx = x * 2 + y * pitch;
-	sx *= 2;
-
-	for(i = 0; i < SizeY; i ++){
-		memcpy((char*)spr_buf + idx,(char*)p + src_idx,sx); 
-		idx += pitch;
-		src_idx += sx;
-	}
-	mchA_d3dUnlockSprite(d3dHandle);
-//	mchA_d3dBeginScene();
-}
-
 mchA_Sprite::mchA_Sprite(const char* fname,int id)
 {
 	ID = id;
-	slotID = -1;
+	slotX = slotY = 0;
 	SizeX = SizeY = 0;
-	data = NULL;
 
 	fileName = strdup(fname);
 
 	list = NULL;
+	d3dHandle = -1;
 }
 
 mchA_Sprite::mchA_Sprite(int id)
 {
 	ID = id;
-	slotID = -1;
 	slotX = slotY = 0;
 	SizeX = SizeY = 0;
-	data = NULL;
 
 	fileName = NULL;
 
 	list = NULL;
+	d3dHandle = -1;
 }
 
 mchA_Sprite::~mchA_Sprite(void)
 {
 	if(fileName)
 		free(fileName);
-
-	if(data)
-		delete data;
 }
 
 void mchA_Sprite::load(void)
@@ -155,15 +67,34 @@ void mchA_Sprite::load(void)
 	acsOpenResource(fileName,fh);
 	mchLoadTGA(fh,(void**)(&p),SizeX,SizeY,colors);
 
-	data = new char[SizeX * SizeY * 2];
+	char* data = new char[SizeX * SizeY * 2];
 
 	mchA_d3dConvertSprite(SizeX,SizeY,p,data,colors);
 	delete[] p;
 
-	calc_bound();
+	calc_bound(data);
+
+	d3dHandle = mchA_d3dCreateSlot(64,64);
+
+	unsigned pitch;
+	void* spr_buf;
+	mchA_d3dLockSprite(d3dHandle,&spr_buf,pitch);
+
+	int src_idx = 0;
+	int idx = slotX * 2 + slotY * pitch;
+	const auto sx = SizeX * 2;
+
+	for(int i = 0; i < SizeY; i ++){
+		memcpy((char*)spr_buf + idx,data + src_idx,sx);
+		idx += pitch;
+		src_idx += sx;
+	}
+	mchA_d3dUnlockSprite(d3dHandle);
+
+	delete[] data;
 }
 
-void mchA_Sprite::calc_bound(void)
+void mchA_Sprite::calc_bound(char* data)
 {
 	int x,y,sz,dx0,dx1,dy0,dy1;
 	int idx = 0,idx1 = 0;
@@ -219,7 +150,6 @@ mchA_SpriteDispatcher::mchA_SpriteDispatcher(void)
 mchA_SpriteDispatcher::~mchA_SpriteDispatcher(void)
 {
 	mchA_Sprite* sp;
-	mchA_SpriteSlot* slp;
 
 	sp = spriteLst.first();
 	while(sp){
@@ -227,21 +157,6 @@ mchA_SpriteDispatcher::~mchA_SpriteDispatcher(void)
 		delete sp;
 		sp = spriteLst.first();
 	}
-
-	slp = slotLst.first();
-	while(sp){
-		slotLst.remove(slp);
-		delete slp;
-		slp = slotLst.first();
-	}
-}
-
-void mchA_SpriteDispatcher::AddSlot(int sx,int sy,int id)
-{
-	mchA_SpriteSlot* p = new mchA_SpriteSlot(id);
-	p -> init(sx,sy);
-
-	slotLst.append(p);
 }
 
 void mchA_SpriteDispatcher::AddSprite(int id,const char* fname)
@@ -266,141 +181,38 @@ void mchA_FinitSpriteDispatcher(void)
 
 void mchA_SpriteDispatcher::DrawSpriteClip(int x,int y,float sx,float sy,float l,float t,float r,float b,int id,int col,int alpha,float angle,int center)
 {
-	int handle;
 	mchA_Sprite* p = spriteLst.search(id);
 	if(!p) id = 1;
 
-	handle = GetSlot(id);
-
-	if(RenderMode == XGRAPH_HICOLOR){
-		p = spriteLst.search(id);
-		if(p)
-			XGR_PutSpr16(x,y,p -> SizeX,p -> SizeY,p -> data,XGR_HIDDEN_FON);
-		return;
-	}
-
-	if(handle != -1){
-		mchA_d3dClipSprite(handle,l,t,r,b);
-		mchA_d3dDrawSprite(x,y,sx,sy,handle,col,alpha,angle,center);
-		mchA_d3dClipSprite(handle);
-	}
+	mchA_d3dClipSprite(p->d3dHandle,l,t,r,b);
+	mchA_d3dDrawSprite(x,y,sx,sy,p->d3dHandle,col,alpha,angle,center);
+	mchA_d3dClipSprite(p->d3dHandle);
 }
 
 void mchA_SpriteDispatcher::DrawSpriteClipZ(int x,int y,int z,float sx,float sy,float l,float t,float r,float b,int id,int col,int alpha,float angle,int center)
 {
-	int handle;
 	mchA_Sprite* p = spriteLst.search(id);
 	if(!p) id = 1;
 
-	handle = GetSlot(id);
-
-	if(RenderMode == XGRAPH_HICOLOR){
-		p = spriteLst.search(id);
-		if(p)
-			XGR_PutSpr16(x,y,p -> SizeX,p -> SizeY,p -> data,XGR_HIDDEN_FON);
-		return;
-	}
-
-	if(handle != -1){
-		mchA_d3dClipSprite(handle,l,t,r,b);
-		mchA_d3dDrawSpriteZ(x,y,z,sx,sy,handle,col,alpha,angle,center);
-		mchA_d3dClipSprite(handle);
-	}
+	mchA_d3dClipSprite(p->d3dHandle,l,t,r,b);
+	mchA_d3dDrawSpriteZ(x,y,z,sx,sy,p->d3dHandle,col,alpha,angle,center);
+	mchA_d3dClipSprite(p->d3dHandle);
 }
 
 void mchA_SpriteDispatcher::DrawSprite(int x,int y,float sx,float sy,int id,int col,int alpha,float angle,int center)
 {
-	int handle;
 	mchA_Sprite* p = spriteLst.search(id);
 	if(!p) id = 1;
 
-	handle = GetSlot(id);
-
-	if(RenderMode == XGRAPH_HICOLOR){
-		p = spriteLst.search(id);
-		if(p)
-			XGR_PutSpr16(x,y,p -> SizeX,p -> SizeY,p -> data,XGR_HIDDEN_FON);
-		return;
-	}
-
-	if(handle != -1)
-		mchA_d3dDrawSprite(x,y,sx,sy,handle,col,alpha,angle,center);
+	mchA_d3dDrawSprite(x,y,sx,sy,p->d3dHandle,col,alpha,angle,center);
 }
 
 void mchA_SpriteDispatcher::DrawSpriteZ(int x,int y,int z,float sx,float sy,int id,int col,int alpha,float angle,int center)
 {
-	int handle;
 	mchA_Sprite* p = spriteLst.search(id);
 	if(!p) id = 1;
 
-	handle = GetSlot(id);
-
-	if(RenderMode == XGRAPH_HICOLOR){
-		p = spriteLst.search(id);
-		if(p)
-			XGR_PutSpr16(x,y,p -> SizeX,p -> SizeY,p -> data,XGR_HIDDEN_FON);
-		return;
-	}
-
-	if(handle != -1)
-		mchA_d3dDrawSpriteZ(x,y,z,sx,sy,handle,col,alpha,angle,center);
-}
-
-int mchA_SpriteDispatcher::GetSlot(int spriteID)
-{
-	mchA_Sprite* sp;
-	mchA_SpriteSlot* p = slotLst.first();
-	while(p){
-		if(p -> spriteID == spriteID){
-			p -> inactiveTimer = 0;
-			return p -> d3dHandle;
-		}
-		p = p -> next;
-	}
-
-	sp = spriteLst.search(spriteID);
-	if(!sp) 
-		return -1;
-
-	if(sp -> slotID != -1){
-		p = slotLst.search(sp -> slotID);
-		if(p){ 
-			if(p -> spriteID != sp -> ID)
-				p -> loadSprite(sp -> slotX,sp -> slotY,sp -> SizeX,sp -> SizeY,sp -> data,sp -> ID);
-
-			p -> inactiveTimer = 0;
-			return p -> d3dHandle;
-		}
-		return -1;
-	}
-
-	p = slotLst.first();
-	while(p){
-		if(p -> spriteID == -1 && p -> SizeX == sp -> SizeX && p -> SizeY == sp -> SizeY)
-			break;
-		p = p -> next;
-	}
-	if(!p){ 
-//		return -1;
-		p = slotLst.first();
-		while(p){
-			if(p -> inactiveTimer > 2 && p -> SizeX == sp -> SizeX && p -> SizeY == sp -> SizeY)
-				break;
-			p = p -> next;
-		}
-	}
-
-	if(!p){
-		p = slotLst.first();
-		while(p -> SizeX != sp -> SizeX || p -> SizeY != sp -> SizeY){
-			p = p -> next;
-			if(!p) return -1;
-		}
-	}
-
-	p -> loadSprite(sp -> data,sp -> ID);
-	p -> inactiveTimer = 0;
-	return p -> d3dHandle;
+	mchA_d3dDrawSpriteZ(x,y,z,sx,sy,p->d3dHandle,col,alpha,angle,center);
 }
 
 void mchA_SpriteDispatcher::LoadScript(const char* fname)
@@ -420,18 +232,6 @@ void mchA_SpriteDispatcher::LoadScript(const char* fname)
 	p = root -> nextLevel -> first();
 	while(p){
 		switch(p -> ID){
-			case SPRD_SLOT:
-				sx = sy = 0;
-				p1 = p -> nextLevel -> first();
-				while(p1){
-					if(p1 -> ID == ASCR_SIZE_X)
-						sx = *p1 -> i_dataPtr;
-					if(p1 -> ID == ASCR_SIZE_Y)
-						sy = *p1 -> i_dataPtr;
-					p1 = p1 -> next;
-				}
-				AddSlot(sx,sy,*p -> i_dataPtr);
-				break;
 			case SPRD_SPRITE:
 				sx = sy = 0;
 				str = NULL;
@@ -452,8 +252,6 @@ void mchA_SpriteDispatcher::LoadScript(const char* fname)
 						spr -> slotX = *p1 -> i_dataPtr;
 					if(p1 -> ID == ASCR_POS_Y)
 						spr -> slotY = *p1 -> i_dataPtr;
-					if(p1 -> ID == ASCR_ID)
-						spr -> slotID = *p1 -> i_dataPtr;
 					p1 = p1 -> next;
 				}
 				break;
@@ -555,14 +353,3 @@ void mchA_SpriteDispatcher::DrawEssence(int x,int y,int id,float phase,float ang
 
 	DrawSprite(x,y,sx,sy,200 + id,col,alpha,angle);
 }
-
-void mchA_SpriteDispatcher::Quant(void)
-{
-	mchA_SpriteSlot* p = slotLst.first();
-
-	while(p){
-		p -> inactiveTimer ++;
-		p = p -> next;
-	}
-}
-
