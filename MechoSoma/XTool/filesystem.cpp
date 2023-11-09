@@ -49,6 +49,7 @@ namespace localization {
           "resource/m3d/a_red.3ds",
           "resource/m3d/t.3ds",
           "resource/m3d.scb",
+          "resource/m3d_font_add.scb",
     };
     std::string langDir = "/lang/ru/";
 
@@ -61,7 +62,9 @@ namespace localization {
       std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char c){
           return std::tolower(c == '\\' ? '/' : c);
       });
-      if (localizedFiles.find(lower) != localizedFiles.end()) {
+      if (localizedFiles.find(lower) != localizedFiles.end() ||
+        lower.find("resource/iscreen/fonts/") == 0 ||
+        lower.find("resource/m3d/font/local") == 0) {
         return langDir + input;
       }
       return input;
