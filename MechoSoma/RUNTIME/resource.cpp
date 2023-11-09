@@ -21,9 +21,9 @@ XZIP_Resource* mch_vmapRes = NULL;
 #endif
 
 int mchUseContainer = 0;
-const char* acsResourceDir = "RESOURCE/ISCREEN/";
-const char* acsResourceDirL = "RESOURCE/ISCREEN/RES_LOW/";
-const char* acsResourceDirH = "RESOURCE/ISCREEN/RES_HIGH/";
+const char* acsResourceDir  = "Resource/iScreen/";
+const char* acsResourceDirL = "Resource/iScreen/RES_LOW/";
+const char* acsResourceDirH = "Resource/iScreen/RES_HIGH/";
 XBuffer mch_ResXBuf;
 
 int acsOpenResource(const char* fname,XStream& fh,int res_flag)

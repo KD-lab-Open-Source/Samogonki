@@ -5,6 +5,12 @@
 #include <string>
 #include <vector>
 
+namespace localization
+{
+    void setLanguage(const char* lang);
+    std::string getLocalizedFile(const std::string& input);
+}
+
 namespace file
 {
 
