@@ -1,12 +1,13 @@
-
 #!/usr/bin/python3
 
 from sys import argv
-from os import unlink, makedirs
-from os.path import exists, join, dirname
-from shutil import copyfile
+from os import makedirs
+from os.path import exists, join, dirname, isfile
+from shutil import copyfile, rmtree
+from re import sub, IGNORECASE
+from glob import glob
 
-land_deps = [
+lang_deps = [
     # "./Resource/intro.mpg",
     "./Resource/iScreen/iText.scb",
     "./Resource/iScreen/iscreen.scb",
@@ -49,16 +50,28 @@ land_deps = [
     "./Resource/M3D/a_red.3ds",
     "./Resource/M3D/t.3ds",
     "./Resource/M3d.scb",
+
+    "./Resource/m3d_font_add.scb",
 ]
+
+fonts_dir = ["./Resource/iScreen/FONTS/", "./Resource/M3D/Font/Local"]
 
 src = argv[1]
 dst = argv[2]
 
+if exists(dst):
+    rmtree(dst)
 
-for file in land_deps:
+for file in lang_deps:
     src_file = join(src, file)
     if not exists(src_file):
         src_file = src_file[:-3] + src_file[len(src_file)-3:].upper()
+
+    if not exists(src_file):
+        src_file = sub("iscreen", "iSCREEN", src_file, flags=IGNORECASE)
+
+    if not exists(src_file):
+        src_file = src_file[:-3] + src_file[len(src_file)-3:].lower()
 
     if not exists(src_file):
         raise Exception("File " + src_file + " does not exists")
@@ -67,4 +80,17 @@ for file in land_deps:
     if not exists(dirname(dst_file)):
         makedirs(dirname(dst_file))
     copyfile(src_file, dst_file)
-    unlink(src_file)
+
+for font_dir in fonts_dir:
+    src_fonts_dir = join(src, font_dir)
+    if not exists(src_fonts_dir):
+        src_fonts_dir = sub("iscreen", "iSCREEN", src_fonts_dir, flags=IGNORECASE)
+    if not exists(src_fonts_dir):
+        raise Exception("Local fonts dir not found", src_fonts_dir)
+    for next in glob("**/*", root_dir=src_fonts_dir, recursive=True):
+        src_file = join(src_fonts_dir, next)
+        if isfile(src_file):
+            dst_file = join(dst, font_dir, next) 
+            if not exists(dirname(dst_file)):
+                makedirs(dirname(dst_file))
+            copyfile(src_file, dst_file)
