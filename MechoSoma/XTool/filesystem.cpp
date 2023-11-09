@@ -4,6 +4,69 @@
 #include <cstring>
 #include <locale>
 #include <stdexcept>
+#include <unordered_set>
+
+namespace localization {
+    std::unordered_set<std::string> localizedFiles = {
+          "resource/iscreen/itext.scb",
+          "resource/iscreen/iscreen.scb",
+          "resource/iscreen/doggy.scb",
+          "resource/iscreen/intro/splash.jpg",
+          "resource/iscreen/intro_movie/1.jpg",
+          "resource/iscreen/intro_movie/2.jpg",
+          "resource/iscreen/intro_movie/3.jpg",
+          "resource/iscreen/intro_movie/sound/intro_2_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_3_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_3_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_4_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_2_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_1_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_2_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_5_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_4_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_6_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_7_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_5_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_1_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_7_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_4_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_1_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_7_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_5_1.mp+",
+          "resource/iscreen/intro_movie/sound/intro_6_2.mp+",
+          "resource/iscreen/intro_movie/sound/intro_6_3.mp+",
+          "resource/iscreen/intro_movie/sound/intro_7_4.mp+",
+          "resource/iscreen/arcane/start/go1.tga",
+          "resource/iscreen/arcane/start/go2.tga",
+          "resource/iscreen/arcane/start/go.tga",
+          "resource/mch_tracks.scb",
+          "resource/m3d/s.3ds",
+          "resource/m3d/a.3ds",
+          "resource/m3d/r.3ds",
+          "resource/m3d/t_red.3ds",
+          "resource/m3d/r_red.3ds",
+          "resource/m3d/s_red.3ds",
+          "resource/m3d/a_red.3ds",
+          "resource/m3d/t.3ds",
+          "resource/m3d.scb",
+    };
+    std::string langDir = "/lang/ru/";
+
+    void setLanguage(const char* lang) {
+      langDir = std::string("/lang/") + lang + "/";
+    }
+
+    std::string getLocalizedFile(const std::string& input) {
+      std::string lower{input};
+      std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char c){
+          return std::tolower(c == '\\' ? '/' : c);
+      });
+      if (localizedFiles.find(lower) != localizedFiles.end()) {
+        return langDir + input;
+      }
+      return input;
+    }
+}
 
 namespace fs = std::filesystem;
 
@@ -19,7 +82,7 @@ std::string file::normalize_path(const char* input) {
       c = '/';
     }
   }
-  fs::path input_path{t};
+  fs::path input_path{localization::getLocalizedFile(t)};
 
   auto current_path = fs::current_path();
   auto current_path_part = current_path.begin();
