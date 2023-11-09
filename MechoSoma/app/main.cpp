@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include "filesystem.h"
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #define SOKOL_GLES3
@@ -18,6 +20,14 @@ int main(int argc, char const *argv[]) {
 #else
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 #endif
+
+  for (int i = 1; i < argc - 1; ++i) {
+      if (strcmp(argv[i], "-lang") == 0 && strlen(argv[i + 1]) == 2) {
+          localization::setLanguage(argv[i + 1]);
+          break;
+      }
+  }
+
   SDL_Init(SDL_INIT_VIDEO);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
