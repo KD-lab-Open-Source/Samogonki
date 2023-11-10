@@ -7,6 +7,9 @@
 #include <unordered_set>
 
 namespace localization {
+    std::unordered_set<std::string> supportedLanguages = {
+           "ru", "en", "it", "cz"
+    };
     std::unordered_set<std::string> localizedFiles = {
           "resource/iscreen/itext.scb",
           "resource/iscreen/iscreen.scb",
@@ -51,10 +54,12 @@ namespace localization {
           "resource/m3d.scb",
           "resource/m3d_font_add.scb",
     };
-    std::string langDir = "/lang/ru/";
+    std::string langDir = "/lang/en/";
 
     void setLanguage(const char* lang) {
-      langDir = std::string("/lang/") + lang + "/";
+        if (supportedLanguages.find(lang) != supportedLanguages.end()) {
+            langDir = std::string("/lang/") + lang + "/";
+        }
     }
 
     std::string getLocalizedFile(const std::string& input) {
