@@ -518,7 +518,19 @@ if (WIN32)
     set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32)
 endif(WIN32)
 
-set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES})
+if (STEAM_VERSION)
+    add_definitions(-DSTEAM_VERSION)
+    include_directories(../3rdparty/steamworks_sdk_158/include)
+
+    if (WIN32)
+        link_directories(../3rdparty/steamworks_sdk_158/lib/win64)
+        set(STEAM_LIBRARY steam_api64)
+    else()
+        message(FATAL_ERROR "Steam SDK supports only Windows platform")
+    endif()
+endif()
+
+set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
 
 set(APPLICATION_SOURCES
     app/back_buffer.cpp
