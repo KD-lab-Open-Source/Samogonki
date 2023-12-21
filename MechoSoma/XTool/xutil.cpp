@@ -231,6 +231,7 @@ char* XFindNext(void)
 
 void xtDeleteFile(const char* fname)
 {
+	std::filesystem::remove(std::filesystem::path(fname));
 }
 
 void xtCreateRuntimeObjectTable(int len)
@@ -292,6 +293,14 @@ int xtCallXKey(SDL_Event *event) {
 			const auto key = keycodeMap.find(event->key.keysym.sym);
 			if (key != keycodeMap.end()) {
 				XKey.UnPressFnc(key->second, 1);
+			}
+			break;
+		}
+
+		case SDL_TEXTINPUT:
+		{
+			if (event->text.text[0] < 127) {
+				XKey.LastChar = event->text.text[0];
 			}
 			break;
 		}

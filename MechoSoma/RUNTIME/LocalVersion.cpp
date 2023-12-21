@@ -1,4 +1,5 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
+#include <cctype>
 #include <locale.h>
 
 #include "LocalVersion.h"
@@ -153,14 +154,11 @@ void lvInit(void)
 
 unsigned mch_toupper(unsigned ch)
 {
-#ifdef _WIN32
-	return toupper(ch);
-#endif
 	// CP1251 character table
 	if (ch >= 0xE0 && ch <= 0xFF)
 	{
 		return 0xC0 + (ch - 0xE0); 
 	}
-	return ch;
-}
 
+	return std::toupper(ch);
+}
