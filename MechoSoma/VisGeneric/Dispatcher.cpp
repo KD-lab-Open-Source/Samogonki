@@ -644,24 +644,26 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 	if(stricmp(&fname[l],".m3d")==0) return Loadm3d(fname,TexturePath,Type,SizeObject);
 	cFile3ds f;
 	if(f.Open(fname)==0) return 0;
-	char TextureName[17],NameMesh[22],Shading,OpacityName[17];
-	int NumberObject3ds=f.OpenBaseMesh(),nPoint,nPolygon;
+	char TextureName[cFile3ds::TextureNameSize];
+	char NameMesh[cFile3ds::ObjectNameSize];
+	char Shading;
+	char OpacityName[cFile3ds::OpacityNameSize];
+	int NumberObject3ds=f.GetMeshCount(),nPoint,nPolygon;
 	if(SizeObject!=0) f.MaxSizeMesh(NumberObject3ds,SizeObject);	// єёЄрэютър ьрё°Єрср чруЁєцрхьюую юс·хъЄр
-	int NumberKeyFrame=f.OpenBaseKeyFrame();
 	cMesh *tmpMesh=0,*BaseMesh=0,*Bound=0;
 	int i;
 	for(i=0;i<NumberObject3ds;i++)
 	{
 		void *Pointer=0;
-		f.OpenMesh(i,&nPoint,&nPolygon,NameMesh);
+		f.GetMeshParameters(i,&nPoint,&nPolygon,NameMesh);
 		unsigned int AttributeMaterial=ATTRMAT_ATTRIBUTE_NULL;
 		float *Vertex=new float[5*nPoint],Matrix[12],ShinStrength,Shininess;
 		int *Face=new int[3*nPolygon];
 		sTile *Tile=new sTile;
 		Tile->GetName()=NameMesh;
 		Tile->GetID()=gb_TileID++;
-		f.ReadMesh(Vertex,Face,(char*)TextureName,Matrix);
-		f.ReadMaterial(TextureName,TextureName,OpacityName,&Tile->GetDiffuse().a,&ShinStrength,&Shininess,&Shading,&Tile->GetDiffuse().r,&Tile->GetDiffuse().g,&Tile->GetDiffuse().b);
+		f.ReadMesh(Vertex,Face,Matrix);
+		f.ReadMaterial(TextureName,OpacityName,&Tile->GetDiffuse().a,&ShinStrength,&Shininess,&Shading,&Tile->GetDiffuse().r,&Tile->GetDiffuse().g,&Tile->GetDiffuse().b);
 		if(Tile->GetDiffuse().a>0) Tile->GetDiffuse().a=1-Tile->GetDiffuse().a; else Tile->GetDiffuse().a=1+Tile->GetDiffuse().a;
 		if(Tile->GetDiffuse().a<0) Tile->GetDiffuse().a=0; else if(Tile->GetDiffuse().a>1) Tile->GetDiffuse().a=1;
 
@@ -696,12 +698,10 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 		for(k=0;k<nPolygon;k++)
 			pPolygon[k].set(Face[3*k+0],Face[3*k+1],Face[3*k+2]);
 
-		char NameParent[30];
+		char NameParent[cFile3ds::ParentNameSize];
 		float *Pos=0,*Rot=0,*Scale,Pivot[3];
 		int NumberPos=0,NumberRot=0,NumberScale=0;
-		f.OpenKeyFrame(NameMesh);
 		f.ReadKeyFrame(NameParent,&Pos,&NumberPos,&Rot,&NumberRot,&Scale,&NumberScale,Pivot);
-		f.CloseKeyFrame();
 
 		for(k=0;k<NumberPos;k++) { Pos[4*k+1]*=gb_sign.x; Pos[4*k+2]*=gb_sign.y; Pos[4*k+3]*=gb_sign.z; }
 		for(k=0;k<NumberRot;k++) { Rot[5*k+2]*=gb_sign.x; Rot[5*k+3]*=gb_sign.y; Rot[5*k+4]*=gb_sign.z; }
@@ -714,13 +714,13 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 			pPoint[k].pos-=vPivot;
 
 		if(strcmp(NameMesh,M3D_BOUND_STRING)==0) 
-		{	// шэшЎшрышчрЎш  ЁрчьхЁют
+		{	// объект является границей
 			Bound=new cMesh();
 			Bound->SetName(NameMesh);
 			Bound->AddTile(Tile);
 		}
 		else if((BaseMesh==0)||((tmpMesh=BaseMesh->FindMesh(NameParent))==0))
-		{	// шэшЎшрышчрЎш  срчютюую ЁюфшЄхы 
+		{	// объект главный родитель
 			if(BaseMesh==0)
 			{
 				BaseMesh=tmpMesh=AddMesh(NameMesh);
@@ -759,9 +759,9 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 		if(Scale) delete[] Scale;
 		delete[] Vertex; 
         delete[] Face;
-		f.CloseMesh();
 	}
-	for(i=NumberObject3ds;i<NumberKeyFrame;i++)
+	int NumberDummy=f.GetDummyCount();
+	for(i=0;i<NumberDummy;i++)
 	{	// set dummy
 		Vect3f v;
 		const char *DummyName=f.OpenDummy(i);
@@ -772,7 +772,6 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 		if(NameDummyParent[0]==0) Mesh=BaseMesh;
 		else Mesh=BaseMesh->FindMesh(NameDummyParent);
 		if(Mesh) Mesh->Dummies.Add(v,DummyName);
-		f.CloseDummy();
 	}
 	if(BaseMesh) { BaseMesh->Alignment(); BaseMesh->ReCalcTotalBound(); BaseMesh->SetFrame(); } 
 	else { XBuffer buf; buf<"Error: cMeshLibrary::Load3ds/r/nNot create "<fname; ErrAbort(buf.address());  return 0; }
@@ -784,8 +783,6 @@ cMesh* cMeshLibrary::Load3ds(const char *filename,const char *TexturePath,unsign
 		Bound->CalcTotalBound(); 
 		Bound->SetParent(BaseMesh); 
 	}
-	f.CloseBaseKeyFrame();
-	f.CloseBaseMesh();
 	f.Close();
 	return BaseMesh;
 }

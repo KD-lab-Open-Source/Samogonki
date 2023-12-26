@@ -7,3 +7,6 @@
 [submodule "3rdparty/miniaudio"]
 	path = 3rdparty/miniaudio
 	url = https://github.com/mackron/miniaudio.git
+[submodule "3rdparty/tinygltf"]
+	path = 3rdparty/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

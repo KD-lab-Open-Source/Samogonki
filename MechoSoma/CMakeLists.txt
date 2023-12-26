@@ -492,7 +492,7 @@ if (APPLE)
 endif()
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
+target_link_libraries(${LIBRARY_NAME} PUBLIC tinygltf iniparser jpeg)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES
     CXX_STANDARD 17
