@@ -70,6 +70,10 @@
 
 #include "Md3d.h"
 
+#ifdef GPX
+#include <c/gamepix.h>
+#endif
+
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 
 extern vrtMap* vMap;
@@ -272,8 +276,13 @@ int ErrHExcept = 1;
 int pause;
 
 int xgrInitFlags = XGR_EXCLUSIVE | XGR_HICOLOR;
+#ifdef GPX
+int xgrInitMode = MCH_1152x864;		// startup videomode
+int xgrGameMode = MCH_1152x864;		// in-game videomode
+#else
 int xgrInitMode = MCH_800x600;		// startup videomode
 int xgrGameMode = MCH_800x600;		// in-game videomode
+#endif
 
 int xgrFullscreenMode = 1;
 int xgrColorDepth = 16;
@@ -519,7 +528,16 @@ int xtInitApplication(void)
 			dwScrX=1024,dwScrY=768;
 			break;
 		case MCH_1152x864:
-			dwScrX=1152,dwScrY=864;
+#ifdef GPX
+            {
+                dwScrX = std::min<int>(gpx()->sys()->getWidth() * 1.5f, 1600);
+                dwScrY = dwScrX / ((float) gpx()->sys()->getWidth() / gpx()->sys()->getHeight());
+                xgrFullscreenMode = 0;
+            }
+#else
+            dwScrX=1152,dwScrY=864;
+#endif
+
 			break;
 		case MCH_1280x1024:
 			dwScrX=1280,dwScrY=1024;
@@ -3075,6 +3093,9 @@ void mchInitCamera(void)
 
 void mchReInitGraph(int mode)
 {
+#ifdef GPX
+    return;
+#endif
 	int dwScrX,GraphMode,dwScrY,FullScr,ColorBit;
 
 	gb_IVisGeneric -> GetGraphInfo(gb_URenderDevice,&dwScrX,&dwScrY,&GraphMode,&FullScr,&ColorBit);

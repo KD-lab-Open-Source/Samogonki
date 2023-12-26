@@ -472,14 +472,10 @@ aciScreenEvent::~aciScreenEvent(void)
 
 aciScreenKeyObject::aciScreenKeyObject(void)
 {
-	codes = new XList;
 }
 
 aciScreenKeyObject::~aciScreenKeyObject(void)
 {
-	aciScreenKey* p,*p1;
-	aci_FREE_LIST(codes,p,p1,aciScreenKey);
-	delete codes;
 }
 
 aciScreenResource::aciScreenResource(void)
@@ -1033,29 +1029,22 @@ void aciScreenResourceXBM::redraw(int x,int y,int frame,int mode)
 
 int aciScreenKeyObject::KeyTrap(int code,int opt_code)
 {
-	aciScreenKey* p = (aciScreenKey*)codes -> fPtr;
-
-	while(p){
-		if(!p -> code_type){
-			if(p -> code == code)
+    for (auto &p: codes) {
+		if(!p.code_type){
+			if(p.code == code)
 				return 1;
 		}
 		else {
-			if(p -> code == opt_code)
+			if(p.code == opt_code)
 				return 1;
 		}
-		p = (aciScreenKey*)p -> next;
 	}
 	return 0;
 }
 
 void aciScreenKeyObject::AddKey(int code,int opt_flag)
 {
-	aciScreenKey* p = new aciScreenKey;
-	p -> code = code;
-	p -> code_type = opt_flag;
-
-	codes -> AddElement((XListElement*)p);
+	codes.push_back(aciScreenKey(opt_flag, code));
 }
 
 void aciScreenEventCommand::init(void)
@@ -2402,6 +2391,10 @@ void aciScreenScroller::SetAlpha(int v)
 
 void aciScreenInputField::redraw(int flag2d)
 {
+    if (ID == 4 /* ONLINE GAME */) {
+        return;
+    }
+
 	int x,y,sx,sy,al;
 	aciScreenResourcePAL* pl;
 

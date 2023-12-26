@@ -1,5 +1,9 @@
 
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
+#if defined(GPX) && defined(EMSCRIPTEN)
+#include <emscripten.h>
+#endif
+
 #include "StdAfx.h"
 
 #include "mechosoma.h"
@@ -4124,8 +4128,14 @@ void mchMechosRacer::sensorIn(const SensorFieldSource* sensor)
 			}
 			break;
 		case IW_CREDITS_SENSOR:
+#if defined(GPX) && defined(EMSCRIPTEN)
+            EM_ASM((
+                Module.showCredits();
+            ));
+#else
 			mch_iScreenID = ACS_CREDITS_SCR;
 			KeyBuf -> put(mchGetKey(MCH_KEY_EXIT),KBD_CUR_KEY_PRESSED);
+#endif
 			break;
 		case IW_DOGGY_SENSOR:
 			if(!mchSplitScreenGame)

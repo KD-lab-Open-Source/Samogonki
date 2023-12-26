@@ -1,3 +1,8 @@
+#ifdef GPX
+#include <c/gamepix.h>
+extern int xtMobileButton;
+#endif
+
 #include "xgraph.h"
 
 #include <cmath>
@@ -656,6 +661,7 @@ void XGR_MouseFnc(SDL_Event *p)
 		return motion;
 	};
 
+    static int flag = 0;
 	if (p->type == SDL_MOUSEMOTION) {
 		const auto motion = getScaledMouseMotion();
 
@@ -667,37 +673,72 @@ void XGR_MouseFnc(SDL_Event *p)
 		XGR_MouseObj.MovementX = motion.x - x1;
 		XGR_MouseObj.MovementY = motion.y - y1;
 
-		XGR_MouseObj.Move(0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+		XGR_MouseObj.Move(flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
 		if (XGR_MouseVisible()) {
 			XGR_MouseRedraw();
 		}
 	} else if (p->type == SDL_MOUSEBUTTONDOWN || p->type == SDL_MOUSEBUTTONUP) {
 		const auto motion = getScaledMouseMotion();
 
+#ifdef GPX
+        if (gpx()->sys()->isMobile()) {
+            p->button.button = xtMobileButton;
+            if (p->type == SDL_MOUSEBUTTONDOWN) {
+                const auto x1 = XGR_MouseObj.PosX;
+                const auto y1 = XGR_MouseObj.PosY;
+                XGR_MouseObj.InitPos(motion.x, motion.y);
+                XGR_MouseObj.MovementX = motion.x - x1;
+                XGR_MouseObj.MovementY = motion.y - y1;
+                XGR_MouseObj.Move(flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+                if (XGR_MouseVisible()) {
+                    XGR_MouseRedraw();
+                }
+            }
+        }
+#endif
+
 		int button = 0;
 		switch (p->button.button) {
 			case SDL_BUTTON_LEFT:
 				button = XGM_LEFT_BUTTON;
+                flag = 0x0001; /* MK_LBUTTON */
 				break;
 
 			case SDL_BUTTON_MIDDLE:
 				button = XGM_MIDDLE_BUTTON;
+                flag = 0;
 				break;
 
 			case SDL_BUTTON_RIGHT:
 				button = XGM_RIGHT_BUTTON;
+                flag = 0x0002; /* MK_RBUTTON */
 				break;
 
 			default:
 				break;
 		}
 
-		XGR_MouseInitPos(motion.x, motion.y);
-		if (p->type == SDL_MOUSEBUTTONDOWN) {
-			XGR_MousePress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
-		}
-		if (p->type == SDL_MOUSEBUTTONUP) {
-			XGR_MouseUnPress(button, 0, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
-		}
+        auto type = p->type;
+        auto fn = [type, button, motion]() {
+            XGR_MouseInitPos(motion.x, motion.y);
+            if (type == SDL_MOUSEBUTTONDOWN) {
+                XGR_MousePress(button, flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+            }
+            if (type == SDL_MOUSEBUTTONUP) {
+                flag = 0;
+                XGR_MouseUnPress(button, flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
+            }
+        };
+
+
+#ifdef GPX
+        if (gpx()->sys()->isMobile() && xtMobileButton != SDL_BUTTON_RIGHT) {
+            gpx()->async()->postTaskDelayed(fn, gamepix::Async::REGULAR, gamepix::Async::NORMAL, 128);
+        } else {
+            fn();
+        }
+#else
+        fn();
+#endif
 	}
 }

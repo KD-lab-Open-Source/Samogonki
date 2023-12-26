@@ -565,8 +565,12 @@ void mchIntroMovieDispatcher::init_texts(void)
 		while(p1){
 			mpeg_name.init();
 			mpeg_name < "Resource\\iScreen\\Intro_Movie\\Sound\\intro_" <= i + 1 < "_" <= id + 1 < ".mp+";
-			PlayMusic(mpeg_name, false);
+#ifdef  GPX
+            len = GetMusicLengthInSamples(mpeg_name);
+#else
+            PlayMusic(mpeg_name, false);
 			len = GetMusicLengthInSamples();
+#endif
 
 			if(len != -1)
 				len = len * 1000 / 44100;

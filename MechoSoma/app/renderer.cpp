@@ -14,6 +14,10 @@
 #include "xgraph.h"
 #include "xtool.h"
 
+#ifdef GPX
+extern void frameReady();
+#endif
+
 #ifdef _WIN32
 #undef far
 #undef near
@@ -219,6 +223,9 @@ MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   _offscreenBuffer->flush();
   SDL_GL_SwapWindow(_window);
+#ifdef GPX
+  frameReady();
+#endif
   return MD3D_OK;
 }
 

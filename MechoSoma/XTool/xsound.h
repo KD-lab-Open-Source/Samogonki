@@ -70,7 +70,11 @@ void PauseMusic();
 void ResumeMusic();
 int GetMusicStatus();
 void SetMusicVolume(int volume);
+#ifdef GPX
+int GetMusicLengthInSamples(const char* filename);
+#else
 int GetMusicLengthInSamples();
+#endif
 
 /* --------------------- CD Management --------------------- */
 

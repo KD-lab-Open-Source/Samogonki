@@ -123,6 +123,11 @@ mchSoundEFF::~mchSoundEFF(void)
 void mchSoundEFF::Load(void)
 {
 	if(!fileName) return;
+#ifdef GPX
+    SoundLoad(fileName,&dsPtr);
+    if(!freqValue)
+        freqValue = GetSoundFrequency(dsPtr);
+#else
 	XStream fh(0);
 
 	if(fh.open(fileName,XS_IN)){
@@ -135,6 +140,7 @@ void mchSoundEFF::Load(void)
 				freqValue = GetSoundFrequency(dsPtr);
 		}
 	}
+#endif
 }
 
 void mchSoundEFF::Load(const char* fname)

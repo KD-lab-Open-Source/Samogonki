@@ -188,7 +188,7 @@ int cGraph3dDirect3D::GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax)
 }
 int cGraph3dDirect3D::SetClipRect(int xmin,int ymin,int xmax,int ymax)
 {
-	assert((xmin<=xmax)&&(ymin<=ymax)&&(xmin>=0)&&(ymin>=0)&&(xmax<xScr)&&(ymax<yScr));
+	assert((xmin<=xmax)&&(ymin<=ymax)&&(xmin>=0)&&(ymin>=0)&&(xmax<=xScr)&&(ymax<=yScr));
 	MD3DRECT rc = { xScrMin=xmin,yScrMin=ymin,xScrMax=xmax,yScrMax=ymax};
 //	if(SwitchRenderScene<=0) d3dSetClipRect(&rc);
 	return 0;

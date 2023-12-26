@@ -1,5 +1,6 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
+#include "TGA.H"
 
 #include "SpriteDispatcher.h"
 #include "arcane_menu_d3d.h"
@@ -20,7 +21,6 @@ extern int mchA_d3dSpriteParent;
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
 int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
-void mchLoadTGA(XStream& fh,void** p,int& sx,int& sy,int& colors);
 
 /* --------------------------- DEFINITION SECTION --------------------------- */
 
@@ -58,14 +58,19 @@ mchA_Sprite::~mchA_Sprite(void)
 
 void mchA_Sprite::load(void)
 {
+    if(!fileName) return;
+
 	int colors;
 	char* p;
 
+#ifdef GPX
+    mchLoadTGA((std::string("RESOURCE\\ISCREEN\\") + fileName).c_str(), (void**)(&p),SizeX,SizeY,colors);
+#else
 	XStream fh;
-	if(!fileName) return;
 
 	acsOpenResource(fileName,fh);
 	mchLoadTGA(fh,(void**)(&p),SizeX,SizeY,colors);
+#endif
 
 	char* data = new char[SizeX * SizeY * 2];
 

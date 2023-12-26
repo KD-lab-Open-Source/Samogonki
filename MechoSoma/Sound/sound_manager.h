@@ -36,7 +36,12 @@ struct MusicPlayer {
   virtual Status getStatus() = 0;
 
   virtual void setVolume(int volume) = 0;
+
+#ifdef GPX
+  virtual int getLengthInSamples(const char* filename) = 0;
+#else
   virtual int getLengthInSamples() = 0;
+#endif
 };
 
 class SoundManager final {
