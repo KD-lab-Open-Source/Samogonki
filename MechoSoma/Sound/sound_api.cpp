@@ -373,7 +373,11 @@ void sndMusicPlay(int track)
 	static XBuffer buf;
 
 	buf.init();
+#ifdef GPX
+	buf < "Resource\\Music\\HQ\\track";
+#else
 	buf < "RESOURCE\\MUSIC\\HQ\\track";
+#endif
 	if(track < 10) buf < "0";
 	buf <= track < ".mp+";
 

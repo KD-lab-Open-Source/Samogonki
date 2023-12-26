@@ -2,6 +2,10 @@
 #ifndef	__I_WORLD_H__
 #define __I_WORLD_H__
 
+#if defined(GPX) and defined(EMSCRIPTEN)
+#include <emscripten.h>
+#endif
+
 #include "I-WorldEvent.h"
 #include "doggy.h"
 
@@ -321,9 +325,35 @@ public:
 	void SetOwner(struct mchRacer* p);
 	struct mchRacer* GetOwner(void) const { return owner; }
 
-	void SetFlag(int f){ flags |= f; }
-	void DropFlag(int f){ flags &= ~f; }
-	void ToggleFlag(int f){ flags ^= f; }
+#if defined(GPX) and defined(EMSCRIPTEN)
+    void updateLayers(int f) {
+        if (f == 0x10 /* IW_TURNBASED_FLAG */) {
+            EM_ASM(({
+                        if (Module.layers) {
+                            Module.layers.setTurnBasedFlag($0 === 1);
+                        }
+                    }), (flags & f) ? 1 : 0);
+        }
+    }
+#endif
+	void SetFlag(int f) {
+        flags |= f;
+#if defined(GPX) and defined(EMSCRIPTEN)
+        updateLayers(f);
+#endif
+    }
+	void DropFlag(int f) {
+        flags &= ~f;
+#if defined(GPX) and defined(EMSCRIPTEN)
+        updateLayers(f);
+#endif
+    }
+	void ToggleFlag(int f) {
+        flags ^= f;
+#if defined(GPX) and defined(EMSCRIPTEN)
+        updateLayers(f);
+#endif
+    }
 	int CheckFlag(int f) const { return (flags & f); }
 
 	void Disable(void){ flags |= IW_DISABLED_FLAG; }

@@ -99,7 +99,7 @@ struct sKFrame
 	int		attribute;
 
 	sKFrame(sKFrame *kf=0);
-	~sKFrame()								{ if(Time) delete Time; }
+	~sKFrame()								{ if(Time) delete[] Time; }
 	int GetNumber();
 	void Set(void *time,int ofs,int nKey);
 	inline float GetT(int number)			{ return (count*GetMaxTime()-Time[number-1])/(Time[number]-Time[number-1]); }

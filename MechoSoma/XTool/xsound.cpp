@@ -167,7 +167,11 @@ void SetMusicVolume(int volume) {
   }
 }
 
+#ifdef GPX
+int GetMusicLengthInSamples(const char* filename) { return soundManager ? soundManager->musicPlayer().getLengthInSamples(filename) : 0; }
+#else
 int GetMusicLengthInSamples() { return soundManager ? soundManager->musicPlayer().getLengthInSamples() : 0; }
+#endif
 
 void XSoundQuantFnc(void) {
   if (soundManager) {

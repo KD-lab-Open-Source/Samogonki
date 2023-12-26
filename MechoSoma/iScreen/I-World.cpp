@@ -1,5 +1,13 @@
 
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
+#ifdef GPX
+#include <c/gamepix.h>
+
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+#endif
+
 #include "StdAfx.h"
 
 #include "SST_Reader.h"
@@ -205,6 +213,14 @@ void iwInit(void)
 		iWorldMode = 1;
 	else
 		iWorldMode = 0;
+
+#if defined(GPX) and defined(EMSCRIPTEN)
+    EM_ASM(({
+                if (Module.layers) {
+                    Module.layers.setIWorldMode($0 === 1);
+                }
+            }), iWorldMode);
+#endif
 
 	cdCheck_Silent(-1);
 
@@ -884,6 +900,9 @@ void iWorldDispatcher::handleEvent(int code,int data1,int data2)
 			mchStopSoundEFF(EFF_PASSAGE_ENTER);
 			break;
 		case IW_TELEPORT_EV:
+#ifdef GPX
+            gpx()->sdk4()->interstitialAd();
+#endif
 			if(!CheckFlag(IW_EXIT_TELEPORT_FLAG)){
 				mchCurrentWorld = nextWorld;
 				mchCurrentTrack = nextTrack;
@@ -1503,6 +1522,9 @@ void iWorldDispatcher::PrevFigure(void)
 
 void iWorldDispatcher::ChooseFigure(void)
 {
+#ifdef GPX
+    gpx()->sdk4()->interstitialAd();
+#endif
 	aciScreenInputField* p = (aciScreenInputField*)acsGetObject(nameScrID,2);
 	if(owner -> stPtr -> essenceID != curFigure){
 		owner -> ChangePart(0,curFigure);

@@ -2658,6 +2658,19 @@ void mchArcaneScreenDispatcher::Quant(void)
 		p = p -> next;
 	}
 
+#if defined(GPX) && defined(EMSCRIPTEN)
+    static int oldShowMode = 0;
+    if (oldShowMode != showMode) {
+        oldShowMode = showMode;
+        EM_ASM((
+                if (Module.layers) {
+                    Module.layers.showMode($0);
+                }
+                ), showMode);
+    }
+#endif
+
+
 	switch(showMode){
 		case AE_BUILD_SCREEN:
 		case AE_BUILD_RACERS_SCREEN:

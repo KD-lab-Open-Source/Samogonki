@@ -171,21 +171,23 @@ struct aciScreenResourceXBM : aciScreenResource
 	~aciScreenResourceXBM(void);
 };
 
-struct aciScreenKey : XListElement
+struct aciScreenKey
 {
-	int code_type;
-	int code;
+	const int code_type;
+	const int code;
+    aciScreenKey(int code_type, int code): code_type(code_type), code(code) {}
 };
 
 struct aciScreenKeyObject
 {
-	XList* codes;
-
 	int KeyTrap(int code, int opt_code = 0);
 	void AddKey(int code, int opt_flag = 0);
 
 	aciScreenKeyObject(void);
 	~aciScreenKeyObject(void);
+
+private:
+    std::vector<aciScreenKey> codes;
 };
 
 // aciScreenEventCommand::flags...

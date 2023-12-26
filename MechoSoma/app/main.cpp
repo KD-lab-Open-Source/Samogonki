@@ -1,4 +1,8 @@
+#ifdef GPX
+#include <c/gamepix.h>
+#else
 #define SDL_MAIN_HANDLED
+#endif
 #include <SDL2/SDL.h>
 #include "filesystem.h"
 
@@ -25,6 +29,68 @@
 
 int xtSysQuantDisabled = 0;
 
+namespace {
+
+    struct LoopState {
+        int prevId;
+        int id;
+        bool xObjInit;
+        XRuntimeObject *XObj;
+        int clockCnt;
+    };
+
+    LoopState state;
+
+    void loop() {
+        if (state.xObjInit) {
+            state.XObj->Init(state.prevId);
+            state.prevId = state.id;
+            state.id = 0;
+            state.xObjInit = false;
+            state.clockCnt = clocki();
+        } else if (!state.id) {
+            if (state.XObj->Timer) {
+                int clockNow = clocki();
+                int clockDelta = clockNow - state.clockCnt;
+                if (clockDelta >= state.XObj->Timer) {
+                    state.clockCnt = clockNow - (clockDelta - state.XObj->Timer) % state.XObj->Timer;
+                    state.id = state.XObj->Quant();
+                }
+            } else {
+                state.id = state.XObj->Quant();
+            }
+
+            if (!xtSysQuantDisabled) {
+                XRec.Quant();
+            }
+
+            if (xtNeedExit()) {
+                ErrH.Exit();
+            }
+        } else {
+            state.XObj->Finit();
+            state.XObj = xtGetRuntimeObject(state.id);
+            state.xObjInit = true;
+#ifdef EMSCRIPTEN
+            EM_ASM((
+                if (Module.layers) {
+                    Module.layers.gameQuantId($0);
+                }
+            ), state.id);
+#endif
+        }
+
+#ifdef GPX
+        gpx()->async()->runNextTask();
+#endif
+    };
+}
+
+#ifdef GPX
+
+int game_main(int argc, char const *argv[]) {
+  localization::setLanguage(gpx()->sys()->getLanguage().c_str());
+#else
 int main(int argc, char const *argv[]) {
   #ifdef STEAM_VERSION
   if (!SteamAPI_Init()) {
@@ -56,7 +122,7 @@ int main(int argc, char const *argv[]) {
       }
   }
   #endif
-
+#endif
   SDL_Init(SDL_INIT_VIDEO);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -70,6 +136,9 @@ int main(int argc, char const *argv[]) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_SetHint("SDL_EMSCRIPTEN_ASYNCIFY", "0");
+  SDL_SetHint("SDL_HINT_TOUCH_MOUSE_EVENTS", "1");
+  SDL_SetHint("SDL_HINT_MOUSE_TOUCH_EVENTS", "0");
 #else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -78,44 +147,19 @@ int main(int argc, char const *argv[]) {
 
   initclock();
 
-  int prevID = 0;
-  int id = xtInitApplication();
-  XRuntimeObject *XObj = xtGetRuntimeObject(id);
-  while (XObj) {
-    XObj->Init(prevID);
-    prevID = id;
-
-    id = 0;
-
-    int clockCnt = clocki();
-    while (!id) {
-      if (XObj->Timer) {
-        int clockNow = clocki();
-        int clockDelta = clockNow - clockCnt;
-        if (clockDelta >= XObj->Timer) {
-          clockCnt = clockNow - (clockDelta - XObj->Timer) % XObj->Timer;
-          id = XObj->Quant();
-        }
-      } else {
-        id = XObj->Quant();
-      }
-
-      if (!xtSysQuantDisabled) {
-        XRec.Quant();
-      }
-
-      if (xtNeedExit()) {
-        ErrH.Exit();
-      }
+  state.prevId = 0;
+  state.id = xtInitApplication();
+  state.xObjInit = true;
+  state.XObj = xtGetRuntimeObject(state.id);
 
 #ifdef EMSCRIPTEN
-       emscripten_sleep(0);
-#endif
+  emscripten_set_main_loop(loop, 0, true);
+#else
+    while (state.XObj) {
+        loop();
     }
+#endif
 
-    XObj->Finit();
-    XObj = xtGetRuntimeObject(id);
-  }
   xtDoneApplication();
 
   SDL_Quit();

@@ -47,6 +47,10 @@ struct tgaFile
 	~tgaFile(void);
 };
 
+#ifdef GPX
+void mchLoadTGA(const char* file,void** p,int& sx,int& sy,int& colors);
+#else
 void mchLoadTGA(XStream& fh,void** p,int& sx,int& sy,int& colors);
+#endif
 
 #endif	// __TGA_H__

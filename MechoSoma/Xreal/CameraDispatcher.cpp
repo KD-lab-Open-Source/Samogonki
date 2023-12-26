@@ -211,6 +211,7 @@ void CameraDispatcher::clear(void)
 	flags_ = EnableControl;
 	input_mode = ConstInput;
 	clip_mode = InitClipping;
+    coords_spline = CameraCoordsSpline();
 
 	realtive_mouse_factor = 1024.f/XGR_MAXX;
 
@@ -1123,7 +1124,13 @@ void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 
 	Mat3f R = coords.rot();
 
-	Vect3f camera_position = R*vg + Vect3f(0, -coords.CenteringDelta*coords.cameraDistance, coords.cameraDistance);
+    auto aspect = std::min<float>(2.22f, XGR_Obj.ScreenY > 0 ? (float) XGR_Obj.ScreenX / XGR_Obj.ScreenY : 1.33f);
+#ifdef GPX
+    auto zOffset = (aspect - 1.33f) / (2.22f - 1.33f) * 100;
+#else
+    auto zOffset = 0;
+#endif
+	Vect3f camera_position = R*vg + Vect3f(0, -coords.CenteringDelta*coords.cameraDistance, coords.cameraDistance + zOffset);
 	camera_position.negate();
 
 	MatXf MC(R, camera_position);
@@ -1402,10 +1409,6 @@ CameraCoords CameraDispatcher::stopTimeInput()
 	else{
 		Vect3f pv, pe, pe0(XGR_MouseObj.PosX, XGR_MouseObj.PosY, 0);
 
-                // TODO: @caiiiycuk investigate this
-#ifdef WTF
-		_controlfp(_PC_53, _MCW_PC); 
-#endif
 		if(hCamera > stop_time_hCamera){
 			Vect2f ScrSize = ((cRenderDevice*)ivsRenderDevice) -> GetSize();
 			Vect2f Center = ivsCamera -> GetCenter()*ScrSize;	

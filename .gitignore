@@ -26,3 +26,11 @@ cmake-build-release
 MechoSoma/ThirdParty/3dsftk3
 MechoSoma/ThirdParty/libjpeg-turbo
 
+efs
+res_gen
+res_linux
+cmake-build-*
+3rdparty
+emscripten
+CMakeFiles
+*.d.ts
