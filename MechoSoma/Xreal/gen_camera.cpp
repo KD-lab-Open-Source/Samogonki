@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 //	XScript definition
 //	Section: CameraPrm
-//	Number of variables: 87
+//	Number of variables: 85
 //	This is computer generated code, don't try to change it
 //////////////////////////////////////////////////////////////////////////////////////////////
 float fCamera = 512.f;
@@ -9,24 +9,24 @@ int camera_integration_steps = 1;
 float camera_distance_min = 30.f;
 int enable_zoom_by_wheel = 1;
 float camera_mouse_wheel_sensitivity = 0.125f;
-float camera_zoom_sensitivity = 1.e-002f;
-float camera_slope_mass_inv = 2.e-003f;
-float camera_water_slope_mass_inv = 1.e-003f;
-float camera_turn_mass_inv = 3.e-003f;
-float camera_distance_mass_inv = 1.e-003f;
-float camera_centering_mass_inv = 1.e-003f;
-float camera_const_input_mass_inv = 3.e-003f;
+float camera_zoom_sensitivity = 0.01f;
+float camera_slope_mass_inv = 0.002f;
+float camera_water_slope_mass_inv = 0.001f;
+float camera_turn_mass_inv = 0.025f;
+float camera_distance_mass_inv = 0.001f; // orig 0.0001
+float camera_centering_mass_inv = 0.001f;
+float camera_const_input_mass_inv = 0.003f;
 float camera_damping_factor = 1.9f;
 float camera_position_mass_inv_cliped = 0.1f;
 float camera_slope_mass_inv_cliped_up = 0.1f;
-float camera_slope_mass_inv_cliped_down = 5.e-003f;
-float camera_turn_mass_inv_cliped = 5.e-002f;
+float camera_slope_mass_inv_cliped_down = 0.005f;
+float camera_turn_mass_inv_cliped = 0.05f;
 float camera_distance_mass_inv_cliped = 0.6f;
 float camera_damping_factor_cliped = 3.f;
 int camera_setMode_interpolation_time = 1000;
 int camera_runStartTimeScenario_interpolation_time = 2000;
 int camera_setObserver_interpolation_time = 1000;
-int camera_enable_clipping = 0;
+int camera_enable_clipping = 1;
 int camera_enable_static_objects_clipping = 0;
 int camera_enable_gears_clipping = 1;
 float camera_angle_step = 0.1f;
@@ -35,14 +35,14 @@ float camera_theta_dominance = 10.f;
 float camera_transparensy_distance = 35.f;
 float camera_transparensy_power = 3.5f;
 float clip_ray_radius = 20.f;
-float clip_ray_t_min = 2.5e-002f;
-float S2G_clip_ray_radius = 1.e-002f;
+float clip_ray_t_min = 0.025f;
+float S2G_clip_ray_radius = 0.01f;
 float camera_scroll_damping_factor = 1.9f;
 float camera_scroll_force_of_distance = 0.2f;
 float camera_scroll_mass_inv = 1.f;
 float camera_fly_stop_time_scale_x = 0.3f;
 float camera_fly_stop_time_scale_y = 0.3f;
-float camera_scroll_move_of_distance = 2.e-003f;
+float camera_scroll_move_of_distance = 0.002f;
 float camera_scroll_move_max = 200.f;
 float centering_delta_default = 0.2f;
 float centering_delta_max = 0.4f;
@@ -60,12 +60,12 @@ float track_fly_z_offset = 90.f;
 int track_fly_enable_binary_search = 1;
 float track_fly_distance = 5.f;
 float track_fly_increment_initial = 1.f;
-float track_fly_increment_epsilon = 5.e-003f;
+float track_fly_increment_epsilon = 0.005f;
 float track_fly_increment = 0.1f;
 int rotation_when_stop_time_time = 250;
 float rotation_when_stop_time_speed = 1.f;
 float stop_time_z_offset = 50.f;
-float stop_time_dxy = 1.e-003f;
+float stop_time_dxy = 0.001f; // orig. 0.0001f
 float stop_time_max_step = 5.f;
 float stop_time_precision = 1.f;
 int stop_time_max_iterations = 100;
@@ -73,7 +73,7 @@ float stop_time_hCamera = 512.f;
 float stop_time_share_radius_factor = 0.45f;
 float free_fly_body_radius = 40.f;
 float free_fly_max_climb_angle = 1.8f;
-float free_fly_roll_angle_decrement_factor = 1.e-002f;
+float free_fly_roll_angle_decrement_factor = 0.01f;
 int camera_new_clip = 1;
 int camera_new_clip_reuse_clipping_number = 4;
 int camera_new_clip_x_size = 15;
