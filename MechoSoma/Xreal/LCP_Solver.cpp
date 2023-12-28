@@ -218,11 +218,13 @@ void LCP_Solver::drive_to_zero(int d)
 				return;
 			}
 		
-		if(iterations++ > LCP_max_iterations)
-			abort("LCP_Solver: too many iterations");
-		
 		mem_restore();
-		}
+
+        if(iterations++ > LCP_max_iterations) {
+            printf("ERR! LCP_Solver: too many iterations, terminating...");
+            return;
+        }
+    }
 }
 	
 void LCP_Solver::fdirection(int d)

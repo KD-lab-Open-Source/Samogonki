@@ -9,37 +9,37 @@ float mechos_foot_speed_factor = 0.12f;
 #define __XScript_struct_FlyingArcaneData__
 #pragma pack( push, __XScript_struct_pack__, 4 )
 struct FlyingArcaneData {
-	float height;
-	float traction_force;
-	float brake_force;
-	float zero_speed_rudder;
-	float rudder_torque_factor_manual;
-	float rudder_torque_factor_point_controlled;
-	float dragVx;
-	float dragVy;
-	float dragVz;
-	float dragWxy;
-	float dragWz;
-	float up_lift;
-	float down_lift;
-	float lift_offset_y;
-	float lift_offset_z;
+    float height;
+    float traction_force;
+    float brake_force;
+    float zero_speed_rudder;
+    float rudder_torque_factor_manual;
+    float rudder_torque_factor_point_controlled;
+    float dragVx;
+    float dragVy;
+    float dragVz;
+    float dragWxy;
+    float dragWz;
+    float up_lift;
+    float down_lift;
+    float lift_offset_y;
+    float lift_offset_z;
 };
 #pragma pack( pop, __XScript_struct_pack__)
 #endif  // __XScript_struct_FlyingArcaneData__
-FlyingArcaneData butterfly_flying_data = { 70.f 
- , 24.f, 40.f, 40.f, 3.e-002f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f 
-  };
+FlyingArcaneData butterfly_flying_data = { 70.f
+        , 24.f, 40.f, 40.f, 0.03f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f
+};
 float butterfly_sweep_period = 300.f;
 float butterfly_sound_phase = 0.25f;
-FlyingArcaneData dirigible_flying_data = { 70.f 
- , 26.f, 40.f, 40.f, 3.e-002f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f 
-  };
-FlyingArcaneData helicopter_flying_data = { 70.f, 29.f, 40.f, 40.f, 3.e-002f 
- , 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f };
-FlyingArcaneData dragon_power_flying_data = { 70.f 
- , 32.f, 40.f, 40.f, 3.e-002f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f 
-  };
+FlyingArcaneData dirigible_flying_data = { 70.f
+        , 26.f, 40.f, 40.f, 0.03f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f
+};
+FlyingArcaneData helicopter_flying_data = { 70.f, 29.f, 40.f, 40.f, 0.03f, 0.1f
+        , 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f };
+FlyingArcaneData dragon_power_flying_data = { 70.f
+        , 32.f, 40.f, 40.f, 0.03f, 0.1f, 4.f, 0.3f, 0.3f, 1.f, 2.f, 2.f, -0.2f, 2.f, 20.f
+};
 float dragon_power_sweep_period = 800.f;
 float dragon_power_sound_phase = 0.f;
 float cannon_ball_height = 70.f;
@@ -97,8 +97,8 @@ float magnetic_field_repulsion = 4.f;
 float k_attraction_arcan = 4.f;
 float magnetic_cushion_traction = 16.f;
 float magnetic_cushion_rudder_modulation = 1.f;
-float k_vortex_force = 5.e-002f;
-float k_vortex_torque = 6.07753e-002f;
+float k_vortex_force = 0.05f;
+float k_vortex_torque = 0.0607753f;
 float k_vortex_attraction = 4.f;
 float k_vortex_lift = 1.2f;
 

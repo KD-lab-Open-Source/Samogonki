@@ -167,13 +167,15 @@ void LCP_Solver::drive_to_zero_frictional(int d)
 				break;
 			}
 	
-		if(index == d && drive_friction == prev_state){
+		if(index == d && drive_friction == prev_state) {
 			return;
-			}
+        }
 
-		if(iterations++ > LCP_max_iterations)
-			abort("LCP_Solver: too many iterations");
-		}
+		if(iterations++ > LCP_max_iterations) {
+            printf("ERR! LCP_Solver: too many iterations, terminating...");
+            return;
+        }
+    }
 }
 	
 void LCP_Solver::fdirection_frictional(int d)
