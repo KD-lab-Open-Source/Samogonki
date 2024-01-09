@@ -1202,8 +1202,9 @@ void sgProcessRefreshData(void)
 
 int sgCheckPacket(char* fname)
 {
-	int sz,day,month;
-	char* buf;
+	unsigned int sz;
+	int day,month;
+
 	ogPacket p;
 
 	time_t ltime;
@@ -1211,13 +1212,15 @@ int sgCheckPacket(char* fname)
 
 	XStream fh(fname,XS_IN);
 	sz = fh.size() + 1;
-	buf = new char[sz];
-	fh.read(buf,sz - 1);
+	
+	ogBuffer buf(sz);
+
+	fh.read(buf.address(), buf.length() - 1);
 	fh.close();
 
-	buf[sz - 1] = 0;
+	buf.address()[sz - 1] = 0;
 
-	if(p.decode(buf,sz)){
+	if(p.decode(buf)){
 		if(p.get_type() == OG_ARCADE_GAME_PACKET){
 			mchGameMode = MCH_SINGLE_GAME;
 			mchHS_LoadFlag = 0;
@@ -1245,19 +1248,18 @@ int sgCheckPacket(char* fname)
 
 void sgGetWorldID(char* fname)
 {
-	int sz;
-	char* buf;
+	unsigned int sz;
 	ogPacket p;
 
 	XStream fh(fname,XS_IN);
 	sz = fh.size() + 1;
-	buf = new char[sz];
-	fh.read(buf,sz - 1);
+	ogBuffer buf(sz);
+	fh.read(buf.address(), buf.length() - 1);
 	fh.close();
 
-	buf[sz - 1] = 0;
+	buf.address()[sz - 1] = 0;
 
-	if(p.decode(buf,sz)){
+	if(p.decode(buf)){
 		mchCurrentWorld = hsWorld = p.world();
 		mchCurrentTrack = hsTrack = p.track();
 
