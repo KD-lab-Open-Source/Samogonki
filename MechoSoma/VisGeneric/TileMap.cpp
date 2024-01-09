@@ -97,26 +97,26 @@ inline void AddPointAlpha(cBaseArray <sPointAlpha> &PointAlpha,short x,short y,i
 int cTileMap::Load3ds(const char *fname)
 {
 	cFile3ds f;
-	if(f.Open(fname,2)==0) return 0;
+	if(f.Open(fname)==0) return 0;
 	xTile=yTile=16;
 	_xTile=_yTile=7;
 	if(Tile) delete [] Tile;
 	Tile=new sTileMap[xTile*yTile];
 	float dx=1.f/(1<<_xTile), dy=1.f/(1<<_yTile);
 	GetZReflectionSurface()=-1;
-	char TextureName[17],NameMesh[22]; // Shading,OpacityName[17];
-	int NumberObject3ds=f.OpenBaseMesh(),nPoint,nPolygon;
+	char NameMesh[cFile3ds::ObjectNameSize]; // Shading,OpacityName[17];
+	int NumberObject3ds=f.GetMeshCount(),nPoint,nPolygon;
 	cBaseArray <sPointAlpha> PointAlpha(50000,10000);
 //	P3D->SaveAttribute("attribute.raw");
 //	P3D->SaveVoxel("voxel.raw");
 	int i;
 	for(i=0;i<NumberObject3ds;i++)
 	{
-		f.OpenMesh(i,&nPoint,&nPolygon,NameMesh);
+		f.GetMeshParameters(i,&nPoint,&nPolygon,NameMesh);
 		unsigned int AttributeMaterial=ATTRMAT_ATTRIBUTE_NULL;
 		float *Vertex=new float[5*nPoint],Matrix[12]; //fTransparency,ShinStrength,Shininess,rDiffuse,gDiffuse,bDiffuse;
 		int *Face=new int[3*nPolygon];
-		f.ReadMesh(Vertex,Face,(char*)TextureName,Matrix);
+		f.ReadMesh(Vertex,Face,Matrix);
 
 		float xCount=0,yCount=0;
 		for(int n=0;n<nPoint;n++)
@@ -215,9 +215,7 @@ int cTileMap::Load3ds(const char *fname)
         delete[] Face;
 		Point.Resize(NumberPoint); Polygon.Resize(NumberPolygon); AttrPolygon.Resize(NumberPolygon); 
 		PointReflection.Resize(NumberPointReflection); PolygonReflection.Resize(NumberPolygonReflection); AttrPolygonReflection.Resize(NumberPolygonReflection);
-		f.CloseMesh();
 	}
-	f.CloseBaseMesh();
 	f.Close();
 #ifdef _DEBUG	
 	int k;

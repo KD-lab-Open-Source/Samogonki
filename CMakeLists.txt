@@ -33,7 +33,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-Werror=mismatched-new-delete)
 endif ()
 
-add_subdirectory(3rdparty/3dsftk3)
+set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF CACHE INTERNAL "" FORCE)
+set(TINYGLTF_HEADER_ONLY ON CACHE INTERNAL "" FORCE)
+set(TINYGLTF_INSTALL OFF CACHE INTERNAL "" FORCE)
+set(TINYGLTF_USE_CPP14 ON CACHE INTERNAL "" FORCE)
+add_subdirectory(3rdparty/tinygltf)
+
 add_subdirectory(3rdparty/iniparser)
 
 add_subdirectory(MechoSoma)

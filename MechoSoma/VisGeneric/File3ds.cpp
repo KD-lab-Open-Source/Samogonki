@@ -1,301 +1,535 @@
-#include <stdlib.h>
 #include "File3ds.h"
+
+#include <algorithm>
+#include <filesystem>
 #include <math.h>
-#include "Math3d.h"
+#include <memory>
+#include <sstream>
+#include <string>
+#include <stdlib.h>
+#include <unordered_map>
+#include <vector>
+
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <tiny_gltf.h>
+
+#include "filesystem.h"
 #include "BaseDefine.h"
+#include "Math3d.h"
 
-#ifdef _MECHOSOMA_
-int m3dOpenResource(const char* fname,XStream& fh);
-int vmapOpenResource(const char* fname,XStream& fh);
-extern "C" {
-void openLogFile(const char* fname);
-void closeLogFile(void);
-};
-#endif
-
-#define RAD_GRAD		57.296f
-
-char cFile3ds::Open(const char *fname,int OpenDirection)
+namespace
 {
-	const ErrRec3ds *ErrList=ReturnErrorList3ds();
 
-#ifdef _MECHOSOMA_
-	int buf_len;
-	char* buf;
+const std::string MaterialExtension = "3DS_material";
+const std::string AnimationExtension = "3DS_animation";
+const std::string DummyExtension = "3DS_dummy";
+const std::string DummyName = "$$$DUMMY";
 
-	XStream fh;
+std::string to_lower(const std::string &input)
+{
+	std::string result;
+	std::transform(input.begin(), input.end(), std::back_inserter(result), [](auto c) { return std::tolower(c); });
+	return result;
+}
 
-	if(OpenDirection==1)
-		m3dOpenResource(fname,fh);
-	else if(OpenDirection==2)
-		vmapOpenResource(fname,fh);
+std::string create_node_name(const char *file_name)
+{
+	const auto normalized = localization::getLocalizedFile(file_name);
 
-	buf_len = fh.size();
-	buf = (char*)malloc(buf_len);
-	fh.read(buf,buf_len);
-	fh.close();
-/*
-	char* tmp_buf = strdup(fname);
-	tmp_buf[strlen(tmp_buf) - 3] = 'l';
-	tmp_buf[strlen(tmp_buf) - 2] = 'o';
-	tmp_buf[strlen(tmp_buf) - 1] = 'g';
+	std::stringstream result;
+	std::string part;
+	for (auto c : normalized)
+	{
+		if (c == '\\' || c == '/')
+		{
+			if (!part.empty())
+			{
+				result << "_" << to_lower(part);
+			}
+			part.clear();
+		}
+		else
+		{
+			part.push_back(c);
+		}
+	}
 
-	openLogFile(tmp_buf);
-	free(tmp_buf);
-*/
+	if (!part.empty())
+	{
+		result << "_" << to_lower(part);
+	}
 
-	f=OpenFile3ds_buf(buf,buf_len);
-//	f=OpenFile3ds(fname,"rb");
-#else
-	f=OpenFile3ds(fname,"rb");
-#endif
-	if(f==0) { CLEAR_ERROR; CloseAllFiles3ds(); /* CLEAR_INFO_MESSAGE; /*ERROR_MESSAGE("3ds file not found",fname,0);*/ XBuffer msg; msg < "3ds file not found " < fname; ErrH.Abort(msg); return 0; }
-	InitDatabase3ds(&db);
-	CreateDatabase3ds(f,db);
+	return result.str().substr(1);
+}
+
+struct ModelStore
+{
+	ModelStore()
+	{
+		tinygltf::TinyGLTF loader;
+		std::string error;
+		std::string warning;
+		const bool result = loader.LoadBinaryFromFile(&model, &error, &warning, "RESOURCE/3ds.gltf");
+		if (!warning.empty())
+		{
+			std::cout << "WARNING: " << warning << std::endl;
+		}
+
+		if (!error.empty())
+		{
+			std::cout << "ERROR: " << error << std::endl;
+		}
+
+		if (!result)
+		{
+			ErrH.Abort("LoadBinaryFromFile", XERR_USER, 0, "");
+		}
+
+		assert(model.scenes.size() == 1);
+		for (auto index : model.scenes[0].nodes)
+		{
+			const auto &node = model.nodes[index];
+			assert(node_index.find(node.name) == node_index.end());
+			node_index.emplace(node.name, &node);
+		}
+	}
+
+	void SetParentNode(const char *file_name)
+	{
+		const auto node_name = create_node_name(file_name);
+		const auto node = node_index.find(node_name);
+		if (node == node_index.end())
+		{
+			ErrH.Abort("Node not found", XERR_USER, 0, "");
+		}
+		parent_node = node->second;
+
+		dummies.clear();
+		children.clear();
+		for (auto index : parent_node->children)
+		{
+			const auto &node = model.nodes[index];
+			if (node.name == DummyName)
+			{
+				dummies.push_back(index);
+			}
+			else
+			{
+				children.push_back(index);
+			}
+		}
+	}
+
+	void Reset()
+	{
+		parent_node = nullptr;
+		current_node = nullptr;
+		current_mesh = nullptr;
+		current_dummy = nullptr;
+		current_animation = nullptr;
+	}
+
+	tinygltf::Model model;
+	std::unordered_map<std::string_view, const tinygltf::Node *> node_index;
+	const tinygltf::Node *parent_node = nullptr;
+	std::vector<int> children;
+	std::vector<int> dummies;
+	const tinygltf::Node *current_node = nullptr;
+	const tinygltf::Mesh *current_mesh = nullptr;
+	const tinygltf::Node *current_dummy = nullptr;
+	const tinygltf::Animation *current_animation = nullptr;
+
+};
+std::unique_ptr<ModelStore> model_store;
+
+}
+
+cFile3ds::cFile3ds() : Scale(1.0), CountDummy(0) {}
+
+cFile3ds::~cFile3ds()
+{
+	Close();
+}
+
+char cFile3ds::Open(const char *FileName)
+{
+	if (!model_store)
+	{
+		model_store = std::make_unique<ModelStore>();
+	}
+
+	model_store->SetParentNode(FileName);
 	return 1;
 }
+
 void cFile3ds::Close()
 {
-//	SHOW_INFO_MESSAGE(f->filename);
-	ReleaseDatabase3ds(&db);
-	CloseFile3ds(f);
-
-//	closeLogFile();
-
-	CLEAR_ERROR; 
-	CloseAllFiles3ds();
+	model_store->Reset();
 }
+
 //******************************** MESH **********************************
-int cFile3ds::OpenBaseMesh()
+int cFile3ds::GetMeshCount()
 {
-	return GetMeshCount3ds(db);
-}
-void cFile3ds::OpenMesh(int nObject,int *nPoint,int *nFace,char *NameObject)
-{
-	mesh=NULL;
-	GetMeshByIndex3ds(db,nObject,&mesh);
-	(*nPoint)=(int)mesh->nvertices;		/* Vertice count */
-	int nTexel=(int)mesh->ntextverts;	/* Number of texture vertices */
-	(*nFace)=(int)mesh->nfaces;			/* Face count	*/
-	strcpy(NameObject,mesh->name);
-//	InfoBuf<"3d object "<NameObject<" - vertex:"<=(*nPoint)<", texel:"<=nTexel<", face:"<=(*nFace);
-	if(nTexel>(*nPoint)) 
-	{ XBuffer buf; buf<"Error : cFile3ds::OpenMesh()\r\nBad 3ds file "<f->filename<" (number texel != number point) in mesh "<mesh->name; ErrH.Abort(buf.address()); }
-//		ERROR_MESSAGE(f->filename,"cFile3ds::OpenMesh()\r\nError - bad 3ds file (number texel != number point)\r\n",0);
-}
-float cFile3ds::MaxSizeMesh(int nObject,float NewSize)
-{
-	float Max=0;
-	for(int j=0;j<nObject;j++)
-	{
-		mesh=NULL;
-		GetMeshByIndex3ds(db,j,&mesh);
-		Max=GetMaxSizeMesh(Max);
-		RelMeshObj3ds(&mesh);
-	}
-	Scale=NewSize/Max;
-	return Max;
-}
-float cFile3ds::GetMaxSizeMesh(float Max)
-{
-	for(int i=0;i<mesh->nvertices;i++)	
-	{
-		if(fabs(mesh->vertexarray[i].x)>Max) Max=fabs(mesh->vertexarray[i].x);
-		if(fabs(mesh->vertexarray[i].y)>Max) Max=fabs(mesh->vertexarray[i].y);
-		if(fabs(mesh->vertexarray[i].z)>Max) Max=fabs(mesh->vertexarray[i].z);
-	}
-	return Max;
-}
-void cFile3ds::ReadMesh(float *PointXYZUV,int *FaceP1P2P3,char *NameMaterial,float *Matrix)
-{
-	point3ds *point=mesh->vertexarray;	/* List of vertices */
-	textvert3ds *texel=mesh->textarray;	/* List of texture coordinates */
-	face3ds *face=mesh->facearray;		/* List of faces	*/
-
-	int i;
-	for(i=0;i<mesh->nfaces;i++)	
-	{
-		FaceP1P2P3[3*i+0]=face[i].v1;
-		FaceP1P2P3[3*i+1]=face[i].v2;
-		FaceP1P2P3[3*i+2]=face[i].v3;
-	}
-
-	for(i=0;i<mesh->nvertices;i++)	
-	{
-		PointXYZUV[5*i+0]=point[i].x*Scale;
-		PointXYZUV[5*i+1]=point[i].y*Scale;
-		PointXYZUV[5*i+2]=point[i].z*Scale;
-		int test11=*((int*)&point[i].x);
-		if((test11==0xFFFFFFFF)||(test11==0xFFFFFF7F)) 
-			test11=test11;
-	}
-	for(i=0;i<mesh->ntextverts;i++)	
-	{
-		PointXYZUV[5*i+3]=texel[i].u;
-		PointXYZUV[5*i+4]=texel[i].v;
-	}
-	for(i=0;i<9;i++) Matrix[i]=mesh->locmatrix[i];
-	for(i=9;i<12;i++) Matrix[i]=mesh->locmatrix[i]*Scale;
-	if(mesh->matarray) 
-		strcpy(NameMaterial,mesh->matarray->name);
-	else for(i=0;i<17;i++) NameMaterial[i]=0;
-
-//	InfoBuf<", material: "<mesh->matarray->name<"\r\n";
+	assert(model_store->parent_node != nullptr);
+	return static_cast<int>(model_store->children.size());
 }
 
-void cFile3ds::ReadMaterial(char *NameMaterial,char *TextureName,char *OpacityName,float *Transparency,float *ShinStrength,float *Shininess,char *Shading,float *rDiffuse,float *gDiffuse,float *bDiffuse)
+void cFile3ds::GetMeshParameters(int nObject, int *nPoint, int *nFace, char *ObjectName)
 {
-	material3ds *mat=NULL;
-	GetMaterialByName3ds(db,NameMaterial,&mat);
-	if(mat==0) { XBuffer buf; buf<"Error : cFile3ds::ReadMaterial()\r\nBad material 3ds file "<f->filename; ErrH.Abort(buf.address()); }
-/*	InfoBuf<"  transparency:"<=((*Transparency)=mat->transparency)<
-		 "  shinstrength:"<=((*ShinStrength)=mat->shinstrength)<
-		 "  shininess:"<=((*Shininess)=mat->shininess)<
-		 "  shading:"<=((*Shading)=(char)mat->shading)<"\r\n";	*/
-	(*Transparency)=mat->transparency; (*ShinStrength)=mat->shinstrength; (*Shininess)=mat->shininess; (*Shading)=(char)mat->shading;
-	*rDiffuse=mat->diffuse.r; *gDiffuse=mat->diffuse.g;	*bDiffuse=mat->diffuse.b;
-	if(mat->texture.map.name) 
-		strcpy(TextureName,mat->texture.map.name);
-	else for(int i=0;i<17;i++) TextureName[i]=0;
-	if(mat->opacity.map.name) 
-		strcpy(OpacityName,mat->opacity.map.name);
-	else for(int i=0;i<17;i++) OpacityName[i]=0;
-	ReleaseMaterial3ds(&mat);
-}
-void cFile3ds::CloseMesh()
-{
-	RelMeshObj3ds(&mesh);
-}
-void cFile3ds::CloseBaseMesh()
-{
-}
-//***************************** KEYFRAME **********************************
-int cFile3ds::OpenBaseKeyFrame()
-{
-	objlist=NULL; 
-	GetObjectNodeNameList3ds(db,&objlist);
-//	InfoBuf<"Number object motion: "<=objlist->count<"\r\n";
-	return (int) objlist->count;
-}
-void cFile3ds::OpenKeyFrame(const char *NameFrame)
-{
-	kfmesh=NULL;
-	for(unsigned int i=0;i<objlist->count;i++)
-		if(strcmp(NameFrame,objlist->list[i].name)==0) { GetObjectMotionByIndex3ds(db,i,&kfmesh); return; }
-	XBuffer buf; buf<"Error: in 3ds file "<f->filename<" not found keyframe object - "<NameFrame; ErrH.Abort(buf);
-}
-void cFile3ds::ReadKeyFrame(char *Parent,float **Pos,int *NumberPos,float **Rot,int *NumberRot,float **Scale,int *NumberScale,float *Pivot)
-{
-	strcpy(Parent,kfmesh->parent);
-	(*NumberPos)=kfmesh->npkeys; (*NumberRot)=kfmesh->nrkeys; (*NumberScale)=kfmesh->nskeys;
-	if(*NumberPos) (*Pos)=new float[4*(*NumberPos)]; else (*Pos)=0;
-	if(*NumberRot) (*Rot)=new float[5*(*NumberRot)]; else (*Rot)=0;
-	if(*NumberScale) (*Scale)=new float [4*(*NumberScale)]; else (*Scale)=0;
-	int i;
-	for(i=0;i<(*NumberPos);i++)
-	{
-		(*Pos)[4*i+0]=(float)kfmesh->pkeys[i].time;
-		(*Pos)[4*i+1]=kfmesh->pos[i].x*cFile3ds::Scale;
-		(*Pos)[4*i+2]=kfmesh->pos[i].y*cFile3ds::Scale;
-		(*Pos)[4*i+3]=kfmesh->pos[i].z*cFile3ds::Scale;
-	}
-	double x2=0,y2=0,z2=0,w2=1;
-	double Angle=kfmesh->rot[0].angle/2;
-	double x1=kfmesh->rot[0].x*sin(Angle);
-	double y1=kfmesh->rot[0].y*sin(Angle);
-	double z1=kfmesh->rot[0].z*sin(Angle);
-	double w1=cos(Angle);
-	double scale=1.0f/sqrt(w1*w1+x1*x1+y1*y1+z1*z1);
-	(*Rot)[5*0+0]=(float)kfmesh->rkeys[0].time;
-	(*Rot)[5*0+1]=(float)(w1*scale);
-	(*Rot)[5*0+2]=(float)(x1*scale);
-	(*Rot)[5*0+3]=(float)(y1*scale);
-	(*Rot)[5*0+4]=(float)(z1*scale);
-	for(i=1;i<(*NumberRot);i++)
-	{
-		double Angle=kfmesh->rot[i].angle/2;
-		double x1=kfmesh->rot[i].x*sin(Angle);
-		double y1=kfmesh->rot[i].y*sin(Angle);
-		double z1=kfmesh->rot[i].z*sin(Angle);
-		double w1=cos(Angle);
+	assert(model_store->parent_node != nullptr);
+	assert(nObject < static_cast<int>(model_store->children.size()));
 
-		double W=w1*w2-x1*x2-y1*y2-z1*z2;
-		double X=w1*x2+x1*w2+y1*z2-z1*y2;
-		double Y=w1*y2-x1*z2+y1*w2+z1*x2;
-		double Z=w1*z2+x1*y2-y1*x2+z1*w2;
+	const auto node_index = model_store->children[nObject];
+	const auto &node = model_store->model.nodes[node_index];
+	assert(node.mesh != -1);
+	const auto &mesh = model_store->model.meshes[node.mesh];
 
-		double scale=1.0f/sqrt(W*W+X*X+Y*Y+Z*Z);
+	assert(mesh.primitives.size() == 1);
+	const auto &primitive = mesh.primitives[0];
 
-		(*Rot)[5*i+0]=(float)kfmesh->rkeys[i].time;
-		(*Rot)[5*i+1]=(float)(w2=W*scale);
-		(*Rot)[5*i+2]=(float)(x2=X*scale);
-		(*Rot)[5*i+3]=(float)(y2=Y*scale);
-		(*Rot)[5*i+4]=(float)(z2=Z*scale);
-	}
-	for(i=0;i<(*NumberScale);i++)
 	{
-		(*Scale)[4*i+0]=(float)kfmesh->skeys[i].time;
-		if(kfmesh->scale[0].x!=0.f) (*Scale)[4*i+1]=(float)kfmesh->scale[i].x/kfmesh->scale[0].x; else (*Scale)[4*i+1]=1.f;
-		if(kfmesh->scale[0].y!=0.f) (*Scale)[4*i+2]=(float)kfmesh->scale[i].y/kfmesh->scale[0].y; else (*Scale)[4*i+2]=1.f;
-		if(kfmesh->scale[0].z!=0.f) (*Scale)[4*i+3]=(float)kfmesh->scale[i].z/kfmesh->scale[0].z; else (*Scale)[4*i+3]=1.f;
+		const auto index = primitive.attributes.at("POSITION");
+		const auto &accessor = model_store->model.accessors[index];
+		*nPoint = static_cast<int>(accessor.count);
 	}
-	Pivot[0]=kfmesh->pivot.x*cFile3ds::Scale; Pivot[1]=kfmesh->pivot.y*cFile3ds::Scale; Pivot[2]=kfmesh->pivot.z*cFile3ds::Scale;
-/*	InfoBuf<"  Parent name: "<Parent
-		<"  pos:"<=(*NumberPos)<" rot:"<=(*NumberRot)
-		<"  Pivot: "<=Pivot[0]<", "<=Pivot[1]<", "<=Pivot[2]<"\r\n";*/
+
+	const auto &accessor = model_store->model.accessors[primitive.indices];
+	assert(accessor.count % 3 == 0);
+	*nFace = static_cast<int>(accessor.count / 3);
+
+	std::fill(ObjectName, ObjectName + ObjectNameSize, 0);
+	assert(node.name.size() < ObjectNameSize);
+	node.name.copy(ObjectName, node.name.size());
+
+	auto extras = node.extras.Get<tinygltf::Value::Object>();
+	auto animation_index = extras.find("animation_index");
+	if (animation_index != extras.end())
+	{
+		const auto &animation = model_store->model.animations[animation_index->second.Get<int>()];
+		model_store->current_animation = &animation;
+	}
+
+	model_store->current_node = &node;
+	model_store->current_mesh = &mesh;
 }
-void cFile3ds::CloseKeyFrame()
+
+float cFile3ds::MaxSizeMesh(int nObject, float NewSize)
 {
-	ReleaseObjectMotion3ds(&kfmesh);
+	float max = 0;
+	for (int i = 0; i < nObject; i++)
+	{
+		const auto node_index = model_store->children[i];
+		const auto &node = model_store->model.nodes[node_index];
+		const auto &mesh = model_store->model.meshes[node.mesh];
+
+		assert(mesh.primitives.size() == 1);
+		const auto &primitive = mesh.primitives[0];
+		const auto index = primitive.attributes.at("POSITION");
+		const auto &accessor = model_store->model.accessors[index];
+
+		assert(accessor.maxValues.size() == 3);
+		for (auto v : accessor.maxValues)
+		{
+			max = std::max(max, static_cast<float>(abs(v)));
+		}
+
+		assert(accessor.minValues.size() == 3);
+		for (auto v : accessor.minValues)
+		{
+			max = std::max(max, static_cast<float>(abs(v)));
+		}		
+	}
+
+	Scale = NewSize / max;
+	return max;
 }
+
+void cFile3ds::ReadMesh(float *PointXYZUV, int *FaceP1P2P3, float *Matrix)
+{
+	assert(model_store->current_node != nullptr);
+	assert(model_store->current_mesh != nullptr);
+
+	const auto &buffer = model_store->model.buffers[0];
+	const auto &primitive = model_store->current_mesh->primitives[0];
+
+	{
+		const auto &accessor = model_store->model.accessors[primitive.indices];
+		const auto &view = model_store->model.bufferViews[accessor.bufferView];
+		auto data = reinterpret_cast<const uint16_t *>(buffer.data.data() + view.byteOffset);
+
+		for (size_t i = 0; i < accessor.count; i++)
+		{
+			FaceP1P2P3[i] = data[i];
+		}
+	}
+
+	const auto &accessor = model_store->model.accessors[primitive.attributes.at("POSITION")];
+	const float *position_data = nullptr;
+	const float *uv_data = nullptr;
+
+	{
+		const auto &view = model_store->model.bufferViews[accessor.bufferView];
+		position_data = reinterpret_cast<const float *>(buffer.data.data() + view.byteOffset);
+	}
+
+	{
+		const auto p = primitive.attributes.find("TEXCOORD_0");
+		if (p != primitive.attributes.end())
+		{
+			const auto &accessor = model_store->model.accessors[p->second];
+			const auto &view = model_store->model.bufferViews[accessor.bufferView];
+			uv_data = reinterpret_cast<const float *>(buffer.data.data() + view.byteOffset);
+		}
+	}
+
+	size_t position_cursor = 0;
+	size_t uv_cursor = 0;
+	for (size_t i = 0; i < accessor.count; i++)
+	{
+		PointXYZUV[5*i + 0] = position_data[position_cursor++] * Scale;
+		PointXYZUV[5*i + 1] = position_data[position_cursor++] * Scale;
+		PointXYZUV[5*i + 2] = position_data[position_cursor++] * Scale;
+
+		if (uv_data != nullptr)
+		{
+			PointXYZUV[5*i + 3] = uv_data[uv_cursor++];
+			PointXYZUV[5*i + 4] = uv_data[uv_cursor++];
+		}
+	}
+
+	auto &m = model_store->current_node->matrix;
+	assert(m.size() == 16);
+	size_t matrix_cursor = 0;
+	for (size_t i = 0; i < 12; i++)
+	{
+		if ((i + 1) % 4 != 0)
+		{
+			Matrix[matrix_cursor++] = m[i];
+		}
+	}
+	for (size_t i = 12; i < 15; i++)
+	{
+		Matrix[matrix_cursor++] = m[i] * Scale;
+	}
+}
+
+void cFile3ds::ReadMaterial(char *TextureName, char *OpacityName, float *Transparency, float *ShinStrength, float *Shininess, char *Shading, float *rDiffuse, float *gDiffuse, float *bDiffuse)
+{
+	assert(model_store->current_mesh != nullptr);
+
+	const auto &primitive = model_store->current_mesh->primitives[0];
+	if (primitive.material == -1)
+	{
+		ErrH.Abort("Bad material");
+	}
+
+	const auto &material = model_store->model.materials[primitive.material];
+	const auto &extension = material.extensions.at(MaterialExtension).Get<tinygltf::Value::Object>();
+
+	*Transparency = static_cast<float>(extension.at("transparency").Get<double>());
+	*ShinStrength = static_cast<float>(extension.at("shininess_strength").Get<double>());
+	*Shininess = static_cast<float>(extension.at("shininess").Get<double>());
+	*Shading = static_cast<char>(extension.at("shading").Get<int>());
+
+	const auto &diffuse = extension.at("diffuse").Get<tinygltf::Value::Array>();
+	assert(diffuse.size() == 3);
+	*rDiffuse = static_cast<float>(diffuse[0].Get<double>());
+	*gDiffuse = static_cast<float>(diffuse[1].Get<double>());
+	*bDiffuse = static_cast<float>(diffuse[2].Get<double>());
+
+	std::fill(TextureName, TextureName + TextureNameSize, 0);
+	auto texture_map_name = extension.find("texture_map_name");
+	if (texture_map_name != extension.end())
+	{
+		const auto &s = texture_map_name->second.Get<std::string>();
+		assert(s.size() < TextureNameSize);
+		s.copy(TextureName, s.size());
+	}
+
+	std::fill(OpacityName, OpacityName + OpacityNameSize, 0);
+	auto opacity_map_name = extension.find("opacity_map_name");
+	if (opacity_map_name != extension.end())
+	{
+		const auto &s = opacity_map_name->second.Get<std::string>();
+		assert(s.size() < OpacityNameSize);
+		s.copy(OpacityName, s.size());
+	}
+}
+
+void cFile3ds::ReadKeyFrame(char *ParentName, float **Pos, int *NumberPos, float **Rot, int *NumberRot, float **Scale, int *NumberScale, float *Pivot)
+{
+	assert(model_store->current_animation != nullptr);
+	const auto &extension = model_store->current_animation->extensions.at(AnimationExtension).Get<tinygltf::Value::Object>();
+
+	const auto &parent = extension.at("parent").Get<std::string>();
+	assert(parent.size() < ParentNameSize);
+	std::fill(ParentName, ParentName + ParentNameSize, 0);
+	parent.copy(ParentName, parent.size());
+
+	const auto &pivot_array = extension.at("pivot").Get<tinygltf::Value::Array>();
+	assert(pivot_array.size() == 3);
+	Pivot[0] = static_cast<float>(pivot_array[0].Get<double>()) * cFile3ds::Scale;
+	Pivot[1] = static_cast<float>(pivot_array[1].Get<double>()) * cFile3ds::Scale;
+	Pivot[2] = static_cast<float>(pivot_array[2].Get<double>()) * cFile3ds::Scale;
+
+	*NumberPos = 0;
+	*Pos = nullptr;
+
+	*NumberRot = 0;
+	*Rot = nullptr;
+
+	*NumberScale = 0;
+	*Scale = nullptr;
+
+	for (const auto &channel : model_store->current_animation->channels)
+	{
+		const auto &sampler = model_store->current_animation->samplers[channel.sampler];
+
+		const float *time_data = nullptr;
+		size_t count = 0;
+		{
+			const auto &accessor = model_store->model.accessors[sampler.input];
+			count = accessor.count;
+			const auto &view = model_store->model.bufferViews[accessor.bufferView];
+			const auto &buffer = model_store->model.buffers[0];
+			time_data = reinterpret_cast<const float *>(buffer.data.data() + view.byteOffset);
+		}
+
+		if (count == 0)
+		{
+			continue;
+		}
+
+		const float *value_data = nullptr;
+		{
+			const auto &accessor = model_store->model.accessors[sampler.output];
+			assert(count == accessor.count);
+			const auto &view = model_store->model.bufferViews[accessor.bufferView];
+			const auto &buffer = model_store->model.buffers[0];
+			value_data = reinterpret_cast<const float *>(buffer.data.data() + view.byteOffset);
+		}
+
+		if (channel.target_path == "translation")
+		{
+			*NumberPos = static_cast<int>(count);
+			(*Pos) = new float[4 * count];
+			size_t cursor = 0;
+			size_t value_cursor = 0;
+			for (size_t i = 0; i < count; i++)
+			{
+				(*Pos)[cursor++] = time_data[i];
+				(*Pos)[cursor++] = value_data[value_cursor++] * cFile3ds::Scale;
+				(*Pos)[cursor++] = value_data[value_cursor++] * cFile3ds::Scale;
+				(*Pos)[cursor++] = value_data[value_cursor++] * cFile3ds::Scale;
+			}
+		}
+		else if (channel.target_path == "rotation")
+		{
+			*NumberRot = static_cast<int>(count);
+			(*Rot) = new float[5 * count];
+			size_t cursor = 0;
+			size_t value_cursor = 0;
+			for (size_t i = 0; i < count; i++)
+			{
+				(*Rot)[cursor++] = time_data[i];
+
+				const float x = value_data[value_cursor++];
+				const float y = value_data[value_cursor++];
+				const float z = value_data[value_cursor++];
+				const float w = value_data[value_cursor++];
+
+				(*Rot)[cursor++] = w;
+				(*Rot)[cursor++] = x;
+				(*Rot)[cursor++] = y;
+				(*Rot)[cursor++] = z;
+			}
+		}
+		else if (channel.target_path == "scale")
+		{
+			*NumberScale = static_cast<int>(count);
+			(*Scale) = new float[4 * count];
+			size_t cursor = 0;
+			size_t value_cursor = 0;
+			for (size_t i = 0; i < count; i++)
+			{
+				(*Scale)[cursor++] = time_data[i];
+				(*Scale)[cursor++] = value_data[value_cursor++];
+				(*Scale)[cursor++] = value_data[value_cursor++];
+				(*Scale)[cursor++] = value_data[value_cursor++];
+			}
+		}
+	}
+}
+
+int cFile3ds::GetDummyCount()
+{
+	return static_cast<int>(model_store->dummies.size());
+}
+
 const char* cFile3ds::OpenDummy(int NumberKeyFrame)
 {
-	while(CountDummy<objlist->count)
+	if (model_store->dummies.empty() || CountDummy == model_store->dummies.size())
 	{
-		kfmesh=NULL;
-		GetObjectMotionByName3ds(db,objlist->list[CountDummy++].name,&kfmesh);
-		if(strcmp(kfmesh->name,DummyName3ds)==0) return (char*) kfmesh->instance;
-		ReleaseObjectMotion3ds(&kfmesh);
+		ErrH.Abort("Dummy not found", XERR_USER, 0, "");
 	}
-	XBuffer buf; buf<"Error: dummy not found - " <f->filename; ErrH.Abort(buf.address()); return 0;
+
+	auto index = model_store->dummies[CountDummy++];
+	const auto &node = model_store->model.nodes[index];
+	model_store->current_dummy = &node;
+	const auto &extension = node.extensions.at(DummyExtension).Get<tinygltf::Value::Object>();
+	const auto &instance = extension.at("instance").Get<std::string>();
+	return instance.c_str();
 }
+
 const char* cFile3ds::GetDummyParent()
 {
-	return kfmesh->parent;
+	assert(model_store->current_dummy != nullptr);
+
+	const auto &extension = model_store->current_dummy->extensions.at(DummyExtension).Get<tinygltf::Value::Object>();
+	const auto &parent = extension.at("parent").Get<std::string>();
+	return parent.c_str();
 }
-void cFile3ds::ReadDummy(float *x,float *y,float *z)
+
+void cFile3ds::ReadDummy(float *x, float *y, float *z)
 {
-	if((kfmesh->parent==0)||(kfmesh->parent[0]==0))
+	assert(model_store->current_dummy != nullptr);
+
+	const auto &translation = model_store->current_dummy->translation;
+	assert(translation.size() == 3);
+
+	const auto &rotation = model_store->current_dummy->rotation;
+	const auto &scale = model_store->current_dummy->scale;
+
+	if (rotation.empty() && scale.empty())
 	{
-		*x=kfmesh->pos[0].x*Scale;
-		*y=kfmesh->pos[0].y*Scale;
-		*z=kfmesh->pos[0].z*Scale;
+		*x = translation[0] * Scale;
+		*y = translation[1] * Scale;
+		*z = translation[2] * Scale;
 	}
 	else
 	{
-		float x_=kfmesh->pos[0].x*Scale;
-		float y_=kfmesh->pos[0].y*Scale;
-		float z_=kfmesh->pos[0].z*Scale;
+		assert(rotation.size() == 4);
+		assert(scale.size() == 3);
+
+		const float tx = translation[0] * Scale;
+		const float ty = translation[1] * Scale;
+		const float tz = translation[2] * Scale;
+
+		const float x1 = rotation[0];
+		const float y1 = rotation[1];
+		const float z1 = rotation[2];
+		const float w1 = rotation[3];
+
 		cMatrix Matrix;
-		double Angle=kfmesh->rot[0].angle/2;
-		double x1=kfmesh->rot[0].x*sin(Angle);
-		double y1=kfmesh->rot[0].y*sin(Angle);
-		double z1=kfmesh->rot[0].z*sin(Angle);
-		double w1=cos(Angle);
-		double scale=1.0f/sqrt(w1*w1+x1*x1+y1*y1+z1*z1);
 		Matrix.NewMatrix();
-		Matrix.Rotate(w1,x1,y1,z1);
-		Matrix.Scale(scale/kfmesh->scale[0].x,scale/kfmesh->scale[0].y,scale/kfmesh->scale[0].z);
-		(*x)=Matrix.rot()[0][0]*x_+Matrix.rot()[0][1]*y_+Matrix.rot()[0][2]*z_;
-		(*y)=Matrix.rot()[1][0]*x_+Matrix.rot()[1][1]*y_+Matrix.rot()[1][2]*z_;
-		(*z)=Matrix.rot()[2][0]*x_+Matrix.rot()[2][1]*y_+Matrix.rot()[2][2]*z_;
+		Matrix.Rotate(w1, x1, y1, z1);
+		const float object_scale = 1.0f / sqrt(w1*w1 + x1*x1 + y1*y1 + z1*z1);
+		Matrix.Scale(object_scale / scale[0], object_scale / scale[1], object_scale / scale[2]);
+
+		*x = Matrix.rot()[0][0] * tx + Matrix.rot()[0][1] * ty + Matrix.rot()[0][2] * tz;
+		*y = Matrix.rot()[1][0] * tx + Matrix.rot()[1][1] * ty + Matrix.rot()[1][2] * tz;
+		*z = Matrix.rot()[2][0] * tx + Matrix.rot()[2][1] * ty + Matrix.rot()[2][2] * tz;
 	}
-}
-void cFile3ds::CloseDummy()
-{
-	ReleaseObjectMotion3ds(&kfmesh);
-}
-void cFile3ds::CloseBaseKeyFrame()
-{
-	ReleaseNameList3ds(&objlist);
 }
