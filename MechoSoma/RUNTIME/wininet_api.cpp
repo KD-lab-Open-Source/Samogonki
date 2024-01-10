@@ -67,11 +67,13 @@ wiDispatcher::wiDispatcher(void)
 	outPos = outSize = 0;
 	outBuffer = NULL;
 
+	http_headers = curl_slist_append(NULL, "Samogonki-Protocol: 1");
 	hCurlMulti = curl_multi_init();
 }
 
 wiDispatcher::~wiDispatcher(void)
 {
+	curl_slist_free_all(http_headers);
 	curl_multi_cleanup(hCurlMulti);
 }
 
@@ -187,6 +189,7 @@ int wiDispatcher::open_request(int action,const char* obj,const char* header,int
 		curl_easy_setopt(handle, CURLOPT_POSTFIELDS, data);
 	}
 	
+	curl_easy_setopt(handle, CURLOPT_HTTPHEADER, http_headers);
 	curl_easy_setopt(handle, CURLOPT_WRITEDATA, &this->iBuffer);
 	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, progress);
 		// curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, [](void *contents, size_t size, size_t nmemb, wiDispatcher *self) {

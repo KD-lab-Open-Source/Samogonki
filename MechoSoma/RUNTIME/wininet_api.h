@@ -35,6 +35,7 @@ class wiDispatcher
 
 	void* hCurlMulti;
 	void* hCurlRequest;
+	struct curl_slist *http_headers = NULL;
 
 	vector<char> oBuffer;
 	vector<char> iBuffer;
