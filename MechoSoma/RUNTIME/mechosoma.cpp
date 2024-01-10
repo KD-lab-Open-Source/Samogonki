@@ -1,4 +1,8 @@
 
+#ifdef NETWORK_PACKET_LOCALPATH
+#include <unistd.h>
+#endif
+
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 #include "PlayWSC.h"
@@ -1201,7 +1205,7 @@ void MainMenuRTO::Finit(void)
 
 void mchComline(void)
 {
-// TODO: @caiiiycuk uncomment this
+// TODO: @fenex require to check some argkeys
 #ifdef CMD_LINE
 	int i,num = __argc;
 	char** p = __argv;
@@ -1378,15 +1382,20 @@ void mchComline(void)
 					break;
 				case 'P':
 				case 'p':
+// TODO: @fenex investigate multiplayer mode (network)
+#ifdef NETWORK_PACKET_LOCALPATH
 					if(!stricmp(p[i] + 1, "path") && i < num - 1)
-						SetCurrentDirectory(p[i + 1]);
-
-					if(!stricmp(p[i] + 1, "player") && i < num - 1)
+					 	SetCurrentDirectory(p[i + 1]);
+#endif
+					if(!stricmp(p[i] + 1, "player") && i < num - 1) {
 						mchPBEM_PlayerUID = atoi(p[i + 1]);
-
+					}
+// TODO: @fenex investigate multiplayer mode (network)
+#ifdef NETWORK_PACKET_LOCALPATH
 					if(!stricmp(p[i] + 1, "packet") && i < num - 1){
 						mchPBEM_PacketFile = strdup(p[i + 1]);
-						GetCurrentDirectory(MAX_PATH,mchPBEM_PacketPath);
+						getcwd(mchPBEM_PacketPath, MAX_PATH);
+						// GetCurrentDirectory(MAX_PATH,mchPBEM_PacketPath);
 
 						if(sgCheckPacket(mchPBEM_PacketFile))
 							mchLoadingRTO_NextID = RTO_GAME_QUANT_ID;
@@ -1394,6 +1403,7 @@ void mchComline(void)
 						if(mchPBEM_Game)
 							sgGetWorldID(mchPBEM_PacketFile);
 					}
+#endif
 #ifndef _FINAL_VERSION_
 					if(!stricmp(p[i] + 1, "profile")){
 						XCon < "Set timer mode for profiling\n";
@@ -3447,7 +3457,7 @@ void LoadingRTO::Init(int id)
 	XStream fh;
 	XBuffer obj_buf;
 
-	char* header;
+	const char* header = "Content-type: application/x-www-form-urlencoded\r\n";
 
 	mchA_d3dCreateBackBuffer();
 
@@ -3475,7 +3485,6 @@ void LoadingRTO::Init(int id)
 			}
 		}
 		else {
-			header = "Content-type: application/x-www-form-urlencoded\r\n";
 			wi_D.open_request(WI_POST,wiGameURL,header,strlen(header),wi_D.output_buffer(),wi_D.output_size());
 		}
 	}
@@ -3499,8 +3508,7 @@ int LoadingRTO::Quant(void)
 	if(d3dIsActive())
 		mchA_d3dFlushBackBuffer(0,0,XGR_MAXX,XGR_MAXY);
 
-// TODO: @caiiiycuk invesitigate this
-#ifdef WTF
+#ifdef NETWORK
 	if(mchPBEM_DataFlag){
 		ogQuant();
 

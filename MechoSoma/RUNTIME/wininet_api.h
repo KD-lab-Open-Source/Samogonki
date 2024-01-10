@@ -2,6 +2,13 @@
 #ifndef __WININET_API_H__
 #define __WININET_API_H__
 
+#include <vector>
+#include <string>
+#include <sstream>
+#include <exception>
+
+using namespace std;
+
 struct wiCriticalSection
 {
 	void* csection;
@@ -21,13 +28,17 @@ enum wiStatus
 	WI_ERROR
 };
 
-// wiDispatcher::flags
-const int WI_REQUEST_COMPLETED	= 0x01;
-
 class wiDispatcher
 {
-	int flags;
+	bool is_request_completed;
 	int status;
+
+	void* hCurlMulti;
+	void* hCurlRequest;
+	struct curl_slist *http_headers = NULL;
+
+	vector<char> oBuffer;
+	vector<char> iBuffer;
 
 	void* hConnect;
 	void* hRequest;
@@ -42,6 +53,8 @@ class wiDispatcher
 	int outPos;
 	char* outBuffer;
 
+	string endpoint = "http://127.0.0.1:8080";
+
 //	char tmpBuffer[WI_TEMP_BUFFER_SIZE];
 
 public:
@@ -55,7 +68,7 @@ public:
 
 	int get_status(void) const { return status; }
 	int get_request_status(void);
-	char* get_request_status_str(void);
+	const char* get_request_status_str(void);
 
 	void alloc_inbuf(int sz);
 	void expand_inbuf(int sz);

@@ -1,5 +1,8 @@
 project(game CXX)
 
+add_compile_definitions(NETWORK)
+add_compile_definitions(CMD_LINE)
+
 set(GAME_SOURCES
         # aciparser
         aciparser/aci_parser.cpp
@@ -95,7 +98,7 @@ set(GAME_SOURCES
         RUNTIME/timer.cpp
         RUNTIME/track.cpp
         RUNTIME/track.h
-        RUNTIME/wininet_api_port.cpp
+        RUNTIME/wininet_api.cpp
         RUNTIME/wininet_api.h
         RUNTIME/xINI.cpp
         RUNTIME/xINI_File.cpp
@@ -461,7 +464,9 @@ set(GAME_SOURCES
         iScreen/hbm.h
         iScreen/iScript.cpp
         iScreen/iText.cpp
-        iScreen/savegame.cpp)
+        iScreen/savegame.cpp
+        )
+
 set(LIBRARY_NAME game)
 
 include_directories(aciparser)
@@ -512,6 +517,7 @@ include_directories(../3rdparty/miniaudio)
 
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
+find_package(CURL REQUIRED)
 
 if (WIN32)
     set(BCRYPT_LIBRARY bcrypt)
@@ -530,7 +536,7 @@ if (STEAM_VERSION)
     endif()
 endif()
 
-set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
+set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY} CURL::libcurl)
 
 set(APPLICATION_SOURCES
     app/back_buffer.cpp
@@ -564,7 +570,7 @@ elseif (APPLE)
     set_property(TARGET ${APPLICATION_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Info.plist.in")
     target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
     target_link_libraries(${APPLICATION_NAME} PRIVATE stdc++
-            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL" 
+            "-framework CoreFoundation" "-framework Cocoa" "-framework QuartzCore" "-framework OpenGL"
             "-framework CoreAudio" "-framework AudioToolbox" "-framework ForceFeedback" "-framework CoreHaptics"
             "-framework GameController" "-framework IOKit" "-framework Carbon" "-framework Metal"
             objc ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})

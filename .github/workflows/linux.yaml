@@ -20,7 +20,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Install deps
-      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev libz-dev nasm
+      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev libz-dev libcurl4-openssl-dev nasm
 
     - name: SDL -- cache
       id: cache-sdl

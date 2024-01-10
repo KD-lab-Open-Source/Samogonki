@@ -20,7 +20,6 @@
 #include "Base.h"
 #include "Mesh3ds.h"
 
-// TODO: @caiiiycuk netowkr game
 #ifdef NETWORK
 #include "wininet_api.h"
 #include "online_game.h"
