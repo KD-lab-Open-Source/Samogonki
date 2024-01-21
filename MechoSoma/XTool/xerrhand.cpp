@@ -24,11 +24,13 @@ void XErrorHandler::SetPostfix(const char* s) {}
 void XErrorHandler::SetRestore(void (*rf)()) {}
 
 void XErrorHandler::Abort(const char* message, int code, int addval, const char* subj) {
+#ifdef _DEBUG
   std::cout << "XErrorHandler: " << message << ", code " << code << ", addval " << addval;
   if (subj) {
     std::cout << ", subj: " << subj;
   }
   std::cout << std::endl;
+#endif
   abort();
 }
 

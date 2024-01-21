@@ -399,8 +399,7 @@ void TextureManager::update_texture(TextureEntry& entry) {
     } break;
 
     default: {
-      std::cout << "Not supported texture format" << std::endl;
-      abort();
+      ErrH.Abort("Not supported texture format", XERR_USER, 0, "");
     } break;
   }
 
