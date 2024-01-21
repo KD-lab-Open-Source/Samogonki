@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "Md3d.h"
+#include "xerrhand.h"
 
 #ifdef EMSCRIPTEN
 #include "sokol-shader-em.h"
@@ -73,8 +74,7 @@ class RenderState final {
         break;
 
       default: {
-        std::cout << "unsupported color operation 1" << std::endl;
-        abort();
+        ErrH.Abort("Unsupported color operation 1", XERR_USER, 0, "");
       }
     }
 
@@ -88,8 +88,7 @@ class RenderState final {
         break;
 
       default: {
-        std::cout << "unsupported color operation 2" << std::endl;
-        abort();
+        ErrH.Abort("Unsupported color operation 2", XERR_USER, 0, "");
       }
     }
 

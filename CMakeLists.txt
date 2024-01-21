@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 project(MOONSHINE_RUNNERS VERSION 1.0.0 LANGUAGES C CXX)
 
+SET(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
+
 set(APPLICATION_NAME moonshine-runners)
 
 if (UNIX AND NOT APPLE)
