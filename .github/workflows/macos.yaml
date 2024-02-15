@@ -1,4 +1,4 @@
-name: Linux
+name: macOS
 
 on:
   push:
@@ -8,55 +8,52 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
+  GH_CACHE_KEY: 3
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: 'recursive'
 
-    - name: Install deps
-      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev libz-dev nasm
+    - name: Install dependencies
+      run: brew install cmake nasm ninja zlib
 
-    - name: SDL -- cache
-      id: cache-sdl
-      uses: actions/cache@v3
+    - uses: actions/cache@v3
+      id: cache
       with:
-        path: ${{github.workspace}}/3rdparty/SDL-2.26.5
-        key: ${{ runner.os }}-sdl-2.26.5
+        path: |
+          ${{github.workspace}}/3rdparty/SDL-2.26.5
+          ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6
+        key: ${{runner.os}}-${{env.GH_CACHE_KEY}}
+
     - name: SDL -- download
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: git clone --depth 1 --branch release-2.26.5 https://github.com/libsdl-org/SDL.git SDL
     - name: SDL -- configure
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
-      run: cmake -B cmake-build-debug -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-debug
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: cmake -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-release
       working-directory: SDL
     - name: SDL -- build and install
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        cmake --build cmake-build-debug --target install
+        cmake --build cmake-build-release --target install
         mkdir -p ${{github.workspace}}/3rdparty/SDL-2.26.5
-        cp -r target-debug/include ${{github.workspace}}/3rdparty/SDL-2.26.5/
-        cp -r target-debug/lib ${{github.workspace}}/3rdparty/SDL-2.26.5/
+        cp -r target-release/include ${{github.workspace}}/3rdparty/SDL-2.26.5/
+        cp -r target-release/lib ${{github.workspace}}/3rdparty/SDL-2.26.5/
       working-directory: SDL
 
-    - name: ffmpeg -- cache
-      id: cache-ffmpeg
-      uses: actions/cache@v3
-      with:
-        path: ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6
-        key: ${{ runner.os }}-ffmpeg-n4.3.6
     - name: ffmpeg -- download
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
         cd ffmpeg
         git apply ${{github.workspace}}/avcodec-x86-mathops.patch
     - name: ffmpeg -- configure
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: ./configure
         --prefix=build
         --disable-programs
@@ -71,23 +68,23 @@ jobs:
         --enable-protocol=file
       working-directory: ffmpeg
     - name: ffmpeg -- build and install
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        make
+        make -j4
         make install
         mkdir -p ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6
         cp -r build/include ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
         cp -r build/lib ${{github.workspace}}/3rdparty/FFmpeg-n4.3.6/
       working-directory: ffmpeg
 
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build -j3 --config ${{env.BUILD_TYPE}}
+    - name: Game -- configure
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Game -- build
+      run: ninja
+      working-directory: ${{github.workspace}}/build
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.0.0
       with:
-        name: moonshine-runners-linux
-        path: build/MechoSoma/moonshine-runners
+        name: moonshine-runners-macos
+        path: build/MechoSoma/moonshine-runners.app
