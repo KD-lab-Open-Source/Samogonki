@@ -69,7 +69,7 @@ void scrDataBlock::saveInfo(XStream& fh)
 	if(name) fh < name;
 
 	if(nextLevel){
-		fh < (int)1;
+		fh < nextLevel -> size();
 		scrDataBlock* p = nextLevel -> first();
 		while(p){
 			p -> saveInfo(fh);
@@ -99,7 +99,7 @@ void scrDataBlock::saveData(XStream& fh)
 	if(nextLevel){
 		scrDataBlock* p = nextLevel -> first();
 		while(p){
-			p -> saveInfo(fh);
+			p -> saveData(fh);
 			p = p -> next;
 		}
 	}

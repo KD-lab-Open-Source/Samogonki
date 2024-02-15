@@ -486,13 +486,8 @@ include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
-if (APPLE)
-    include_directories(../3rdparty/libjpeg-turbo/include)
-    link_directories(../3rdparty/libjpeg-turbo/lib)
-endif()
-
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser jpeg)
+target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES
     CXX_STANDARD 17
@@ -509,6 +504,7 @@ include_directories(../3rdparty/FFmpeg-n4.3.6/include)
 link_directories(../3rdparty/FFmpeg-n4.3.6/lib)
 
 include_directories(../3rdparty/miniaudio)
+include_directories(../3rdparty/stb)
 
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
@@ -553,7 +549,6 @@ if (MINGW)
     target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})
     target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
     add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
-            COMMAND cp -v /mingw64/bin/libjpeg-8.dll "${CMAKE_CURRENT_BINARY_DIR}"
             COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
 elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})

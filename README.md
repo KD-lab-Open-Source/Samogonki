@@ -77,10 +77,6 @@ cp -r 3rdparty/ffmpeg/build/include 3rdparty/FFmpeg-n4.3.6/
 cp -r 3rdparty/ffmpeg/build/lib 3rdparty/FFmpeg-n4.3.6/
 ```
 
-### macOS
-Download [libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo/files/2.1.0/libjpeg-turbo-ios-2.1.0.dmg/download)
-and unpack it to `3rdparty/libjpeg-turbo` folder.
-
 ## How to run
 
 Copy *moonshine-runners* binary into original folder of the game and run it.

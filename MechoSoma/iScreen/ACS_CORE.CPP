@@ -2391,10 +2391,6 @@ void aciScreenScroller::SetAlpha(int v)
 
 void aciScreenInputField::redraw(int flag2d)
 {
-    if (ID == 4 /* ONLINE GAME */) {
-        return;
-    }
-
 	int x,y,sx,sy,al;
 	aciScreenResourcePAL* pl;
 
