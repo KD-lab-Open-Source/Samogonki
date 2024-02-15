@@ -1,7 +1,8 @@
 # Moonshine Runners Community edition
 
-[![Linux](https://github.com/KD-lab-Open-Source/Samogonki/workflows/Linux/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/linux.yaml)
-[![Windows](https://github.com/KD-lab-Open-Source/Samogonki/workflows/Windows/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/windows.yaml)
+[![Linux](https://github.com/KD-lab-Open-Source/Samogonki/workflows/linux/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/linux.yaml)
+[![Windows](https://github.com/KD-lab-Open-Source/Samogonki/workflows/windows/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/windows.yaml)
+[![macOS](https://github.com/KD-lab-Open-Source/Samogonki/workflows/macos/badge.svg)](https://github.com/KD-lab-Open-Source/Samogonki/actions/workflows/macos.yaml)
 
 Original game: Moonshine Runners / Spanking Runners / Самогонки
 
@@ -18,6 +19,7 @@ Community in telegram: https://t.me/SamogonkiGame
 Look into buildscripts:
 * [Linux](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/linux.yaml)
 * [Windows](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/windows.yaml)
+* [macOS](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/macos.yaml)
 
 ### SDL 2
 1. Clone

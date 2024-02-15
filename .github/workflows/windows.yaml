@@ -101,7 +101,7 @@ jobs:
     - name: publish artifact
       uses: actions/upload-artifact@v2
       with:
-        name: Mechosoma
+        name: moonshine-runners-windows
         path: |
           build-mingw/MechoSoma/moonshine-runners.exe
           build-mingw/MechoSoma/*.dll
