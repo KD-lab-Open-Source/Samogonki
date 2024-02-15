@@ -611,17 +611,16 @@ void mchA_d3dCreateBackBuffer(void)
 	XGR_Obj.flags |= XGR_HICOLOR;
 	XGR_Obj.ScreenX = XGR_MAXX;
 	XGR_Obj.ScreenY = XGR_MAXY;
+
+	if(XGR_Obj.yOffsTable) delete XGR_Obj.yOffsTable;
+	XGR_Obj.yOffsTable = new int[XGR_Obj.ScreenY + 1];
 }
 
 void mchA_d3dLockBackBuffer(void)
 {
 	void* p;
 	uint32_t pitch;
-
 	d3dLockBackBuffer(&p,&pitch);
-
-	if(!XGR_Obj.yOffsTable)
-		XGR_Obj.yOffsTable = new int[XGR_MAXX + 1];
 
 	XGR_Obj.ScreenBuf = (unsigned char*)p;
 	XGR_Obj.set_pitch(pitch);
