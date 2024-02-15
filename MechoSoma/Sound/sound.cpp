@@ -112,12 +112,12 @@ mchSoundEFF::mchSoundEFF(void)
 mchSoundEFF::~mchSoundEFF(void)
 {
 	if(fileName) free(fileName);
-	if(dsPtr){
-		if(flags & EFF_STREAM)
-			SoundStreamClose(dsPtr);
-		else
-			SoundRelease(dsPtr);
-	}
+	// if(dsPtr){
+	// 	if(flags & EFF_STREAM)
+	// 		SoundStreamClose(dsPtr);
+	// 	else
+	// 		SoundRelease(dsPtr);
+	// }
 }
 
 void mchSoundEFF::Load(void)
