@@ -436,6 +436,9 @@ void XGR_Pal64K::prepare(void* p)
 
 XGR_Screen::XGR_Screen(void)
 {
+	ScreenX = ScreenY = 0;
+	yOffsTable = NULL;
+	yStrOffs = 0;
 }
 
 void XGR_Screen::set_pitch(int p)
