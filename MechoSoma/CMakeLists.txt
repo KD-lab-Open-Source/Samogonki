@@ -521,8 +521,11 @@ if (STEAM_VERSION)
     if (WIN32)
         link_directories(../3rdparty/steamworks_sdk_158/lib/win64)
         set(STEAM_LIBRARY steam_api64)
+    elseif (APPLE)
+        link_directories(../3rdparty/steamworks_sdk_158/lib/osx)
+        set(STEAM_LIBRARY steam_api)
     else()
-        message(FATAL_ERROR "Steam SDK supports only Windows platform")
+        message(FATAL_ERROR "Steam version supports only Windows and macOS platforms")
     endif()
 endif()
 
@@ -555,6 +558,7 @@ elseif (LINUX)
     target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES}
             X11 Xi Xcursor GL dl pthread)
 elseif (APPLE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
     set_property(TARGET ${APPLICATION_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Info.plist.in")
     target_compile_options(${APPLICATION_NAME} PRIVATE -x objective-c++)
@@ -563,4 +567,18 @@ elseif (APPLE)
             "-framework CoreAudio" "-framework AudioToolbox" "-framework ForceFeedback" "-framework CoreHaptics"
             "-framework GameController" "-framework IOKit" "-framework Carbon" "-framework Metal"
             objc ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})
+
+    if (STEAM_VERSION)
+        set(APP_BUNDLE_CONTENTS_DIR "${CMAKE_CURRENT_BINARY_DIR}/${APPLICATION_NAME}.app/Contents")
+        set(APP_BUNDLE_FRAMEWORKS_DIR "${APP_BUNDLE_CONTENTS_DIR}/Frameworks")
+        set(STEAM_SDK_DLIB "../3rdparty/steamworks_sdk_158/lib/osx/libsteam_api.dylib")
+        file(COPY ${STEAM_SDK_DLIB} DESTINATION ${APP_BUNDLE_FRAMEWORKS_DIR})
+
+        set(LOADER_PATH "@loader_path/libsteam_api.dylib")
+        set(EXECUTABLE_PATH "@executable_path/../Frameworks/libsteam_api.dylib")
+        add_custom_command(TARGET ${APPLICATION_NAME}
+            POST_BUILD COMMAND
+            install_name_tool -change "${LOADER_PATH}" "${EXECUTABLE_PATH}" "${APP_BUNDLE_CONTENTS_DIR}/MacOS/${APPLICATION_NAME}"
+        )
+    endif()
 endif(MINGW)
