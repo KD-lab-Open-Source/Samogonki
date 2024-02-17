@@ -108,8 +108,6 @@ set(GAME_SOURCES
     IVisGeneric/VisGenericDefine.h
     IVisGeneric/World_id.h
     # Sound
-    Sound/audio_file.cpp
-    Sound/audio_file.h
     Sound/sound.cpp
     Sound/sound.h
     Sound/sound_api.cpp
@@ -487,7 +485,7 @@ include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
 
 add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser)
+target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser mpcdec)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES
     CXX_STANDARD 17
@@ -499,9 +497,6 @@ include_directories(../3rdparty/sokol)
 
 include_directories(../3rdparty/SDL-2.26.5/include)
 link_directories(../3rdparty/SDL-2.26.5/lib)
-
-include_directories(../3rdparty/FFmpeg-n4.3.6/include)
-link_directories(../3rdparty/FFmpeg-n4.3.6/lib)
 
 include_directories(../3rdparty/miniaudio)
 include_directories(../3rdparty/stb)
@@ -532,7 +527,7 @@ if (STEAM_VERSION)
     endif()
 endif()
 
-set(COMMON_APPLICATION_LIBRARIES avformat avcodec avutil ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
+set(COMMON_APPLICATION_LIBRARIES ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
 
 set(APPLICATION_SOURCES
     app/back_buffer.cpp

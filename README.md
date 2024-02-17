@@ -44,41 +44,6 @@ cp -r 3rdparty/SDL/target-debug/include 3rdparty/SDL-2.26.5/
 cp -r 3rdparty/SDL/target-debug/lib 3rdparty/SDL-2.26.5/
 ```
 
-### FFmpeg
-1. Clone FFmpeg n4.3.6
-```
-git clone --depth 1 --branch n4.3.6 https://git.ffmpeg.org/ffmpeg.git ffmpeg
-```
-
-2. Configurate
-```
-./configure
-	--prefix=build
-	--disable-programs
-	--disable-doc
-	--disable-avdevice
-	--disable-avfilter
-	--disable-network
-	--disable-pixelutils
-	--disable-everything
-	--enable-decoder=pcm_s16le,mpc7
-	--enable-demuxer=wav,mpc
-	--enable-protocol=file
-```
-
-3. Build and install
-```
-make
-make install
-```
-
-4. Copy
-```
-mkdir 3rdparty/FFmpeg-n4.3.6
-cp -r 3rdparty/ffmpeg/build/include 3rdparty/FFmpeg-n4.3.6/
-cp -r 3rdparty/ffmpeg/build/lib 3rdparty/FFmpeg-n4.3.6/
-```
-
 ## How to run
 
 Copy *moonshine-runners* binary into original folder of the game and run it.
