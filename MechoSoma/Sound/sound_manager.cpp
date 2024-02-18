@@ -12,11 +12,12 @@
 #define MA_NO_RUNTIME_LINKING
 #endif
 
-#define MA_NO_RESOURCE_MANAGER
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 
-#include "audio_file.h"
+#include <mpc/mpcdec.h>
+#include <mpc/reader.h>
+
 #include "filesystem.h"
 #include "xerrhand.h"
 #include "xsound.h"
@@ -27,108 +28,30 @@ namespace game::sound
 const auto doubleValue = 10.0f;
 const auto minimumAttenuation = std::pow(1.0f / 2.0f, 100.0f / doubleValue);
 
-struct BufferDataSource final {
-  ma_data_source_base base;
-  std::vector<float> buffer;
-  ma_uint64 total_frames;
-  ma_uint32 channels = 0;
-  ma_uint32 sampleRate = 0;
-  ma_uint64 cursor = 0;
-
-  // Read data here. Output in the same format returned by my_data_source_get_data_format().
-  static ma_result read(ma_data_source *dataSource, void *frames, ma_uint64 frameCount, ma_uint64 *framesRead) {
-    auto source = static_cast<BufferDataSource *>(dataSource);
-    assert(source->total_frames >= source->cursor);
-
-    const auto count = std::min(frameCount, source->total_frames - source->cursor);
-    auto begin = source->buffer.data() + source->cursor * 2;
-    std::copy(begin, begin + count * 2, static_cast<float *>(frames));
-
-    source->cursor += count;
-    *framesRead = count;
-
-    return MA_SUCCESS;
-  }
-
-  // Seek to a specific PCM frame here. Return MA_NOT_IMPLEMENTED if seeking is not supported.
-  static ma_result seek(ma_data_source *dataSource, ma_uint64 frameIndex) {
-    auto source = static_cast<BufferDataSource *>(dataSource);
-    assert(source->total_frames > frameIndex);
-
-    source->cursor = frameIndex;
-    return MA_SUCCESS;
-  }
-
-  // Return the format of the data here.
-  static ma_result getDataFormat(ma_data_source *dataSource, ma_format *format, ma_uint32 *channels,
-                                 ma_uint32 *sampleRate, ma_channel *, size_t) {
-    auto source = static_cast<BufferDataSource *>(dataSource);
-    *format = ma_format_f32;
-    *channels = source->channels;
-    *sampleRate = source->sampleRate;
-    return MA_SUCCESS;
-  }
-
-  // Retrieve the current position of the cursor here. Return MA_NOT_IMPLEMENTED and set cursor to 0
-  // if there is no notion of a cursor.
-  static ma_result getCursor(ma_data_source *dataSource, ma_uint64 *cursor) {
-    auto source = static_cast<BufferDataSource *>(dataSource);
-    *cursor = source->cursor;
-    return MA_SUCCESS;
-  }
-
-  // Retrieve the length in PCM frames here. Return MA_NOT_IMPLEMENTED and set length to 0 if there is no notion
-  // of a length or if the length is unknown.
-  static ma_result getLength(ma_data_source *dataSource, ma_uint64 *length) {
-    auto source = static_cast<BufferDataSource *>(dataSource);
-    *length = source->total_frames;
-    return MA_SUCCESS;
-  }
-
-  static constexpr ma_data_source_vtable table = {read, seek, getDataFormat, getCursor, getLength};
-
-  explicit BufferDataSource(const std::string &path) {
-    auto baseConfig = ma_data_source_config_init();
-    baseConfig.vtable = &table;
-
-    const auto result = ma_data_source_init(&baseConfig, &base);
-    if (result != MA_SUCCESS) {
-      XAssert("ma_data_source_init");
-    }
-
-    AudioFile file(path);
-    while (file.read(buffer)) {}
-
-    channels = file.getChannels();
-    if (channels != 2) {
-      XAssert("stereo audio expected");
-    }
-    sampleRate = file.getSampleRate();
-    if (sampleRate != 44100) {
-      XAssert("44100 sample rate expected");
-    }
-
-    total_frames = buffer.size() / 2;
-  }
-
-  ~BufferDataSource() { ma_data_source_uninit(&base); }
-};
-
 struct StreamDataSource final {
   ma_data_source_base base;
-  AudioFile file;
+  mpc_reader_t reader;
+  mpc_streaminfo streamInfo;
+  mpc_demux *demux = nullptr;
+  std::vector<MPC_SAMPLE_FORMAT> sampleBuffer;
   std::vector<float> buffer;
-  ma_uint32 channels = 0;
-  ma_uint32 sampleRate = 0;
 
   // Read data here. Output in the same format returned by my_data_source_get_data_format().
   static ma_result read(ma_data_source *dataSource, void *frames, ma_uint64 frameCount, ma_uint64 *framesRead) {
     auto source = static_cast<StreamDataSource *>(dataSource);
-    const auto sampleCount = frameCount * source->channels;
+    const auto sampleCount = frameCount * source->streamInfo.channels;
 
     while (source->buffer.size() < sampleCount) {
-      if (!source->file.read(source->buffer)) {
+      mpc_frame_info frame;
+      frame.buffer = source->sampleBuffer.data();
+      const auto result = mpc_demux_decode(source->demux, &frame);
+      if (frame.bits == -1)
+      {
         break;
+      }
+      const auto count = frame.samples * source->streamInfo.channels;
+      for (size_t i = 0; i < count; i++) {
+        source->buffer.push_back(source->sampleBuffer[i]);
       }
     }
 
@@ -137,7 +60,7 @@ struct StreamDataSource final {
     std::copy(begin, begin + count, static_cast<float *>(frames));
 
     source->buffer.erase(source->buffer.begin(), source->buffer.begin() + count);
-    *framesRead = count / source->channels;
+    *framesRead = count / source->streamInfo.channels;
 
     return MA_SUCCESS;
   }
@@ -146,7 +69,7 @@ struct StreamDataSource final {
   static ma_result seek(ma_data_source *dataSource, ma_uint64 frame) {
     if (frame == 0) {
       auto source = static_cast<StreamDataSource *>(dataSource);
-      source->file.seekToStart();
+      mpc_demux_seek_sample(source->demux, 0);
       source->buffer.clear();
       return MA_SUCCESS;
     }
@@ -158,8 +81,8 @@ struct StreamDataSource final {
                                  ma_uint32 *sampleRate, ma_channel *, size_t) {
     auto source = static_cast<StreamDataSource *>(dataSource);
     *format = ma_format_f32;
-    *channels = source->channels;
-    *sampleRate = source->sampleRate;
+    *channels = source->streamInfo.channels;
+    *sampleRate = source->streamInfo.sample_freq;
     return MA_SUCCESS;
   }
 
@@ -179,7 +102,27 @@ struct StreamDataSource final {
 
   static constexpr ma_data_source_vtable table = {read, seek, getDataFormat, getCursor, getLength};
 
-  explicit StreamDataSource(const std::string &path) : file(path) {
+  explicit StreamDataSource(const std::string &path) : sampleBuffer(MPC_DECODER_BUFFER_LENGTH) {
+    {
+      const auto result = mpc_reader_init_stdio(&reader, path.c_str());
+      if (result < 0) {
+        XAssert("mpc_reader_init_stdio");
+      }
+
+      demux = mpc_demux_init(&reader);
+      if (demux == nullptr) {
+        XAssert("mpc_demux_init");
+      }
+
+      mpc_demux_get_info(demux, &streamInfo);
+      if (streamInfo.channels != 2) {
+        XAssert("stereo audio expected");
+      }
+      if (streamInfo.sample_freq != 44100) {
+        XAssert("44100 sample rate expected");
+      }
+    }
+
     auto baseConfig = ma_data_source_config_init();
     baseConfig.vtable = &table;
 
@@ -187,25 +130,18 @@ struct StreamDataSource final {
     if (result != MA_SUCCESS) {
       XAssert("ma_data_source_init");
     }
-
-    channels = file.getChannels();
-    if (channels != 2) {
-      XAssert("stereo audio expected");
-    }
-    sampleRate = file.getSampleRate();
-    if (sampleRate != 44100) {
-      XAssert("44100 sample rate expected");
-    }
   }
 
-  ~StreamDataSource() { ma_data_source_uninit(&base); }
+  ~StreamDataSource() {
+    mpc_demux_exit(demux);
+    mpc_reader_exit_stdio(&reader);
+    ma_data_source_uninit(&base);
+  }
 };
 
 struct Sound {
-  BufferDataSource dataSource;
+  ma_resource_manager_data_source dataSource;
   ma_sound sound;
-
-  explicit Sound(const std::string &path) : dataSource(path) {}
 
   ~Sound() {
     ma_sound_uninit(&sound);
@@ -261,12 +197,26 @@ struct MusicFile {
 
 class InternalSamplePlayer final : public SamplePlayer {
 public:
-  InternalSamplePlayer(ma_engine *engine, int channels) : _engine(engine), _channels(channels) {}
+  InternalSamplePlayer(ma_engine *engine, ma_resource_manager *resource_manager, int channels)
+    : _engine(engine), _resource_manager(resource_manager), _channels(channels) {}
 
   void *loadSound(const char *filename) override {
     const auto path = file::normalize_path(filename);
-    _sounds.push_back(std::make_unique<Sound>(path));
+    _sounds.push_back(std::make_unique<Sound>());
     auto &sound = _sounds.back();
+
+    {
+      const auto result = ma_resource_manager_data_source_init(
+          _resource_manager,
+          path.c_str(),
+          MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_DECODE,
+          nullptr,
+          &sound->dataSource
+      );
+      if (result != MA_SUCCESS) {
+        XAssert("ma_resource_manager_data_source_init");
+      }
+    }
 
     const auto result = ma_sound_init_from_data_source(_engine, &sound->dataSource, 0, nullptr, &sound->sound);
     if (result != MA_SUCCESS) {
@@ -281,7 +231,7 @@ public:
     assert(channelIndex < _channels.size());
 
     if (flags & DS_STREAM || flags & DS_QUEUE) {
-      // don't support stream and queue
+      XAssert("don't support stream and queue");
       return;
     }
 
@@ -444,6 +394,7 @@ public:
 
 private:
   ma_engine *_engine = nullptr;
+  ma_resource_manager *_resource_manager;
   std::vector<std::unique_ptr<Sound>> _sounds;
   std::vector<Channel> _channels;
 };
@@ -501,7 +452,7 @@ public:
 
   int getLengthInSamples() override {
     if (_file) {
-      return _file->dataSource.file.getLengthInSamples();
+      return _file->dataSource.streamInfo.samples;
     }
     return 0;
   }
@@ -515,6 +466,8 @@ private:
 struct SoundManager::Internal {
   ma_engine_config config;
   ma_engine engine;
+  ma_resource_manager_config resource_manager_config;
+  ma_resource_manager resource_manager;  
   std::unique_ptr<InternalSamplePlayer> samplerPlayer;
   std::unique_ptr<InternalMusicPlayer> musicPlayer;
 
@@ -528,12 +481,26 @@ struct SoundManager::Internal {
       XAssert("ma_engine_init");
     }
 
-    samplerPlayer = std::make_unique<InternalSamplePlayer>(&engine, channels);
+    setupResourceManager();
+    samplerPlayer = std::make_unique<InternalSamplePlayer>(&engine, &resource_manager, channels);
     musicPlayer = std::make_unique<InternalMusicPlayer>(&engine);
+  }
+
+  void setupResourceManager()
+  {
+    resource_manager_config = ma_resource_manager_config_init();
+    resource_manager_config.decodedSampleRate = 0;
+    resource_manager_config.decodedChannels = 0;
+
+    const auto result = ma_resource_manager_init(&resource_manager_config, &resource_manager);
+    if (result != MA_SUCCESS) {
+      XAssert("ma_resource_manager_init");
+    }
   }
 
   ~Internal() {
     ma_engine_stop(&engine);
+    ma_resource_manager_uninit(&resource_manager);
     ma_engine_uninit(&engine);
   }
 };

@@ -37,6 +37,7 @@ endif ()
 
 add_subdirectory(3rdparty/3dsftk3)
 add_subdirectory(3rdparty/iniparser)
+add_subdirectory(3rdparty/musepack_src_r475)
 
 add_subdirectory(MechoSoma)
 
