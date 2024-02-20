@@ -341,7 +341,6 @@ set(GAME_SOURCES
     Xreal/Handle.h
     Xreal/HydrophobicObject.cpp
     Xreal/HydrophobicObject.h
-    Xreal/Joystick
     Xreal/LCP_ContactSolver.cpp
     Xreal/LCP_ContactSolver.h
     Xreal/LCP_Solver.cpp
@@ -446,7 +445,7 @@ set(GAME_SOURCES
     Xreal/gen_xreal.h
     Xreal/pt.cpp
     # Xreal/Joystick
-    Xreal/Joystick/XJoystick_port.cpp
+    Xreal/Joystick/XJoystick.cpp
     # iScreen
     iScreen/SCRIPTS/SCR_DEFS.H
     iScreen/ACS_CORE.CPP

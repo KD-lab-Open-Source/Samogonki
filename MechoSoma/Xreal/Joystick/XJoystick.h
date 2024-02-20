@@ -5,54 +5,6 @@
 
 //---------------------------------------------------------------------------
 
-struct XJOYSTATE 
-{
-	long    lX;                     /* x-axis position              */
-	long    lY;                     /* y-axis position              */
-	long    lZ;                     /* z-axis position              */
-	long    lRx;                    /* x-axis rotation              */
-	long    lRy;                    /* y-axis rotation              */
-	long    lRz;                    /* z-axis rotation              */
-	long    rglSlider[2];           /* extra axes positions         */
-	unsigned int   rgdwPOV[4];             /* POV directions               */
-	unsigned char    rgbButtons[32];         /* 32 buttons                   */
-	XJOYSTATE() { memset(this, 0, sizeof(*this)); }
-};
-
-class XJoystick : public XJOYSTATE
-{
-	int next_input;
-// TODO: @caiiiycuk investigate this
-#ifdef WTF
-	struct IDirectInputDevice2* gpdiJoystick;
-#endif
-	XJOYSTATE prev_state;
-
-public:	
-	int ID;
-
-	XJoystick()
-	{
-// TODO: @caiiiycuk investigate this
-#ifdef WTF
-		gpdiJoystick = 0;
-#endif
-	}
-	~XJoystick() { release(); }
-// TODO: @caiiiycuk investigate this
-#ifdef WTF
-	int prepare(IDirectInputDevice2* gpdiJoystick);
-#endif
- 	int acquire();
-	int input();
-	void release();
-
-	int whatsPressedNow();
-	int isButtonPressed(int vk_code);
-	void quant();
-};
-   
-
 enum eXJoystickState {
 	XJ_PressButton = 1,
 	XJ_UnPressButton,
@@ -66,7 +18,8 @@ typedef void (*XJoystickHandler)(eXJoystickState state, int button_or_axis_value
 int XJoystickInit(int ErrHUsed = 1); // return the number of joysticks avaible
 void XJoystickQuant();
 int XJoystickIsButtonPressed(int button, int joystick_ID = 0);
-XJoystick* XJoystickGetJoystick(int joystick_ID = 0);
+int XJoystickGetXAxis(int joystick_ID = 0);
+int XJoystickGetYAxis(int joystick_ID = 0);
 void XJoystickCleanup();
 XJoystickHandler XJoystickSetHandler(XJoystickHandler handler);
 
