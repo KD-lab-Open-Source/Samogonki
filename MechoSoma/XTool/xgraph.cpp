@@ -221,7 +221,16 @@ void XGR_Mouse::SetCursor(int sx, int sy, int num, void* p)
 
 void XGR_Mouse::SetPos(int x, int y)
 {
-	// TODO
+	LastPosX = PosX;
+	LastPosY = PosY;
+
+	LastSizeX = SizeX;
+	LastSizeY = SizeY;
+
+	PosX = x;
+	PosY = y;
+
+	AdjustPos();
 }
 
 void XGR_Mouse::SetClipAuto(void)

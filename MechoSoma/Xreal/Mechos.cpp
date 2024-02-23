@@ -1368,11 +1368,9 @@ void Mechos::keyboard_control()
 {
 	float traction_incr = 1.; // скорость набора мощности
 	float traction_decr = 1; // скорость сброса (противоположная стрелка - мгновенно + тормоз)
-
-	XJoystick* joystick = enable_joystick_control ? XJoystickGetJoystick() : 0;
 	  
 	// Traction
-	float do_traction = joystick ? -joystick -> lY*2./(float)RANGE_MAX : 0;
+	float do_traction = XJoystickGetYAxis() * 2./(float)RANGE_MAX;
 	if(fabs(do_traction) > 1)
 		do_traction = SIGN(do_traction);
 	if(mchKeyPressed(MCH_KEY_MOVE_BACKWARD, control_config))
@@ -1409,7 +1407,7 @@ void Mechos::keyboard_control()
 
 
 	// Rudder
-	float do_rudder = joystick ? joystick -> lX*2./(float)RANGE_MAX : 0;
+	float do_rudder = XJoystickGetXAxis() * 2./(float)RANGE_MAX;
 	if(fabs(do_rudder) > 1)
 		do_rudder = SIGN(do_rudder);
 	if(mchKeyPressed(MCH_KEY_TURN_RIGHT, control_config))
