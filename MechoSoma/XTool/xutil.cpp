@@ -299,7 +299,7 @@ int xtCallXKey(SDL_Event *event) {
 
 		case SDL_TEXTINPUT:
 		{
-			if (event->text.text[0] < 127) {
+			if (event->text.text[0] > 0 && event->text.text[0] < 127) {
 				XKey.LastChar = event->text.text[0];
 			}
 			break;
