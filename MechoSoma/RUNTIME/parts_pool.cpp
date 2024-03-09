@@ -100,8 +100,8 @@ mchMechosPartsPool::~mchMechosPartsPool(void)
 		}
 		delete pool[i];
 	}
-	delete pool;
-	delete poolCur;
+	delete[] pool;
+	delete[] poolCur;
 }
 
 void mchMechosPartsPool::Create(int sz)

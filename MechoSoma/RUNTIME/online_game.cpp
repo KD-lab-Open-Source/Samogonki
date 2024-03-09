@@ -302,7 +302,7 @@ void ogPacket::free_turns(void)
 	if(STEPS_CNT){
 		for(i = 0; i < STEPS_CNT; i ++)
 			delete turns[i];
-		delete turns;
+		delete[] turns;
 	}
 	STEPS_CNT = 0;
 	turns = 0;
@@ -633,7 +633,7 @@ void ogTurnInfo::free_turns(void)
 		for(i = 0; i < USERS_CNT; i ++)
 			delete turns[i];
 
-		delete turns;
+		delete[] turns;
 	}
 	USERS_CNT = 0;
 	turns = 0;

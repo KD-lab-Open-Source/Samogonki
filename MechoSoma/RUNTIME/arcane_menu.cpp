@@ -3559,8 +3559,8 @@ void mchArcaneBMP::Save(const char* fname)
 
 mchArcaneBMP::~mchArcaneBMP(void)
 {
-	delete data;
-	delete frameData;
+	delete[] data;
+	delete[] frameData;
 }
 
 void mchArcaneBMP::Scale(int sx,int sy)

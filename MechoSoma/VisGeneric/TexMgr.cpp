@@ -439,9 +439,9 @@ int cTextureBuffer::SaveTGA(const char *fname,void *buf,int x,int y,int fmt)
 	if(p) tga.Save(NameTGA,x,y,bpp,p);
 	if(p) {
                 if (bpp == 16) {
-                        delete ((unsigned short*) p);
+                        delete[] ((unsigned short*) p);
                 } else {
-                        delete ((unsigned char*) p);
+                        delete[] ((unsigned char*) p);
                 }
         }
 	return 1;

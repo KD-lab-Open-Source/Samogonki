@@ -38,7 +38,7 @@ void fxlabSpriteType::Open(scrDataBlock* data)
 
 void fxlabSpriteType::Close()
 {
-	delete SpriteData;
+	delete[] SpriteData;
 };
 
 sSpriteFX* fxlabSpriteType::GetSpriteData(float phase)

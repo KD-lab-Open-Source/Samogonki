@@ -103,8 +103,8 @@ public:
 	inline cBase* FindID(unsigned int ID)
 	{
 		cBaseList *start = nullptr;
-		for(start=this->BaseList; start; start=start->next);
-		if(start->Base->ID==ID) return start->Base;
+		for(start=this->BaseList; start; start=start->next)
+			if(start->Base->ID==ID) return start->Base;
 		return 0;
 	}
 };

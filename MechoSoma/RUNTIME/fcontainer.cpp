@@ -66,7 +66,7 @@ void fContainer::save_idx(const char* idx_name)
 	fh.write(buf,buf_sz);
 	fh.close();
 
-	delete buf;
+	delete[] buf;
 	delete buf0;
 }
 
