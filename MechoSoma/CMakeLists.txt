@@ -178,7 +178,6 @@ set(GAME_SOURCES
     VisGeneric/PolyGrid.h
     VisGeneric/PolyMgr.cpp
     VisGeneric/PolyMgr.h
-    VisGeneric/PolyMgrD3D.cpp
     VisGeneric/PolyMgrDraw.cpp
     VisGeneric/PolyMgrTex.cpp
     VisGeneric/RenderDevice.cpp
