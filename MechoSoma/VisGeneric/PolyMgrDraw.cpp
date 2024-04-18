@@ -15,25 +15,32 @@
 #include "TileWater.h"
 #endif //_USE_TILEMAP_
 
-#include "Graph3d_Direct3d.h"
-
 float gb_LodValue=0.01f;
 #define LOD_VALUE						0.01f
 //#define LOD_VALUE						gb_LodValue
 
 extern void ResetTextureMultiMaterialSurface565(cInterfaceGraph3d *IGraph3d,cMaterial *Material,cSurfaceReflectionMultiMaterial *Surface);
 
-void SetProjectionMatrix(cCamera *Camera, cGraph3dDirect3D *Graph3d, bool isRenderReflection)
+void SetProjectionMatrix(cCamera *Camera, cInterfaceGraph3d *Graph3d, bool isRenderReflection)
 {
-	const float d = ((float)Graph3d->xScr) / Graph3d->yScr;
-	float xmin = (Camera->GetCenter().x + Camera->GetClipping().xmin() * Camera->GetFocus().x) * Graph3d->xScr;
-	float ymin = (Camera->GetCenter().y + Camera->GetClipping().ymin() * Camera->GetFocus().y * d) * Graph3d->yScr;
-	float xmax = (Camera->GetCenter().x + Camera->GetClipping().xmax() * Camera->GetFocus().x) * Graph3d->xScr;
-	float ymax = (Camera->GetCenter().y + Camera->GetClipping().ymax() * Camera->GetFocus().y * d) * Graph3d->yScr;
-	if (xmin < Graph3d->xScrMin) xmin = Graph3d->xScrMin;
-	if (xmax >= Graph3d->xScrMax) xmax = Graph3d->xScrMax - 1;
-	if (ymin < Graph3d->yScrMin) ymin = Graph3d->yScrMin;
-	if (ymax >= Graph3d->yScrMax) ymax = Graph3d->yScrMax - 1;
+	const int xScr = Graph3d->GetSizeX();
+	const int yScr = Graph3d->GetSizeY();
+
+	int xScrMin = 0;
+	int xScrMax = 0;
+	int yScrMin = 0;
+	int yScrMax = 0;
+	Graph3d->GetClipRect(&xScrMin, &yScrMin, &xScrMax, &yScrMax);
+
+	const float d = ((float)xScr) / yScr;
+	float xmin = (Camera->GetCenter().x + Camera->GetClipping().xmin() * Camera->GetFocus().x) * xScr;
+	float ymin = (Camera->GetCenter().y + Camera->GetClipping().ymin() * Camera->GetFocus().y * d) * yScr;
+	float xmax = (Camera->GetCenter().x + Camera->GetClipping().xmax() * Camera->GetFocus().x) * xScr;
+	float ymax = (Camera->GetCenter().y + Camera->GetClipping().ymax() * Camera->GetFocus().y * d) * yScr;
+	if (xmin < xScrMin) xmin = xScrMin;
+	if (xmax >= xScrMax) xmax = xScrMax - 1;
+	if (ymin < yScrMin) ymin = yScrMin;
+	if (ymax >= yScrMax) ymax = yScrMax - 1;
 
 	MD3DRECT viewport{
 		static_cast<int32_t>(xmin),
@@ -41,18 +48,17 @@ void SetProjectionMatrix(cCamera *Camera, cGraph3dDirect3D *Graph3d, bool isRend
 		static_cast<int32_t>(xmax - xmin),
 		static_cast<int32_t>(ymax - ymin)
 	};
-	d3dSetClipRect(viewport);
 
-	const float dx = ((float)(2 * Graph3d->xScr)) / viewport.right;
-	const float dy = ((float)(2 * Graph3d->xScr)) / viewport.bottom;
+	const float dx = ((float)(2 * xScr)) / viewport.right;
+	const float dy = ((float)(2 * xScr)) / viewport.bottom;
 
 	D3DMATRIX mat;
 	memset(&mat, 0, sizeof(D3DMATRIX));
 
 	mat._11 = +Camera->GetFocus().x * dx;
 	mat._22 = -Camera->GetFocus().y * dy;
-	mat._31 = 2 * (Camera->GetCenter().x * Graph3d->xScr - viewport.left) / viewport.right - 1;
-	mat._32 = 1 - 2 * (Camera->GetCenter().y * Graph3d->yScr - viewport.top) / viewport.bottom;
+	mat._31 = 2 * (Camera->GetCenter().x * xScr - viewport.left) / viewport.right - 1;
+	mat._32 = 1 - 2 * (Camera->GetCenter().y * yScr - viewport.top) / viewport.bottom;
 	mat._34 = 1;
 
 	if (isRenderReflection)
@@ -66,7 +72,7 @@ void SetProjectionMatrix(cCamera *Camera, cGraph3dDirect3D *Graph3d, bool isRend
 		mat._43 = -(Camera->GetZBufferScale().y - Camera->GetZBufferScale().x) * Camera->GetZPlane().x;
 	}
 
-	d3dSetProjectionMatrix(mat);
+	Graph3d->SetProjectionMatrix(viewport, mat);
 }
 
 int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,int hTexture,int hLightMap)
@@ -87,7 +93,7 @@ int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,in
 	cRenderDevice *RenderDevice=(cRenderDevice*)URenderDevice;
 	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 
-	SetProjectionMatrix(Camera, static_cast<cGraph3dDirect3D*>(Graph3d), Attribute & RENDER_REFLECTION);
+	SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 
 	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
 	if((Attribute&RENDER_MULTICANAL)==0)
@@ -95,8 +101,7 @@ int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,in
 	else
 		Graph3d->PolygonIndexed2(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length(),hTexture,hLightMap);
 
-	d3dResetClipRect();
-	d3dResetProjectionMatrix();
+	Graph3d->ResetProjectionMatrix();
 	return 1;
 }
 

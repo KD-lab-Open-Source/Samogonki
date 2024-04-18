@@ -212,6 +212,18 @@ int cGraph3dDirect3D::Flush()
 	return 0;
 }
 
+void cGraph3dDirect3D::SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix)
+{
+	d3dSetClipRect(Viewport);
+	d3dSetProjectionMatrix(ProjectionMatrix);
+}
+
+void cGraph3dDirect3D::ResetProjectionMatrix()
+{
+	d3dResetClipRect();
+	d3dResetProjectionMatrix();
+}
+
 int cGraph3dDirect3D::PolygonFan(void *vertex,int NumberVertex,int VertexFormat)
 {
 	return 0;

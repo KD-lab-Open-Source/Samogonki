@@ -22,6 +22,9 @@ public:
 	virtual int Fill(int r,int g,int b);
 	virtual int Flush();
 
+	virtual void SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix);
+	virtual void ResetProjectionMatrix();
+
 	virtual int SetMaterial(eMaterialMode material);
 	virtual int SetRenderState(eRenderStateOption option,int value);
 	virtual int GetTextureFormatData(sTextureFormatData &TexFmtData);

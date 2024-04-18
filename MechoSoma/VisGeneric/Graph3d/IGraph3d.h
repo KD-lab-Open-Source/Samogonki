@@ -236,6 +236,9 @@ public:
 	virtual int Fill(int r,int g,int b)=0;
 	virtual int Flush()=0;
 
+	virtual void SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix)=0;
+	virtual void ResetProjectionMatrix()=0;
+
 	virtual int SetMaterial(eMaterialMode material)=0;
 	virtual int SetRenderState(eRenderStateOption option,int value)=0;
 	virtual int GetTextureFormatData(sTextureFormatData &TexFmtData)=0;
