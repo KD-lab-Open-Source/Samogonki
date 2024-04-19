@@ -226,36 +226,22 @@ void cGraph3dDirect3D::ResetProjectionMatrix()
 
 int cGraph3dDirect3D::PolygonFan(void *vertex,int NumberVertex,int VertexFormat)
 {
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::PolygonStrip(void *vertex,int NumberVertex,int VertexFormat)
 {
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat)
 {
-	assert(polygon&&vertex);
-	assert(VertexFormat==VERTEXFMT_FIX);
-	assert((NumberVertex<65536)&&(NumberVertex>0)&&(NumberPolygon>0));
-	if(!SwitchRenderScene) return 1;
-	sVertexFix *vFix=(sVertexFix*)vertex;
-	sPolygonFix *pFix=(sPolygonFix*)polygon,*pFixEnd=&pFix[NumberPolygon];
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	d3dTrianglesIndexed(FixFormatd3d,vFix,NumberVertex,(unsigned short*)pFix,3*NumberPolygon);
-	cGraph3dDirect3D::NumberPolygon+=NumberPolygon;
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat)
 {
-	assert(polygon&&vertex);
-	assert(VertexFormat==VERTEXFMT_FIX);
-	assert((NumberVertex<65536)&&(NumberVertex>0)&&(NumberPolygon>0));
-	if(!SwitchRenderScene) return 1;
-	sVertexFix *vFix=(sVertexFix*)vertex;
-	sPolygonFix *pFix=(sPolygonFix*)polygon,*pFixEnd=&pFix[NumberPolygon];
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	d3dTrianglesIndexed2(FixFormatd3d,vFix,NumberVertex,(unsigned short*)pFix,3*NumberPolygon,hTexture,hLightMap);
-	cGraph3dDirect3D::NumberPolygon+=NumberPolygon;
+	assert(0);
 	return 0;
 }
 
@@ -322,95 +308,22 @@ void* cGraph3dDirect3D::GetInfo(int *graph3d)
 }
 int cGraph3dDirect3D::DrawLine(int x1,int y1,int x2,int y2,int c1,int c2)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-//	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	sPolygonFix pFix[2]={ 0,2,1, 1,2,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=0.001f; vFix[0].w=0.999f;
-	vFix[0].diffuse()=c1;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=0.001f; vFix[1].w=0.999f;
-	vFix[1].diffuse()=c2;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=0.001f; vFix[2].w=0.999f;
-	vFix[2].diffuse()=c1;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=0.001f; vFix[3].w=0.999f;
-	vFix[3].diffuse()=c2;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawLine(int x1,int y1,int x2,int y2,int r,int g,int b,int a)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-//	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	sPolygonFix pFix[2]={ 0,2,1, 1,2,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=0.001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=0.001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=0.001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=0.001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawLine(float x1,float y1,float z1,float x2,float y2,float z2,int r,int g,int b,int a)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=z1; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=z2; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=z1; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=z2; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawPixel(int x1,int y1,int r,int g,int b,int a)
 { 
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x1>xScrMax||y1<yScrMin||y1>yScrMax) return 0;
-	struct sPointFD
-	{
-		float xe,ye,z,w;
-		unsigned char drgba[4];
-		inline unsigned char& dr()			{ return drgba[2]; }
-		inline unsigned char& dg()			{ return drgba[1]; }
-		inline unsigned char& db()			{ return drgba[0]; }
-		inline unsigned char& da()			{ return drgba[3]; }
-	} vPoint;
-	vPoint.xe=(float)x1; vPoint.ye=(float)y1; vPoint.z=0.001f; vPoint.w=0.999f;
-	vPoint.dr()=r; vPoint.dg()=g; vPoint.db()=b; vPoint.da()=a;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dPoints(D3DFVF_XYZRHW|D3DFVF_DIFFUSE,&vPoint,1);
+	assert(0);
 	return 0; 
 }
 int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
@@ -677,42 +590,70 @@ int cGraph3dDirect3D::GetWindowHandle( void **hWnd )
 int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 {
 	assert(SwitchRenderScene);
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,2,1, 3,2,0 };
-	vFix[0].xe=(float)0; vFix[0].ye=(float)0; vFix[0].z=0.0001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)xScr; vFix[1].ye=(float)0; vFix[1].z=0.0001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)xScr; vFix[2].ye=(float)yScr; vFix[2].z=0.0001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)0; vFix[3].ye=(float)yScr; vFix[3].z=0.0001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
+
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
+
+	drawCommand.addPosition(0, 0, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(xScr, 0, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(xScr, yScr, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(0, yScr, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addIndex(0, 2, 1);
+	drawCommand.addIndex(3, 2, 0);
+
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
 	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
 	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,	D3DCULL_NONE ); 
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+
+	d3dEndDrawCommand(drawCommand);
+
 	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
 	return 0;
 }
 int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,int a,int flag)
 { 
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,1,2, 2,3,0 };
-	vFix[0].xe=(float)x; vFix[0].ye=(float)y; vFix[0].z=0.0001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)(x+dx); vFix[1].ye=(float)y; vFix[1].z=0.0001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)(x+dx); vFix[2].ye=(float)(y+dy); vFix[2].z=0.0001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x; vFix[3].ye=(float)(y+dy); vFix[3].z=0.0001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
+
+	drawCommand.addPosition(x, y, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x+dx, y, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x+dx, y+dy, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x, y+dy, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addIndex(0, 1, 2);
+	drawCommand.addIndex(2, 3, 0);
+
 	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
 	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+
+	d3dEndDrawCommand(drawCommand);
+
 	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
 	return 0; 
 }
@@ -734,8 +675,6 @@ int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 ////////////////////////// PRIVATE //////////////////////////
 void cGraph3dDirect3D::InitRenderState()
 {
-	d3dSetProjectionMatrixToIdentity();
-
 	d3dSetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
 	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
 	d3dSetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );

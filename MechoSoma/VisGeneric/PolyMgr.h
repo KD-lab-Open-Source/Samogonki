@@ -13,18 +13,6 @@
 
 #define POINT_SCALE_W				0.9f
 
-#define GET_FRUSTUM_CLIP(a)							((a)&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))
-enum eAttributeClipPoint
-{
-	CLIP_NILL					=	0,
-	CLIP_XMIN					=	1<<0,
-	CLIP_XMAX					=	1<<1,
-	CLIP_YMIN					=	1<<2,
-	CLIP_YMAX					=	1<<3,
-	CLIP_ZMIN					=	1<<4,
-	CLIP_ZMAX					=	1<<5,
-};
-
 #define GET_RENDER(a)								((a)&0x00FFFFFF)
 #define GET_RENDER_TYPE(a)							((a)&0x0000FFFF)
 // type render 1..16
@@ -56,21 +44,6 @@ enum eAttributeRenderPolygon
 #define HARDWARE_W(w)			(POLYGON_SCALE_W*w)
 #define SOFTWARE_Z(wh)			((1/POLYGON_SCALE_W)/(wh))
 
-//private
-#define GET_CLIP(xe,ye,zv)													\
-	(	(xClipMin>xe?CLIP_XMIN : (xClipMax<xe?CLIP_XMAX:0)) |				\
-		(yClipMin>ye?CLIP_YMIN : (yClipMax<ye?CLIP_YMAX:0)) |				\
-		(zClipMin>zv?CLIP_ZMIN : (zClipMax<zv?CLIP_ZMAX:0)) )
-
-#define SET_POINTFIX_XYW(p,fxe,fye,fwh)									{ p.xe=fxe; p.ye=fye; p.z=fwh; }
-#define SET_POINTFIX_D(p,rd,gd,bd,ad)									{ p.dr()=rd; p.dg()=gd; p.db()=bd; p.da()=ad; }
-#define SET_POINTFIX_S(p,rs,gs,bs,as)									{ p.sr()=rs; p.sg()=gs; p.sb()=bs; p.sa()=as; }
-#define SET_POINTFIX_UV1(p,fu1,fv1)										{ p.u1()=fu1; p.v1()=fv1; }
-
-#define SET_POLYGONFIX(f,v1,v2,v3)										{ f.p1=v1; f.p2=v2; f.p3=v3; }
-#define SWAP_POLYGONFIX(f1,f2)											{ int tmp=f2.p1; f2.p1=f1.p1; f1.p1=tmp; tmp=f2.p2; f2.p2=f1.p2; f1.p2=tmp; tmp=f2.p3; f2.p3=f1.p3; f1.p3=tmp; }
-#define RESET_POLYGONFIX(f1,f2)											{ f1.p1=f2.p1; f1.p2=f2.p2; f1.p3=f2.p3; }
-
 class cSun;
 class cOmni;
 class cMesh;
@@ -98,30 +71,18 @@ struct sSpriteFX
 	void Init(const sColor4f &diffuse,float angle,float scale)				{ a.set(scale*cosf(angle+0.7854f),scale*sinf(angle+0.7854f)); b.set(scale*cosf(angle+2.3562f),scale*sinf(angle+2.3562f)); rD=diffuse.GetR(); gD=diffuse.GetG(); bD=diffuse.GetB(); aD=diffuse.GetA(); }
 };
 
-struct sPointAttribute
-{
-	Vect3f			pv;		// координаты в прострастве камеры
-	unsigned char	clip;	// флаги клиппирования
-	unsigned int	edge;	// указывает на две вершины породивших при клиповке данную
-	inline void Set(float fxv,float fyv,float fzv)						{ pv.x=fxv; pv.y=fyv; pv.z=fzv; }
-	inline void Set(const sPointAttribute &pa1,const sPointAttribute &pa2,float t)	{ pv.x=pa1.pv.x+(pa2.pv.x-pa1.pv.x)*t; pv.y=pa1.pv.y+(pa2.pv.y-pa1.pv.y)*t;	pv.z=pa1.pv.z+(pa2.pv.z-pa1.pv.z)*t; };
-};
-
 class cPolyDispatcher : public sTracePolygon
 {
-	cBaseArray <sPlane4f>			PlaneClip3d;
-	float							xClipMin,xClipMax,yClipMin,yClipMax,zClipMin,zClipMax;
 	cCamera							*CurrentCamera;
 	cConvertor						*CurrentConvertorObjectToScreen;
 	int								AlphaForSprite;
-	Vect2f							Center,Focus;	
+
+	M3D_DRAW_COMMAND				CurrentDrawCommand;
+	int 							CurrentListPointIndex = 0;
 public:
 	int								Attribute;
 	cBaseArray <sVertexFix>			PointFix;
-	cBaseArray <sPolygonFix>		PolygonFix;
-	cBaseArray <sPointAttribute>	PointAttribute;
 	cUnknownDynArrayPointer			RenderDeviceArray;
-	cBaseArray <sVertexD3D>			VertexD3D;
 
 	cPolyDispatcher();
 	~cPolyDispatcher();
@@ -131,32 +92,13 @@ public:
 	void Detach(cUnknownClass *URenderDevice)			{ assert(URenderDevice->GetKind(KIND_RENDERDEVICE)); RenderDeviceArray.Detach(URenderDevice); }
 	inline cRenderDevice* GetRenderDevice(int number)	{ return (cRenderDevice*)RenderDeviceArray[number]; }
 	inline int GetNumberRenderDevice()					{ return RenderDeviceArray.length(); }
-	void SetClippingPlane(cCamera *Camera);
 
-	int Draw(cUnknownClass *UCamera,cUnknownClass *UViewPort,int hTexture=0,int hLightMap=0);
 	void BeginScene(cUnknownClass *UCameraList);
 	void EndScene(cUnknownClass *UCameraList);
 	// Texture operation
 	void CreateTexture(cMaterial *Material,cRenderDevice *RenderDevice);
 	void DeleteTexture(sTexture *Texture);
 
-	// Fix-format function
-	void InitFix(int attribute,int NumberPoint=0);
-	__forceinline void AddPolygonFixTestPointFix(int i1,int i2,int i3);// добавление в конецполигона после теста
-	__forceinline void SetPointFix(int i,const Vect2f &tex);
-	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da);
-	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da,const Vect2f &tex);
-	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa);
-	__forceinline void SetPointFix(int i,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect2f &tex);
-	__forceinline void SetPointFix(int i,float xe,float ye,float w,float u,float v,float xv,float yv,float zv);
-	__forceinline void SetPointFix(int i,float xe,float ye,float w,int dr,int dg,int db,int da,float xv,float yv,float zv);
-	__forceinline void SetPointFix(int i,float xe,float ye,float w,int dr,int dg,int db,int da,float u,float v,float xv,float yv,float zv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,const Vect3f &pv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,const Vect2f &tex,const Vect3f &pv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,const Vect3f &pv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,const Vect2f &tex,const Vect3f &pv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect3f &pv);
-	__forceinline void SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect2f &tex,const Vect3f &pv);
 	// функции растеризации
 	void Draw(cUnknownClass *UCameraList,cOmni *Omni);
 	
@@ -192,22 +134,6 @@ public:
 
 private:
 	inline int AssertValid();
-	// PolygonFix
-	inline int  AddPolygonFix(int p1,int p2,int p3);		// добавление в конец
-	inline void MovPolygonFix(int i);						// перемещение из положения i в конец
-	inline void SetPolygonFix(int i,int p1,int p2,int p3);	// установка значений полигона
-
-	inline sVertexFix& NextPointFix()					{ return PointFix[PointFix.CurrentSize++]; }
-	inline sPolygonFix& NextPolygonFix()				{ return PolygonFix[PolygonFix.CurrentSize++]; }
-	inline sPointAttribute& NextPointAttribute()		{ return PointAttribute[PointAttribute.CurrentSize++]; }
-	// AddPoint
-	int AddPointFix(sPlane4f &PlaneClip3d,int i1,int i2);
-	// push
-	inline int PushPolygonFix(int ofs=0)		{ int tmp=PolygonFix.length(); PolygonFix.Base=&PolygonFix.Base[PolygonFix.length()]; PolygonFix.length()=ofs; return tmp; } 
-	inline int PushPointFix(int ofs=0)			{ int tmp=PointFix.length(); PointFix.Base=&PointFix.Base[PointFix.length()]; PointAttribute.Base=&PointAttribute.Base[PointAttribute.length()]; PointFix.length()=PointAttribute.length()=ofs; return tmp; } 
-	// pop
-	inline int PopPolygonFix(int ofs)			{ int tmp=PolygonFix.length(); PolygonFix.Base=&PolygonFix.Base[-(PolygonFix.length()=ofs)]; return tmp; }
-	inline int PopPointFix(int ofs)				{ int tmp=PointFix.length(); PointFix.Base=&PointFix.Base[-(PointFix.length()=ofs)]; PointAttribute.Base=&PointAttribute.Base[-(PointAttribute.length()=ofs)]; return tmp; }
 
 	void CreateTexture565(cMaterial *Material,cRenderDevice *RenderDevice);
 	void CreateTexture1555(cMaterial *Material,cRenderDevice *RenderDevice);
@@ -222,158 +148,8 @@ private:
 
 extern cPolyDispatcher *P3D;
 
-#define ADD_POINT_ATTRIBUTE(i,xe,ye,xv,yv,zv)			\
-	{													\
-		assert(i<PointAttribute.length());				\
-		sPointAttribute &pa=PointAttribute[i];			\
-		pa.Set(xv,yv,zv);								\
-		pa.clip=GET_CLIP(xe,ye,zv);						\
-	}
-
-__forceinline void cPolyDispatcher::AddPolygonFixTestPointFix(int i1,int i2,int i3)	
-{	// добавление в конец полигона после теста
-	assert((i1<PointFix.length())&&(i2<PointFix.length())&&(i3<PointFix.length()));
-	sVertexFix &p1=PointFix[i1],&p2=PointFix[i2],&p3=PointFix[i3];
-	if(PointAttribute[i1].clip&PointAttribute[i2].clip&PointAttribute[i3].clip) return;
-	if((PointAttribute[i1].clip|PointAttribute[i2].clip|PointAttribute[i3].clip)&(CLIP_ZMIN|CLIP_ZMAX))
-	{
-		sPolygonFix &pFix=NextPolygonFix();
-		SET_POLYGONFIX(pFix,i1,i2,i3);
-	}
-	else if(((p3.xe-p2.xe)*(p3.ye-p1.ye)-(p3.xe-p1.xe)*(p3.ye-p2.ye))>0)
-	{
-		sPolygonFix &pFix=NextPolygonFix();
-		SET_POLYGONFIX(pFix,i1,i2,i3);
-	}
-}
-inline void cPolyDispatcher::SetPolygonFix(int i,int p1,int p2,int p3)
-{
-	assert(i<PolygonFix.length());
-	SET_POLYGONFIX(PolygonFix[i],p1,p2,p3);
-}
-inline int cPolyDispatcher::AddPolygonFix(int p1,int p2,int p3)
-{
-	sPolygonFix &pFix=NextPolygonFix();
-	SET_POLYGONFIX(pFix,p1,p2,p3);
-	return PolygonFix.length()-1;
-}
-inline void cPolyDispatcher::MovPolygonFix(int i)
-{
-	assert(i<PolygonFix.length());
-	sPolygonFix &pFix=NextPolygonFix();
-	RESET_POLYGONFIX(pFix,PolygonFix[i]);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,int dr,int dg,int db,int da)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length()&&i<PointAttribute.length());
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	PointAttribute[i].clip=GET_CLIP(PointFix[i].xe,PointFix[i].ye,PointAttribute[i].pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect2f &tex)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length()&&i<PointAttribute.length());
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	PointAttribute[i].clip=GET_CLIP(PointFix[i].xe,PointFix[i].ye,PointAttribute[i].pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,int dr,int dg,int db,int da,const Vect2f &tex)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length()&&i<PointAttribute.length());
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	PointAttribute[i].clip=GET_CLIP(PointFix[i].xe,PointFix[i].ye,PointAttribute[i].pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length()&&i<PointAttribute.length());
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_S(PointFix[i],sr,sg,sb,sa);
-	PointAttribute[i].clip=GET_CLIP(PointFix[i].xe,PointFix[i].ye,PointAttribute[i].pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect2f &tex)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length()&&i<PointAttribute.length());
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_S(PointFix[i],sr,sg,sb,sa);
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	PointAttribute[i].clip=GET_CLIP(PointFix[i].xe,PointFix[i].ye,PointAttribute[i].pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,float xe,float ye,float w,float u,float v,float xv,float yv,float zv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],xe,ye,w);
-	SET_POINTFIX_UV1(PointFix[i],u,v);
-	ADD_POINT_ATTRIBUTE(i,xe,ye,xv,yv,zv);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,float xe,float ye,float w,int r,int g,int b,int a,float xv,float yv,float zv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],xe,ye,w);
-	SET_POINTFIX_D(PointFix[i],r,g,b,a);
-	ADD_POINT_ATTRIBUTE(i,xe,ye,xv,yv,zv);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,float xe,float ye,float w,int r,int g,int b,int a,float u,float v,float xv,float yv,float zv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],xe,ye,w);
-	SET_POINTFIX_D(PointFix[i],r,g,b,a);
-	SET_POINTFIX_UV1(PointFix[i],u,v);
-	ADD_POINT_ATTRIBUTE(i,xe,ye,xv,yv,zv);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,const Vect2f &tex,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,const Vect2f &tex,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_S(PointFix[i],sr,sg,sb,sa);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,int dr,int dg,int db,int da,int sr,int sg,int sb,int sa,const Vect2f &tex,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	SET_POINTFIX_D(PointFix[i],dr,dg,db,da);
-	SET_POINTFIX_S(PointFix[i],sr,sg,sb,sa);
-	SET_POINTFIX_UV1(PointFix[i],tex.x,tex.y);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
-__forceinline void cPolyDispatcher::SetPointFix(int i,const Vect3f &pe,const Vect3f &pv)
-{
-	assert(PointFix.length()<PointFix.MaxSize&&i<PointFix.length());
-	SET_POINTFIX_XYW(PointFix[i],pe.x,pe.y,pe.z);
-	ADD_POINT_ATTRIBUTE(i,pe.x,pe.y,pv.x,pv.y,pv.z);
-}
 inline int cPolyDispatcher::AssertValid()
 {
-#ifdef _DEBUG
-	for(int i=0;i<PolygonFix.length();i++)
-	{
-		sPolygonFix &p=PolygonFix[i];
-		if((p.p1>=PointFix.length())||(p.p2>=PointFix.length())||(p.p3>=PointFix.length()))
-			return 0;
-	}
-#endif
 	return 1;
 }
 

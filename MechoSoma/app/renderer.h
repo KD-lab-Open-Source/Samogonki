@@ -45,23 +45,19 @@ class Renderer final {
   MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
   MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
   MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
-  MD3DERROR d3dTriangleFan(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount);
-  MD3DERROR d3dTrianglesIndexed(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices,
-                                uint32_t dwIndexCount);
 
   MD3DERROR d3dSetTexture(uint32_t dwHandle, uint32_t dwStage);
   MD3DERROR d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
 
-  MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t *lpwIndices,
-                                 uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1);
+  MD3DERROR d3dBeginDrawCommand(M3D_DRAW_COMMAND &command);
+  MD3DERROR d3dEndDrawCommand(const M3D_DRAW_COMMAND &command);
 
   MD3DERROR d3dLockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
   MD3DERROR d3dUnlockBackBuffer();
   MD3DERROR d3dFlushBackBuffer(MD3DRECT* lprcRect);
 
  private:
-  void prepare_render_state(size_t index_count);
-  void add_vertex(uint32_t vertex_type, void* vertices, uint32_t index);
+  void prepare_render_state();
 
 private:
   const size_t max_vertex_count = 100000;
@@ -74,12 +70,14 @@ private:
   sg_image _nullTexture;
 
   std::vector<float> _position_buffer;
-  std::vector<float> _color_buffer;
+  std::vector<float> _diffuse_color_buffer;
+  std::vector<float> _specular_color_buffer;
   std::vector<float> _uv_buffer;
   std::vector<uint32_t> _index_buffer;
 
   sg_buffer sg_position_buffer;
-  sg_buffer sg_color_buffer;
+  sg_buffer sg_diffuse_color_buffer;
+  sg_buffer sg_specular_color_buffer;
   sg_buffer sg_uv_buffer;
   sg_buffer sg_index_buffer;
   sg_sampler _clamp_sampler;

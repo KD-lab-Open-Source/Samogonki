@@ -144,14 +144,6 @@ MD3DERROR d3dBeginScene() {
 
 MD3DERROR d3dTestCooperativeLevel() { return MD3D_OK; }
 
-MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
-  return renderer->d3dSetProjectionMatrix(matrix);
-}
-
-MD3DERROR d3dResetProjectionMatrix() {
-  return renderer->d3dResetProjectionMatrix();
-}
-
 MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
   return renderer->d3dSetRenderState(dwRenderStateType, dwRenderState);
 }
@@ -162,20 +154,6 @@ MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdw
 
 MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue) {
   return renderer->d3dSetTextureStageState(dwStage, dwState, dwValue);
-}
-
-MD3DERROR d3dTriangles(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount) { return MD3D_OK; }
-
-MD3DERROR d3dTriangleStrip(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount) { return MD3D_OK; }
-
-MD3DERROR d3dTriangleFan(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount) {
-  return renderer->d3dTriangleFan(dwVertexTypeDesc, lpvVertices, dwVertexCount);
-}
-
-MD3DERROR d3dPoints(uint32_t, void*, uint32_t) { return MD3D_OK; }
-
-MD3DERROR d3dTrianglesIndexed(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices, uint32_t dwIndexCount) {
-  return renderer->d3dTrianglesIndexed(dwVertexTypeDesc, lpvVertices, dwVertexCount, lpwIndices, dwIndexCount);
 }
 
 MD3DERROR d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData) {
@@ -228,10 +206,6 @@ MD3DERROR d3dSetGammaFxShadow(float fRShadow, float fGShadow, float fBShadow) { 
 
 MD3DERROR d3dGetGammaFxShadow(float* pfRShadow, float* pfGShadow, float* pfBShadow) { return MD3D_OK; }
 
-MD3DERROR d3dSetProjectionMatrix(float fFOV, float fNearPlane, float fFarPlane) { return MD3D_OK; }
-
-MD3DERROR d3dSetProjectionMatrixToIdentity() { return MD3D_OK; }
-
 MD3DERROR d3dSetFogParameters(uint32_t dwMode, uint32_t dwColor, float fStart, float fEnd, float fDensity) { return MD3D_OK; }
 
 MD3DERROR d3dEnableFog(bool bEnable) { return MD3D_OK; }
@@ -248,10 +222,38 @@ MD3DERROR d3dResetClipRect() {
   return renderer->d3dResetClipRect();
 }
 
-MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices, uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1) {
-  assert(g_bInitialized);
-  assert(g_bInScene);
+MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
+  return renderer->d3dSetProjectionMatrix(matrix);
+}
 
-  return renderer->d3dTrianglesIndexed2(dwVertexTypeDesc, lpvVertices, dwVertexCount, 
-    lpwIndices, dwIndexCount, dwHandleTex0, dwHandleTex1);
+MD3DERROR d3dResetProjectionMatrix() {
+  return renderer->d3dResetProjectionMatrix();
+}
+
+MD3DERROR d3dBeginDrawCommand(M3D_DRAW_COMMAND &command) {
+  return renderer->d3dBeginDrawCommand(command);
+}
+
+MD3DERROR d3dEndDrawCommand(const M3D_DRAW_COMMAND &command) {
+  return renderer->d3dEndDrawCommand(command);
+}
+
+void M3D_DRAW_COMMAND::addPosition(float x, float y, float z) {
+  positionBuffer.add(x, y, z);
+}
+
+void M3D_DRAW_COMMAND::addDiffuseColor(int r, int g, int b, int a) {
+  diffuseColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+}
+
+void M3D_DRAW_COMMAND::addSpecularColor(int r, int g, int b, int a) {
+  specularColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+}
+
+void M3D_DRAW_COMMAND::addUV(float u, float v) {
+  uvBuffer.add(u, v);
+}
+
+void M3D_DRAW_COMMAND::addIndex(unsigned v1, unsigned v2, unsigned v3) {
+  indexBuffer.add(v1, v2, v3);
 }

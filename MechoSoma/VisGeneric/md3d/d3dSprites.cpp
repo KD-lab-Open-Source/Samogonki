@@ -747,8 +747,26 @@ MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOri
 
 	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
 
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CCW);
-	d3dTriangleFan( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, &(lpSprite->Vertices), 4 );
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
+
+	for (int i = 0; i < 4; i++)
+	{
+		drawCommand.addPosition(lpSprite->Vertices[i].x, lpSprite->Vertices[i].y, lpSprite->Vertices[i].z);
+		drawCommand.addDiffuseColor(
+			((lpSprite->Vertices[i].rgba >> 16) & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 8) & 0xFF),
+			(lpSprite->Vertices[i].rgba & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 24) & 0xFF)
+		);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(lpSprite->Vertices[i].u, lpSprite->Vertices[i].v);
+	}
+	drawCommand.addIndex(2, 1, 0);
+	drawCommand.addIndex(3, 2, 0);
+
+	d3dEndDrawCommand(drawCommand);
+
 //	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
 
 

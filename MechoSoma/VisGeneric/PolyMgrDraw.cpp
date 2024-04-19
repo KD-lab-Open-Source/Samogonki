@@ -1,4 +1,3 @@
-//#ifndef _ONLY_DIRECT3D_
 #include "PolyMgr.h"
 #include "Camera.h"
 #include "Object.h"
@@ -42,7 +41,7 @@ void SetProjectionMatrix(cCamera *Camera, cInterfaceGraph3d *Graph3d, bool isRen
 	if (ymin < yScrMin) ymin = yScrMin;
 	if (ymax >= yScrMax) ymax = yScrMax - 1;
 
-	MD3DRECT viewport{
+	const MD3DRECT viewport{
 		static_cast<int32_t>(xmin),
 		static_cast<int32_t>(ymin),
 		static_cast<int32_t>(xmax - xmin),
@@ -75,36 +74,6 @@ void SetProjectionMatrix(cCamera *Camera, cInterfaceGraph3d *Graph3d, bool isRen
 	Graph3d->SetProjectionMatrix(viewport, mat);
 }
 
-int cPolyDispatcher::Draw(cUnknownClass *UCamera,cUnknownClass *URenderDevice,int hTexture,int hLightMap)
-{
-	assert(UCamera->GetKind(KIND_CAMERA));
-	assert(URenderDevice->GetKind(KIND_RENDERDEVICE));
-	cCamera *Camera=(cCamera*)UCamera;
-	if(PolygonFix.length()<=0) return 0;
-
-	sPointAttribute *pa=&PointAttribute[0];
-	for(sVertexFix *bp=&PointFix[0],*ep=&PointFix[PointFix.length()];bp<ep;bp++,pa++)
-	{
-		bp->xe = pa->pv.x;
-		bp->ye = pa->pv.y;
-		bp->z = pa->pv.z;
-	}
-
-	cRenderDevice *RenderDevice=(cRenderDevice*)URenderDevice;
-	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
-
-	SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
-
-	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-	if((Attribute&RENDER_MULTICANAL)==0)
-		Graph3d->PolygonIndexed(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length());
-	else
-		Graph3d->PolygonIndexed2(&PolygonFix[0],PolygonFix.length(),&PointFix[0],PointFix.length(),hTexture,hLightMap);
-
-	Graph3d->ResetProjectionMatrix();
-	return 1;
-}
-
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 {
 	float size=Omni->GetRadius();
@@ -118,7 +87,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 			cCamera *Camera=(cCamera*)CameraArray[nCamera];
 			cRenderDevice *RenderDevice=Camera->GetViewPort();
 			cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
-			SetClippingPlane(Camera);
 			// подготовка к расчету координат объекта
 			cConvertor ConvertorObjectToScreen;
 			Omni->BuildDrawMatrix(Camera,ConvertorObjectToScreen.GetMatrix(),Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE);
@@ -132,7 +100,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 			float limit=(float)size*(NumberPlane-1)/NumberPlane, dlimit=(float)size/NumberPlane;
 			int RenderAttribute=MAT_COLOR_ADD_DIFFUSE|MAT_ALPHA_MOD_DIFFUSE|RENDER_COLOR_MOD_DIFFUSE;
 			if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-			InitFix(RenderAttribute,round((NumberAngle+1)*(limit+limit+dlimit)/dlimit));
+
+			Attribute = RenderAttribute;
+			M3D_DRAW_COMMAND drawCommand;
+			d3dBeginDrawCommand(drawCommand);
+
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			int CurrentPoint=0,PreviousPoints=0;
 			Vect3f pw(0,0,0),pv,pe;
@@ -143,29 +115,41 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 				float radius=size;
 				if(height>0) radius=size-height; else radius=size+height; 
 				if((pv.z+height)<=Camera->GetZPlane().x) continue;
-				float div_zv;
-				if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) div_zv=(pv.z+height); 
-				else div_zv=Camera->GetPos().z;
-				assert(div_zv!=0);
-				div_zv=1/div_zv; 
 				Vect3f pv1(pv.x,pv.y,pv.z+height);
-				Vect3f pe1(pv1.x*div_zv,pv1.y*div_zv,div_zv);
-				SetPointFix(CurrentPoint++,pe1,rc,gc,bc,255,pv1);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(rc, gc, bc, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				CurrentPoint++;
+
 				for(int k=1;k<(NumberAngle+1);k++)
 				{
 					int angle=(k-1)*GRAD_TO_DGRAD(360)/NumberAngle;
 					Vect3f pv1(pv.x+size*COS_FLOAT_DGRAD(angle),pv.y+size*SIN_FLOAT_DGRAD(angle),pv.z+height);
-					Vect3f pe1(pv1.x*div_zv,pv1.y*div_zv,div_zv);
-					SetPointFix(CurrentPoint++,pe1,0,0,0,0,pv1);
+
+					drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+					drawCommand.addDiffuseColor(0, 0, 0, 0);
+					drawCommand.addSpecularColor(0, 0, 0, 0);
+					CurrentPoint++;
 				}
-				AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+1,PreviousPoints+NumberAngle);
+
+				drawCommand.addIndex(PreviousPoints + 0, PreviousPoints + 1, PreviousPoints + NumberAngle);
+
 				for(int i=1;i<NumberAngle;i++)
-					AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+i+1,PreviousPoints+i);
+				{
+					drawCommand.addIndex(PreviousPoints + 0, PreviousPoints + i + 1, PreviousPoints + i);
+				}
 			}
-			Draw(Camera,RenderDevice);
+
+			SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+			Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+			d3dEndDrawCommand(drawCommand);
+			Graph3d->ResetProjectionMatrix();
+
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 }
+
 inline int GetAttributePoint(int xg,int yg,int zg)
 { 
 	int Attribute=ATTRIBUTE_LIGHT;
@@ -190,7 +174,8 @@ inline int GetAttributePoint(int xg,int yg,int zg)
 #endif 
 	return Attribute;
 }
-__forceinline void SetPointMesh(int i,cPolyDispatcher *P3D,cLight *LightObject,
+
+__forceinline void SetPointMesh(M3D_DRAW_COMMAND &drawCommand,int i,cPolyDispatcher *P3D,cLight *LightObject,
 						cConvertor &ConvertorObjectToScreen,cConvertor &ConvertorObjectToWorld,
 						Vect3f &vLight,Vect3f &vView,float cosLightView,
 						int RenderDiffuse,int RenderMetal,int RenderShade,
@@ -229,23 +214,28 @@ __forceinline void SetPointMesh(int i,cPolyDispatcher *P3D,cLight *LightObject,
 	}
 	else 
 		ar=AddTile.r,ag=AddTile.g,ab=AddTile.b;
-	ConvertorObjectToScreen.ConvertPoint(Point->pos,P3D->PointAttribute[i].pv,*(Vect3f*)&P3D->PointFix[i]);
+
+	Vect3f pv;
+	Vect3f pe;
+	ConvertorObjectToScreen.ConvertPoint(Point->pos,pv,pe);
 	if(Texel)
-		P3D->SetPointFix(i,dr,dg,db,MulTile.a,ar,ag,ab,255,Vect2f(Texel->u(),Texel->v()));
+	{
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(dr, dg, db, MulTile.a);
+		drawCommand.addSpecularColor(ar, ag, ab, 255);
+		drawCommand.addUV(Texel->u(), Texel->v());
+	}
 	else
-		P3D->SetPointFix(i,dr,dg,db,MulTile.a,ar,ag,ab,255);
+	{
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(dr, dg, db, MulTile.a);
+		drawCommand.addSpecularColor(ar, ag, ab, 255);
+	}
 }
-__forceinline void SetPointMesh(int i,cPolyDispatcher *P3D,sVertexFix &p,sPointAttribute &pa,sTexel &Texel)
-{
-	P3D->PointFix[i]=p;
-	P3D->PointAttribute[i]=pa;
-	P3D->PointFix[i].u1()=Texel.u();
-	P3D->PointFix[i].v1()=Texel.v();
-}
+
 //int gb_ShowMesh=1;
 void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMesh *Mesh,Vect3f *vReflection)
 {
-//	if(gb_ShowMesh==0&&M3D_TYPE(Mesh->Type)==M3D_ENGINE)return;
 	assert(UScene->GetKind(KIND_SCENE));
 	cScene *Scene=(cScene*)UScene;
 	cLight *LightObject=Scene->GetLight();
@@ -287,7 +277,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	// подготовка к расчету освещенности объекта
 	cConvertor ConvertorObjectToWorld;
 	ConvertorObjectToWorld.GetMatrix()=Mesh->GlobalMatrix;
-//	ConvertorObjectToWorld.BuildMatrix();
 	Vect3f vView,vLight;
 	ConvertorObjectToWorld.InverseConvertVector(LightObject->GetTangent(),vLight);
 	vLight.normalize(1.f);
@@ -302,7 +291,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 				continue;
 			cRenderDevice *RenderDevice=Camera->GetViewPort();
 			cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
-			SetClippingPlane(Camera);
 			sColor4s MetalTile=MetalColor;
 
 			// подготовка к расчету освещенности объекта - расчет направления камеры
@@ -368,6 +356,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			ConvertorObjectToScreen.SetProjection(Camera,Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE));
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
 				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
+
 			// собственно расчет координат и освещенности
 			for(int i=0;i<Mesh->GetNumberTile();i++)
 				{
@@ -375,7 +364,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					sPoint	*Point=tile->GetPoint();
 					sPolygon *Polygon=tile->GetPolygon();
 					Vect3f pv,pe; // pv.z-z-координата расстояния до характерной точки объекта
-//					float zDistance=ConvertorObjectToScreen.Matrix[6]*Point->pos.x+ConvertorObjectToScreen.Matrix[7]*Point->pos.y+ConvertorObjectToScreen.Matrix[8]*Point->pos.z+ConvertorObjectToScreen.Matrix[11];
 					ConvertorObjectToScreen.ConvertPoint(Point->pos,pv,pe);
 					float fLOD=Mesh->Scale.x*tile->size/pv.z;
 					if(fLOD>=0&&fLOD<LOD_VALUE) 
@@ -393,7 +381,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(AddTile.b>255) AddTile.b=255;
 					// инициализация буффера диспетчера растеризации
 					int AttributeTile=MATERIAL_ATTRIBUTE(tile->GetAttribute()|Mesh->Attribute);
-//					int RenderMetal=(GET_RENDER_TUNING(RENDER_TUNING_METAL)&&((Attribute&MESH_NOT_METALL)==0)&&(tile->GetAttribute(ATTRMAT_METAL)))&&RenderLighting;
 					int RenderMetal=(GET_RENDER_TUNING(RENDER_TUNING_METAL)&&((Attribute&MESH_NOT_METALL)==0)&&(tile->GetAttribute(ATTRMAT_METAL)));
 					int RenderShade=((Attribute&MESH_NOT_SHADE)==0);
 					int BaseAttribute=RENDER_COLOR_MOD_DIFFUSE;
@@ -414,13 +401,17 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(AttributeTile&ATTRMAT_TEXTURE_PAL)		
 						BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 
+					M3D_DRAW_COMMAND drawCommand;
+					d3dBeginDrawCommand(drawCommand);
+
 					switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
 					{
 						case ATTRTILE_VERTEX:
 							{
-								InitFix(BaseAttribute,tile->GetNumberPoint());
+								Attribute = BaseAttribute;
+
 								for(int i=0;i<tile->GetNumberPoint();i++)
-									SetPointMesh(i,this,LightObject,
+									SetPointMesh(drawCommand,i,this,LightObject,
 										ConvertorObjectToScreen,ConvertorObjectToWorld,
 										vLight,vView,cosLightView,
 										RenderDiffuse,RenderMetal,RenderShade,
@@ -428,19 +419,29 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 										&Point[i]);
 								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
+								{
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
-										AddPolygonFixTestPointFix(p->p1,p->p2,p->p3);
+									{
+										drawCommand.addIndex(p->p1, p->p2, p->p3);
+									}
+								}
 								else
+								{
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
-										AddPolygonFixTestPointFix(p->p1,p->p3,p->p2);
+									{
+										drawCommand.addIndex(p->p1, p->p3, p->p2);
+									}
+								}
 							}
 							break;
 						case ATTRTILE_VERTEX_TEXEL:
 							{
 								sTexel	*Texel=tile->GetTexel();
-								InitFix(BaseAttribute,tile->GetNumberPoint());
+
+								Attribute = BaseAttribute;
+
 								for(int i=0;i<tile->GetNumberPoint();i++)
-									SetPointMesh(i,this,LightObject,
+									SetPointMesh(drawCommand,i,this,LightObject,
 										ConvertorObjectToScreen,ConvertorObjectToWorld,
 										vLight,vView,cosLightView,
 										RenderDiffuse,RenderMetal,RenderShade,
@@ -448,32 +449,38 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 										&Point[i],&Texel[i]);
 								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
+								{
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
-										AddPolygonFixTestPointFix(p->p1,p->p2,p->p3);
+									{
+										drawCommand.addIndex(p->p1, p->p2, p->p3);
+									}
+								}
 								else
+								{
 									for(sPolygon *p=&Polygon[0],*end=&p[tile->GetNumberPolygon()];p<end;p++)
-										AddPolygonFixTestPointFix(p->p1,p->p3,p->p2);
+									{
+										drawCommand.addIndex(p->p1, p->p3, p->p2);
+									}
+								}
 							}
 							break;
 						case ATTRTILE_TEXEL:
 							{
 								sTexel	*Texel=tile->GetTexel();
 								sPolygon *TexPoly=tile->GetTexPoly();
-								InitFix(BaseAttribute,3*tile->GetNumberPolygon());
-								assert((PointFix.MaxSize-tile->GetNumberPoint()-1)>0);
-								sVertexFix *BufPoint=&PointFix[PointFix.MaxSize-tile->GetNumberPoint()-1];
-								sPointAttribute *BufPointAttribute=&PointAttribute[PointAttribute.MaxSize-tile->GetNumberPoint()-1];
 
-								for(int i=0;i<tile->GetNumberPoint();i++)
+								Attribute = BaseAttribute;
+
+								auto SetColor = [&](sPoint &point, M3D_DRAW_COMMAND &command)
 								{
 									int dr,dg,db;
 									if(RenderDiffuse)
 									{
-										int ToneDiffuse=LightObject->CalcToneDiffuse(Point[i].normal,vLight);
+										int ToneDiffuse=LightObject->CalcToneDiffuse(point.normal,vLight);
 										if(RenderShade)
 										{
 											Vect3f pw;
-											ConvertorObjectToWorld.ConvertPoint(Point[i].pos,pw);
+											ConvertorObjectToWorld.ConvertPoint(point.pos,pw);
 											if(GetAttributePoint(round(pw.x),round(pw.y),round(pw.z))&ATTRIBUTE_SHADOW)
 												ToneDiffuse>>=1;
 										}
@@ -488,48 +495,76 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 										if((dg=MulTile.g+AmbientMesh.g)>255) dg=255; 
 										if((db=MulTile.b+AmbientMesh.b)>255) db=255;
 									}
-									BufPoint[i].dr()=dr; BufPoint[i].dg()=dg; BufPoint[i].db()=db; BufPoint[i].da()=MulTile.a;
+
+									drawCommand.addDiffuseColor(dr, dg, db, MulTile.a);
+
 									if(RenderMetal)
 									{
-										int ToneSpecular=LightObject->CalcToneMetal(Point[i].normal,vLight,vView,cosLightView),ar,ag,ab;
+										int ToneSpecular=LightObject->CalcToneMetal(point.normal,vLight,vView,cosLightView),ar,ag,ab;
 										assert(0<=ToneSpecular&&ToneSpecular<=255);
 										if((ar=AddTile.r+((ToneSpecular*MetalColor.r)>>7))>255) ar=255;
 										if((ag=AddTile.g+((ToneSpecular*MetalColor.g)>>7))>255) ag=255;
 										if((ab=AddTile.b+((ToneSpecular*MetalColor.b)>>7))>255) ab=255;
-										BufPoint[i].sr()=ar,BufPoint[i].sg()=ag,BufPoint[i].sb()=ab,BufPoint[i].sa()=255;
+
+										drawCommand.addSpecularColor(ar, ag, ab, 255);
 									}
-									else 
-										BufPoint[i].sr()=AddTile.r,BufPoint[i].sg()=AddTile.g,BufPoint[i].sb()=AddTile.b,BufPoint[i].sa()=255;
-									ConvertorObjectToScreen.ConvertPoint(Point[i].pos,BufPointAttribute[i].pv,*(Vect3f*)&BufPoint[i]);
-									BufPointAttribute[i].clip=GET_CLIP(BufPoint[i].xe,BufPoint[i].ye,BufPointAttribute[i].pv.z);
-								}
+									else
+									{
+										drawCommand.addSpecularColor(AddTile.r, AddTile.g, AddTile.b, 255);
+									}
+								};
 								for(int i=0;i<tile->GetNumberPolygon();i++)
 								{ 
 									// передача геометрических координат
-									int i3=i*3;
+									// int i3=i*3;
 									Vect3f pv,pe;
 									sPolygon &p=Polygon[i];
 									sPolygon &t=TexPoly[i];
-									SetPointMesh(i3+0,P3D,BufPoint[p.p1],BufPointAttribute[p.p1],Texel[t.p1]);
-									SetPointMesh(i3+1,P3D,BufPoint[p.p2],BufPointAttribute[p.p2],Texel[t.p2]);
-									SetPointMesh(i3+2,P3D,BufPoint[p.p3],BufPointAttribute[p.p3],Texel[t.p3]);
+
+									ConvertorObjectToScreen.ConvertPoint(Point[p.p1].pos,pv,pe);
+									drawCommand.addPosition(pv.x, pv.y, pv.z);
+									drawCommand.addUV(Texel[t.p1].u(), Texel[t.p1].v());
+									SetColor(Point[p.p1], drawCommand);
+
+									ConvertorObjectToScreen.ConvertPoint(Point[p.p2].pos,pv,pe);
+									drawCommand.addPosition(pv.x, pv.y, pv.z);
+									drawCommand.addUV(Texel[t.p2].u(), Texel[t.p2].v());
+									SetColor(Point[p.p2], drawCommand);
+
+									ConvertorObjectToScreen.ConvertPoint(Point[p.p3].pos,pv,pe);
+									drawCommand.addPosition(pv.x, pv.y, pv.z);
+									drawCommand.addUV(Texel[t.p3].u(), Texel[t.p3].v());
+									SetColor(Point[p.p3], drawCommand);
 								}
 								// вставляются полигоны и одновременно идет отсортировка back-полигонов (невидимых, соответствующих обратной стороне объекта)
 								if(PolygonOrientationCCW)
+								{
 									for(int i3=0;i3<3*tile->GetNumberPolygon();i3+=3)
-										AddPolygonFixTestPointFix(i3+0,i3+1,i3+2);
+									{
+										drawCommand.addIndex(i3+0, i3+1, i3+2);
+									}
+								}
 								else
+								{
 									for(int i3=0;i3<3*tile->GetNumberPolygon();i3+=3)
-										AddPolygonFixTestPointFix(i3+0,i3+2,i3+1);
+									{
+										drawCommand.addIndex(i3+0, i3+2, i3+1);
+									}
+								}
 							}
 							break;
 					}
-					Draw(Camera,RenderDevice);
+
+					SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+					Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+					d3dEndDrawCommand(drawCommand);
+					Graph3d->ResetProjectionMatrix();
 				}
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
 				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 }
+
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 {
 #ifdef _USE_TILEMAP_
@@ -542,7 +577,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 		cRenderDevice *RenderDevice=Camera->GetViewPort();
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_CLAMP);
-		SetClippingPlane(Camera);
 
 		if(TileMap->GetZReflectionSurface()>=0)
 			for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
@@ -561,32 +595,58 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						cBaseDynArray <sPolygonFix> &Polygon=bTile->PolygonReflection;
 						int AttributeRender=RENDER_COLOR_MOD_TEXTURE1|RENDER_COLOR_MOD_DIFFUSE|RENDER_ALPHA_MOD_DIFFUSE;
 						if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) AttributeRender|=RENDER_CLIPPING3D;
-						InitFix(AttributeRender,Point.length());
+
+						Attribute = AttributeRender;
+						M3D_DRAW_COMMAND drawCommand;
+						d3dBeginDrawCommand(drawCommand);
+
 						int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 						int i;
 						for(i=0;i<Point.length();i++)
 						{
 							sPointTile &p=Point[i];
 							int x=(int)p.xw+(int)p.dx,y=(int)p.yw+(int)p.dy, xr=xofs+x,yr=yofs+y;
-							ConvertorObjectToScreen.ConvertPoint(Vect3f((float)x,(float)y,(float)((int)p.zw+(int)p.dz)-SHARE_FLOAT(xr*xr+yr*yr)),PointAttribute[i].pv,*(Vect3f*)&PointFix[i]);
-							SetPointFix(i,255,255,255,p.da(),Vect2f(p.u,p.v));
+							Vect3f pv;
+							Vect3f pe;
+							ConvertorObjectToScreen.ConvertPoint(Vect3f((float)x,(float)y,(float)((int)p.zw+(int)p.dz)-SHARE_FLOAT(xr*xr+yr*yr)),pv,pe);
+
+							drawCommand.addPosition(pv.x, pv.y, pv.z);
+							drawCommand.addDiffuseColor(255, 255, 255, p.da());
+							drawCommand.addSpecularColor(0, 0, 0, 0);
+							drawCommand.addUV(p.u, p.v);
 						}
 						for(i=0;i<Polygon.length();i++)
-							AddPolygonFixTestPointFix(Polygon[i].p1,Polygon[i].p2,Polygon[i].p3);	
+						{
+							drawCommand.addIndex(Polygon[i].p1, Polygon[i].p2, Polygon[i].p3);
+						}
+
+						SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+						Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+
 						if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 						{
 							if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 							{
-//								Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
-//								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
-								this->Attribute|=RENDER_MULTICANAL;
-								Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
+								d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+								d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+								d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+
+								d3dEndDrawCommand(drawCommand);
+
+								d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+								d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 							}
 							else
-								Draw(Camera,RenderDevice);
+							{
+								d3dEndDrawCommand(drawCommand);
+							}
 						}
 						else
-							Draw(Camera,RenderDevice);
+						{
+							d3dEndDrawCommand(drawCommand);
+						}
+
+						Graph3d->ResetProjectionMatrix();
 					}
 		for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
 			if(bTile->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)
@@ -601,50 +661,66 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				cBaseDynArray <sPolygonFix> &Polygon=bTile->Polygon;
 				int AttributeRender=RENDER_COLOR_MOD_TEXTURE1;
 				if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) AttributeRender|=RENDER_CLIPPING3D;
-				InitFix(AttributeRender,Point.length());
+
+				Attribute = AttributeRender;
+				M3D_DRAW_COMMAND drawCommand;
+				d3dBeginDrawCommand(drawCommand);
+
 				int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 				int i;
 				for(i=0;i<Point.length();i++)
 				{
 					sPointTile &p=Point[i];
 					int x=(int)p.xw+(int)p.dx,y=(int)p.yw+(int)p.dy,xr=xofs+x, yr=yofs+y;
-					ConvertorObjectToScreen.ConvertPoint(Vect3f(x,y,(float)((int)p.zw+(int)p.dz)-SHARE_FLOAT(xr*xr+yr*yr)),PointAttribute[i].pv,*(Vect3f*)&PointFix[i]);
-					SetPointFix(i,255,255,255,255,Vect2f(p.u,p.v));
-//					ConvertorObjectToScreen.ConvertPoint(po,pv,pe);
-//					SetPointFix(i,pe,255,255,255,p.da(),Vect2f(p.u,p.v),pv);
+					Vect3f pv;
+					Vect3f pe;
+					ConvertorObjectToScreen.ConvertPoint(Vect3f(x,y,(float)((int)p.zw+(int)p.dz)-SHARE_FLOAT(xr*xr+yr*yr)),pv,pe);
+
+					drawCommand.addPosition(pv.x, pv.y, pv.z);
+					drawCommand.addDiffuseColor(255, 255, 255, 255);
+					drawCommand.addSpecularColor(0, 0, 0, 0);
+					drawCommand.addUV(p.u, p.v);
 				}
 				for(i=0;i<Polygon.length();i++)
-					AddPolygonFixTestPointFix(Polygon[i].p1,Polygon[i].p2,Polygon[i].p3);	
+				{
+					drawCommand.addIndex(Polygon[i].p1, Polygon[i].p2, Polygon[i].p3);
+				}
+
+				SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+				Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+
 				if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 				{
 					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 					{
-						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
-//								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
-						this->Attribute|=RENDER_MULTICANAL;
-						Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
+						d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+						d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+						d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+
+						d3dEndDrawCommand(drawCommand);
+
+						d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+						d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 					}
 					else
-						Draw(Camera,RenderDevice);
+					{
+						d3dEndDrawCommand(drawCommand);
+					}
 				}
 				else
-					Draw(Camera,RenderDevice);
-/*
-				Draw(Camera,RenderDevice);
-				if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
-					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
-					{
-						Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
-						this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
-						Draw(Camera,RenderDevice);
-					}
-*/			}
+				{
+					d3dEndDrawCommand(drawCommand);
+				}
+
+				Graph3d->ResetProjectionMatrix();
+			}
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_WRAP);
 	}
 	for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
 		bTile->GetLightMap()->ClearStatus(STATUS_TEXTURE_SHADOW);
 #endif //_USE_TILEMAP_
 }
+
 void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMap)
 {
 #ifdef _USE_TILEMAP_
@@ -658,7 +734,6 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 		cRenderDevice *RenderDevice=Camera->GetViewPort();
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_CLAMP);
-		SetClippingPlane(Camera);
 		SetViewColor(Camera,sColor4f(0,0,0,1),sColor4f(0,0,0,1));
 
 		Vect3f PointView;
@@ -687,7 +762,11 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					int BaseAttribute=RENDER_REFLECTION|RENDER_COLOR_MOD_TEXTURE1;
 					if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) BaseAttribute|=RENDER_CLIPPING3D;
 					if(bTile->GetAttribute(ATTR_TILE_SURFACE_REFLECTION)) BaseAttribute|=RENDER_COLOR_MOD_DIFFUSE|RENDER_ALPHA_MOD_DIFFUSE;
-					InitFix(BaseAttribute,Point.length());
+
+					Attribute = BaseAttribute;
+					M3D_DRAW_COMMAND drawCommand;
+					d3dBeginDrawCommand(drawCommand);
+
 					int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y),flag=0;
 					int i;
 					for(i=0;i<Point.length();i++)
@@ -714,41 +793,54 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 							z=2*zReflectionSurface-(z-SHARE_FLOAT(xr*xr+yr*yr));
 							if(z>zReflectionSurface) z=zReflectionSurface; else flag=1;
 						}
-						ConvertorObjectToScreen.ConvertPoint(Vect3f(x,y,z),PointAttribute[i].pv,*(Vect3f*)&PointFix[i]);
-						SetPointFix(i,255,255,255,p.da(),Vect2f(p.u,p.v));
+						Vect3f pv;
+						Vect3f pe;
+						ConvertorObjectToScreen.ConvertPoint(Vect3f(x,y,z),pv,pe);
+
+						drawCommand.addPosition(pv.x, pv.y, pv.z);
+						drawCommand.addDiffuseColor(255, 255, 255, p.da());
+						drawCommand.addSpecularColor(0, 0, 0, 0);
+						drawCommand.addUV(p.u, p.v);
 					}
 					if(flag==0) continue;
 					for(i=0;i<Polygon.length();i++)
-						AddPolygonFixTestPointFix(Polygon[i].p2,Polygon[i].p1,Polygon[i].p3);
+					{
+						drawCommand.addIndex(Polygon[i].p2, Polygon[i].p1, Polygon[i].p3);
+					}
+
+					SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+					Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+
 					if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 					{
 						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 						{
-							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
-	//								this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
-							this->Attribute|=RENDER_MULTICANAL;
-							Draw(Camera,RenderDevice,bTile->GetTexture()->nTexture,bTile->GetLightMap()->nTexture);
+							d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+							d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+							d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+
+							d3dEndDrawCommand(drawCommand);
+
+							d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+							d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 						}
 						else
-							Draw(Camera,RenderDevice);
+						{
+							d3dEndDrawCommand(drawCommand);
+						}
 					}
 					else
-						Draw(Camera,RenderDevice);
-/*
-					Draw(Camera,RenderDevice);
-					if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
-						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
-						{
-							Graph3d->SetTexture(bTile->GetLightMap()->nTexture);				// установка текстуры
-							this->Attribute=RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_TEXTURE1|RENDER_MULTICANAL;
-							Draw(Camera,RenderDevice);
-						}
-*/
+					{
+						d3dEndDrawCommand(drawCommand);
+					}
+
+					Graph3d->ResetProjectionMatrix();
 				}
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_WRAP);
 	}
 #endif //_USE_TILEMAP_
 }
+
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 {
 #ifdef _USE_TILEMAP_
@@ -760,7 +852,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
 		cRenderDevice *RenderDevice=Camera->GetViewPort();
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
-		SetClippingPlane(Camera);
 		int FlagShareWorld=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE;
 		// создание конвертера из объектного в экранное пространство
 		Vect3f ShareOfs;
@@ -786,7 +877,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 			Graph3d->SetTexture(PolyGrid->Texture->nTexture);
 			BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 		}
-		InitFix(BaseAttribute,xsize*ysize);
+
+		Attribute = BaseAttribute;
+		M3D_DRAW_COMMAND drawCommand;
+		d3dBeginDrawCommand(drawCommand);
+		
 		// установка вершин
 		float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
 		sPointPolyGrid *bPoint=Point,*ePoint=&Point[xsize*ysize];
@@ -805,9 +900,12 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 	   				l=round(l*k*k);
 					po.z-=2*RadiusWorldShare-SHARE_FLOAT(l);
 				}
-				ConvertorObjectToScreen.ConvertPoint(po,PointAttribute[bPoint-Point].pv,*(Vect3f*)&PointFix[bPoint-Point]);
-				SetPointFix(bPoint-Point,bPoint->r,bPoint->g,bPoint->b,bPoint->a,
-					Vect2f(duPoint+bPoint->du*uLimit,dvPoint+bPoint->dv*vLimit));
+				ConvertorObjectToScreen.ConvertPoint(po,pv,pe);
+
+				drawCommand.addPosition(pv.x, pv.y, pv.z);
+				drawCommand.addDiffuseColor(bPoint->r, bPoint->g, bPoint->b, bPoint->a);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				drawCommand.addUV(duPoint+bPoint->du*uLimit, dvPoint+bPoint->dv*vLimit);
 			}
 		// установка полигонов
 		for(int j=0,jend=(ysize-1)*xsize;j<jend;j+=xsize)
@@ -815,14 +913,23 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 			{
 				sPointPolyGrid *p=&Point[i];
 				if(p[0].attribute|p[1].attribute|p[xsize].attribute)
-					AddPolygonFixTestPointFix(i,i+xsize,i+1);
+				{
+					drawCommand.addIndex(i, i+xsize, i+1);
+				}
 				if(p[1].attribute|p[xsize].attribute|p[1+xsize].attribute)
-					AddPolygonFixTestPointFix(i+1,i+xsize,i+1+xsize);
+				{
+					drawCommand.addIndex(i+1, i+xsize, i+1+xsize);
+				}
 			}
-		Draw(Camera,RenderDevice);
+
+		SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+		d3dEndDrawCommand(drawCommand);
+		Graph3d->ResetProjectionMatrix();
 	}
 #endif //_USE_TILEMAP_
 }
+
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 {
 #ifdef _USE_TILEMAP_
@@ -834,7 +941,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
 		cRenderDevice *RenderDevice=Camera->GetViewPort();
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
-		SetClippingPlane(Camera);
 		int FlagShareWorld=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE;
 		// создание конвертера из объектного в экранное пространство
 		Vect2f dTex(0,0);
@@ -846,7 +952,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 		for(;bWater<eWater;bWater++,bTile++)
 			if(((*bWater)!=0)&&(bTile->isVisibleTotal(UCameraList)&CONST_VISIBLE_FRUSTUM))
 			{
-//				(*bWater)->du=dTex.x; (*bWater)->dv=dTex.y;
 				cPolyGrid *PolyGrid=(*bWater);
 				Vect3f ShareOfs;
 				cConvertor ConvertorObjectToScreen;
@@ -870,7 +975,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 						CreateTexture((cMaterial*)PolyGrid,RenderDevice);
 					Graph3d->SetTexture(PolyGrid->Texture->nTexture);
 				}
-				InitFix(BaseAttribute,xsize*ysize);
+
+				Attribute = BaseAttribute;
+				M3D_DRAW_COMMAND drawCommand;
+				d3dBeginDrawCommand(drawCommand);
+
 				// установка вершин
 				float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
 				sPointPolyGrid *bPoint=Point,*ePoint=&Point[xsize*ysize];
@@ -889,9 +998,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 	   						l=round(l*k*k);
 							po.z-=2*RadiusWorldShare-SHARE_FLOAT(l);
 						}
-						ConvertorObjectToScreen.ConvertPoint(po,PointAttribute[bPoint-Point].pv,*(Vect3f*)&PointFix[bPoint-Point]);
-						SetPointFix(bPoint-Point,bPoint->r,bPoint->g,bPoint->b,bPoint->a,
-							Vect2f(duPoint+bPoint->du*uLimit,dvPoint+bPoint->dv*vLimit));
+						Vect3f pv;
+						Vect3f pe;
+						ConvertorObjectToScreen.ConvertPoint(po,pv,pe);
+
+						drawCommand.addPosition(pv.x, pv.y, pv.z);
+						drawCommand.addDiffuseColor(bPoint->r, bPoint->g, bPoint->b, bPoint->a);
+						drawCommand.addSpecularColor(0, 0, 0, 0);
+						drawCommand.addUV(duPoint+bPoint->du*uLimit, dvPoint+bPoint->dv*vLimit);
 					}
 				// установка полигонов
 				for(int j=0,jend=(ysize-1)*xsize;j<jend;j+=xsize)
@@ -899,15 +1013,24 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 					{
 						sPointPolyGrid *p=&Point[i];
 						if(p[0].attribute|p[1].attribute|p[xsize].attribute)
-							AddPolygonFixTestPointFix(i,i+xsize,i+1);
+						{
+							drawCommand.addIndex(i, i+xsize, i+1);
+						}
 						if(p[1].attribute|p[xsize].attribute|p[1+xsize].attribute)
-							AddPolygonFixTestPointFix(i+1,i+xsize,i+1+xsize);
+						{
+							drawCommand.addIndex(i+1, i+xsize, i+1+xsize);
+						}
 					}
-				Draw(Camera,RenderDevice);
+
+				SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+				Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+				d3dEndDrawCommand(drawCommand);
+				Graph3d->ResetProjectionMatrix();
 			}
 	}
 #endif //_USE_TILEMAP_
 }
+
 //////////////////// POLYGRID RASTERIZATION ////////////////////
 void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Camera,cBasePolyGrid *WorldPolyGrid,int i1,int j1,int i2,int j2,cMaterial *Material)
 {
@@ -937,7 +1060,11 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 		BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 	if(Material->GetSpecular().r||Material->GetSpecular().g||Material->GetSpecular().b)
 		BaseAttribute|=RENDER_COLOR_ADD_SPECULAR;
-	InitFix(BaseAttribute,isize*jsize);
+
+	Attribute = BaseAttribute;
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
+
 	float xpos=xofs,ypos=yofs, ustep, duPoint0,vstep, duPoint,dvPoint;
 	if(WorldPolyGrid->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))
 	{ // убирается зацикливание, константы подобраны имперически для текстуры 128
@@ -959,31 +1086,49 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 			sBaseColor4c &p=pColor[(i%xsize)+(j%ysize)*xsize];
 			Vect3f po(xpos,ypos,0),pv,pe;
 			ShareMapping2(Camera,po,RadiusWorldShare,DivRadiusWorldShare);
-			ConvertorObjectToScreen.ConvertPoint(po,PointAttribute[ij].pv,*(Vect3f*)&PointFix[ij]);
-			SetPointFix(ij,p.r,p.g,p.b,p.a,Vect2f(duPoint,dvPoint));
+			ConvertorObjectToScreen.ConvertPoint(po,pv,pe);
+
+			drawCommand.addPosition(pv.x, pv.y, pv.z);
+			drawCommand.addDiffuseColor(p.r, p.g, p.b, p.a);
+
+			if(BaseAttribute&RENDER_COLOR_ADD_SPECULAR)
+			{
+				drawCommand.addSpecularColor(
+					Material->GetSpecular().GetR(),
+					Material->GetSpecular().GetG(),
+					Material->GetSpecular().GetB(),
+					255);
+			}
+			else
+			{
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+			}
+			
+			drawCommand.addUV(duPoint, dvPoint);
 		}
-	if(BaseAttribute&RENDER_COLOR_ADD_SPECULAR)
-	{
-		unsigned int specular=(Material->GetSpecular().GetR()<<16)|(Material->GetSpecular().GetG()<<8)|(Material->GetSpecular().GetB()<<0);
-		for(int i=0;i<PointFix.length();i++)
-			PointFix[i].specular()=specular;
-	}
 	if(WorldPolyGrid->BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCW))
 		for(int j=0;j<(jsize-1)*isize;j+=isize)
 			for(int i=j;i<(j+isize-1);i++)
 			{
-				AddPolygonFixTestPointFix(i,i+isize,i+1);
-				AddPolygonFixTestPointFix(i+1,i+isize,i+1+isize);
+				drawCommand.addIndex(i, i+isize, i+1);
+				drawCommand.addIndex(i+1, i+isize, i+1+isize);
 			}
 	if(WorldPolyGrid->BaseDrawObject()->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_POLYGONCCW))
 		for(int j=0;j<(jsize-1)*isize;j+=isize)
 			for(int i=j;i<(j+isize-1);i++)
 			{
-				AddPolygonFixTestPointFix(i+isize,i,i+1);
-				AddPolygonFixTestPointFix(i+isize,i+1,i+1+isize);
+				drawCommand.addIndex(i+isize, i, i+1);
+				drawCommand.addIndex(i+isize, i+1, i+1+isize);
 			}
-	Draw(Camera,RenderDevice);
+
+	cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
+
+	SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+	d3dEndDrawCommand(drawCommand);
+	Graph3d->ResetProjectionMatrix();
 }
+
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cWorldPolyGrid *WorldPolyGrid)
 {
 	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
@@ -994,7 +1139,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cWorldPolyGrid *WorldPolyG
 	{
 		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
-		SetClippingPlane(Camera);
 
 		cMaterial *Material=&(WorldPolyGrid->MaterialArray[0]);
 		if(Material->GetAttribute(ATTRMAT_TEXTURE_PAL))
@@ -1017,6 +1161,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cWorldPolyGrid *WorldPolyG
 		Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 	}
 }
+
 //////////////////// SURFACEREFLECTION RASTERIZATION ////////////////////
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cSurfaceReflectionMultiMaterial *Surface)
 {
@@ -1029,7 +1174,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cSurfaceReflectionMultiMat
 	{
 		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
-		SetClippingPlane(Camera);
 		int FlagShareWorld=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE)==ATTRIBUTE_CAMERA_PERSPECTIVE_WORLD_SHARE;
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_CLAMP);
 		for(int j=0,j1=0,j2;j<Surface->yMaterial;j++,j1+=jstep)
@@ -1053,6 +1197,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cSurfaceReflectionMultiMat
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_WRAP);
 	}
 }
+
 //////////////////// SUN RASTERIZATION ////////////////////
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *SunArray)
 {
@@ -1065,7 +1210,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 	{
 		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
-		SetClippingPlane(Camera);
 
 		for(int i=0;i<SunDynArray.length();i++)
 		{
@@ -1103,22 +1247,46 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 				if(Material->Texture->nTexture==0)
 					CreateTexture(Material,RenderDevice);
 				Graph3d->SetTexture(Material->Texture->nTexture);
-				InitFix(BaseAttribute,4);
+
+				Attribute = BaseAttribute;
+				M3D_DRAW_COMMAND drawCommand;
+				d3dBeginDrawCommand(drawCommand);
+
 				Vect3f pv1(pv.x-RadiusSun,pv.y-RadiusSun,pv.z);
-				Vect3f pe1(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-				SetPointFix(0,pe1,255,255,255,255,Vect2f(0,0),pv1);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(255, 255, 255, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				drawCommand.addUV(0, 0);
+
 				pv1.set(pv.x-RadiusSun,pv.y+RadiusSun,pv1.z);
-				pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe1.z);
-				SetPointFix(1,pe1,255,255,255,255,Vect2f(0,1),pv1);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(255, 255, 255, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				drawCommand.addUV(0, 1.0f);
+
 				pv1.set(pv.x+RadiusSun,pv.y+RadiusSun,pv1.z);
-				pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe1.z);
-				SetPointFix(2,pe1,255,255,255,255,Vect2f(1,1),pv1);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(255, 255, 255, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				drawCommand.addUV(1.0f, 1.0f);
+
 				pv1.set(pv.x+RadiusSun,pv.y-RadiusSun,pv1.z);
-				pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe1.z);
-				SetPointFix(3,pe1,255,255,255,255,Vect2f(1,0),pv1);
-				AddPolygonFixTestPointFix(0,1,2);
-				AddPolygonFixTestPointFix(2,3,0);
-				Draw(Camera,RenderDevice);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(255, 255, 255, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				drawCommand.addUV(1.0f, 0);
+
+				drawCommand.addIndex(0, 1, 2);
+				drawCommand.addIndex(2, 3, 0);
+
+				SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+				Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+				d3dEndDrawCommand(drawCommand);
+				Graph3d->ResetProjectionMatrix();
 			}
 
 			int CurrentPoint=0,PreviousPoints=0;
@@ -1130,35 +1298,53 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 			float limit=(float)RadiusLight*(NumberPlane-1)/NumberPlane, dlimit=(float)RadiusLight/NumberPlane;
 			int RenderAttribute=MAT_COLOR_ADD_DIFFUSE|RENDER_ALPHA_MOD_DIFFUSE|RENDER_COLOR_MOD_DIFFUSE;
 			if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-			InitFix(RenderAttribute,round((NumberAngle+1)*(limit+limit+dlimit)/dlimit));
+
+			Attribute = RenderAttribute;
+			M3D_DRAW_COMMAND drawCommand;
+			d3dBeginDrawCommand(drawCommand);
+
 			for(float height=+limit;height>=-limit;height-=dlimit)
 			{
 				PreviousPoints=CurrentPoint;
 				float radius=RadiusLight;
 				if(height>0) radius=RadiusLight-height; else radius=RadiusLight+height;
 				if((pv.z+height)<=Camera->GetZPlane().x) continue;
-				float div_zv;
-				if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) div_zv=1/(pv.z+height);
-				else div_zv=1/Camera->GetPos().z;
 				Vect3f pv1(pv.x,pv.y,pv.z+height);
-				Vect3f pe1(pv1.x*div_zv,pv1.y*div_zv,div_zv);
-				SetPointFix(CurrentPoint++,pe1,rc,gc,bc,255,pv1);
+
+				drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+				drawCommand.addDiffuseColor(rc, gc, bc, 255);
+				drawCommand.addSpecularColor(0, 0, 0, 0);
+				CurrentPoint++;
+
 				for(int k=1;k<(NumberAngle+1);k++)
 				{
 					int angle=(k-1)*GRAD_TO_DGRAD(360)/NumberAngle;
 					Vect3f pv1(pv.x+RadiusLight*COS_FLOAT_DGRAD(angle),pv.y+RadiusLight*SIN_FLOAT_DGRAD(angle),pv.z+height);
-					Vect3f pe1(pv1.x*div_zv,pv1.y*div_zv,div_zv);
-					SetPointFix(CurrentPoint++,pe1,0,0,0,0,pv1);
+
+					drawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+					drawCommand.addDiffuseColor(0, 0, 0, 0);
+					drawCommand.addSpecularColor(0, 0, 0, 0);
+					CurrentPoint++;
 				}
-				AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+1,PreviousPoints+NumberAngle);
+
+				drawCommand.addIndex(PreviousPoints+0, PreviousPoints+1, PreviousPoints+NumberAngle);
+
 				for(int i=1;i<NumberAngle;i++)
-					AddPolygonFixTestPointFix(PreviousPoints+0,PreviousPoints+i+1,PreviousPoints+i);
+				{
+					drawCommand.addIndex(PreviousPoints+0, PreviousPoints+i+1, PreviousPoints+i);
+				}
 			}
-			Draw(Camera,RenderDevice);
+
+			SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+			Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+			d3dEndDrawCommand(drawCommand);
+			Graph3d->ResetProjectionMatrix();
+
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
 		}
 	}
 }
+
 //////////////////// TRAIL RASTERIZATION ////////////////////
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrail)
 {
@@ -1170,7 +1356,6 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 	{
 		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
-		SetClippingPlane(Camera);
 
 		cTileMap *TileMap=TangentTrail->tMap;
 		int i=(int)(TangentTrail->Pos.x/(1<<TileMap->_SizeTileX()));
@@ -1180,10 +1365,8 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		cMaterial *Material=TangentTrail->MaterialArray.length() == 0 ? nullptr : &TangentTrail->MaterialArray[0];
 		sColor4f &Diffuse1=TangentTrail->Diffuse1,&Diffuse2=TangentTrail->Diffuse2;
 		float Phase=TangentTrail->Timer()/TangentTrail->Duration,Intensity=255.f;
-//		float Phase=TangentTrail->CurrentTime/TangentTrail->FinishTime,Intensity=255.f;
 		if(TangentTrail->AnimTime<1e10f)
 			Intensity=128+127*sin(2*M_PI*global_time()/TangentTrail->AnimTime);
-//			Intensity=128+127*sin(2*M_PI*(TangentTrail->StartTime+TangentTrail->CurrentTime)/TangentTrail->AnimTime);
 		if(Phase>=1) { TangentTrail->Type|=BASEOBJECT_TYPE_DELETE; continue; }
 		cConvertor ConvertorObjectToScreen;
 		ConvertorObjectToScreen.GetMatrix().set(Mat3f::ID,TangentTrail->Pos);
@@ -1208,39 +1391,57 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 			Graph3d->SetTexture(Material->Texture->nTexture); // установка текстуры
 			BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 		}
-		InitFix(BaseAttribute,4);
-/*		
-		Vect3f pv,pe,*Point=TangentTrail->Point;
-		ConvertorObjectToScreen.ConvertPoint(Point[0],pv,pe);
-		SetPointFix(0,pe,r1,g1,b1,a1,Vect2f(0.f,1.f),pv);
-		ConvertorObjectToScreen.ConvertPoint(Point[1],pv,pe);
-		SetPointFix(1,pe,r2,g2,b2,a2,Vect2f(1.f,1.f),pv);
-		ConvertorObjectToScreen.ConvertPoint(Point[2],pv,pe);
-		SetPointFix(2,pe,r2,g2,b2,a2,Vect2f(1.f,0.f),pv);
-		ConvertorObjectToScreen.ConvertPoint(Point[3],pv,pe);
-		SetPointFix(3,pe,r1,g1,b1,a1,Vect2f(0.f,0.f),pv);
-*/
-		Vect3f *Point=TangentTrail->Point;
-		ConvertorObjectToScreen.ConvertPoint(Point[0],PointAttribute[0].pv,*(Vect3f*)&PointFix[0]);
-		SetPointFix(0,r1,g1,b1,a1,Vect2f(0.f,1.f));
-		ConvertorObjectToScreen.ConvertPoint(Point[1],PointAttribute[1].pv,*(Vect3f*)&PointFix[1]);
-		SetPointFix(1,r2,g2,b2,a2,Vect2f(1.f,1.f));
-		ConvertorObjectToScreen.ConvertPoint(Point[2],PointAttribute[2].pv,*(Vect3f*)&PointFix[2]);
-		SetPointFix(2,r2,g2,b2,a2,Vect2f(1.f,0.f));
-		ConvertorObjectToScreen.ConvertPoint(Point[3],PointAttribute[3].pv,*(Vect3f*)&PointFix[3]);
-		SetPointFix(3,r1,g1,b1,a1,Vect2f(0.f,0.f));
 
-		AddPolygonFixTestPointFix(1,0,2);
-		AddPolygonFixTestPointFix(2,0,3);
-		Draw(Camera,RenderDevice);
+		Attribute = BaseAttribute;
+		M3D_DRAW_COMMAND drawCommand;
+		d3dBeginDrawCommand(drawCommand);
+
+		Vect3f *Point=TangentTrail->Point;
+		Vect3f pv;
+		Vect3f pe;
+		ConvertorObjectToScreen.ConvertPoint(Point[0],pv,pe);
+
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(r1, g1, b1, a1);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(0, 1.0f);
+
+		ConvertorObjectToScreen.ConvertPoint(Point[1],pv,pe);
+
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(r2, g2, b2, a2);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(1.0f, 1.0f);
+
+		ConvertorObjectToScreen.ConvertPoint(Point[2],pv,pe);
+
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(r2, g2, b2, a2);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(1.0f, 0);
+
+		ConvertorObjectToScreen.ConvertPoint(Point[3],pv,pe);
+
+		drawCommand.addPosition(pv.x, pv.y, pv.z);
+		drawCommand.addDiffuseColor(r1, g1, b1, a1);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(0, 0);
+
+		drawCommand.addIndex(1, 0, 2);
+		drawCommand.addIndex(2, 0, 3);
+
+		SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+		d3dEndDrawCommand(drawCommand);
+		Graph3d->ResetProjectionMatrix();
 	}
 }
+
 //////////////////// PARTICLE RASTERIZATION ////////////////////
 void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix)
 {
 	assert(UCamera->GetKind(KIND_CAMERA));
 	CurrentCamera=(cCamera*)UCamera;
-	SetClippingPlane(CurrentCamera);
 	
 	CurrentConvertorObjectToScreen->GetMatrix()=*(cMatrix*)&Matrix;
 	WorldToCameraCutting(CurrentConvertorObjectToScreen->GetMatrix(),CurrentCamera);
@@ -1257,7 +1458,11 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf 
 	Graph3d->SetTexture(TextureChild.Texture->nTexture);
 	int RenderAttribute=0;
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-	InitFix(RenderAttribute|RENDER_COLOR_MOD_DIFFUSE|RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_DIFFUSE|RENDER_ALPHA_MOD_TEXTURE1);
+
+	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
+	d3dBeginDrawCommand(CurrentDrawCommand);
+	CurrentListPointIndex = 0;
+
 	AlphaForSprite=255;
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_WORLD_SHARE))
 	{
@@ -1271,70 +1476,105 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf 
 		}
 	}
 }
+
 void cPolyDispatcher::AttachCenter(const Vect3f &pos,float angle,float scale,int rgbaDiffuse,int idTextureChild)
 {
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	sTextureChild &TextureChild=TextureBuffer->GetTextureChild(idTextureChild);
-//	int Angle=round(RAD_TO_GRAD(fmod(angle+6.283,6.283)));
 	Vect3f pv,pe,pv1,pe1;
 	CurrentConvertorObjectToScreen->ConvertPoint(pos,pv,pe);
-	int CurrentPoint=PointFix.length();
-	PointAttribute.length()=(PointFix.length()+=4);
 	int rc=GET_INT_R(rgbaDiffuse),
 		gc=GET_INT_G(rgbaDiffuse),
 		bc=GET_INT_B(rgbaDiffuse),
 		ac=(GET_INT_A(rgbaDiffuse)*AlphaForSprite)>>8;
-//	Vect2f t1(0,0),t2(1,1);
 	Vect2f t1(TextureChild.uofs,TextureChild.vofs),t2(TextureChild.uofs+TextureChild.usize,TextureChild.vofs+TextureChild.vsize);
 	pv1.set(pv.x+scale*cos(G2R(45)+angle),pv.y+scale*sin(G2R(45)+angle),pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x+scale*cos(G2R(90+45)+angle),pv.y+scale*sin(G2R(90+45)+angle),pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x+scale*cos(G2R(90+90+45)+angle),pv.y+scale*sin(G2R(90+90+45)+angle),pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t2.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t2.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x+scale*cos(G2R(90+90+90+45)+angle),pv.y+scale*sin(G2R(90+90+90+45)+angle),pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t2.y),pv1);
-	AddPolygonFixTestPointFix(CurrentPoint-1,CurrentPoint-2,CurrentPoint-3);
-	AddPolygonFixTestPointFix(CurrentPoint-4,CurrentPoint-1,CurrentPoint-3);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t2.y);
+	CurrentListPointIndex++;
+
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-1, CurrentListPointIndex-2, CurrentListPointIndex-3);
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-4, CurrentListPointIndex-1, CurrentListPointIndex-3);
 }
+
 void cPolyDispatcher::AttachCenter(const Vect3f &pos,sSpriteFX *SpriteFX,int idTextureChild)
 {
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	sTextureChild &TextureChild=TextureBuffer->GetTextureChild(idTextureChild);
 	Vect3f pv,pe,pv1,pe1;
 	CurrentConvertorObjectToScreen->ConvertPoint(pos,pv,pe);
-	int CurrentPoint=PointFix.length();
-	PointAttribute.length()=(PointFix.length()+=4);
 	int rc=SpriteFX->rD,gc=SpriteFX->gD,bc=SpriteFX->bD,ac=(SpriteFX->aD*AlphaForSprite)>>8;
 	Vect2f &a=SpriteFX->a,&b=SpriteFX->b;
 	Vect2f t1(TextureChild.uofs,TextureChild.vofs),t2(TextureChild.uofs+TextureChild.usize,TextureChild.vofs+TextureChild.vsize);
 	pv1.set(pv.x+a.x,pv.y+a.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x+b.x,pv.y+b.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x-a.x,pv.y-a.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t2.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t2.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x-b.x,pv.y-b.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t2.y),pv1);
-	AddPolygonFixTestPointFix(CurrentPoint-1,CurrentPoint-2,CurrentPoint-3);
-	AddPolygonFixTestPointFix(CurrentPoint-4,CurrentPoint-1,CurrentPoint-3);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t2.y);
+	CurrentListPointIndex++;
+
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-1, CurrentListPointIndex-2, CurrentListPointIndex-3);
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-4, CurrentListPointIndex-1, CurrentListPointIndex-3);
 }
+
 void cPolyDispatcher::BeginListShare(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix)
 {
 	assert(UCamera->GetKind(KIND_CAMERA));
 	CurrentCamera=(cCamera*)UCamera;
-	SetClippingPlane(CurrentCamera);
 	
 	CurrentConvertorObjectToScreen->GetMatrix()=*(cMatrix*)&Matrix;
-//	WorldToCameraCutting(CurrentConvertorObjectToScreen->GetMatrix(),CurrentCamera);
 	CurrentConvertorObjectToScreen->GetMatrix().trans().set(CurrentCamera->GetPos().x,CurrentCamera->GetPos().y,0);
 	CurrentConvertorObjectToScreen->GetMatrix()=CurrentCamera->GetMatrix()*CurrentConvertorObjectToScreen->GetMatrix();
 	CurrentConvertorObjectToScreen->BuildMatrix();
@@ -1348,8 +1588,12 @@ void cPolyDispatcher::BeginListShare(cUnknownClass *UCamera,int idTextureChild,M
 	Graph3d->SetTexture(TextureChild.Texture->nTexture);
 	int RenderAttribute=0;
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-	InitFix(RenderAttribute|RENDER_COLOR_MOD_DIFFUSE|RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_DIFFUSE|RENDER_ALPHA_MOD_TEXTURE1);
+
+	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
+	d3dBeginDrawCommand(CurrentDrawCommand);
+	CurrentListPointIndex = 0;
 }
+
 void cPolyDispatcher::AttachCenterShare(const Vect3f &pos,sSpriteFX *SpriteFX,int idTextureChild)
 {
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
@@ -1360,31 +1604,49 @@ void cPolyDispatcher::AttachCenterShare(const Vect3f &pos,sSpriteFX *SpriteFX,in
 	Pos.x=xr; Pos.y=yr;
 	Pos.z-=SHARE_FLOAT(xr*xr+yr*yr);
 	CurrentConvertorObjectToScreen->ConvertPoint(Pos,pv,pe);
-	int CurrentPoint=PointFix.length();
-	PointAttribute.length()=(PointFix.length()+=4);
 	int rc=SpriteFX->rD,gc=SpriteFX->gD,bc=SpriteFX->bD,ac=SpriteFX->aD;
 	Vect2f &a=SpriteFX->a,&b=SpriteFX->b;
 	Vect2f t1(TextureChild.uofs,TextureChild.vofs),t2(TextureChild.uofs+TextureChild.usize,TextureChild.vofs+TextureChild.vsize);
 	pv1.set(pv.x+a.x,pv.y+a.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x+b.x,pv.y+b.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t1.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x-a.x,pv.y-a.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t2.x,t2.y),pv1);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t2.y);
+	CurrentListPointIndex++;
+
 	pv1.set(pv.x-b.x,pv.y-b.y,pv.z);
-	pe1.set(pv1.x*pe.z,pv1.y*pe.z,pe.z);
-	SetPointFix(CurrentPoint++,pe1,rc,gc,bc,ac,Vect2f(t1.x,t2.y),pv1);
-	AddPolygonFixTestPointFix(CurrentPoint-1,CurrentPoint-2,CurrentPoint-3);
-	AddPolygonFixTestPointFix(CurrentPoint-4,CurrentPoint-1,CurrentPoint-3);
+
+	CurrentDrawCommand.addPosition(pv1.x, pv1.y, pv1.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t2.y);
+	CurrentListPointIndex++;
+
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-1, CurrentListPointIndex-2, CurrentListPointIndex-3);
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-4, CurrentListPointIndex-1, CurrentListPointIndex-3);
 }
+
 void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild)
 {
 	assert(UCamera->GetKind(KIND_CAMERA));
 	CurrentCamera=(cCamera*)UCamera;
-	SetClippingPlane(CurrentCamera);
 
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	sTextureChild &TextureChild=TextureBuffer->GetTextureChild(idTextureChild);
@@ -1394,68 +1656,113 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild)
 	Graph3d->SetTexture(TextureChild.Texture->nTexture);
 	int RenderAttribute=0;
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-	InitFix(RenderAttribute|RENDER_COLOR_MOD_DIFFUSE|RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_DIFFUSE|RENDER_ALPHA_MOD_TEXTURE1);
-//	InitFix(RENDER_COLOR_MOD_DIFFUSE|RENDER_COLOR_MOD_TEXTURE1|RENDER_ALPHA_MOD_DIFFUSE|RENDER_ALPHA_MOD_TEXTURE1);
+
+	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
+	d3dBeginDrawCommand(CurrentDrawCommand);
+	CurrentListPointIndex = 0;
 }
+
 void cPolyDispatcher::AttachCenter(const Vect2f &pos,sSpriteFX *SpriteFX,int idTextureChild)
 {
 	cRenderDevice *RenderDevice=GetRenderDevice(0);
 	sTextureChild &TextureChild=TextureBuffer->GetTextureChild(idTextureChild);
 	Vect3f pv,pe;
 	float zNear=CurrentCamera->GetZPlane().x, dez=1/zNear;
-	int CurrentPoint=PointFix.length();
-	PointAttribute.length()=(PointFix.length()+=4);
 	int rc=SpriteFX->rD,gc=SpriteFX->gD,bc=SpriteFX->bD,ac=(SpriteFX->aD*AlphaForSprite)>>8;
 	Vect2f &a=SpriteFX->a,&b=SpriteFX->b;
 	Vect2f t1(TextureChild.uofs,TextureChild.vofs),t2(TextureChild.uofs+TextureChild.usize,TextureChild.vofs+TextureChild.vsize);
-	pe.set(pos.x+a.x,pos.y+a.y,dez);
 	pv.set(pe.x*zNear,pe.y*zNear,zNear);
-	SetPointFix(CurrentPoint++,pe,rc,gc,bc,ac,Vect2f(t1.x,t1.y),pv);
-	pe.set(pos.x+b.x,pos.y+b.y,dez);
+
+	CurrentDrawCommand.addPosition(pv.x, pv.y, pv.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t1.y);
+	CurrentListPointIndex++;	
+
 	pv.set(pe.x*zNear,pe.y*zNear,zNear);
-	SetPointFix(CurrentPoint++,pe,rc,gc,bc,ac,Vect2f(t2.x,t1.y),pv);
-	pe.set(pos.x-a.x,pos.y-a.y,dez);
+
+	CurrentDrawCommand.addPosition(pv.x, pv.y, pv.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t1.y);
+	CurrentListPointIndex++;
+
 	pv.set(pe.x*zNear,pe.y*zNear,zNear);
-	SetPointFix(CurrentPoint++,pe,rc,gc,bc,ac,Vect2f(t2.x,t2.y),pv);
-	pe.set(pos.x-b.x,pos.y-b.y,dez);
+
+	CurrentDrawCommand.addPosition(pv.x, pv.y, pv.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t2.x, t2.y);
+	CurrentListPointIndex++;
+
 	pv.set(pe.x*zNear,pe.y*zNear,zNear);
-	SetPointFix(CurrentPoint++,pe,rc,gc,bc,ac,Vect2f(t1.x,t2.y),pv);
-	AddPolygonFixTestPointFix(CurrentPoint-1,CurrentPoint-2,CurrentPoint-3);
-	AddPolygonFixTestPointFix(CurrentPoint-4,CurrentPoint-1,CurrentPoint-3);
+
+	CurrentDrawCommand.addPosition(pv.x, pv.y, pv.z);
+	CurrentDrawCommand.addDiffuseColor(rc, gc, bc, ac);
+	CurrentDrawCommand.addSpecularColor(0, 0, 0, 0);
+	CurrentDrawCommand.addUV(t1.x, t2.y);
+	CurrentListPointIndex++;
+
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-1, CurrentListPointIndex-2, CurrentListPointIndex-3);
+	CurrentDrawCommand.addIndex(CurrentListPointIndex-4, CurrentListPointIndex-1, CurrentListPointIndex-3);
 }
+
 void cPolyDispatcher::EndList()
 {
 	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,false);
-	Draw(CurrentCamera,GetRenderDevice(0));
+
+	SetProjectionMatrix(CurrentCamera, GetRenderDevice(0)->GetIGraph3d(), Attribute & RENDER_REFLECTION);
+	GetRenderDevice(0)->GetIGraph3d()->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+	d3dEndDrawCommand(CurrentDrawCommand);
+	GetRenderDevice(0)->GetIGraph3d()->ResetProjectionMatrix();
+
 	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
 	CurrentCamera=0;
 	AlphaForSprite=255;
 }
+
 void cPolyDispatcher::SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffuse,const sColor4f &Specular,int zWrite)
 {
 	assert(UCamera->GetKind(KIND_CAMERA));
 	cCamera *Camera=(cCamera*)UCamera;
-	SetClippingPlane(Camera);
 	int rMul=Diffuse.GetR(),gMul=Diffuse.GetG(),bMul=Diffuse.GetB(),aMul=Diffuse.GetA();
 	int rAdd=Specular.GetR(),gAdd=Specular.GetG(),bAdd=Specular.GetB(),aAdd=Specular.GetA();
 	int RenderAttribute=RENDER_COLOR_MOD_DIFFUSE;
 	if(rAdd|gAdd|bAdd) RenderAttribute|=RENDER_COLOR_ADD_SPECULAR;
 	if(aMul<255) RenderAttribute|=RENDER_ALPHA_MOD_DIFFUSE;
-	InitFix(RenderAttribute,4);
+
+	Attribute = RenderAttribute;
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
+
 	Vect3f pe(0,0,1/Camera->GetZPlane().x),pv(0,0,Camera->GetZPlane().x);
 	sRectangle4f &Clip=Camera->GetClipping();
 	pe.x=Clip.xmin(); pe.y=Clip.ymin();
-	SetPointFix(0,pe,rMul,gMul,bMul,aMul,rAdd,gAdd,bAdd,aAdd,pv);
+	drawCommand.addPosition(pe.x, pe.y, pe.z);
+	drawCommand.addDiffuseColor(rMul, gMul, bMul, aMul);
+	drawCommand.addSpecularColor(rAdd, gAdd, bAdd, aAdd);
+
 	pe.x=Clip.xmax(); pe.y=Clip.ymin();
-	SetPointFix(1,pe,rMul,gMul,bMul,aMul,rAdd,gAdd,bAdd,aAdd,pv);
+	drawCommand.addPosition(pe.x, pe.y, pe.z);
+	drawCommand.addDiffuseColor(rMul, gMul, bMul, aMul);
+	drawCommand.addSpecularColor(rAdd, gAdd, bAdd, aAdd);
+
 	pe.x=Clip.xmax(); pe.y=Clip.ymax();
-	SetPointFix(2,pe,rMul,gMul,bMul,aMul,rAdd,gAdd,bAdd,aAdd,pv);
+	drawCommand.addPosition(pe.x, pe.y, pe.z);
+	drawCommand.addDiffuseColor(rMul, gMul, bMul, aMul);
+	drawCommand.addSpecularColor(rAdd, gAdd, bAdd, aAdd);
+
 	pe.x=Clip.xmin(); pe.y=Clip.ymax();
-	SetPointFix(3,pe,rMul,gMul,bMul,aMul,rAdd,gAdd,bAdd,aAdd,pv);
-	AddPolygonFixTestPointFix(0,2,1);
-	AddPolygonFixTestPointFix(0,3,2);
+	drawCommand.addPosition(pe.x, pe.y, pe.z);
+	drawCommand.addDiffuseColor(rMul, gMul, bMul, aMul);
+	drawCommand.addSpecularColor(rAdd, gAdd, bAdd, aAdd);
+
+	drawCommand.addIndex(0, 2, 1);
+	drawCommand.addIndex(0, 3, 2);
+
 	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,false);
-	Draw(Camera,GetRenderDevice(0));
+
+	d3dEndDrawCommand(drawCommand);
+
 	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
 }
-//#endif _ONLY_DIRECT3D_

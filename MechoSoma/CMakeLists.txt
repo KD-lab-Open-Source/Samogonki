@@ -1,5 +1,11 @@
 project(game CXX)
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-D_DEBUG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+endif()
+
 set(GAME_SOURCES
     # aciparser
     aciparser/aci_parser.cpp
@@ -540,7 +546,6 @@ set(APPLICATION_SOURCES
     app/sokol-shader.h
     app/texture_manager.cpp
     app/texture_manager.h
-    app/vertex_type.h
 )
 
 if (MINGW)

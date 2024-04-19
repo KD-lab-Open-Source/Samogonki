@@ -12,6 +12,7 @@
 #endif
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 
 //#define _PROFILE_D3D
@@ -414,8 +415,6 @@ MD3DERROR d3dScreenShot(void *lpBuffer, uint32_t dwSize);
 MD3DERROR d3dEndScene();
 MD3DERROR d3dBeginScene();
 MD3DERROR d3dTestCooperativeLevel();
-MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
-MD3DERROR d3dResetProjectionMatrix();
 
 #ifdef _PROFILE_D3D
 void d3dGetTransferMemoryVideo(DWORD& byte_per_frame, DWORD& n256,DWORD& n128,DWORD& n64,DWORD& n32);
@@ -425,12 +424,6 @@ void d3dGetTransferMemoryVideo(DWORD& byte_per_frame, DWORD& n256,DWORD& n128,DW
 MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE, uint32_t);
 MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState);
 MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
-
-MD3DERROR d3dTriangles(uint32_t, void*, uint32_t);
-MD3DERROR d3dTriangleStrip(uint32_t, void *, uint32_t);
-MD3DERROR d3dTriangleFan(uint32_t, void *, uint32_t);
-MD3DERROR d3dPoints(uint32_t, void *, uint32_t);
-MD3DERROR d3dTrianglesIndexed(uint32_t, void *, uint32_t, uint16_t *, uint32_t);
 
 MD3DERROR d3dGetTextureFormatData(uint32_t, M3DTEXTUREFORMAT* );
 MD3DERROR d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, uint32_t* lpdwHandle);
@@ -461,8 +454,8 @@ MD3DERROR d3dGetGammaFxShadow(float *pfRShadow, float *pfGShadow, float *pfBShad
 
 MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
 MD3DERROR d3dResetClipRect();
-MD3DERROR d3dSetProjectionMatrix(float fFOV, float fNearPlane, float fFarPlane);
-MD3DERROR d3dSetProjectionMatrixToIdentity();
+MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
+MD3DERROR d3dResetProjectionMatrix();
 
 MD3DERROR d3dSetFogParameters(uint32_t dwMode, uint32_t dwColor, float fStart, float fEnd, float fDensity);
 MD3DERROR d3dEnableFog(bool bEnable);
@@ -569,12 +562,52 @@ bool d3dIsActive(); //Активно ли приложение в данный �
 //Текущие установки экрана
 MD3DERROR d3dGetDisplayMode(uint32_t& width, uint32_t& height, uint32_t& bpp);
 
-/*
-  Операции для работы с мультитекстуированием
-*/
-//Может ли карточка поддерживать мультитекстуирование
-bool IsMultiTextureSupport();
+template <typename T, size_t N>
+struct M3D_BUFFER_VIEW
+{
+  T *data = nullptr;
+  uint32_t count = 0;
+  uint32_t countLimit = 0;
 
-//dwVertexTypeDesc обязательно должен иметь хотябы один набор текстурных координат
-//Эта функция работает даже в случае IsMultiTextureSupport()==FALSE
-MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices, uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1);
+  void add(T x, T y)
+  {
+    assert(count + 2 < countLimit);
+    data[count++] = x;
+    data[count++] = y;
+  }
+
+  void add(T x, T y, T z)
+  {
+    assert(count + 3 < countLimit);
+    data[count++] = x;
+    data[count++] = y;
+    data[count++] = z;
+  }
+
+  void add(T x, T y, T z, T w)
+  {
+    assert(count + 4 < countLimit);
+    data[count++] = x;
+    data[count++] = y;
+    data[count++] = z;
+    data[count++] = w;
+  }
+};
+
+struct M3D_DRAW_COMMAND final
+{
+  M3D_BUFFER_VIEW<float, 3> positionBuffer;
+  M3D_BUFFER_VIEW<float, 4> diffuseColorBuffer;
+  M3D_BUFFER_VIEW<float, 4> specularColorBuffer;
+  M3D_BUFFER_VIEW<float, 2> uvBuffer;
+  M3D_BUFFER_VIEW<uint32_t, 3> indexBuffer;
+
+  void addPosition(float x, float y, float z);
+  void addDiffuseColor(int r, int g, int b, int a);
+  void addSpecularColor(int r, int g, int b, int a);
+  void addUV(float u, float v);
+  void addIndex(unsigned v1, unsigned v2, unsigned v3);
+};
+
+MD3DERROR d3dBeginDrawCommand(M3D_DRAW_COMMAND &command);
+MD3DERROR d3dEndDrawCommand(const M3D_DRAW_COMMAND &command);

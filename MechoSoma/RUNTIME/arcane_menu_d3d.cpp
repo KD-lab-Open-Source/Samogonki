@@ -913,27 +913,27 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 	uint32_t dwZEnable;
 	uint32_t dwZWriteEnable;
 
-	VERT_DIFFUSE Quad[4];
+	M3D_DRAW_COMMAND drawCommand;
+	d3dBeginDrawCommand(drawCommand);
 
-	Quad[0].x = float( dwLeft );
-	Quad[0].y = float( dwTop );
+	drawCommand.addPosition(dwLeft, dwTop, 0.0001f);
+	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
 
-	Quad[1].x = float( dwRight );
-	Quad[1].y = float( dwTop );
+	drawCommand.addPosition(dwRight, dwTop, 0.0001f);
+	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
 
-	Quad[2].x = float( dwRight );
-	Quad[2].y = float( dwBottom );
+	drawCommand.addPosition(dwRight, dwBottom, 0.0001f);
+	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
 
-	Quad[3].x = float( dwLeft );
-	Quad[3].y = float( dwBottom );
+	drawCommand.addPosition(dwLeft, dwBottom, 0.0001f);
+	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
 
-	for(i = 0; i < 4; i++ ){
-		Quad[i].z = 0.0001f;
-		Quad[i].rhw = 0.9999f;
-		Quad[i].rgba = RGBA_MAKE( 0, 0, 0, dwDarkness );
-		Quad[i].srgba = 0;
-		Quad[i].u = Quad[i].v = 0;
-	}
+	drawCommand.addIndex(0, 1, 2);
+	drawCommand.addIndex(0, 2, 3);
 
 	// Save current render states
 
@@ -956,7 +956,7 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 
 	d3dSetTextureBlendMode( MD3DTB_DIFFUSE, MD3DTB_DIFFUSE );
 
-	d3dTriangleFan( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1, &Quad, 4 );
+	d3dEndDrawCommand(drawCommand);
 
 	// Restore render states
 
