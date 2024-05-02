@@ -133,12 +133,12 @@ void mchA_d3dInit(void)
 				y += p -> SizeY;
 				if(y >= 256 - p -> SizeY){
 					y = 1;
-					d3dCreateSprite(256,256,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&mchA_d3dSprParent[idx]);
-					d3dLockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
+					gb_IGraph3d->CreateSprite(256,256,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&mchA_d3dSprParent[idx]);
+					gb_IGraph3d->LockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
 					for(yy = 0; yy < 256; yy ++){
 						memcpy((char*)spr_buf + pitch * yy,buf + yy * 512,512);
 					}
-					d3dUnlockSprite(mchA_d3dSprParent[idx]);
+					gb_IGraph3d->UnlockSprite(mchA_d3dSprParent[idx]);
 					memset(buf,0,256 * 256 * 2);
 					idx ++;
 				}
@@ -146,12 +146,12 @@ void mchA_d3dInit(void)
 		}
 	}
 
-	d3dCreateSprite(256,256,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&mchA_d3dSprParent[idx]);
-	d3dLockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
+	gb_IGraph3d->CreateSprite(256,256,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&mchA_d3dSprParent[idx]);
+	gb_IGraph3d->LockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
 	for(yy = 0; yy < 256; yy ++){
 		memcpy((char*)spr_buf + pitch * yy,buf + yy * 512,512);
 	}
-	d3dUnlockSprite(mchA_d3dSprParent[idx]);
+	gb_IGraph3d->UnlockSprite(mchA_d3dSprParent[idx]);
 
 	idx ++;
 
@@ -257,10 +257,10 @@ void mchA_d3dOutSprite(int x,int y,float sx,float sy,int idx,int col,int alpha,f
 {
 	int mode = (center_flag) ? MD3DORG_CENTER : MD3DORG_TOPLEFT;
 
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_COLORFACTOR,col);
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAFACTOR,alpha);
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
-	d3dDrawSprite(mchA_d3dSpr[idx],(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_COLORFACTOR,col);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAFACTOR,alpha);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
+	gb_IGraph3d->DrawSprite(mchA_d3dSpr[idx],(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
 }
 
 void mchA_d3dOutSpriteZ(int x,int y,int z,float sx,float sy,int idx,int col,int alpha,float rotate,int center_flag)
@@ -275,10 +275,10 @@ void mchA_d3dOutSpriteZ(int x,int y,int z,float sx,float sy,int idx,int col,int 
 	gb_IVisGeneric->GetCameraFrustum(camera_dispatcher -> camera(),&Center,&Clipping,&Focus,&zPlane,&zBufferScale);
 	zHard=zBufferScale.y-(zBufferScale.y-zBufferScale.x)*zPlane.x*wHard;
 
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_COLORFACTOR,col);
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAFACTOR,alpha);
-	d3dSetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
-	d3dDrawSpriteZ(mchA_d3dSpr[idx],(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,zHard,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_COLORFACTOR,col);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAFACTOR,alpha);
+	gb_IGraph3d->SetSpriteMode(mchA_d3dSpr[idx],MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
+	gb_IGraph3d->DrawSpriteZ(mchA_d3dSpr[idx],(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,zHard,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
 }
 
 void mchA_d3dDrawSprite(int x,int y,float sx,float sy,int handle,int col,int alpha,float rotate,int center_flag)
@@ -297,10 +297,10 @@ void mchA_d3dDrawSprite(int x,int y,float sx,float sy,int handle,int col,int alp
 			break;
 
 		if(ret == MD3D_OK){
-			d3dSetSpriteMode(handle,MD3DSP_COLORFACTOR,col);
-			d3dSetSpriteMode(handle,MD3DSP_ALPHAFACTOR,alpha);
-			d3dSetSpriteMode(handle,MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
-			d3dDrawSprite(handle,(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_COLORFACTOR,col);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_ALPHAFACTOR,alpha);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
+			gb_IGraph3d->DrawSprite(handle,(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
 		}
 	} while(ret != MD3D_OK);
 }
@@ -324,10 +324,10 @@ void mchA_d3dDrawSpriteZ(int x,int y,int z,float sx,float sy,int handle,int col,
 			break;
 
 		if(ret == MD3D_OK){
-			d3dSetSpriteMode(handle,MD3DSP_COLORFACTOR,col);
-			d3dSetSpriteMode(handle,MD3DSP_ALPHAFACTOR,alpha);
-			d3dSetSpriteMode(handle,MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
-			d3dDrawSpriteZ(handle,(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,zHard,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_COLORFACTOR,col);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_ALPHAFACTOR,alpha);
+			gb_IGraph3d->SetSpriteMode(handle,MD3DSP_ALPHAREF,mchA_d3dAlphaRef);
+			gb_IGraph3d->DrawSpriteZ(handle,(float)x * mchA_d3dResX,(float)y * mchA_d3dResY,zHard,mode,sx * mchA_d3dResX,sy * mchA_d3dResY,rotate);
 		}
 	} while(ret != MD3D_OK);
 }
@@ -411,11 +411,11 @@ void mchA_d3dLoadBmp(int x,int y,int idx,int ch_idx,mchArcaneBMP* p)
 	uint32_t pitch;
 	void* spr_buf;
 
-	d3dLockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
+	gb_IGraph3d->LockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
 
 	mchA_d3dMemPutSpr(x,y,p -> SizeX,p -> SizeY,p -> data,pitch,(char*)spr_buf);
 
-	d3dUnlockSprite(mchA_d3dSprParent[idx]);
+	gb_IGraph3d->UnlockSprite(mchA_d3dSprParent[idx]);
 	mchA_d3dCreateChildSprite(idx,x,y,p -> SizeX,p -> SizeY,ch_idx);
 
 	mchA_d3dSaveSprite(idx);
@@ -553,9 +553,9 @@ void mchA_d3dSprPutpixel(int x,int y,int idx,unsigned r,unsigned g,unsigned b)
 
 	cl |= (alpha << mchA_d3dTexFmt.dwAlphaBitShift);
 
-	d3dLockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
+	gb_IGraph3d->LockSprite(mchA_d3dSprParent[idx],&spr_buf,&pitch);
 	*(unsigned short*)((char*)spr_buf + x*2 + y * pitch) = cl;
-	d3dUnlockSprite(mchA_d3dSprParent[idx]);
+	gb_IGraph3d->UnlockSprite(mchA_d3dSprParent[idx]);
 }
 
 void mchA_d3dSetClip(int x,int y,int sx,int sy)
@@ -600,8 +600,8 @@ void mchA_d3dCreateBackBuffer(void)
 
 	mchA_d3dBackBufferFlag = 1;
 
-	d3dCreateBackBuffer();
-	d3dGetBackBufferFormat(&fmt);
+	gb_IGraph3d->CreateBackBuffer();
+	gb_IGraph3d->GetBackBufferFormat(&fmt);
 
 	if(fmt == MD3DBBFORMAT_RGB565)
 		XGR_HighColorMode = 0;
@@ -620,7 +620,7 @@ void mchA_d3dLockBackBuffer(void)
 {
 	void* p;
 	uint32_t pitch;
-	d3dLockBackBuffer(&p,&pitch);
+	gb_IGraph3d->LockBackBuffer(&p,&pitch);
 
 	XGR_Obj.ScreenBuf = (unsigned char*)p;
 	XGR_Obj.set_pitch(pitch);
@@ -628,13 +628,13 @@ void mchA_d3dLockBackBuffer(void)
 
 void mchA_d3dUnlockBackBuffer(void)
 {
-	d3dUnlockBackBuffer();
+	gb_IGraph3d->UnlockBackBuffer();
 }
 
 void mchA_d3dReleaseBackBuffer(void)
 {
 	if(mchA_d3dBackBufferFlag){
-		d3dReleaseBackBuffer();
+		gb_IGraph3d->ReleaseBackBuffer();
 		mchA_d3dBackBufferFlag = 0;
 	}
 }
@@ -663,11 +663,11 @@ void mchA_d3dClear(unsigned cl)
 void mchA_d3dToggleColorKey(int value)
 {
 	if(value){
-		d3dSetBackBufferColorKey(mchA_d3dColorKey);
-		d3dEnableBackBufferColorKey(true);
+		gb_IGraph3d->SetBackBufferColorKey(mchA_d3dColorKey);
+		gb_IGraph3d->EnableBackBufferColorKey(true);
 	}
 	else {
-		d3dEnableBackBufferColorKey(false);
+		gb_IGraph3d->EnableBackBufferColorKey(false);
 	}
 }
 
@@ -760,7 +760,7 @@ void mchA_d3dSetGamma(float v)
 	if(v > 5.0f) v = 5.0f;
 
 	if(RenderMode == DIRECT3D_HICOLOR)
-		d3dSetAdjustedGamma(v,v,v);
+		gb_IGraph3d->SetAdjustedGamma(v,v,v);
 }
 
 float mchA_d3dGetGamma(void)
@@ -768,7 +768,7 @@ float mchA_d3dGetGamma(void)
 	float gr,gg = 0.0f,gb;
 
 	if(RenderMode == DIRECT3D_HICOLOR)
-		d3dGetAdjustedGamma(&gr,&gg,&gb);
+		gb_IGraph3d->GetAdjustedGamma(&gr,&gg,&gb);
 
 	return gg;
 }
@@ -776,14 +776,14 @@ float mchA_d3dGetGamma(void)
 void mchA_d3dLockSprite(int handle,void** p,unsigned& pitch)
 {
 	uint32_t pt;
-	d3dLockSprite(handle,p,&pt);
+	gb_IGraph3d->LockSprite(handle,p,&pt);
 
 	pitch = pt;
 }
 
 void mchA_d3dUnlockSprite(int handle)
 {
-	d3dUnlockSprite(handle);
+	gb_IGraph3d->UnlockSprite(handle);
 }
 
 int mchA_d3dCreateSlot(int sx,int sy)
@@ -791,7 +791,7 @@ int mchA_d3dCreateSlot(int sx,int sy)
 	uint32_t handle = 0;
 
 	if(RenderMode == DIRECT3D_HICOLOR)
-		d3dCreateSprite(sx,sy,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&handle);
+		gb_IGraph3d->CreateSprite(sx,sy,mchA_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&handle);
 
 	return handle;
 }
@@ -1021,5 +1021,5 @@ MD3DERROR mchA_d3dCreateChildSprite(int parent_id,int x,int y,int sx,int sy,int 
 	mchA_d3dSprSX[child_id] = sx;
 	mchA_d3dSprSY[child_id] = sy;
 #endif
-	return d3dCreateChildSprite(mchA_d3dSprParent[parent_id],x,y,sx,sy,&mchA_d3dSpr[child_id]);
+	return gb_IGraph3d->CreateChildSprite(mchA_d3dSprParent[parent_id],x,y,sx,sy,&mchA_d3dSpr[child_id]);
 }

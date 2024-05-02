@@ -177,35 +177,6 @@ struct sVertexFix
 	inline float& u3()					{ return uv[0][0]; }
 	inline float& v3()					{ return uv[0][1]; }
 };
-class Vect2f;
-class Vect3f;
-struct sVertexD3D
-{ // диффузный цвет - drgba, спекулярный цвет - srgba, 3 пары текстурных координат - uv[3][2]
-	float			x,y,z;
-	unsigned char	drgba[4];
-	unsigned char	srgba[4];
-	float			uv[1][2];
-	static int		fmt;
-	
-	inline unsigned char& dr()			{ return drgba[2]; }
-	inline unsigned char& dg()			{ return drgba[1]; }
-	inline unsigned char& db()			{ return drgba[0]; }
-	inline unsigned char& da()			{ return drgba[3]; }
-	inline unsigned char& sr()			{ return srgba[2]; }
-	inline unsigned char& sg()			{ return srgba[1]; }
-	inline unsigned char& sb()			{ return srgba[0]; }
-	inline unsigned char& sa()			{ return srgba[3]; }
-	inline float& u1()					{ return uv[0][0]; }
-	inline float& v1()					{ return uv[0][1]; }
-	inline float& u2()					{ return uv[0][0]; }
-	inline float& v2()					{ return uv[0][1]; }
-	inline float& u3()					{ return uv[0][0]; }
-	inline float& v3()					{ return uv[0][1]; }
-	inline int& diffuse()				{ return *(int*)&drgba[0]; }
-	inline int& specular()				{ return *(int*)&srgba[0]; }
-	inline Vect3f& GetVect3f()			{ return *(Vect3f*)&x; }
-	inline Vect2f& GetTexel()			{ return *(Vect2f*)&uv[0][0]; }
-};
 
 struct sPolygonFix
 {

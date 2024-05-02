@@ -122,12 +122,6 @@ enum D3DCULL {
   D3DCULL_FORCE_DWORD        = 0x7fffffff, /* force 32-bit size enum */
 };
 
-#define D3DFVF_XYZ              0x002
-#define D3DFVF_XYZRHW           0x004
-#define D3DFVF_DIFFUSE          0x040
-#define D3DFVF_SPECULAR         0x080
-#define D3DFVF_TEX1             0x100
-
 enum D3DBLEND {
     D3DBLEND_ZERO              = 1,
     D3DBLEND_ONE               = 2,

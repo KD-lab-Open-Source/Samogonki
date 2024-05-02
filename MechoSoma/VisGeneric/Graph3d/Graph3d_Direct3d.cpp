@@ -11,8 +11,6 @@ fstream fxx("graph.txt",ios::out);
 
 #include "port.h"
 
-int sVertexD3D::fmt	=	D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-
 extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
 extern void xtDeactivateSysFinitFnc(int id);
 void D3D_FinitFnc(void)
@@ -534,7 +532,7 @@ int cGraph3dDirect3D::LockBackBuffer(void **lplpSurface,uint32_t *lpdwPitch)
 }
 int cGraph3dDirect3D::UnlockBackBuffer()
 {
-	return UnlockBackBuffer();
+	return d3dUnlockBackBuffer();
 }
 int cGraph3dDirect3D::FlushBackBuffer(MD3DRECT *lprcRect)
 {
@@ -647,7 +645,6 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 	drawCommand.addIndex(0, 1, 2);
 	drawCommand.addIndex(2, 3, 0);
 
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
 	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
