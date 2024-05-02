@@ -227,7 +227,12 @@ void Renderer::setVideoMode(int width, int height, bool isFullScreen) {
   _backBuffer = std::make_unique<BackBuffer>(width, height);
 }
 
-MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
+bool Renderer::isInScene() const
+{
+  return _is_in_scene;
+}
+
+MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   _offscreenBuffer->flush();
   SDL_GL_SwapWindow(_window);
@@ -237,24 +242,24 @@ MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetClipRect(const MD3DRECT &lprcClipRect) {
+MD3DERROR Renderer::setClipRect(const MD3DRECT &lprcClipRect) {
   _render_state.set_viewport(lprcClipRect);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dResetClipRect() {
+MD3DERROR Renderer::resetClipRect() {
   _render_state.reset_viewport();
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dBeginScene() {
+MD3DERROR Renderer::beginScene() {
   _commands.clear();
   _render_state.reset_texture_stage();
   _texture_manager->delete_textures();
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dEndScene() {
+MD3DERROR Renderer::endScene() {
   if (_commands.empty()) {
     return MD3D_OK;
   }
@@ -450,17 +455,17 @@ MD3DERROR Renderer::d3dEndScene() {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
+MD3DERROR Renderer::setProjectionMatrix(const D3DMATRIX &matrix) {
   _render_state.set_projection_matrix(matrix);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dResetProjectionMatrix() {
+MD3DERROR Renderer::resetProjectionMatrix() {
   _render_state.reset_projection_matrix();
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dClear(uint32_t dwColor) {
+MD3DERROR Renderer::clear(uint32_t dwColor) {
   const auto red = static_cast<float>((dwColor >> 16) & 0xFF) / 255.0f;
   const auto green = static_cast<float>((dwColor >> 8) & 0xFF) / 255.0f;
   const auto blue = static_cast<float>(dwColor & 0xFF) / 255.0f;
@@ -470,36 +475,36 @@ MD3DERROR Renderer::d3dClear(uint32_t dwColor) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
+MD3DERROR Renderer::setRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
   _render_state.set_option(dwRenderStateType, dwRenderState);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState) {
+MD3DERROR Renderer::getRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState) {
   *lpdwRenderState = _render_state.get_option(dwRenderStateType);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue) {
+MD3DERROR Renderer::setTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue) {
   _render_state.set_texture_stage_state(dwStage, dwState, dwValue);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetTexture(uint32_t dwHandle, uint32_t dwStage) {
+MD3DERROR Renderer::setTexture(uint32_t dwHandle, uint32_t dwStage) {
   _render_state.set_texture(dwHandle, dwStage);
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend) {
+MD3DERROR Renderer::setTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend) {
   switch (tbRGBBlend) {
     case MD3DTB_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
       break;
     case MD3DTB_TEXTURE1:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
       break;
     case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
       break;
     default:
       return MD3DERR_INVALIDPARAM;
@@ -507,13 +512,13 @@ MD3DERROR Renderer::d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXT
 
   switch (tbAlphaBlend) {
     case MD3DTB_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
       break;
     case MD3DTB_TEXTURE1:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
       break;
     case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
       break;
     default:
       return MD3DERR_INVALIDPARAM;
@@ -522,7 +527,7 @@ MD3DERROR Renderer::d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXT
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dBeginDrawCommand(M3D_DRAW_COMMAND &command) {
+MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
   auto vertex_count = [this]() -> size_t {
     if (_commands.empty())
     {
@@ -574,7 +579,7 @@ MD3DERROR Renderer::d3dBeginDrawCommand(M3D_DRAW_COMMAND &command) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dEndDrawCommand(const M3D_DRAW_COMMAND &command) {
+MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
   prepare_render_state();
   assert(command.positionBuffer.count % 3 == 0);
 
@@ -589,19 +594,19 @@ MD3DERROR Renderer::d3dEndDrawCommand(const M3D_DRAW_COMMAND &command) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dLockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
+MD3DERROR Renderer::lockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
   const auto address = _backBuffer->lock();
   *lplpSurface = address.address;
   *lpdwPitch = address.pitch;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dUnlockBackBuffer() {
+MD3DERROR Renderer::unlockBackBuffer() {
   _backBuffer->unlock();
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dFlushBackBuffer(MD3DRECT *lprcRect) {
+MD3DERROR Renderer::flushBackBuffer(MD3DRECT *lprcRect) {
   _is_back_buffer_flush = true;
   return MD3D_OK;
 }

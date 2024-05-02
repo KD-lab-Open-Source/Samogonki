@@ -381,90 +381,14 @@ struct MD3DMODE {
 
 // Function prototypes -------------------------------------------- //
 
-//////array после использования необходимо уничтожать при помощи delete[] pArray;
-MD3DERROR d3dEnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray);
-MD3DERROR d3dGetAvailableVidMem (uint32_t* allVideoMem);
-
-MD3DERROR d3dInit(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwBpp, uint32_t dwInitFlags, void* hInst, void* hIcon, char* szTitle);
-MD3DERROR d3dReInit(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwBpp, uint32_t dwInitFlags, void* hInst, void* hIcon, char* szTitle);
-
-MD3DERROR d3dClose();
-MD3DERROR d3dQueryCaps(MD3DCAPS Caps, uint32_t *dwData);
-MD3DERROR d3dGetWindowHandle(void *hWnd);
-MD3DERROR d3dClear(uint32_t);
-MD3DERROR d3dFlip(bool WaitVerticalBlank=true);
-MD3DERROR d3dFlipToGdiSurface();///Вызывать перед использованием диалогов и т.д.
-
-
-MD3DERROR d3dCreateBackBuffer();
-MD3DERROR d3dReleaseBackBuffer();
-MD3DERROR d3dGetBackBufferFormat(uint32_t *dwFormat);
-MD3DERROR d3dLockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch);
-MD3DERROR d3dUnlockBackBuffer();
-MD3DERROR d3dFlushBackBuffer(MD3DRECT* lprcRect);
-MD3DERROR d3dSetBackBufferColorKey(uint32_t dwColor);
-MD3DERROR d3dEnableBackBufferColorKey(bool bEnable);
-
-MD3DERROR d3dScreenShot(void *lpBuffer, uint32_t dwSize);
-MD3DERROR d3dEndScene();
-MD3DERROR d3dBeginScene();
-MD3DERROR d3dTestCooperativeLevel();
-
 #ifdef _PROFILE_D3D
 void d3dGetTransferMemoryVideo(DWORD& byte_per_frame, DWORD& n256,DWORD& n128,DWORD& n64,DWORD& n32);
 #endif // _PROFILE_D3D
-
-
-MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE, uint32_t);
-MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState);
-MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
-
-MD3DERROR d3dGetTextureFormatData(uint32_t, M3DTEXTUREFORMAT* );
-MD3DERROR d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, uint32_t* lpdwHandle);
-MD3DERROR d3dDeleteTexture(uint32_t);
-MD3DERROR d3dLockTexture(uint32_t dwHandle, void **lplpTexture, uint32_t *lplpPitch );
-MD3DERROR d3dLockTexture(uint32_t dwHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwRight, uint32_t dwBottom, void **lplpTexture, uint32_t *lplpPitch);
-MD3DERROR d3dUnlockTexture(uint32_t);
-MD3DERROR d3dSetTexture(uint32_t hTexture, uint32_t StageState = 0);
-
-MD3DERROR d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
-
-MD3DERROR d3dCreateSprite(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, uint32_t dwFlags, uint32_t* lpdwHandle);
-MD3DERROR d3dCreateChildSprite(uint32_t dwParentHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwWidth, uint32_t dwHeight, uint32_t* lpdwHandle);
-MD3DERROR d3dDeleteSprite(uint32_t dwHandle);
-MD3DERROR d3dLockSprite(uint32_t dwHandle, void **lplpSprite, uint32_t *lplpPitch);
-MD3DERROR d3dUnlockSprite(uint32_t dwHandle);
-MD3DERROR d3dSetSpriteMode(uint32_t dwHandle, uint32_t dwMode, uint32_t dwValue);
-MD3DERROR d3dSetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom);
-MD3DERROR d3dDrawSprite(uint32_t dwHandle, float dvX, float dvY, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
-MD3DERROR d3dDrawSpriteZ(uint32_t dwHandle, float dvX, float dvY, float dvZ, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
-
-MD3DERROR d3dSetAdjustedGamma(float fRGamma, float fGGamma, float fBGamma);
-MD3DERROR d3dGetAdjustedGamma(float *pfRGamma, float *pfGGamma, float *pfBGamma);
-MD3DERROR d3dSetGammaFxHighlight(float fRHilight, float fGHilight, float fBHilight);
-MD3DERROR d3dGetGammaFxHighlight(float *pfRHilight, float *pfGHilight, float *pfBHilight);
-MD3DERROR d3dSetGammaFxShadow(float fRShadow, float fGShadow, float fBShadow);
-MD3DERROR d3dGetGammaFxShadow(float *pfRShadow, float *pfGShadow, float *pfBShadow);
-
-MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
-MD3DERROR d3dResetClipRect();
-MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
-MD3DERROR d3dResetProjectionMatrix();
-
-MD3DERROR d3dSetFogParameters(uint32_t dwMode, uint32_t dwColor, float fStart, float fEnd, float fDensity);
-MD3DERROR d3dEnableFog(bool bEnable);
-
-MD3DERROR d3dSetFocusLossBehavior(bool bSleep);
-
-
-// Constants ------------------------------------------------------ //
-
 
 // Flags used for the d3dInit() function
 
 #define MD3D_FULLSCREEN    0x00000001 // Use fullscreen mode
 #define MD3D_ALTDEVICE	   0x00000010 // Use alternative device (add-in card)
-
 
 // Back buffer formats
 
@@ -551,11 +475,6 @@ MD3DERROR d3dSetFocusLossBehavior(bool bSleep);
 #define MD3DLOG7(l,f,a1,a2,a3,a4,a5,a6,a7)
 #endif
 
-bool d3dIsActive(); //Активно ли приложение в данный момент
-
-//Текущие установки экрана
-MD3DERROR d3dGetDisplayMode(uint32_t& width, uint32_t& height, uint32_t& bpp);
-
 template <typename T, size_t N>
 struct M3D_BUFFER_VIEW
 {
@@ -596,12 +515,28 @@ struct M3D_DRAW_COMMAND final
   M3D_BUFFER_VIEW<float, 2> uvBuffer;
   M3D_BUFFER_VIEW<uint32_t, 3> indexBuffer;
 
-  void addPosition(float x, float y, float z);
-  void addDiffuseColor(int r, int g, int b, int a);
-  void addSpecularColor(int r, int g, int b, int a);
-  void addUV(float u, float v);
-  void addIndex(unsigned v1, unsigned v2, unsigned v3);
-};
+  inline void addPosition(float x, float y, float z)
+  {
+    positionBuffer.add(x, y, z);
+  }
 
-MD3DERROR d3dBeginDrawCommand(M3D_DRAW_COMMAND &command);
-MD3DERROR d3dEndDrawCommand(const M3D_DRAW_COMMAND &command);
+  inline void addDiffuseColor(int r, int g, int b, int a)
+  {
+    diffuseColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+  }
+
+  inline void addSpecularColor(int r, int g, int b, int a)
+  {
+    specularColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+  }
+
+  inline void addUV(float u, float v)
+  {
+    uvBuffer.add(u, v);
+  }
+
+  inline void addIndex(unsigned v1, unsigned v2, unsigned v3)
+  {
+    indexBuffer.add(v1, v2 ,v3);
+  }
+};

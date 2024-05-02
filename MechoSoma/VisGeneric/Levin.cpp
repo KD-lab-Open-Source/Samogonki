@@ -3,6 +3,7 @@
 #include "Levin.h"
 #include "Unknown.h"
 #include "BaseDefine.h"
+#include "RenderDevice.h"
 
 #ifdef _MECHOSOMA_
 #include "mch_common.h" // For far target
@@ -34,7 +35,7 @@ void cLevin::Draw(cUnknownClass *UCameraList,int var)
 		int RenderAttribute=RENDER_COLOR_MOD_DIFFUSE;
 		if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
 
-		d3dBeginDrawCommand(DrawCommand);
+		RenderDevice->GetIGraph3d()->BeginDrawCommand(DrawCommand);
 		CurrentNumberPoint = 0;
 
 		switch(var)
@@ -49,7 +50,7 @@ void cLevin::Draw(cUnknownClass *UCameraList,int var)
 				ErrAbort("Error: cLevin::Draw()\r\nUnknown var");
 		}
 
-		d3dEndDrawCommand(DrawCommand);
+		RenderDevice->GetIGraph3d()->EndDrawCommand(DrawCommand);
 	}
 }
 void cLevin::GenerationLevin1(const Vect3f &pos,const Vect3f &dpos,const Vect2f &width,int level,int count)

@@ -10,9 +10,22 @@ fstream fxx("graph.txt",ios::out);
 #endif //_TEST_DIRECT3D_
 
 #include "port.h"
+#include "texture_manager.h"
 
 extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
 extern void xtDeactivateSysFinitFnc(int id);
+
+extern MD3DERROR d3dCreateSprite(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, uint32_t dwFlags, uint32_t* lpdwHandle);
+extern MD3DERROR d3dCreateChildSprite(uint32_t dwParentHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwWidth, uint32_t dwHeight, uint32_t* lpdwHandle);
+extern MD3DERROR d3dDeleteSprite(uint32_t dwHandle);
+extern MD3DERROR d3dLockSprite(uint32_t dwHandle, void **lplpSprite, uint32_t *lplpPitch);
+extern MD3DERROR d3dUnlockSprite(uint32_t dwHandle);
+extern MD3DERROR d3dSetSpriteMode(uint32_t dwHandle, uint32_t dwMode, uint32_t dwValue);
+extern MD3DERROR d3dSetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom);
+extern MD3DERROR d3dDrawSprite(uint32_t dwHandle, float dvX, float dvY, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
+extern MD3DERROR d3dDrawSpriteZ(uint32_t dwHandle, float dvX, float dvY, float dvZ, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
+
+
 void D3D_FinitFnc(void)
 {
 	xtDeactivateSysFinitFnc(XD3D_SYSOBJ_ID);            
@@ -63,19 +76,8 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	extern char* mchWndTitle;
 	wnd_title = mchWndTitle;
 
-	error=d3dInit(xscr,yscr,ColorBit,DriverMode,nullptr,nullptr,wnd_title);
-	if(error!=MD3D_OK)
-			ErrH.Abort ("No compatible 3D devices found.");
-/*
-		if(error==MD3DERR_NOCOMPATIBLEDEVICES) 
-			ErrH.Abort ("No compatible 3D devices found.");
-		else 
-		{
-			XBuffer buf; 
-			buf < "Error initializing Direct3D. Code=" <= error < "."; 
-			ErrH.Abort (buf.address());
-		}
-*/	
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
+	_isActive = true;
 	xtRegisterSysFinitFnc(D3D_FinitFnc,XD3D_SYSOBJ_ID); 
 
 	SetClipRect(0,0,xscr-1,yscr-1);
@@ -112,19 +114,7 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,void *hInst,char *szTitl
 	extern char* mchWndTitle;
 	wnd_title = mchWndTitle;
 
-	error=d3dReInit(xscr,yscr,ColorBit,DriverMode,nullptr,nullptr,wnd_title);
-	if(error!=MD3D_OK)
-		ErrH.Abort ("No compatible 3D devices found.");
-/*
-		if(error==MD3DERR_NOCOMPATIBLEDEVICES) 
-			ErrH.Abort ("No compatible 3D devices found.");
-		else 
-		{
-			XBuffer buf; 
-			buf < "Error initializing Direct3D. Code=" <= error < "."; 
-			ErrH.Abort (buf.address());
-		}
-*/
+	_renderer->setVideoMode(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
 	SetClipRect(0,0,xscr-1,yscr-1);
 	Fill(0,0,0);
 	Flush();
@@ -138,19 +128,18 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,void *hInst,char *szTitl
 }
 int cGraph3dDirect3D::Release()
 {
-	d3dClose();
 	delete this;
 	return 0;
 }
 int cGraph3dDirect3D::IsActive()
 {
-	return d3dIsActive();
+	return _isActive;
 }
 
 int cGraph3dDirect3D::BeginScene()
 {
 	if(SwitchRenderScene>0) return 1;
-	int err=d3dBeginScene();
+	int err=_renderer->beginScene();
 	if(err==0) SwitchRenderScene=1;
 	else 
 	{
@@ -169,13 +158,13 @@ int cGraph3dDirect3D::EndScene()
 	if(SwitchRenderScene==0) return 1;
 	SwitchRenderScene=0;
 	SetMaterial(MAT_NULL);
-	d3dEndScene();
+	_renderer->endScene();
 	return 0;
 }
 int cGraph3dDirect3D::NullClipRect()
 {
 	MD3DRECT viewport{ xScrMin, yScrMin, xScrMax - xScrMin, yScrMax - yScrMin };
-	d3dSetClipRect(viewport);
+	_renderer->setClipRect(viewport);
 	return 0;
 }
 int cGraph3dDirect3D::GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax)
@@ -194,13 +183,13 @@ int cGraph3dDirect3D::SetClipRect(int xmin,int ymin,int xmax,int ymax)
 int cGraph3dDirect3D::Fill(int r,int g,int b)
 {
 	if(SwitchRenderScene>0) EndScene();
-	d3dClear((r<<16)|(g<<8)|(b<<0));
+	_renderer->clear((r<<16)|(g<<8)|(b<<0));
 	return 0;
 }
 int cGraph3dDirect3D::Flush()
 {
 	if(SwitchRenderScene>0) EndScene();
-	d3dFlip((bool)WaitVerticalBlank);
+	_renderer->flip((bool)WaitVerticalBlank);
 	if(NumberPolygon&&MinNumberPolygon>NumberPolygon) MinNumberPolygon=NumberPolygon;
 	if(MaxNumberPolygon<NumberPolygon) MaxNumberPolygon=NumberPolygon;
 #ifdef _TEST_DIRECT3D_
@@ -212,14 +201,14 @@ int cGraph3dDirect3D::Flush()
 
 void cGraph3dDirect3D::SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix)
 {
-	d3dSetClipRect(Viewport);
-	d3dSetProjectionMatrix(ProjectionMatrix);
+	_renderer->setClipRect(Viewport);
+	_renderer->setProjectionMatrix(ProjectionMatrix);
 }
 
 void cGraph3dDirect3D::ResetProjectionMatrix()
 {
-	d3dResetClipRect();
-	d3dResetProjectionMatrix();
+	_renderer->resetClipRect();
+	_renderer->resetProjectionMatrix();
 }
 
 int cGraph3dDirect3D::PolygonFan(void *vertex,int NumberVertex,int VertexFormat)
@@ -243,21 +232,30 @@ int cGraph3dDirect3D::PolygonIndexed2(void *polygon,int NumberPolygon,void *vert
 	return 0;
 }
 
-int cGraph3dDirect3D::SetTexture(int hTexture)
+int cGraph3dDirect3D::BeginDrawCommand(M3D_DRAW_COMMAND &command)
+{
+	return _renderer->beginDrawCommand(command) == MD3D_OK;
+}
+int cGraph3dDirect3D::EndDrawCommand(const M3D_DRAW_COMMAND &command)
+{
+	return _renderer->endDrawCommand(command) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetTexture(int hTexture, uint32_t dwStage)
 {
 	assert(hTexture);
 	if(!SwitchRenderScene) return 1;
-	return d3dSetTexture((int)hTexture)!=MD3D_OK;
+	return _renderer->setTexture((int)hTexture, dwStage)!=MD3D_OK;
 }
 int cGraph3dDirect3D::LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)
 {
 	assert(hTexture);
-	return d3dLockTexture((uint32_t)hTexture,TextureBuffer,(uint32_t *)BytePerLine)!=MD3D_OK;
+	return _renderer->get_texture_manager().lockTexture((uint32_t)hTexture,TextureBuffer,(uint32_t *)BytePerLine)!=MD3D_OK;
 }
 int cGraph3dDirect3D::UnlockTexture(int hTexture)
 {
 	assert(hTexture);
-	return d3dUnlockTexture((int)hTexture)!=MD3D_OK;
+	return _renderer->get_texture_manager().unlockTexture((int)hTexture)!=MD3D_OK;
 }
 int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 {
@@ -281,14 +279,14 @@ int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 		default: 
 			assert(0);
 	}
-	if(d3dCreateTexture(x,y,TexFormat3d,&hTexture)==MD3D_OK) 
+	if(_renderer->get_texture_manager().createTexture(x,y,TexFormat3d,&hTexture)==MD3D_OK) 
 		return hTexture;
 	return 0;
 }
 int cGraph3dDirect3D::DeleteTexture(int hTexture)
 {
 	assert(hTexture);
-	return d3dDeleteTexture((int)hTexture)==MD3D_OK;
+	return _renderer->get_texture_manager().deleteTexture((int)hTexture)==MD3D_OK;
 }
 
 void* cGraph3dDirect3D::GetZBuffer()
@@ -330,44 +328,44 @@ int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 	// восстановление материалов
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
 	{
-		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,false);
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHATESTENABLE,false);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
 	}
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
 	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		d3dSetRenderState(D3DRENDERSTATE_SPECULARENABLE,false);
+		_renderer->setRenderState(D3DRENDERSTATE_SPECULARENABLE,false);
 	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
 	{
-		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
+		_renderer->setRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
+		_renderer->setRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
 	}
 	// установка материалов
 	MaterialMode=material;
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
 	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
 	{
-		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,true);
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHATESTENABLE,true);
+		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
 	}
 	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		d3dSetRenderState(D3DRENDERSTATE_SPECULARENABLE,true);
+		_renderer->setRenderState(D3DRENDERSTATE_SPECULARENABLE,true);
 	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
 	{
-		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_ONE);
-		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_ONE);
+		_renderer->setRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_ONE);
+		_renderer->setRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_ONE);
 	}
 	switch(MaterialMode&(MAT_COLOR_MOD_DIFFUSE|MAT_COLOR_MOD_TEXTURE1))
 	{
 		case MAT_COLOR_MOD_DIFFUSE:
-			d3dSetTextureBlendMode(MD3DTB_DIFFUSE,MD3DTB_DIFFUSE);
+			_renderer->setTextureBlendMode(MD3DTB_DIFFUSE,MD3DTB_DIFFUSE);
 			break;
 		case MAT_COLOR_MOD_TEXTURE1:
-			d3dSetTextureBlendMode(MD3DTB_TEXTURE1,MD3DTB_TEXTURE1);
+			_renderer->setTextureBlendMode(MD3DTB_TEXTURE1,MD3DTB_TEXTURE1);
 			break;
 		case MAT_COLOR_MOD_DIFFUSE_TEXTURE1:
-			d3dSetTextureBlendMode(MD3DTB_TEXTURE1_MOD_DIFFUSE,MD3DTB_TEXTURE1_MOD_DIFFUSE);
+			_renderer->setTextureBlendMode(MD3DTB_TEXTURE1_MOD_DIFFUSE,MD3DTB_TEXTURE1_MOD_DIFFUSE);
 			break;
 		case MAT_NULL:
 			break;
@@ -436,14 +434,14 @@ int cGraph3dDirect3D::SetRenderState(eRenderStateOption option,int value)
 			type=D3DRENDERSTATE_DESTBLEND;
 			break;
 		case RENDERSTATE_TEXTUREADDRESS:
-		    d3dSetTextureStageState(0,D3DTSS_ADDRESS,value);
-			return d3dSetTextureStageState(1,D3DTSS_ADDRESS,value);
+		    _renderer->setTextureStageState(0,D3DTSS_ADDRESS,value);
+			return _renderer->setTextureStageState(1,D3DTSS_ADDRESS,value);
 		case RENDERSTATE_TEXTUREPOINT:
 		case RENDERSTATE_TEXTURELINEAR:
 		default:
 			assert(0);
 	};
-	return d3dSetRenderState(type,value)!=MD3D_OK;
+	return _renderer->setRenderState(type,value)!=MD3D_OK;
 }
 int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 {
@@ -467,7 +465,7 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 		default: 
 			assert(0);
 	}
-	int error=d3dGetTextureFormatData(TexFormat3d,&d3dTexFmt);
+	int error=_renderer->get_texture_manager().getTextureFormatData(TexFormat3d,&d3dTexFmt);
 	TexFmtData.Set(TexFmtData.TextureFormat,
 		d3dTexFmt.dwRBitCount,d3dTexFmt.dwGBitCount,d3dTexFmt.dwBBitCount,d3dTexFmt.dwAlphaBitCount,
 		d3dTexFmt.dwRBitShift,d3dTexFmt.dwGBitShift,d3dTexFmt.dwBBitShift,d3dTexFmt.dwAlphaBitShift);
@@ -512,40 +510,41 @@ int cGraph3dDirect3D::DrawSpriteZ(uint32_t dwHandle,float dvX,float dvY,float dv
 }
 int cGraph3dDirect3D::ScreenShot(void *lpBuffer,uint32_t dwSize)
 {
-	return d3dScreenShot(lpBuffer,dwSize);
+	return 0;
 }
 int cGraph3dDirect3D::CreateBackBuffer()
 {
-	return d3dCreateBackBuffer();
+	return 0;
 }
 int cGraph3dDirect3D::ReleaseBackBuffer()
 {
-	return d3dReleaseBackBuffer();
+	return 0;
 }
 int cGraph3dDirect3D::GetBackBufferFormat(uint32_t *dwFormat)
 {
-	return d3dGetBackBufferFormat(dwFormat);
+	*dwFormat = MD3DBBFORMAT_RGB565;
+	return 1;
 }
 int cGraph3dDirect3D::LockBackBuffer(void **lplpSurface,uint32_t *lpdwPitch)
 {
-	return d3dLockBackBuffer(lplpSurface,lpdwPitch);
+	return _renderer->lockBackBuffer(lplpSurface,lpdwPitch);
 }
 int cGraph3dDirect3D::UnlockBackBuffer()
 {
-	return d3dUnlockBackBuffer();
+	return _renderer->unlockBackBuffer();
 }
 int cGraph3dDirect3D::FlushBackBuffer(MD3DRECT *lprcRect)
 {
 	if(SwitchRenderScene>0) EndScene();
-	return d3dFlushBackBuffer(lprcRect);
+	return _renderer->flushBackBuffer(lprcRect);
 }
 int cGraph3dDirect3D::SetBackBufferColorKey(uint32_t dwColor)
 {
-	return d3dSetBackBufferColorKey(dwColor);
+	return 0;
 }
 int cGraph3dDirect3D::EnableBackBufferColorKey(bool bEnable)
 {
-	return d3dEnableBackBufferColorKey(bEnable);
+	return 0;
 }
 int cGraph3dDirect3D::QueryGammaSupport( MD3DGAMMASUPPORT *gmGammaSupport )
 {
@@ -559,38 +558,38 @@ int cGraph3dDirect3D::CalibrateGamma( DDGAMMARAMP *lpRampData )
 }
 int cGraph3dDirect3D::SetAdjustedGamma( float fRGamma, float fGGamma, float fBGamma )
 {
-	return d3dSetAdjustedGamma(fRGamma,fGGamma,fBGamma);
+	return 0;
 }
 int cGraph3dDirect3D::GetAdjustedGamma( float *pfRGamma, float *pfGGamma, float *pfBGamma )
 {
-	return d3dGetAdjustedGamma(pfRGamma,pfGGamma,pfBGamma);
+	return 0;
 }
 int cGraph3dDirect3D::SetGammaFxHighlight( float fRHilight, float fGHilight, float fBHilight )
 {
-	return d3dSetGammaFxHighlight(fRHilight,fGHilight,fBHilight);
+	return 0;
 }
 int cGraph3dDirect3D::GetGammaFxHighlight( float *pfRHilight, float *pfGHilight, float *pfBHilight )
 {
-	return d3dGetGammaFxHighlight(pfRHilight,pfGHilight,pfBHilight );
+	return 0;
 }
 int cGraph3dDirect3D::SetGammaFxShadow( float fRShadow, float fGShadow, float fBShadow )
 {
-	return d3dSetGammaFxShadow(fRShadow,fGShadow,fBShadow);
+	return 0;
 }
 int cGraph3dDirect3D::GetGammaFxShadow( float *pfRShadow, float *pfGShadow, float *pfBShadow )
 {
-	return d3dGetGammaFxShadow(pfRShadow,pfGShadow,pfBShadow);
+	return 0;
 }
 int cGraph3dDirect3D::GetWindowHandle( void **hWnd )
 {
-	return d3dGetWindowHandle(hWnd);
+	return 0;
 }
 int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 {
 	assert(SwitchRenderScene);
 
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	_renderer->beginDrawCommand(drawCommand);
 
 	drawCommand.addPosition(0, 0, 0.0001f);
 	drawCommand.addDiffuseColor(r, g, b, a);
@@ -613,18 +612,18 @@ int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,	D3DCULL_NONE ); 
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
+	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,	D3DCULL_NONE ); 
 
-	d3dEndDrawCommand(drawCommand);
+	_renderer->endDrawCommand(drawCommand);
 
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
 	return 0;
 }
 int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,int a,int flag)
 { 
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	_renderer->beginDrawCommand(drawCommand);
 
 	drawCommand.addPosition(x, y, 0.0001f);
 	drawCommand.addDiffuseColor(r, g, b, a);
@@ -647,11 +646,11 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
 
-	d3dEndDrawCommand(drawCommand);
+	_renderer->endDrawCommand(drawCommand);
 
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
 	return 0; 
 }
 int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
@@ -672,101 +671,180 @@ int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 ////////////////////////// PRIVATE //////////////////////////
 void cGraph3dDirect3D::InitRenderState()
 {
-	d3dSetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
+	_renderer->setTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
+	_renderer->setTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	_renderer->setTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+	_renderer->setTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
+	_renderer->setTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	_renderer->setTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+	_renderer->setTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 
-	d3dSetTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
-	d3dSetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
+	_renderer->setTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
+	_renderer->setTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	_renderer->setTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
+	_renderer->setTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
+	_renderer->setTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
+	_renderer->setTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+	_renderer->setTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 
-	d3dSetTextureStageState( 2, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 2, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
+	_renderer->setTextureStageState( 2, D3DTSS_COLOROP,   D3DTOP_DISABLE );
+	_renderer->setTextureStageState( 2, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 
-    d3dSetTextureStageState( 0, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 0, D3DTSS_MIPFILTER, D3DTFP_NONE);
-    d3dSetTextureStageState( 1, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 1, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 1, D3DTSS_MIPFILTER, D3DTFP_NONE);
+    _renderer->setTextureStageState( 0, D3DTSS_MINFILTER, D3DTFN_LINEAR );
+	_renderer->setTextureStageState( 0, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
+	_renderer->setTextureStageState( 0, D3DTSS_MIPFILTER, D3DTFP_NONE);
+    _renderer->setTextureStageState( 1, D3DTSS_MINFILTER, D3DTFN_LINEAR );
+	_renderer->setTextureStageState( 1, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
+	_renderer->setTextureStageState( 1, D3DTSS_MIPFILTER, D3DTFP_NONE);
 
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE,true);
-	d3dSetRenderState( D3DRENDERSTATE_ANTIALIAS,D3DANTIALIAS_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE,1);
-	d3dSetRenderState( D3DRENDERSTATE_FILLMODE,D3DFILL_SOLID);
-	d3dSetRenderState( D3DRENDERSTATE_SHADEMODE,D3DSHADE_GOURAUD);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,1);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_LASTPIXEL,true);
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_ZFUNC,D3DCMP_LESSEQUAL);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,1);	// 0
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL); //D3DCMP_ALWAYS
-	d3dSetRenderState( D3DRENDERSTATE_DITHERENABLE,true);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGCOLOR,0x00000000);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEMODE,D3DFOG_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLESTART,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEEND,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEDENSITY,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGSTART,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGEND,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGDENSITY,0);
-	d3dSetRenderState( D3DRENDERSTATE_COLORKEYENABLE,0);
-	d3dSetRenderState( D3DRENDERSTATE_ZBIAS,0);
-	d3dSetRenderState( D3DRENDERSTATE_RANGEFOGENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREFACTOR,0x80FFFFFF);
+	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE,true);
+	_renderer->setRenderState( D3DRENDERSTATE_ANTIALIAS,D3DANTIALIAS_NONE);
+	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE,1);
+	_renderer->setRenderState( D3DRENDERSTATE_FILLMODE,D3DFILL_SOLID);
+	_renderer->setRenderState( D3DRENDERSTATE_SHADEMODE,D3DSHADE_GOURAUD);
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,1);
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_LASTPIXEL,true);
+	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
+	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
+//	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
+	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_NONE);
+	_renderer->setRenderState( D3DRENDERSTATE_ZFUNC,D3DCMP_LESSEQUAL);
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,1);	// 0
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL); //D3DCMP_ALWAYS
+	_renderer->setRenderState( D3DRENDERSTATE_DITHERENABLE,true);
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGCOLOR,0x00000000);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEMODE,D3DFOG_NONE);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLESTART,0);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEEND,0);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEDENSITY,0);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGSTART,0);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGEND,0);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGDENSITY,0);
+	_renderer->setRenderState( D3DRENDERSTATE_COLORKEYENABLE,0);
+	_renderer->setRenderState( D3DRENDERSTATE_ZBIAS,0);
+	_renderer->setRenderState( D3DRENDERSTATE_RANGEFOGENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREFACTOR,0x80FFFFFF);
 
-	d3dSetRenderState( D3DRENDERSTATE_CLIPPING,1);
-	d3dSetRenderState( D3DRENDERSTATE_LIGHTING,0);
+	_renderer->setRenderState( D3DRENDERSTATE_CLIPPING,1);
+	_renderer->setRenderState( D3DRENDERSTATE_LIGHTING,0);
 	
-	d3dSetRenderState( D3DRENDERSTATE_AMBIENT,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGVERTEXMODE,false);
-	d3dSetRenderState( D3DRENDERSTATE_COLORVERTEX,1);
-	d3dSetRenderState( D3DRENDERSTATE_COLORKEYBLENDENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_DIFFUSEMATERIALSOURCE,D3DMCS_COLOR1);
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARMATERIALSOURCE,D3DMCS_COLOR2);
-	d3dSetRenderState( D3DRENDERSTATE_AMBIENTMATERIALSOURCE,D3DMCS_MATERIAL);
-	d3dSetRenderState( D3DRENDERSTATE_EMISSIVEMATERIALSOURCE,D3DMCS_MATERIAL);
-	d3dSetRenderState( D3DRENDERSTATE_VERTEXBLEND,D3DVBLEND_DISABLE);
-	d3dSetRenderState( D3DRENDERSTATE_CLIPPLANEENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_AMBIENT,false);
+	_renderer->setRenderState( D3DRENDERSTATE_FOGVERTEXMODE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_COLORVERTEX,1);
+	_renderer->setRenderState( D3DRENDERSTATE_COLORKEYBLENDENABLE,false);
+	_renderer->setRenderState( D3DRENDERSTATE_DIFFUSEMATERIALSOURCE,D3DMCS_COLOR1);
+	_renderer->setRenderState( D3DRENDERSTATE_SPECULARMATERIALSOURCE,D3DMCS_COLOR2);
+	_renderer->setRenderState( D3DRENDERSTATE_AMBIENTMATERIALSOURCE,D3DMCS_MATERIAL);
+	_renderer->setRenderState( D3DRENDERSTATE_EMISSIVEMATERIALSOURCE,D3DMCS_MATERIAL);
+	_renderer->setRenderState( D3DRENDERSTATE_VERTEXBLEND,D3DVBLEND_DISABLE);
+	_renderer->setRenderState( D3DRENDERSTATE_CLIPPLANEENABLE,false);
 /*
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_DITHERENABLE, TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	TRUE ); 
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL );
-	d3dSetRenderState( D3DRENDERSTATE_ZBIAS, 0 );
-	d3dSetRenderState( D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID ); 
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_CW ); 
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_NONE ); 
-	d3dSetRenderState( D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD );
+	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
+	_renderer->setRenderState( D3DRENDERSTATE_DITHERENABLE, TRUE );
+	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE );
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	TRUE ); 
+	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
+	_renderer->setRenderState( D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL );
+	_renderer->setRenderState( D3DRENDERSTATE_ZBIAS, 0 );
+	_renderer->setRenderState( D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID ); 
+//	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_CW ); 
+	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_NONE ); 
+	_renderer->setRenderState( D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD );
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE,FALSE );
-//	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_ALWAYS );
-//	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,0xFF );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,1 );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE,FALSE );
+//	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_ALWAYS );
+//	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,0xFF );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,1 );
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA );
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,FALSE );
+	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA );
+	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA );
 
-    d3dSetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
-    d3dSetTextureStageState(1,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
+    _renderer->setTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
+    _renderer->setTextureStageState(1,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
 */
+}
+
+int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
+{
+	*pNumVideoMode = 6;
+	auto modes = new MD3DMODE[*pNumVideoMode];
+
+	modes[0].dx = 640;
+	modes[0].dy = 480;
+	modes[0].bitPerPixel = 32;
+
+	modes[1].dx = 800;
+	modes[1].dy = 600;
+	modes[1].bitPerPixel = 32;
+
+	modes[2].dx = 1024;
+	modes[2].dy = 768;
+	modes[2].bitPerPixel = 32;
+
+	modes[3].dx = 1152;
+	modes[3].dy = 864;
+	modes[3].bitPerPixel = 32;
+
+	modes[4].dx = 1280;
+	modes[4].dy = 1024;
+	modes[4].bitPerPixel = 32;
+
+	modes[5].dx = 1600;
+	modes[5].dy = 1200;
+	modes[5].bitPerPixel = 32;
+
+	*ppArray = modes;
+
+	return 1;
+}
+
+int cGraph3dDirect3D::GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)
+{
+	return _renderer->get_texture_manager().getTextureFormatData(dwTexFormatID, pData) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState)
+{
+	return _renderer->setRenderState(dwRenderStateType, dwRenderState) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::GetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState)
+{
+	return _renderer->getRenderState(dwRenderStateType, lpdwRenderState) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue)
+{
+	return _renderer->setTextureStageState(dwStage, dwState, dwValue) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend)
+{
+	return _renderer->setTextureBlendMode(tbRGBBlend, tbAlphaBlend) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)
+{
+	return d3dSetSpriteRect(dwHandle, dvLeft, dvTop, dvRight, dvBottom) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::Clear(uint32_t dwColor)
+{
+	return _renderer->clear(dwColor) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::Flip(bool bWaitVerticalBlank)
+{
+	return _renderer->flip(bWaitVerticalBlank) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetClipRect(const MD3DRECT &lprcClipRect)
+{
+	return _renderer->setClipRect(lprcClipRect);
 }

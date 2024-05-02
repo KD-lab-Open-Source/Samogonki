@@ -33,28 +33,29 @@ class Renderer final {
 
   TextureManager& get_texture_manager();
   void setVideoMode(int width, int height, bool isFullScreen);
+  bool isInScene() const;
 
-  MD3DERROR d3dClear(uint32_t dwColor);
-  MD3DERROR d3dFlip(bool WaitVerticalBlank);
-  MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
-  MD3DERROR d3dResetClipRect();
-  MD3DERROR d3dBeginScene();
-  MD3DERROR d3dEndScene();
-  MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
-  MD3DERROR d3dResetProjectionMatrix();
-  MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
-  MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
-  MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
+  MD3DERROR clear(uint32_t dwColor);
+  MD3DERROR flip(bool WaitVerticalBlank);
+  MD3DERROR setClipRect(const MD3DRECT &lprcClipRect);
+  MD3DERROR resetClipRect();
+  MD3DERROR beginScene();
+  MD3DERROR endScene();
+  MD3DERROR setProjectionMatrix(const D3DMATRIX &matrix);
+  MD3DERROR resetProjectionMatrix();
+  MD3DERROR setRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
+  MD3DERROR getRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
+  MD3DERROR setTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
 
-  MD3DERROR d3dSetTexture(uint32_t dwHandle, uint32_t dwStage);
-  MD3DERROR d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
+  MD3DERROR setTexture(uint32_t dwHandle, uint32_t dwStage);
+  MD3DERROR setTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
 
-  MD3DERROR d3dBeginDrawCommand(M3D_DRAW_COMMAND &command);
-  MD3DERROR d3dEndDrawCommand(const M3D_DRAW_COMMAND &command);
+  MD3DERROR beginDrawCommand(M3D_DRAW_COMMAND &command);
+  MD3DERROR endDrawCommand(const M3D_DRAW_COMMAND &command);
 
-  MD3DERROR d3dLockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
-  MD3DERROR d3dUnlockBackBuffer();
-  MD3DERROR d3dFlushBackBuffer(MD3DRECT* lprcRect);
+  MD3DERROR lockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
+  MD3DERROR unlockBackBuffer();
+  MD3DERROR flushBackBuffer(MD3DRECT* lprcRect);
 
  private:
   void prepare_render_state();
@@ -115,6 +116,7 @@ private:
 
   std::vector<DrawCommand> _commands;
   bool _is_back_buffer_flush = false;
+  bool _is_in_scene = false;
 };
 
 }  // namespace graphics

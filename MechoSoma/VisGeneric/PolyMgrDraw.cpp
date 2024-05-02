@@ -103,7 +103,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 
 			Attribute = RenderAttribute;
 			M3D_DRAW_COMMAND drawCommand;
-			d3dBeginDrawCommand(drawCommand);
+			Graph3d->BeginDrawCommand(drawCommand);
 
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			int CurrentPoint=0,PreviousPoints=0;
@@ -143,7 +143,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 
 			SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 			Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-			d3dEndDrawCommand(drawCommand);
+			Graph3d->EndDrawCommand(drawCommand);
 			Graph3d->ResetProjectionMatrix();
 
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
@@ -402,7 +402,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 						BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 
 					M3D_DRAW_COMMAND drawCommand;
-					d3dBeginDrawCommand(drawCommand);
+					Graph3d->BeginDrawCommand(drawCommand);
 
 					switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
 					{
@@ -557,7 +557,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 
 					SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 					Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-					d3dEndDrawCommand(drawCommand);
+					Graph3d->EndDrawCommand(drawCommand);
 					Graph3d->ResetProjectionMatrix();
 				}
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
@@ -598,7 +598,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 
 						Attribute = AttributeRender;
 						M3D_DRAW_COMMAND drawCommand;
-						d3dBeginDrawCommand(drawCommand);
+						Graph3d->BeginDrawCommand(drawCommand);
 
 						int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 						int i;
@@ -627,23 +627,23 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						{
 							if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 							{
-								d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-								d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-								d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+								Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+								Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+								Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
-								d3dEndDrawCommand(drawCommand);
+								Graph3d->EndDrawCommand(drawCommand);
 
-								d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-								d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+								Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+								Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 							}
 							else
 							{
-								d3dEndDrawCommand(drawCommand);
+								Graph3d->EndDrawCommand(drawCommand);
 							}
 						}
 						else
 						{
-							d3dEndDrawCommand(drawCommand);
+							Graph3d->EndDrawCommand(drawCommand);
 						}
 
 						Graph3d->ResetProjectionMatrix();
@@ -664,7 +664,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 
 				Attribute = AttributeRender;
 				M3D_DRAW_COMMAND drawCommand;
-				d3dBeginDrawCommand(drawCommand);
+				Graph3d->BeginDrawCommand(drawCommand);
 
 				int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 				int i;
@@ -693,23 +693,23 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				{
 					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 					{
-						d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-						d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-						d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+						Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+						Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+						Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
-						d3dEndDrawCommand(drawCommand);
+						Graph3d->EndDrawCommand(drawCommand);
 
-						d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-						d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+						Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+						Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 					}
 					else
 					{
-						d3dEndDrawCommand(drawCommand);
+						Graph3d->EndDrawCommand(drawCommand);
 					}
 				}
 				else
 				{
-					d3dEndDrawCommand(drawCommand);
+					Graph3d->EndDrawCommand(drawCommand);
 				}
 
 				Graph3d->ResetProjectionMatrix();
@@ -765,7 +765,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 
 					Attribute = BaseAttribute;
 					M3D_DRAW_COMMAND drawCommand;
-					d3dBeginDrawCommand(drawCommand);
+					Graph3d->BeginDrawCommand(drawCommand);
 
 					int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y),flag=0;
 					int i;
@@ -815,23 +815,23 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					{
 						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 						{
-							d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-							d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-							d3dSetTexture(bTile->GetLightMap()->nTexture, 1);
+							Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+							Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+							Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
-							d3dEndDrawCommand(drawCommand);
+							Graph3d->EndDrawCommand(drawCommand);
 
-							d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-							d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+							Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+							Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 						}
 						else
 						{
-							d3dEndDrawCommand(drawCommand);
+							Graph3d->EndDrawCommand(drawCommand);
 						}
 					}
 					else
 					{
-						d3dEndDrawCommand(drawCommand);
+						Graph3d->EndDrawCommand(drawCommand);
 					}
 
 					Graph3d->ResetProjectionMatrix();
@@ -880,7 +880,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 
 		Attribute = BaseAttribute;
 		M3D_DRAW_COMMAND drawCommand;
-		d3dBeginDrawCommand(drawCommand);
+		Graph3d->BeginDrawCommand(drawCommand);
 		
 		// установка вершин
 		float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -924,7 +924,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 
 		SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-		d3dEndDrawCommand(drawCommand);
+		Graph3d->EndDrawCommand(drawCommand);
 		Graph3d->ResetProjectionMatrix();
 	}
 #endif //_USE_TILEMAP_
@@ -978,7 +978,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 
 				Attribute = BaseAttribute;
 				M3D_DRAW_COMMAND drawCommand;
-				d3dBeginDrawCommand(drawCommand);
+				Graph3d->BeginDrawCommand(drawCommand);
 
 				// установка вершин
 				float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -1024,7 +1024,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 
 				SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 				Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-				d3dEndDrawCommand(drawCommand);
+				Graph3d->EndDrawCommand(drawCommand);
 				Graph3d->ResetProjectionMatrix();
 			}
 	}
@@ -1063,7 +1063,7 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 
 	Attribute = BaseAttribute;
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	RenderDevice->GetIGraph3d()->BeginDrawCommand(drawCommand);
 
 	float xpos=xofs,ypos=yofs, ustep, duPoint0,vstep, duPoint,dvPoint;
 	if(WorldPolyGrid->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))
@@ -1125,7 +1125,7 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 
 	SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-	d3dEndDrawCommand(drawCommand);
+	Graph3d->EndDrawCommand(drawCommand);
 	Graph3d->ResetProjectionMatrix();
 }
 
@@ -1250,7 +1250,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 
 				Attribute = BaseAttribute;
 				M3D_DRAW_COMMAND drawCommand;
-				d3dBeginDrawCommand(drawCommand);
+				Graph3d->BeginDrawCommand(drawCommand);
 
 				Vect3f pv1(pv.x-RadiusSun,pv.y-RadiusSun,pv.z);
 
@@ -1285,7 +1285,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 
 				SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 				Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-				d3dEndDrawCommand(drawCommand);
+				Graph3d->EndDrawCommand(drawCommand);
 				Graph3d->ResetProjectionMatrix();
 			}
 
@@ -1301,7 +1301,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 
 			Attribute = RenderAttribute;
 			M3D_DRAW_COMMAND drawCommand;
-			d3dBeginDrawCommand(drawCommand);
+			Graph3d->BeginDrawCommand(drawCommand);
 
 			for(float height=+limit;height>=-limit;height-=dlimit)
 			{
@@ -1337,7 +1337,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 
 			SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 			Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-			d3dEndDrawCommand(drawCommand);
+			Graph3d->EndDrawCommand(drawCommand);
 			Graph3d->ResetProjectionMatrix();
 
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,true);
@@ -1394,7 +1394,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 
 		Attribute = BaseAttribute;
 		M3D_DRAW_COMMAND drawCommand;
-		d3dBeginDrawCommand(drawCommand);
+		Graph3d->BeginDrawCommand(drawCommand);
 
 		Vect3f *Point=TangentTrail->Point;
 		Vect3f pv;
@@ -1432,7 +1432,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 
 		SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
 		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-		d3dEndDrawCommand(drawCommand);
+		Graph3d->EndDrawCommand(drawCommand);
 		Graph3d->ResetProjectionMatrix();
 	}
 }
@@ -1460,7 +1460,7 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf 
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
-	d3dBeginDrawCommand(CurrentDrawCommand);
+	Graph3d->BeginDrawCommand(CurrentDrawCommand);
 	CurrentListPointIndex = 0;
 
 	AlphaForSprite=255;
@@ -1590,7 +1590,7 @@ void cPolyDispatcher::BeginListShare(cUnknownClass *UCamera,int idTextureChild,M
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
-	d3dBeginDrawCommand(CurrentDrawCommand);
+	Graph3d->BeginDrawCommand(CurrentDrawCommand);
 	CurrentListPointIndex = 0;
 }
 
@@ -1658,7 +1658,7 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild)
 	if(CurrentCamera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
-	d3dBeginDrawCommand(CurrentDrawCommand);
+	Graph3d->BeginDrawCommand(CurrentDrawCommand);
 	CurrentListPointIndex = 0;
 }
 
@@ -1713,7 +1713,7 @@ void cPolyDispatcher::EndList()
 
 	SetProjectionMatrix(CurrentCamera, GetRenderDevice(0)->GetIGraph3d(), Attribute & RENDER_REFLECTION);
 	GetRenderDevice(0)->GetIGraph3d()->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-	d3dEndDrawCommand(CurrentDrawCommand);
+	GetRenderDevice(0)->GetIGraph3d()->EndDrawCommand(CurrentDrawCommand);
 	GetRenderDevice(0)->GetIGraph3d()->ResetProjectionMatrix();
 
 	GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
@@ -1733,7 +1733,7 @@ void cPolyDispatcher::SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffus
 
 	Attribute = RenderAttribute;
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	GetRenderDevice(0)->GetIGraph3d()->BeginDrawCommand(drawCommand);
 
 	Vect3f pe(0,0,1/Camera->GetZPlane().x),pv(0,0,Camera->GetZPlane().x);
 	sRectangle4f &Clip=Camera->GetClipping();
@@ -1762,7 +1762,7 @@ void cPolyDispatcher::SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffus
 
 	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,false);
 
-	d3dEndDrawCommand(drawCommand);
+	GetRenderDevice(0)->GetIGraph3d()->EndDrawCommand(drawCommand);
 
 	if(!zWrite) GetRenderDevice(0)->GetIGraph3d()->SetRenderState(RENDERSTATE_ZWRITE,true);
 }

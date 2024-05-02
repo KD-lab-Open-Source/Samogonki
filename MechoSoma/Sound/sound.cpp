@@ -741,7 +741,7 @@ void mchInitSound(void)
 
 	memset(sndTrackLoop,0,CDTRACK_MAX);
 
-	if(!XGR_hWnd) d3dGetWindowHandle(&XGR_hWnd);
+//	if(!XGR_hWnd) d3dGetWindowHandle(&XGR_hWnd);
 
 	mch_sndD = new mchSoundDispatcher;
 	if(!SoundInit(EFFECT_KHZ,DIG_F_STEREO_16,32)){

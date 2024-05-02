@@ -18,6 +18,9 @@
 #define _RPTF0(X, Y)
 #include <math.h>
 
+#include "renderer.h"
+#include "texture_manager.h"
+
  
 struct TVertex
 {
@@ -63,15 +66,12 @@ typedef struct {
 static uint32_t FindUnusedSlot();
 static uint32_t CreateNewSlot();
 
-// Md3d globals
-extern bool		g_bInScene;			// TRUE when in BeginScene/EndScene bracket
-
-
 // Local vars
 
 bool g_SpriteMgrInitialized = false;
 static float m_dvSpriteZ;
 static bool	m_bSpriteZEnable = false;
+graphics::Renderer *m_renderer = nullptr;
 
 
 #define SLOTS_INITIAL_SIZE 200
@@ -86,9 +86,10 @@ uint32_t m_dwSpriteSlotsUsed = 0;
 // Name: __d3dInitSpriteManager()
 // Desc: Initialize sprite manager
 //-----------------------------------------------------------------------------
-MD3DERROR __d3dInitSpriteManager()
+MD3DERROR __d3dInitSpriteManager(graphics::Renderer *renderer)
 {
 	_ASSERTE( false == g_SpriteMgrInitialized );
+	m_renderer = renderer;
 
 	// Initialize sprite slots
 
@@ -163,7 +164,7 @@ MD3DERROR d3dCreateSprite( uint32_t dwWidth, uint32_t dwHeight, uint32_t dwForma
 	uint32_t hr;
 	uint32_t dwTexHandle;
 
-	if( ( hr = d3dCreateTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) ) < 0 ) {
+	if( ( hr = m_renderer->get_texture_manager().createTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) ) < 0 ) {
 		_RPT0( _CRT_ERROR, "MD3D: unable to create texture for a sprite.\n" );
 		*lpdwHandle = 0;
 		return hr;
@@ -342,7 +343,7 @@ MD3DERROR d3dDeleteSprite( uint32_t dwHandle )
 
 	// Free the texture handle 
 	uint32_t hr;
-	hr = d3dDeleteTexture( lpSprite->dwTexHandle );
+	hr = m_renderer->get_texture_manager().deleteTexture( lpSprite->dwTexHandle );
 	_ASSERT( 0 == hr );
 
 	// Mark the slot as free
@@ -372,11 +373,11 @@ MD3DERROR d3dLockSprite( uint32_t dwHandle, void **lplpSprite, uint32_t *lplpPit
 	uint32_t hr;
 	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
 		// It's a parent sprite
-		hr = d3dLockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch );
+		hr = m_renderer->get_texture_manager().lockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch );
 	} else {
 		// It's a child sprite
 		uint32_t dwTexHandle = m_lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
-		hr = d3dLockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
+		hr = m_renderer->get_texture_manager().lockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
 							 lpSprite->dwLeft + lpSprite->dwWidth-1, 
 							 lpSprite->dwTop + lpSprite->dwHeight-1,	
 							 lplpSprite, lplpPitch );
@@ -418,7 +419,7 @@ MD3DERROR d3dUnlockSprite( uint32_t dwHandle )
 		dwTexHandle = m_lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
 	}
 
-	return d3dUnlockTexture( dwTexHandle );
+	return m_renderer->get_texture_manager().unlockTexture( dwTexHandle );
 }
 
 
@@ -579,7 +580,7 @@ MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOri
 						 float dvScaleX, float dvScaleY, float dvRotate )
 {
 	_ASSERTE( g_SpriteMgrInitialized );
-	_ASSERTE( g_bInScene );
+	_ASSERTE( m_renderer->isInScene() );
 
 	// Check if the handle is valid
 	_ASSERTE( dwHandle > 0 && dwHandle < m_dwSpriteSlotsUsed );
@@ -598,7 +599,7 @@ MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOri
 	uint32_t hr;
 
 	// Set current texture to the sprite texture
-	hr = d3dSetTexture( dwTexHandle );
+	hr = m_renderer->setTexture( dwTexHandle, 0 );
 	if( hr < 0 )
 		return hr;
 
@@ -703,52 +704,52 @@ MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOri
 	uint32_t dwZEnable;
 	uint32_t dwZWriteEnable;
 
-	d3dGetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, &dwAlphaTestEnable );
-	d3dGetRenderState( D3DRENDERSTATE_ALPHAFUNC, &dwAlphaFunc );
-	d3dGetRenderState( D3DRENDERSTATE_ALPHAREF, &dwAlphaRef );
+	m_renderer->getRenderState( D3DRENDERSTATE_ALPHATESTENABLE, &dwAlphaTestEnable );
+	m_renderer->getRenderState( D3DRENDERSTATE_ALPHAFUNC, &dwAlphaFunc );
+	m_renderer->getRenderState( D3DRENDERSTATE_ALPHAREF, &dwAlphaRef );
 
-	d3dGetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
-	d3dGetRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
-	d3dGetRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
+	m_renderer->getRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
+	m_renderer->getRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
+	m_renderer->getRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
 
-	d3dGetRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
-	d3dGetRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
+	m_renderer->getRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
+	m_renderer->getRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
 
 	// Set render states
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, true );
-		d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL );
-		d3dSetRenderState( D3DRENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, true );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
 	} else {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, false );
-		d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_ALWAYS );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, false );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_ALWAYS );
 	}
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
-		d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
-		d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
+		m_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
+		m_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
 	} else {
-		d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, false );
+		m_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, false );
 	}
 
 	if( m_bSpriteZEnable ) {
-		d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+		m_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
+		m_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 	} else {
-		d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-		d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+		m_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
+		m_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 	}
 
-	d3dSetTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
+	m_renderer->setTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
 				//MD3DTB_TEXTURE1);//Для совсем слабеньких карточек
 				MD3DTB_TEXTURE1_MOD_DIFFUSE );
 
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
+	m_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
 
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	m_renderer->beginDrawCommand(drawCommand);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -765,23 +766,23 @@ MD3DERROR d3dDrawSprite( uint32_t dwHandle, float dvX, float dvY, uint32_t dwOri
 	drawCommand.addIndex(2, 1, 0);
 	drawCommand.addIndex(3, 2, 0);
 
-	d3dEndDrawCommand(drawCommand);
+	m_renderer->endDrawCommand(drawCommand);
 
 //	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
 
 
 	// Restore render states
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE, dwAlphaTestEnable );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC, dwAlphaFunc );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF, dwAlphaRef );
+	m_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, dwAlphaTestEnable );
+	m_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, dwAlphaFunc );
+	m_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, dwAlphaRef );
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
+	m_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
+	m_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
+	m_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
 
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
+	m_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
+	m_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
 
 	return MD3D_OK;
 }

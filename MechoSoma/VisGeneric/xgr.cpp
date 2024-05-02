@@ -49,7 +49,7 @@ void Null_Finit()
 			XGR_Obj.close();
 			break;
 		case DIRECT3D_HICOLOR:
-			d3dClose();
+//			d3dClose();
 			break;
 		default: { XBuffer buf; buf<"Error: unknown render mode = "<=RenderMode; ErrH.Abort(buf.address()); }
 	}
@@ -103,7 +103,7 @@ void Null_Flush(int x,int y,int sx,int sy)
 			XGR_Obj.flush(x,y,sx,sy);
 			break;
 		case DIRECT3D_HICOLOR:
-			d3dFlip();
+//			d3dFlip();
 			break;
 		default: { XBuffer buf; buf<"Error: unknown render mode = "<=RenderMode; ErrH.Abort(buf.address()); }
 	}
@@ -116,7 +116,7 @@ void Null_Flush625(int x,int y,int sx,int sy)
 			XGR_Obj.flush625(x,y,sx,sy);
 			break;
 		case DIRECT3D_HICOLOR:
-			d3dFlip();
+//			d3dFlip();
 			break;
 		default: { XBuffer buf; buf<"Error: unknown render mode = "<=RenderMode; ErrH.Abort(buf.address()); }
 	}
@@ -129,7 +129,7 @@ void Null_Fill(int col)
 			XGR_Obj.fill(col);
 			break;
 		case DIRECT3D_HICOLOR:
-			d3dClear(col);
+//			d3dClear(col);
 			break;
 		default: { XBuffer buf; buf<"Error: unknown render mode = "<=RenderMode; ErrH.Abort(buf.address()); }
 	}

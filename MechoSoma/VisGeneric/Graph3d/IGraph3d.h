@@ -219,7 +219,10 @@ public:
 	virtual int PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX)=0;
 	virtual int PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat=VERTEXFMT_FIX)=0;
 
-	virtual int SetTexture(int hTexture)=0;
+	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command)=0;
+	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command)=0;
+
+	virtual int SetTexture(int hTexture, uint32_t dwStage = 0)=0;
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)=0;
 	virtual int UnlockTexture(int hTexture)=0;
 	virtual int CreateTexture(int x,int y,eTextureFormat TextureFormat)=0;
@@ -278,6 +281,18 @@ public:
 	virtual int OutText(int x,int y,char *string,int r=255,int g=255,int b=255,int a=255)	{ return 0; }
 	virtual int DrawLine(float x1,float y1,float z1,float x2,float y2,float z2,int r=255,int g=255,int b=255,int a=255)	{ return 0; }
 	virtual void InitRenderState()												{}
+
+	// Legacy
+	virtual int EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)=0;
+	virtual int GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)=0;
+	virtual int SetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState)=0;
+	virtual int GetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState)=0;
+	virtual int SetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue)=0;
+	virtual int SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend)=0;
+	virtual int SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)=0;
+	virtual int Clear(uint32_t dwColor)=0;
+	virtual int Flip(bool bWaitVerticalBlank = true)=0;
+	virtual int SetClipRect(const MD3DRECT &lprcClipRect)=0;
 };
 
 cInterfaceGraph3d* CreateIGraph3D(int InterfaceGraph3d);

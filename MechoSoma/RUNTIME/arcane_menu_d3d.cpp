@@ -38,8 +38,6 @@ extern cInterfaceGraph3d	*gb_IGraph3d;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
-MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
-
 void mchA_d3dLoadBmp(int x,int y,int idx,int ch_idx,mchArcaneBMP* p);
 
 void mchA_d3dInitPal(void);
@@ -102,7 +100,7 @@ void mchA_d3dInit(void)
 	void* spr_buf;
 	char* buf;
 
-	d3dEnumVideoMode(&mchA_d3dNumModes,&mchA_d3dModes);
+	gb_IGraph3d->EnumVideoMode(&mchA_d3dNumModes,&mchA_d3dModes);
 
 #ifdef AE_D3D_DEBUG
 	for(i = 0; i < 256; i ++){
@@ -114,7 +112,7 @@ void mchA_d3dInit(void)
 	mchA_d3dResX = (float)XGR_MAXX / 640.0f;
 	mchA_d3dResY = (float)XGR_MAXY / 480.0f;
 
-	d3dGetTextureFormatData(mchA_d3dTexMode,&mchA_d3dTexFmt);
+	gb_IGraph3d->GetTextureFormatData(mchA_d3dTexMode,&mchA_d3dTexFmt);
 	mchA_d3dInitPal();
 
 	x = y = 1;
@@ -570,7 +568,7 @@ void mchA_d3dSetClip(int x,int y,int sx,int sy)
 	};
 	if(!sx || !sy) return;
 
-	d3dSetClipRect(r);
+	gb_IGraph3d->SetClipRect(r);
 
 //	gb_IGraph3d->BeginScene();
 }
@@ -588,7 +586,7 @@ void mchA_d3dClearClip(void)
 
 void mchA_d3dScreenShot(void* buf,int sz)
 {
-	d3dScreenShot(buf,sz);
+	gb_IGraph3d->ScreenShot(buf,sz);
 }
 
 void mchA_d3dCreateBackBuffer(void)
@@ -652,12 +650,12 @@ void mchA_d3dFlushBackBuffer(int x,int y,int sx,int sy)
 
 void mchA_d3dFlip(void)
 {
-	d3dFlip();
+	gb_IGraph3d->Flip();
 }
 
 void mchA_d3dClear(unsigned cl)
 {
-	d3dClear(cl);
+	gb_IGraph3d->Clear(cl);
 }
 
 void mchA_d3dToggleColorKey(int value)
@@ -892,7 +890,7 @@ void mchA_d3dConvertSprite(int sx,int sy,void* src,void* dest,int src_colors)
 
 void mchA_d3dClipSprite(int handle,float l,float t,float r,float b)
 {
-	d3dSetSpriteRect(handle,l,t,r,b);
+	gb_IGraph3d->SetSpriteRect(handle,l,t,r,b);
 }
 
 
@@ -914,7 +912,7 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 	uint32_t dwZWriteEnable;
 
 	M3D_DRAW_COMMAND drawCommand;
-	d3dBeginDrawCommand(drawCommand);
+	gb_IGraph3d->BeginDrawCommand(drawCommand);
 
 	drawCommand.addPosition(dwLeft, dwTop, 0.0001f);
 	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
@@ -937,35 +935,35 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 
 	// Save current render states
 
-	d3dGetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
-	d3dGetRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
-	d3dGetRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
+	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
+	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
+	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
 
-	d3dGetRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
-	d3dGetRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
+	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
+	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
 
 	// Set render states
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
 
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
 
-	d3dSetTextureBlendMode( MD3DTB_DIFFUSE, MD3DTB_DIFFUSE );
+	gb_IGraph3d->SetTextureBlendMode( MD3DTB_DIFFUSE, MD3DTB_DIFFUSE );
 
-	d3dEndDrawCommand(drawCommand);
+	gb_IGraph3d->EndDrawCommand(drawCommand);
 
 	// Restore render states
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
 
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
+	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
 }
 
 int mchA_d3dCheckMode(int mode,int color_depth)
