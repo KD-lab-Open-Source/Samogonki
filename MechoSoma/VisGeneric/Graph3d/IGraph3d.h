@@ -214,11 +214,6 @@ public:
 	virtual int SetRenderState(eRenderStateOption option,int value)=0;
 	virtual int GetTextureFormatData(sTextureFormatData &TexFmtData)=0;
 
-	virtual int PolygonFan(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX)=0;
-	virtual int PolygonStrip(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX)=0;
-	virtual int PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX)=0;
-	virtual int PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat=VERTEXFMT_FIX)=0;
-
 	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command)=0;
 	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command)=0;
 

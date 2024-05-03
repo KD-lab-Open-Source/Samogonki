@@ -15,16 +15,49 @@ fstream fxx("graph.txt",ios::out);
 extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
 extern void xtDeactivateSysFinitFnc(int id);
 
-extern MD3DERROR d3dCreateSprite(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwFormat, uint32_t dwFlags, uint32_t* lpdwHandle);
-extern MD3DERROR d3dCreateChildSprite(uint32_t dwParentHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwWidth, uint32_t dwHeight, uint32_t* lpdwHandle);
-extern MD3DERROR d3dDeleteSprite(uint32_t dwHandle);
-extern MD3DERROR d3dLockSprite(uint32_t dwHandle, void **lplpSprite, uint32_t *lplpPitch);
-extern MD3DERROR d3dUnlockSprite(uint32_t dwHandle);
-extern MD3DERROR d3dSetSpriteMode(uint32_t dwHandle, uint32_t dwMode, uint32_t dwValue);
-extern MD3DERROR d3dSetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom);
-extern MD3DERROR d3dDrawSprite(uint32_t dwHandle, float dvX, float dvY, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
-extern MD3DERROR d3dDrawSpriteZ(uint32_t dwHandle, float dvX, float dvY, float dvZ, uint32_t dwOrigin, float dvScaleX, float dvScaleY, float dvRotate);
+// Sprites
 
+struct TVertex
+{
+	float	x,y,z,rhw;
+	uint32_t rgba;
+	float	u,v;
+};
+
+struct TSpriteSlot {
+
+	uint32_t dwHandle;			// If the 31-st bit is 1, it's a child sprite
+							// otherwise it's a parent. 0 means the slot is free.
+
+	uint32_t dwWidth;			// Width of the sprite
+	uint32_t dwHeight;			// Height of the sprite
+
+	uint32_t dwFlags;			// Sprite modes etc.
+	uint32_t dwAlphaRef;		
+	uint32_t dwAlphaFactor;
+	uint32_t dwColorFactor;
+
+	TVertex Vertices[4];	// Vertices for the triangle fan
+
+	union {
+
+		// Parent sprite
+		struct {
+		uint32_t dwChildrenCount;		// Number of children for this parent
+		uint32_t dwTexHandle;			// Texture handle
+		};
+
+		// Child sprite 
+		struct {
+		uint32_t dwParentHandle;		// Handle of the parent sprite
+		uint32_t dwLeft;				// Coordinates of the upper-left corner 
+		uint32_t dwTop;				// on the parent sprite
+		};
+	};
+};
+
+#define SLOTS_INITIAL_SIZE 200
+#define SLOTS_EXPAND_CHUNK 50
 
 void D3D_FinitFnc(void)
 {
@@ -45,6 +78,10 @@ cGraph3dDirect3D::cGraph3dDirect3D()
 }
 cGraph3dDirect3D::~cGraph3dDirect3D()
 {
+	free( _lpSpriteSlots );
+	_lpSpriteSlots = NULL;
+	_dwSpriteSlotsCount = 0;
+	_dwSpriteSlotsUsed = 0;
 }
 	
 int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,void *hIcon)
@@ -78,6 +115,14 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 
 	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
 	_isActive = true;
+
+	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
+	assert( NULL != _lpSpriteSlots );
+	memset( _lpSpriteSlots, 0, sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
+	_dwSpriteSlotsCount = SLOTS_INITIAL_SIZE;
+	_dwSpriteSlotsUsed = 1;	// First slot is never used
+	_bSpriteZEnable = false;
+
 	xtRegisterSysFinitFnc(D3D_FinitFnc,XD3D_SYSOBJ_ID); 
 
 	SetClipRect(0,0,xscr-1,yscr-1);
@@ -209,27 +254,6 @@ void cGraph3dDirect3D::ResetProjectionMatrix()
 {
 	_renderer->resetClipRect();
 	_renderer->resetProjectionMatrix();
-}
-
-int cGraph3dDirect3D::PolygonFan(void *vertex,int NumberVertex,int VertexFormat)
-{
-	assert(0);
-	return 0;
-}
-int cGraph3dDirect3D::PolygonStrip(void *vertex,int NumberVertex,int VertexFormat)
-{
-	assert(0);
-	return 0;
-}
-int cGraph3dDirect3D::PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat)
-{
-	assert(0);
-	return 0;
-}
-int cGraph3dDirect3D::PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat)
-{
-	assert(0);
-	return 0;
 }
 
 int cGraph3dDirect3D::BeginDrawCommand(M3D_DRAW_COMMAND &command)
@@ -474,40 +498,549 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 ////////////////////////// начало прочие функции //////////////////////////
 int cGraph3dDirect3D::CreateSprite(uint32_t dwWidth,uint32_t dwHeight,uint32_t dwFormat,uint32_t dwFlags,uint32_t* lpdwHandle )
 {
-	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(uint32_t*)lpdwHandle);
+	uint32_t dwSlot;
+	if( 0 == ( dwSlot = FindUnusedSlot() ) )
+	{
+		// No unused slots. Try to create a new one.
+		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+	}
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwSlot];
+
+	// Create the texture
+
+	uint32_t hr;
+	uint32_t dwTexHandle;
+
+	assert(_renderer->get_texture_manager().createTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) == MD3D_OK);
+
+	// Fill the slot for the new parent sprite
+
+	lpSprite->dwHandle = dwSlot;
+	lpSprite->dwWidth = dwWidth;
+	lpSprite->dwHeight = dwHeight;
+	lpSprite->dwChildrenCount = 0;
+	lpSprite->dwTexHandle = dwTexHandle;
+
+	lpSprite->dwFlags = dwFlags;
+	lpSprite->dwAlphaRef = 0;
+	lpSprite->dwAlphaFactor = 255;
+	lpSprite->dwColorFactor = RGB_MAKE(255,255,255);
+
+	// Vertices
+
+	for( uint32_t i = 0; i < 4; i++ ) {
+		lpSprite->Vertices[i].x = 0.0f;
+		lpSprite->Vertices[i].y = 0.0f;
+		lpSprite->Vertices[i].z = 0.0f;
+		lpSprite->Vertices[i].rhw = 1.0f;
+		lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+	}
+	lpSprite->Vertices[0].u = 0.0f;
+	lpSprite->Vertices[0].v = 0.0f;
+	lpSprite->Vertices[1].u = 1.0f;
+	lpSprite->Vertices[1].v = 0.0f;
+	lpSprite->Vertices[2].u = 1.0f;
+	lpSprite->Vertices[2].v = 1.0f;
+	lpSprite->Vertices[3].u = 0.0f;
+	lpSprite->Vertices[3].v = 1.0f;
+
+	// Return the new handle
+	*lpdwHandle = dwSlot;
+
+	return 0;
 }
 int cGraph3dDirect3D::CreateChildSprite(uint32_t dwParentHandle,uint32_t dwLeft,uint32_t dwTop, 
 							    uint32_t dwWidth,uint32_t dwHeight,uint32_t* lpdwHandle)
 {
-	return d3dCreateChildSprite(dwParentHandle,dwLeft,dwTop,dwWidth,dwHeight,(uint32_t*)lpdwHandle);
+	assert( dwParentHandle > 0 && dwParentHandle < _dwSpriteSlotsUsed );
+	assert( _lpSpriteSlots[dwParentHandle].dwHandle == dwParentHandle );
+
+	// Try to find an unused slot.
+	uint32_t dwSlot;
+	if( 0 == ( dwSlot = FindUnusedSlot() ) )
+	{
+		// No unused slots. Try to create a new one.
+		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+	}
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwSlot];
+
+	// Pointer to the parent sprite
+	TSpriteSlot *lpParentSprite = &_lpSpriteSlots[dwParentHandle];
+
+
+	// Fill the slot and give the user the new handle
+
+	lpSprite->dwHandle = dwSlot | 0x80000000;
+	lpSprite->dwParentHandle = dwParentHandle;
+
+	lpSprite->dwLeft = dwLeft;
+	lpSprite->dwTop = dwTop;
+	lpSprite->dwWidth = dwWidth;
+	lpSprite->dwHeight = dwHeight;
+
+	lpSprite->dwFlags = lpParentSprite->dwFlags;
+	lpSprite->dwAlphaRef = lpParentSprite->dwAlphaRef;
+	lpSprite->dwAlphaFactor = lpParentSprite->dwAlphaFactor;
+	lpSprite->dwColorFactor = lpParentSprite->dwColorFactor;
+
+	for( uint32_t i = 0; i < 4; i++ ) {
+		lpSprite->Vertices[i].x = 0.0f;
+		lpSprite->Vertices[i].y = 0.0f;
+		lpSprite->Vertices[i].z = 0.0f;
+		lpSprite->Vertices[i].rhw = 1.0f;
+		lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+	}
+
+	float dvLeft = float(lpSprite->dwLeft) / float(lpParentSprite->dwWidth);
+	float dvTop = float(lpSprite->dwTop) / float(lpParentSprite->dwHeight);
+	float dvRight = float(lpSprite->dwLeft + lpSprite->dwWidth) / float(lpParentSprite->dwWidth);
+	float dvBottom = float(lpSprite->dwTop + lpSprite->dwHeight) / float(lpParentSprite->dwHeight);
+
+	lpSprite->Vertices[0].u = dvLeft;
+	lpSprite->Vertices[0].v = dvTop;
+	lpSprite->Vertices[1].u = dvRight;
+	lpSprite->Vertices[1].v = dvTop;
+	lpSprite->Vertices[2].u = dvRight;
+	lpSprite->Vertices[2].v = dvBottom;
+	lpSprite->Vertices[3].u = dvLeft;
+	lpSprite->Vertices[3].v = dvBottom;
+
+	// Increment parent sprite's child count
+	lpParentSprite->dwChildrenCount++;
+
+	// Return the handle
+	*lpdwHandle = dwSlot;
+
+	return 0;
 }
 int cGraph3dDirect3D::DeleteSprite(uint32_t dwHandle)
 {
-	return d3dDeleteSprite(dwHandle);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// If this is a child sprite, just free the slot
+	if( 0 != (lpSprite->dwHandle & 0x80000000) ) {
+		// Mark the slot as free
+		lpSprite->dwHandle = 0;
+
+		// Decrement the child count for the parent slot
+		_lpSpriteSlots[lpSprite->dwParentHandle].dwChildrenCount--;
+
+		return MD3D_OK;
+	}
+
+	// Else it's a parent slot
+
+	// First, free all the children if any
+	if( 0 != lpSprite->dwChildrenCount ) {
+		
+		uint32_t dwSlot;
+		for( dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+		{
+			if( (_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
+				 _lpSpriteSlots[dwSlot].dwParentHandle == dwHandle ) {
+
+				// Mark the child slot as free
+				_lpSpriteSlots[dwSlot].dwHandle = 0;
+
+#ifdef _DEBUG
+				lpSprite->dwChildrenCount--;
+#endif
+			}
+		}
+		assert( 0 == lpSprite->dwChildrenCount );
+	}
+
+	// Free the texture handle 
+	assert(_renderer->get_texture_manager().deleteTexture( lpSprite->dwTexHandle ) == MD3D_OK);
+
+	// Mark the slot as free
+	lpSprite->dwHandle = 0;
+
+	return 0;
 }
 int cGraph3dDirect3D::LockSprite(uint32_t dwHandle,void **lplpSprite,uint32_t *lplpPitch)
 {
-	return d3dLockSprite(dwHandle,lplpSprite,(uint32_t*)lplpPitch);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Lock the sprite texture
+	uint32_t hr;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
+		// It's a parent sprite
+		assert(_renderer->get_texture_manager().lockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch ) == MD3D_OK);
+	} else {
+		// It's a child sprite
+		uint32_t dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+		assert(_renderer->get_texture_manager().lockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
+							 lpSprite->dwLeft + lpSprite->dwWidth-1, 
+							 lpSprite->dwTop + lpSprite->dwHeight-1,	
+							 lplpSprite, lplpPitch ) == MD3D_OK);
+	}
+
+	return 0;
 }
 int cGraph3dDirect3D::UnlockSprite(uint32_t dwHandle)
 {
-	return UnlockSprite(dwHandle);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Get the texture handle
+	uint32_t dwTexHandle;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
+		// It's a parent sprite
+		dwTexHandle = lpSprite->dwTexHandle;
+	} else {
+		// It's a child sprite
+		dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+	}
+
+	return _renderer->get_texture_manager().unlockTexture( dwTexHandle );
 }
 int cGraph3dDirect3D::SetSpriteMode(uint32_t dwHandle,uint32_t dwMode,uint32_t dwValue)
 {
-	return d3dSetSpriteMode(dwHandle,dwMode,dwValue);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+	uint32_t i;
+
+	// Set mode for this sprite
+
+	switch( dwMode ) {
+	case MD3DSP_ALPHATESTENABLE:
+		if( dwValue )
+			lpSprite->dwFlags |= MD3DSP_USEALPHATEST;
+		else
+			lpSprite->dwFlags &= ~MD3DSP_USEALPHATEST;
+
+		break;
+
+	case MD3DSP_ALPHABLENDENABLE:
+		if( dwValue )
+			lpSprite->dwFlags |= MD3DSP_USEALPHABLEND;
+		else
+			lpSprite->dwFlags &= ~MD3DSP_USEALPHABLEND;
+
+		break;
+
+	case MD3DSP_ALPHAREF:
+		lpSprite->dwAlphaRef = dwValue;
+		break;
+
+	case MD3DSP_COLORFACTOR:
+		lpSprite->dwColorFactor = dwValue & RGBA_MAKE(255,255,255,0);
+		for( i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+		}
+		break;
+
+	case MD3DSP_ALPHAFACTOR:
+		lpSprite->dwAlphaFactor = dwValue;
+		for( i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+		}
+		break;
+	}
+
+
+	// See if this sprite has children
+
+	if( (lpSprite->dwHandle & 0x80000000) == 0 && lpSprite->dwChildrenCount != 0) {
+		for( uint32_t dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+		{
+			if( (_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
+				 _lpSpriteSlots[dwSlot].dwParentHandle == dwHandle ) {
+
+				// Pointer to the child sprite
+				TSpriteSlot *lpChild = &_lpSpriteSlots[dwSlot];
+
+				// Set mode for this child
+
+				switch( dwMode ) {
+				case MD3DSP_ALPHATESTENABLE:
+					if( dwValue )
+						lpSprite->dwFlags |= MD3DSP_USEALPHATEST;
+					else
+						lpSprite->dwFlags &= ~MD3DSP_USEALPHATEST;
+
+					break;
+
+				case MD3DSP_ALPHABLENDENABLE:
+					if( dwValue )
+						lpSprite->dwFlags |= MD3DSP_USEALPHABLEND;
+					else
+						lpSprite->dwFlags &= ~MD3DSP_USEALPHABLEND;
+
+					break;
+
+				case MD3DSP_ALPHAREF:
+					lpSprite->dwAlphaRef = dwValue;
+					break;
+
+				case MD3DSP_COLORFACTOR:
+					lpSprite->dwColorFactor = dwValue & RGBA_MAKE(255,255,255,0);
+					for( i = 0; i < 4; i++ ) {
+						lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+					}
+					break;
+
+				case MD3DSP_ALPHAFACTOR:
+					lpSprite->dwAlphaFactor = dwValue;
+					for( i = 0; i < 4; i++ ) {
+						lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t dwOrigin,
 						float dvScaleX,float dvScaleY,float dvRotate )
 {
-	return d3dDrawSprite(dwHandle,dvX,dvY,dwOrigin,dvScaleX,dvScaleY,dvRotate);
+	assert( _renderer->isInScene() );
+
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Texutre handle
+	uint32_t dwTexHandle;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 )
+		dwTexHandle = lpSprite->dwTexHandle;
+	else
+		dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+
+	uint32_t hr;
+
+	// Set current texture to the sprite texture
+	hr = _renderer->setTexture( dwTexHandle, 0 );
+	if( hr < 0 )
+		return hr;
+
+	// Calculate coordinates
+
+	float dvWidth, dvHeight;
+	float dvLeft, dvTop, dvRight, dvBottom;
+
+	if( lpSprite->dwHandle & 0x80000000 )
+	{
+		// Child
+		dvWidth = float(lpSprite->dwWidth);
+		dvHeight = float(lpSprite->dwHeight);
+	} else {
+		dvWidth = float(lpSprite->dwWidth) * (lpSprite->Vertices[1].u - lpSprite->Vertices[0].u);
+		dvHeight = float(lpSprite->dwHeight) * (lpSprite->Vertices[2].v - lpSprite->Vertices[1].v);
+	}
+
+	switch(dwOrigin) {
+	case MD3DORG_CENTER:
+		if( dvScaleX == 1.0f ) {
+			dvLeft = dvX - dvWidth/2.0f;
+			dvRight = dvX + dvWidth/2.0f;
+		} else {
+			dvLeft = dvX - (dvWidth/2.0f)*dvScaleX;
+			dvRight = dvX + (dvWidth/2.0f)*dvScaleX;
+		}
+		if( dvScaleY == 1.0f ) {
+			dvTop = dvY - dvHeight/2.0f;
+			dvBottom = dvY + dvHeight/2.0f;
+		} else {
+			dvTop = dvY - (dvHeight/2.0f)*dvScaleY;
+			dvBottom = dvY + (dvHeight/2.0f)*dvScaleY;
+		}
+
+		break;
+
+	case MD3DORG_TOPLEFT:
+		dvLeft = dvX;
+		dvTop = dvY;
+
+		if( dvScaleX == 1.0f ) {
+			dvRight = dvX + dvWidth;
+		} else {
+			dvRight = dvX + dvWidth*dvScaleX;
+		}
+		if( dvScaleY == 1.0f ) {
+			dvBottom = dvY + dvHeight;
+		} else {
+			dvBottom = dvY + dvHeight*dvScaleY;
+		}
+
+		break;
+	}
+
+	lpSprite->Vertices[0].x = dvLeft;
+	lpSprite->Vertices[0].y = dvTop;
+
+	lpSprite->Vertices[1].x = dvRight;
+	lpSprite->Vertices[1].y = dvTop;
+
+	lpSprite->Vertices[2].x = dvRight;
+	lpSprite->Vertices[2].y = dvBottom;
+
+	lpSprite->Vertices[3].x = dvLeft;
+	lpSprite->Vertices[3].y = dvBottom;
+	
+	// See if we have to rotate the sprite
+
+	if( dvRotate != 0.0f ) {
+		float sin_a = (float)sin(dvRotate);
+		float cos_a = (float)cos(dvRotate);
+
+		float xc = (dvRight+dvLeft)/2.0f;
+		float yc = (dvBottom+dvTop)/2.0f;
+		float x;
+		float y;
+		for( uint32_t i = 0; i < 4; i++ ) {
+			x = lpSprite->Vertices[i].x - xc;
+			y = lpSprite->Vertices[i].y - yc;
+			lpSprite->Vertices[i].x = x*cos_a - y*sin_a + xc;
+			lpSprite->Vertices[i].y = x*sin_a + y*cos_a + yc;
+		}
+	}
+
+	// If Z is enabled, set z values in the vertices
+	if( _bSpriteZEnable ) {
+		for( uint32_t i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].z = _dvSpriteZ;
+		}
+	}
+
+
+	// Save current render states
+
+	uint32_t dwAlphaTestEnable;
+	uint32_t dwAlphaFunc;
+	uint32_t dwAlphaRef;
+	uint32_t dwAlphaBlendEnable;
+	uint32_t dwSrcFactor;
+	uint32_t dwDestFactor;
+	uint32_t dwZEnable;
+	uint32_t dwZWriteEnable;
+
+	_renderer->getRenderState( D3DRENDERSTATE_ALPHATESTENABLE, &dwAlphaTestEnable );
+	_renderer->getRenderState( D3DRENDERSTATE_ALPHAFUNC, &dwAlphaFunc );
+	_renderer->getRenderState( D3DRENDERSTATE_ALPHAREF, &dwAlphaRef );
+
+	_renderer->getRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
+	_renderer->getRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
+	_renderer->getRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
+
+	_renderer->getRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
+	_renderer->getRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
+
+	// Set render states
+
+	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, true );
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL );
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
+	} else {
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, false );
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_ALWAYS );
+	}
+
+	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
+		_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
+		_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
+	} else {
+		_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, false );
+	}
+
+	if( _bSpriteZEnable ) {
+		_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
+		_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+	} else {
+		_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
+		_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+	}
+
+	_renderer->setTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
+				//MD3DTB_TEXTURE1);//Для совсем слабеньких карточек
+				MD3DTB_TEXTURE1_MOD_DIFFUSE );
+
+	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
+
+	M3D_DRAW_COMMAND drawCommand;
+	_renderer->beginDrawCommand(drawCommand);
+
+	for (int i = 0; i < 4; i++)
+	{
+		drawCommand.addPosition(lpSprite->Vertices[i].x, lpSprite->Vertices[i].y, lpSprite->Vertices[i].z);
+		drawCommand.addDiffuseColor(
+			((lpSprite->Vertices[i].rgba >> 16) & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 8) & 0xFF),
+			(lpSprite->Vertices[i].rgba & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 24) & 0xFF)
+		);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(lpSprite->Vertices[i].u, lpSprite->Vertices[i].v);
+	}
+	drawCommand.addIndex(2, 1, 0);
+	drawCommand.addIndex(3, 2, 0);
+
+	_renderer->endDrawCommand(drawCommand);
+
+//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
+
+
+	// Restore render states
+
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, dwAlphaTestEnable );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, dwAlphaFunc );
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, dwAlphaRef );
+
+	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
+	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
+	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
+
+	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
+	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
+
+	return 0;
 }
 int cGraph3dDirect3D::DrawSpriteZ(uint32_t dwHandle,float dvX,float dvY,float dvZ, 
 						 uint32_t dwOrigin,float dvScaleX,float dvScaleY, 
 						 float dvRotate )
 {
-	return d3dDrawSpriteZ(dwHandle,dvX,dvY,dvZ,dwOrigin,dvScaleX,dvScaleY,dvRotate);
+	_dvSpriteZ = dvZ;
+	_bSpriteZEnable = true;
+
+	MD3DERROR hr;
+	hr = DrawSprite( dwHandle, dvX, dvY, dwOrigin, dvScaleX, dvScaleY, dvRotate );
+
+	_bSpriteZEnable = false;
+
+	return hr;
 }
+
 int cGraph3dDirect3D::ScreenShot(void *lpBuffer,uint32_t dwSize)
 {
 	return 0;
@@ -742,32 +1275,6 @@ void cGraph3dDirect3D::InitRenderState()
 	_renderer->setRenderState( D3DRENDERSTATE_EMISSIVEMATERIALSOURCE,D3DMCS_MATERIAL);
 	_renderer->setRenderState( D3DRENDERSTATE_VERTEXBLEND,D3DVBLEND_DISABLE);
 	_renderer->setRenderState( D3DRENDERSTATE_CLIPPLANEENABLE,false);
-/*
-	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
-	_renderer->setRenderState( D3DRENDERSTATE_DITHERENABLE, TRUE );
-	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE );
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	TRUE ); 
-	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-	_renderer->setRenderState( D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL );
-	_renderer->setRenderState( D3DRENDERSTATE_ZBIAS, 0 );
-	_renderer->setRenderState( D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID ); 
-//	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_CW ); 
-	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_NONE ); 
-	_renderer->setRenderState( D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD );
-
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE,FALSE );
-//	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_ALWAYS );
-//	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,0xFF );
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL );
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,1 );
-
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,FALSE );
-	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA );
-	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA );
-
-    _renderer->setTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
-    _renderer->setTextureStageState(1,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
-*/
 }
 
 int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
@@ -831,7 +1338,32 @@ int cGraph3dDirect3D::SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTU
 
 int cGraph3dDirect3D::SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)
 {
-	return d3dSetSpriteRect(dwHandle, dvLeft, dvTop, dvRight, dvBottom) == MD3D_OK;
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Make sure the coordinates are valid
+	assert( dvLeft <= dvRight );
+	assert( dvTop <= dvBottom );
+	assert( dvLeft >= 0.0f && dvLeft <= 1.0f );
+	assert( dvTop >= 0.0f && dvTop <= 1.0f );
+	assert( dvRight >= 0.0f && dvRight <= 1.0f );
+	assert( dvBottom >= 0.0f && dvBottom <= 1.0f );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Change texture coordinates to the rectangle specified
+	lpSprite->Vertices[0].u = dvLeft;
+	lpSprite->Vertices[0].v = dvTop;
+	lpSprite->Vertices[1].u = dvRight;
+	lpSprite->Vertices[1].v = dvTop;
+	lpSprite->Vertices[2].u = dvRight;
+	lpSprite->Vertices[2].v = dvBottom;
+	lpSprite->Vertices[3].u = dvLeft;
+	lpSprite->Vertices[3].v = dvBottom;
+
+	return 0;
 }
 
 int cGraph3dDirect3D::Clear(uint32_t dwColor)
@@ -847,4 +1379,41 @@ int cGraph3dDirect3D::Flip(bool bWaitVerticalBlank)
 int cGraph3dDirect3D::SetClipRect(const MD3DRECT &lprcClipRect)
 {
 	return _renderer->setClipRect(lprcClipRect);
+}
+
+uint32_t cGraph3dDirect3D::FindUnusedSlot()
+{
+	uint32_t dwSlot;
+
+	for( dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+	{
+		if( 0 == _lpSpriteSlots[dwSlot].dwHandle )
+			return dwSlot;	// Found
+	}
+
+	// Not found.
+	return 0;
+}
+
+uint32_t cGraph3dDirect3D::CreateNewSlot()
+{
+	if( _dwSpriteSlotsUsed < _dwSpriteSlotsCount )
+	{
+		// We still have free space
+		_dwSpriteSlotsUsed++;
+		return _dwSpriteSlotsUsed-1;
+	}
+
+	// Else we need to expand the array
+
+	assert( NULL != ( _lpSpriteSlots = (TSpriteSlot *)realloc( _lpSpriteSlots, 
+		 (_dwSpriteSlotsCount+SLOTS_EXPAND_CHUNK)*sizeof(TSpriteSlot) ) ) );
+
+	// Clear the newly allocated block
+	memset( _lpSpriteSlots + _dwSpriteSlotsCount, 0, SLOTS_EXPAND_CHUNK*sizeof(TSpriteSlot) );
+
+	_dwSpriteSlotsCount += SLOTS_EXPAND_CHUNK;
+
+	_dwSpriteSlotsUsed++;
+	return _dwSpriteSlotsUsed-1;
 }

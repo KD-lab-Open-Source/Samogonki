@@ -219,8 +219,6 @@ set(GAME_SOURCES
     VisGeneric/Graph3d/Graph3d_Direct3d.h
     VisGeneric/Graph3d/IGraph3d.cpp
     VisGeneric/Graph3d/IGraph3d.h
-    # Md3d
-    VisGeneric/md3d/d3dSprites.cpp
     # PluginMAX
     VisGeneric/PluginMAX/src/AnimationMaterial.cpp
     VisGeneric/PluginMAX/src/AnimationMesh.cpp

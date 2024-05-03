@@ -31,11 +31,6 @@ public:
 	virtual int SetRenderState(eRenderStateOption option,int value);
 	virtual int GetTextureFormatData(sTextureFormatData &TexFmtData);
 
-	virtual int PolygonFan(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonStrip(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat=VERTEXFMT_FIX);
-
 	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command);
 	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command);
 
@@ -119,8 +114,18 @@ private:
 	int						WaitVerticalBlank;
 
 	inline int GetColor(int r,int g,int b)										{ if(r>255) r=255; if(g>255) g=255; if(b>255) b=255; return ((r>>(8-rBitCount))<<rBitShift)+((g>>(8-gBitCount))<<gBitShift)+((b>>(8-bBitCount))<<bBitShift); }
+
 	std::unique_ptr<graphics::Renderer> _renderer;
 	bool _isActive = false;
+
+	class TSpriteSlot *_lpSpriteSlots = nullptr;
+	uint32_t _dwSpriteSlotsCount = 0;
+	uint32_t _dwSpriteSlotsUsed = 0;
+	float _dvSpriteZ = 0;
+	bool _bSpriteZEnable = false;
+
+	uint32_t FindUnusedSlot();
+	uint32_t CreateNewSlot();
 };
 
 #endif //__GRAPH3D_DIRECT3D_H__
