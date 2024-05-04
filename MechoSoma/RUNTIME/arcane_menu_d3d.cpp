@@ -1,7 +1,6 @@
 /* ---------------------------- INCLUDE SECTION ----------------------------- */
 #include "StdAfx.h"
 
-#include "Md3d.h"
 #include "HFONT.H"
 #include "hbm.h"
 
@@ -905,12 +904,6 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 {
 	int i;
 
-	uint32_t dwAlphaBlendEnable;
-	uint32_t dwSrcFactor;
-	uint32_t dwDestFactor;
-	uint32_t dwZEnable;
-	uint32_t dwZWriteEnable;
-
 	M3D_DRAW_COMMAND drawCommand;
 	gb_IGraph3d->BeginDrawCommand(drawCommand);
 
@@ -930,40 +923,19 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 	drawCommand.addDiffuseColor(0, 0, 0, dwDarkness);
 	drawCommand.addSpecularColor(0, 0, 0, 0);
 
-	drawCommand.addIndex(0, 1, 2);
-	drawCommand.addIndex(0, 2, 3);
+	drawCommand.addIndex(2, 1, 0);
+	drawCommand.addIndex(3, 2, 0);
 
-	// Save current render states
+	gb_IGraph3d->SetRenderState( RENDERSTATE_ALPHABLEND, 1 );
+	gb_IGraph3d->SetRenderState( RENDERSTATE_SRCBLEND, BLEND_SRCALPHA );
+	gb_IGraph3d->SetRenderState( RENDERSTATE_DESTBLEND, BLEND_INVSRCALPHA );
 
-	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
-	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
-	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
+	gb_IGraph3d->SetRenderState( RENDERSTATE_ZTEST, 0 );
+	gb_IGraph3d->SetRenderState( RENDERSTATE_ZWRITE, 0 );
 
-	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
-	gb_IGraph3d->GetRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
-
-	// Set render states
-
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
-
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
-
-	gb_IGraph3d->SetTextureBlendMode( MD3DTB_DIFFUSE, MD3DTB_DIFFUSE );
+	gb_IGraph3d->SetMaterial( MAT_COLOR_MOD_DIFFUSE );
 
 	gb_IGraph3d->EndDrawCommand(drawCommand);
-
-	// Restore render states
-
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
-
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
-	gb_IGraph3d->SetRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
 }
 
 int mchA_d3dCheckMode(int mode,int color_depth)

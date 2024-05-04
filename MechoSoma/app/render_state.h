@@ -5,12 +5,11 @@
 #ifndef MOONSHINE_RUNNERS_RENDER_STATE_H
 #define MOONSHINE_RUNNERS_RENDER_STATE_H
 
+#include <algorithm>
 #include <array>
-#include <iostream>
 #include <optional>
-#include <unordered_map>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 #include "xerrhand.h"
 
 #ifdef EMSCRIPTEN
@@ -19,129 +18,41 @@
 #include "sokol-shader.h"
 #endif
 
-namespace graphics::d3d {
-
-enum class TextureColorOperation { Disable, Texture, Modulate };
-
-struct FragmentShaderParameters {
-  TextureColorOperation color_operation_1;
-  TextureColorOperation color_operation_2;
-};
-
-class RenderState final {
- public:
-  void set_option(D3DRENDERSTATETYPE type, uint32_t value) { _options[type] = value; }
-
-  uint32_t get_option(D3DRENDERSTATETYPE type) const { return _options.at(type); }
-
-  void set_texture(uint32_t handle, uint32_t stage) { _texture_stages[stage].texture_handle = handle; }
-
-  std::optional<uint32_t> get_texture(uint32_t stage) const { return _texture_stages[stage].texture_handle; }
-
-  void reset_texture_stage() {
-    for (auto &stage : _texture_stages) {
-      stage.texture_handle = std::nullopt;
-    }
-    _projection_matrix = std::nullopt;
-    _viewport = std::nullopt;
-  }
-
-  void set_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state, uint32_t value) {
-    _texture_stages[stage].states[state] = value;
-  }
-
-  std::optional<uint32_t> get_texture_stage_state(uint32_t stage, D3DTEXTURESTAGESTATETYPE state) const {
-    const auto p = _texture_stages[stage].states.find(state);
-    if (p == _texture_stages[stage].states.end()) {
-      return std::nullopt;
-    }
-    return p->second;
-  }
-
-  FragmentShaderParameters get_fragment_shader_parameters() const {
-    FragmentShaderParameters result;
-    switch (_texture_stages[0].states.at(D3DTSS_COLOROP)) {
-      case D3DTOP_DISABLE:
-        result.color_operation_1 = TextureColorOperation::Disable;
-        break;
-
-      case D3DTOP_SELECTARG1:
-        result.color_operation_1 = TextureColorOperation::Texture;
-        break;
-
-      case D3DTOP_MODULATE:
-        result.color_operation_1 = TextureColorOperation::Modulate;
-        break;
-
-      default: {
-        ErrH.Abort("Unsupported color operation 1", XERR_USER, 0, "");
-      }
-    }
-
-    switch (_texture_stages[1].states.at(D3DTSS_COLOROP)) {
-      case D3DTOP_DISABLE:
-        result.color_operation_2 = TextureColorOperation::Disable;
-        break;
-
-      case D3DTOP_MODULATE:
-        result.color_operation_2 = TextureColorOperation::Modulate;
-        break;
-
-      default: {
-        ErrH.Abort("Unsupported color operation 2", XERR_USER, 0, "");
-      }
-    }
-
-    return result;
-  }
-
-  void set_projection_matrix(const D3DMATRIX& matrix) {
-    _projection_matrix = matrix;
-  }
-
-  std::optional<D3DMATRIX> get_projection_matrix() const {
-    return _projection_matrix;
-  }
-
-  void reset_projection_matrix() {
-    _projection_matrix = std::nullopt;
-  }
-
-  void set_viewport(const MD3DRECT& viewport) {
-    _viewport = viewport;
-  }
-
-  std::optional<MD3DRECT> get_viewport() const {
-    return _viewport;
-  }
-
-  void reset_viewport() {
-    _viewport = std::nullopt;
-  }
-
+namespace graphics {
+struct RenderState final {
   bool operator==(const RenderState& other) const {
-    return _options == other._options && _texture_stages == other._texture_stages
-      && _projection_matrix == other._projection_matrix
-      && _viewport == other._viewport;
+    return is_depth_test_enabled == other.is_depth_test_enabled
+      && is_depth_write_enabled == other.is_depth_write_enabled
+      && is_alpha_test_enabled == other.is_alpha_test_enabled
+      && alpha_reference == other.alpha_reference
+      && is_alpha_blend_enabled == other.is_alpha_blend_enabled
+      && source_blend_mode == other.source_blend_mode
+      && destination_blend_mode == other.destination_blend_mode
+      && texture_address == other.texture_address
+      && color_operation1 == other.color_operation1
+      && color_operation2 == other.color_operation2
+      && textures == other.textures
+      && projection_matrix == other.projection_matrix
+      && viewport == other.viewport;
   }
 
- private:
-  std::unordered_map<D3DRENDERSTATETYPE, uint32_t> _options;
+  bool is_depth_test_enabled = true;
+  bool is_depth_write_enabled = true;
+  bool is_alpha_test_enabled = false;
+  int alpha_reference = 1;
+  bool is_alpha_blend_enabled = false;
+  eBlendMode source_blend_mode = BLEND_SRCALPHA;
+  eBlendMode destination_blend_mode = BLEND_INVSRCALPHA;
+  eRenderStateTextureAddress texture_address = TADDRESS_WRAP;
 
-  struct TextureStage {
-    std::optional<uint32_t> texture_handle;
-    std::unordered_map<D3DTEXTURESTAGESTATETYPE, uint32_t> states;
+  int color_operation1 = 0;
+  int color_operation2 = 0;
+  std::array<std::optional<uint32_t>, 2> textures;
 
-    TextureStage() : texture_handle(std::nullopt) {}
-
-    bool operator==(const TextureStage& other) const {
-      return texture_handle == other.texture_handle && states == other.states;
-    }
-  };
-  std::array<TextureStage, 10> _texture_stages;
-
-  std::optional<D3DMATRIX> _projection_matrix;
-  std::optional<MD3DRECT> _viewport;
+  std::optional<D3DMATRIX> projection_matrix;
+  std::optional<MD3DRECT> viewport;
 };
-}  // namespace graphics::d3d
+
+}
+  // namespace graphics::d3d
 #endif  // MOONSHINE_RUNNERS_RENDER_STATE_H

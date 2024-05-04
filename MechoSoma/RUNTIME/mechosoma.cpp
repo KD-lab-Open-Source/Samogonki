@@ -68,8 +68,6 @@
 
 #define DBGCHECK
 
-#include "Md3d.h"
-
 #ifdef GPX
 #include <c/gamepix.h>
 #endif

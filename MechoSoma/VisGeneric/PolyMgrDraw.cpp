@@ -627,14 +627,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						{
 							if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 							{
-								Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-								Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-								Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
+								// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+								// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+								// Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
 								Graph3d->EndDrawCommand(drawCommand);
 
-								Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-								Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+								// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+								// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 							}
 							else
 							{
@@ -693,14 +693,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				{
 					if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 					{
-						Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-						Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+						// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+						// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
 						Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
 						Graph3d->EndDrawCommand(drawCommand);
 
-						Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-						Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+						// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+						// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 					}
 					else
 					{
@@ -815,14 +815,14 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					{
 						if(bTile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
 						{
-							Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-							Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+							// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+							// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
 							Graph3d->SetTexture(bTile->GetLightMap()->nTexture, 1);
 
 							Graph3d->EndDrawCommand(drawCommand);
 
-							Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-							Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+							// Graph3d->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+							// Graph3d->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 						}
 						else
 						{

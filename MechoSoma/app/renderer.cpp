@@ -243,23 +243,26 @@ MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
 }
 
 MD3DERROR Renderer::setClipRect(const MD3DRECT &lprcClipRect) {
-  _render_state.set_viewport(lprcClipRect);
+  _render_state.viewport = lprcClipRect;
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::resetClipRect() {
-  _render_state.reset_viewport();
+  _render_state.viewport = std::nullopt;
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::beginScene() {
   _commands.clear();
-  _render_state.reset_texture_stage();
+  _render_state = RenderState();
   _texture_manager->delete_textures();
+  _is_in_scene = true;
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::endScene() {
+  _is_in_scene = false;
+
   if (_commands.empty()) {
     return MD3D_OK;
   }
@@ -304,14 +307,14 @@ MD3DERROR Renderer::endScene() {
     pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
 
     auto vs_params = scene_vs_params_t {};
-    const auto m = command.render_state.get_projection_matrix();
+    const auto m = command.render_state.projection_matrix;
     if (m) {
       std::copy(&m->_11, &m->_11 + 16, vs_params.projection_matrix);
     } else {
       std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), vs_params.projection_matrix);
     }
 
-    const auto viewport = command.render_state.get_viewport();
+    const auto viewport = command.render_state.viewport;
     if (viewport) {
       sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
     } else {
@@ -321,25 +324,24 @@ MD3DERROR Renderer::endScene() {
     pipeline.cull_mode = SG_CULLMODE_BACK;
     pipeline.face_winding = SG_FACEWINDING_CCW;
 
-    pipeline.depth.write_enabled = command.render_state.get_option(D3DRENDERSTATE_ZWRITEENABLE);
+    pipeline.depth.write_enabled = command.render_state.is_depth_write_enabled;
     pipeline.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
 
-    if (command.render_state.get_option(D3DRENDERSTATE_ALPHABLENDENABLE)) {
+    if (command.render_state.is_alpha_blend_enabled) {
       pipeline.colors[0].blend.enabled = true;
 
-      const auto source_blend = command.render_state.get_option(D3DRENDERSTATE_SRCBLEND);
-      switch (source_blend) {
-        case D3DBLEND_SRCALPHA:
+      switch (command.render_state.source_blend_mode) {
+        case BLEND_SRCALPHA:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
           break;
 
-        case D3DBLEND_INVSRCALPHA:
+        case BLEND_INVSRCALPHA:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           break;
 
-        case D3DBLEND_ONE:
+        case BLEND_ONE:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
           break;
@@ -348,19 +350,18 @@ MD3DERROR Renderer::endScene() {
           break;
       }
 
-      const auto destination_blend = command.render_state.get_option(D3DRENDERSTATE_DESTBLEND);
-      switch (destination_blend) {
-        case D3DBLEND_SRCALPHA:
+      switch (command.render_state.destination_blend_mode) {
+        case BLEND_SRCALPHA:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
           break;
 
-        case D3DBLEND_INVSRCALPHA:
+        case BLEND_INVSRCALPHA:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           break;
 
-        case D3DBLEND_ONE:
+        case BLEND_ONE:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
           break;
@@ -370,13 +371,10 @@ MD3DERROR Renderer::endScene() {
       }
     }
 
-    const auto alpha_test_enabled = command.render_state.get_option(D3DRENDERSTATE_ALPHATESTENABLE);
-    const auto alpha_reference = command.render_state.get_option(D3DRENDERSTATE_ALPHAREF);
-
     for (uint32_t i = 0; i < 2; i++) {
       bindings.fs.images[i] = _nullTexture;
 
-      auto texture_handle = command.render_state.get_texture(i);
+      auto texture_handle = command.render_state.textures[i];
       if (texture_handle) {
         auto texture = _texture_manager->get(*texture_handle);
         if (texture != nullptr) {
@@ -385,30 +383,25 @@ MD3DERROR Renderer::endScene() {
       }
     }
 
-    const auto texture_address = command.render_state.get_texture_stage_state(0, D3DTSS_ADDRESS);
-    if (texture_address) {
-      switch (*texture_address) {
-        case D3DTADDRESS_CLAMP:
-          bindings.fs.samplers[0] = _clamp_sampler;
-          break;
+    switch (command.render_state.texture_address) {
+      case TADDRESS_CLAMP:
+        bindings.fs.samplers[0] = _clamp_sampler;
+        break;
 
-        case D3DTADDRESS_WRAP:
-          bindings.fs.samplers[0] = _repeat_sampler;
-          break;
+      case TADDRESS_WRAP:
+        bindings.fs.samplers[0] = _repeat_sampler;
+        break;
 
-        default:
-          break;
-      }
-    } else {
-      bindings.fs.samplers[0] = _repeat_sampler;
+      default:
+        bindings.fs.samplers[0] = _repeat_sampler;
+        break;
     }
 
-    auto parameters = command.render_state.get_fragment_shader_parameters();
     auto fs_params = scene_fs_params_t{
-        .color_operation_1 = (int) parameters.color_operation_1,
-        .color_operation_2 = (int) parameters.color_operation_2,
-        .alpha_test_enabled = (int) alpha_test_enabled,
-        .alpha_reference = (int) alpha_reference
+        .color_operation_1 = command.render_state.color_operation1,
+        .color_operation_2 = command.render_state.color_operation2,
+        .alpha_test_enabled = command.render_state.is_alpha_test_enabled,
+        .alpha_reference = command.render_state.alpha_reference
     };
 
     pipeline.layout.attrs[ATTR_scene_vs_pos].buffer_index = 0;
@@ -456,12 +449,12 @@ MD3DERROR Renderer::endScene() {
 }
 
 MD3DERROR Renderer::setProjectionMatrix(const D3DMATRIX &matrix) {
-  _render_state.set_projection_matrix(matrix);
+  _render_state.projection_matrix = matrix;
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::resetProjectionMatrix() {
-  _render_state.reset_projection_matrix();
+  _render_state.projection_matrix = std::nullopt;
   return MD3D_OK;
 }
 
@@ -475,55 +468,93 @@ MD3DERROR Renderer::clear(uint32_t dwColor) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::setRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
-  _render_state.set_option(dwRenderStateType, dwRenderState);
+MD3DERROR Renderer::setRenderState(eRenderStateOption option, int value) {
+  switch (option) {
+    case RENDERSTATE_ZTEST:
+      _render_state.is_depth_test_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_ZWRITE:
+      _render_state.is_depth_write_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_ALPHATEST:
+      _render_state.is_alpha_test_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_ALPHAREF:
+      _render_state.alpha_reference = value;
+      break;
+
+    case RENDERSTATE_ALPHABLEND:
+      _render_state.is_alpha_blend_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_SRCBLEND:
+      _render_state.source_blend_mode = static_cast<eBlendMode>(value);
+      break;
+
+    case RENDERSTATE_DESTBLEND:
+      _render_state.destination_blend_mode = static_cast<eBlendMode>(value);
+      break;
+
+    case RENDERSTATE_TEXTUREADDRESS:
+      _render_state.texture_address = static_cast<eRenderStateTextureAddress>(value);
+      break;
+
+    default:
+      break;
+  }
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::getRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState) {
-  *lpdwRenderState = _render_state.get_option(dwRenderStateType);
-  return MD3D_OK;
-}
+MD3DERROR Renderer::setMaterial(eMaterialMode material) {
+  // восстановление материалов
+  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MASK_TEXTURE1)) {
+    _render_state.is_alpha_test_enabled = false;
+    _render_state.is_alpha_blend_enabled = false;
+  }
+  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE)) {
+    _render_state.is_alpha_blend_enabled = false;
+  }
+  if (material & MAT_COLOR_ADD_DIFFUSE) {
+    _render_state.source_blend_mode = BLEND_SRCALPHA;
+    _render_state.destination_blend_mode = BLEND_INVSRCALPHA;
+  }
 
-MD3DERROR Renderer::setTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue) {
-  _render_state.set_texture_stage_state(dwStage, dwState, dwValue);
+  // установка материалов
+  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE)) {
+    _render_state.is_alpha_blend_enabled = true;
+  }
+  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MASK_TEXTURE1)) {
+    _render_state.is_alpha_test_enabled = true;
+    _render_state.is_alpha_blend_enabled = true;
+  }
+  if (material & MAT_COLOR_ADD_DIFFUSE) {
+    _render_state.source_blend_mode = BLEND_ONE;
+    _render_state.destination_blend_mode = BLEND_ONE;
+  }
+  switch (material & (MAT_COLOR_MOD_DIFFUSE | MAT_COLOR_MOD_TEXTURE1)) {
+    case MAT_COLOR_MOD_DIFFUSE:
+      _render_state.color_operation1 = 0;
+      break;
+    case MAT_COLOR_MOD_TEXTURE1:
+      _render_state.color_operation1 = 1;
+      break;
+    case MAT_COLOR_MOD_DIFFUSE_TEXTURE1:
+      _render_state.color_operation1 = 2;
+      break;
+    case MAT_NULL:
+      break;
+    default:
+      assert(0);
+  }
   return MD3D_OK;
 }
 
 MD3DERROR Renderer::setTexture(uint32_t dwHandle, uint32_t dwStage) {
-  _render_state.set_texture(dwHandle, dwStage);
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::setTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend) {
-  switch (tbRGBBlend) {
-    case MD3DTB_DIFFUSE:
-      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
-      break;
-    case MD3DTB_TEXTURE1:
-      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-      break;
-    case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      setTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-      break;
-    default:
-      return MD3DERR_INVALIDPARAM;
-  }
-
-  switch (tbAlphaBlend) {
-    case MD3DTB_DIFFUSE:
-      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-      break;
-    case MD3DTB_TEXTURE1:
-      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-      break;
-    case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      setTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-      break;
-    default:
-      return MD3DERR_INVALIDPARAM;
-  }
-
+  assert(dwStage < 2);
+  _render_state.textures[dwStage] = dwHandle;
   return MD3D_OK;
 }
 

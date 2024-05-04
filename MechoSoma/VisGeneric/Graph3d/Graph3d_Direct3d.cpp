@@ -1,4 +1,3 @@
-#include "Md3d.h"
 #include "math.h"
 #include "BaseDefine.h"
 #include "assert.h"
@@ -11,9 +10,6 @@ fstream fxx("graph.txt",ios::out);
 
 #include "port.h"
 #include "texture_manager.h"
-
-extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
-extern void xtDeactivateSysFinitFnc(int id);
 
 // Sprites
 
@@ -59,16 +55,9 @@ struct TSpriteSlot {
 #define SLOTS_INITIAL_SIZE 200
 #define SLOTS_EXPAND_CHUNK 50
 
-void D3D_FinitFnc(void)
-{
-	xtDeactivateSysFinitFnc(XD3D_SYSOBJ_ID);            
-//	d3dClose();
-}
-
 cGraph3dDirect3D::cGraph3dDirect3D()
 {
 	GraphMode=GRAPH3D_MODE_NULL;
-	MaterialMode=MAT_NULL;
 	SwitchRenderScene=-1;
 	xScr=yScr=xScrMin=yScrMin=xScrMax=yScrMax=0;
 	rBitShift=gBitShift=bBitShift=0;
@@ -122,8 +111,6 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	_dwSpriteSlotsCount = SLOTS_INITIAL_SIZE;
 	_dwSpriteSlotsUsed = 1;	// First slot is never used
 	_bSpriteZEnable = false;
-
-	xtRegisterSysFinitFnc(D3D_FinitFnc,XD3D_SYSOBJ_ID); 
 
 	SetClipRect(0,0,xscr-1,yscr-1);
 	Fill(0,0,0);
@@ -348,124 +335,19 @@ int cGraph3dDirect3D::DrawPixel(int x1,int y1,int r,int g,int b,int a)
 }
 int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 {
-	if(MaterialMode==material) return 0;
-	// восстановление материалов
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
-	{
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHATESTENABLE,false);
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	}
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		_renderer->setRenderState(D3DRENDERSTATE_SPECULARENABLE,false);
-	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
-	{
-		_renderer->setRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-		_renderer->setRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
-	}
-	// установка материалов
-	MaterialMode=material;
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
-	{
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHATESTENABLE,true);
-		_renderer->setRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
-	}
-	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		_renderer->setRenderState(D3DRENDERSTATE_SPECULARENABLE,true);
-	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
-	{
-		_renderer->setRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_ONE);
-		_renderer->setRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_ONE);
-	}
-	switch(MaterialMode&(MAT_COLOR_MOD_DIFFUSE|MAT_COLOR_MOD_TEXTURE1))
-	{
-		case MAT_COLOR_MOD_DIFFUSE:
-			_renderer->setTextureBlendMode(MD3DTB_DIFFUSE,MD3DTB_DIFFUSE);
-			break;
-		case MAT_COLOR_MOD_TEXTURE1:
-			_renderer->setTextureBlendMode(MD3DTB_TEXTURE1,MD3DTB_TEXTURE1);
-			break;
-		case MAT_COLOR_MOD_DIFFUSE_TEXTURE1:
-			_renderer->setTextureBlendMode(MD3DTB_TEXTURE1_MOD_DIFFUSE,MD3DTB_TEXTURE1_MOD_DIFFUSE);
-			break;
-		case MAT_NULL:
-			break;
-		default:
-			assert(0);
-	}
+	_renderer->setMaterial(material);
 	return 0;
 }
 int cGraph3dDirect3D::SetRenderState(eRenderStateOption option,int value)
 {
 	if(!SwitchRenderScene) return 1;
-	D3DRENDERSTATETYPE type;
-	switch(option)
+
+	if (option == RENDERSTATE_NULL)
 	{
-		case RENDERSTATE_NULL:
-			return 1;
-		case RENDERSTATE_ZTEST:
-			type=D3DRENDERSTATE_ZENABLE;
-			break;
-		case RENDERSTATE_ZWRITE:
-			type=D3DRENDERSTATE_ZWRITEENABLE;
-			break;
-		case RENDERSTATE_DITHER:
-			type=D3DRENDERSTATE_DITHERENABLE;
-			break;
-		case RENDERSTATE_SPECULAR:
-			type=D3DRENDERSTATE_SPECULARENABLE;
-			break;
-		case RENDERSTATE_TEXTUREPERSPECTIVE:
-			type=D3DRENDERSTATE_TEXTUREPERSPECTIVE;
-			break;
-		case RENDERSTATE_ZFUNC:
-			type=D3DRENDERSTATE_ZFUNC;
-			break;
-		case RENDERSTATE_ZBIAS:
-			type=D3DRENDERSTATE_ZBIAS;
-			break;
-		case RENDERSTATE_FILLMODE:
-			type=D3DRENDERSTATE_FILLMODE;
-			break;
-		case RENDERSTATE_CULLMODE:
-			type=D3DRENDERSTATE_CULLMODE;
-			break;
-		case RENDERSTATE_SHADEMODE:
-			type=D3DRENDERSTATE_SHADEMODE;
-			break;
-		case RENDERSTATE_SUBPIXEL:
-			type=D3DRENDERSTATE_SUBPIXEL;
-			break;
-		case RENDERSTATE_ALPHATEST:
-			type=D3DRENDERSTATE_ALPHATESTENABLE;
-			break;
-		case RENDERSTATE_ALPHAFUNC:
-			type=D3DRENDERSTATE_ALPHAFUNC;
-			break;
-		case RENDERSTATE_ALPHAREF:
-			type=D3DRENDERSTATE_ALPHAREF;
-			break;
-		case RENDERSTATE_ALPHABLEND:
-			type=D3DRENDERSTATE_ALPHABLENDENABLE;
-			break;
-		case RENDERSTATE_SRCBLEND:
-			type=D3DRENDERSTATE_SRCBLEND;
-			break;
-		case RENDERSTATE_DESTBLEND:
-			type=D3DRENDERSTATE_DESTBLEND;
-			break;
-		case RENDERSTATE_TEXTUREADDRESS:
-		    _renderer->setTextureStageState(0,D3DTSS_ADDRESS,value);
-			return _renderer->setTextureStageState(1,D3DTSS_ADDRESS,value);
-		case RENDERSTATE_TEXTUREPOINT:
-		case RENDERSTATE_TEXTURELINEAR:
-		default:
-			assert(0);
-	};
-	return _renderer->setRenderState(type,value)!=MD3D_OK;
+		return 1;
+	}
+
+	return _renderer->setRenderState(option, value) != MD3D_OK;
 }
 int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 {
@@ -932,61 +814,32 @@ int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t 
 		}
 	}
 
-
-	// Save current render states
-
-	uint32_t dwAlphaTestEnable;
-	uint32_t dwAlphaFunc;
-	uint32_t dwAlphaRef;
-	uint32_t dwAlphaBlendEnable;
-	uint32_t dwSrcFactor;
-	uint32_t dwDestFactor;
-	uint32_t dwZEnable;
-	uint32_t dwZWriteEnable;
-
-	_renderer->getRenderState( D3DRENDERSTATE_ALPHATESTENABLE, &dwAlphaTestEnable );
-	_renderer->getRenderState( D3DRENDERSTATE_ALPHAFUNC, &dwAlphaFunc );
-	_renderer->getRenderState( D3DRENDERSTATE_ALPHAREF, &dwAlphaRef );
-
-	_renderer->getRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, &dwAlphaBlendEnable );
-	_renderer->getRenderState( D3DRENDERSTATE_SRCBLEND, &dwSrcFactor );
-	_renderer->getRenderState( D3DRENDERSTATE_DESTBLEND, &dwDestFactor );
-
-	_renderer->getRenderState( D3DRENDERSTATE_ZENABLE, &dwZEnable );
-	_renderer->getRenderState( D3DRENDERSTATE_ZWRITEENABLE, &dwZWriteEnable );
-
-	// Set render states
+	eMaterialMode Attributes;
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, true );
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATEREQUAL );
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
+		_renderer->setRenderState( RENDERSTATE_ALPHATEST, 1 );
+		_renderer->setRenderState( RENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
 	} else {
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, false );
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, D3DCMP_ALWAYS );
+		_renderer->setRenderState( RENDERSTATE_ALPHATEST, 0 );
 	}
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, true );
-		_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA );
-		_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		_renderer->setRenderState( RENDERSTATE_ALPHABLEND, 1 );
+		_renderer->setRenderState( RENDERSTATE_SRCBLEND, BLEND_SRCALPHA );
+		_renderer->setRenderState( RENDERSTATE_DESTBLEND, BLEND_INVSRCALPHA );
 	} else {
-		_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, false );
+		_renderer->setRenderState( RENDERSTATE_ALPHABLEND, 0 );
 	}
 
 	if( _bSpriteZEnable ) {
-		_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-		_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+		_renderer->setRenderState( RENDERSTATE_ZTEST, 1 );
+		_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
 	} else {
-		_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_FALSE );
-		_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, false );
+		_renderer->setRenderState( RENDERSTATE_ZTEST, 0 );
+		_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
 	}
 
-	_renderer->setTextureBlendMode( MD3DTB_TEXTURE1_MOD_DIFFUSE, 
-				//MD3DTB_TEXTURE1);//Для совсем слабеньких карточек
-				MD3DTB_TEXTURE1_MOD_DIFFUSE );
-
-	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE, false );
+	_renderer->setMaterial(MAT_COLOR_MOD_DIFFUSE_TEXTURE1);
 
 	M3D_DRAW_COMMAND drawCommand;
 	_renderer->beginDrawCommand(drawCommand);
@@ -1007,22 +860,6 @@ int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t 
 	drawCommand.addIndex(3, 2, 0);
 
 	_renderer->endDrawCommand(drawCommand);
-
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
-
-
-	// Restore render states
-
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE, dwAlphaTestEnable );
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC, dwAlphaFunc );
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF, dwAlphaRef );
-
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE, dwAlphaBlendEnable );
-	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND, dwSrcFactor );
-	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND, dwDestFactor );
-
-	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE, dwZEnable );
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE, dwZWriteEnable );
 
 	return 0;
 }
@@ -1145,12 +982,11 @@ int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
-	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,	D3DCULL_NONE ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
 
 	_renderer->endDrawCommand(drawCommand);
 
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
 	return 0;
 }
 int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,int a,int flag)
@@ -1179,11 +1015,11 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 
 	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 ); 
 
 	_renderer->endDrawCommand(drawCommand);
 
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
 	return 0; 
 }
 int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
@@ -1204,77 +1040,6 @@ int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 ////////////////////////// PRIVATE //////////////////////////
 void cGraph3dDirect3D::InitRenderState()
 {
-	_renderer->setTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
-	_renderer->setTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	_renderer->setTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-	_renderer->setTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	_renderer->setTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	_renderer->setTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	_renderer->setTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
-
-	_renderer->setTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
-	_renderer->setTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	_renderer->setTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
-	_renderer->setTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	_renderer->setTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	_renderer->setTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	_renderer->setTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
-
-	_renderer->setTextureStageState( 2, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	_renderer->setTextureStageState( 2, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
-
-    _renderer->setTextureStageState( 0, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	_renderer->setTextureStageState( 0, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	_renderer->setTextureStageState( 0, D3DTSS_MIPFILTER, D3DTFP_NONE);
-    _renderer->setTextureStageState( 1, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	_renderer->setTextureStageState( 1, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	_renderer->setTextureStageState( 1, D3DTSS_MIPFILTER, D3DTFP_NONE);
-
-	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE,true);
-	_renderer->setRenderState( D3DRENDERSTATE_ANTIALIAS,D3DANTIALIAS_NONE);
-	_renderer->setRenderState( D3DRENDERSTATE_ZENABLE,1);
-	_renderer->setRenderState( D3DRENDERSTATE_FILLMODE,D3DFILL_SOLID);
-	_renderer->setRenderState( D3DRENDERSTATE_SHADEMODE,D3DSHADE_GOURAUD);
-	_renderer->setRenderState( D3DRENDERSTATE_ZWRITEENABLE,1);
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHATESTENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_LASTPIXEL,true);
-	_renderer->setRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-	_renderer->setRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
-//	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
-	_renderer->setRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_NONE);
-	_renderer->setRenderState( D3DRENDERSTATE_ZFUNC,D3DCMP_LESSEQUAL);
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAREF,1);	// 0
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL); //D3DCMP_ALWAYS
-	_renderer->setRenderState( D3DRENDERSTATE_DITHERENABLE,true);
-	_renderer->setRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_SPECULARENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGCOLOR,0x00000000);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEMODE,D3DFOG_NONE);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLESTART,0);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEEND,0);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGTABLEDENSITY,0);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGSTART,0);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGEND,0);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGDENSITY,0);
-	_renderer->setRenderState( D3DRENDERSTATE_COLORKEYENABLE,0);
-	_renderer->setRenderState( D3DRENDERSTATE_ZBIAS,0);
-	_renderer->setRenderState( D3DRENDERSTATE_RANGEFOGENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_TEXTUREFACTOR,0x80FFFFFF);
-
-	_renderer->setRenderState( D3DRENDERSTATE_CLIPPING,1);
-	_renderer->setRenderState( D3DRENDERSTATE_LIGHTING,0);
-	
-	_renderer->setRenderState( D3DRENDERSTATE_AMBIENT,false);
-	_renderer->setRenderState( D3DRENDERSTATE_FOGVERTEXMODE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_COLORVERTEX,1);
-	_renderer->setRenderState( D3DRENDERSTATE_COLORKEYBLENDENABLE,false);
-	_renderer->setRenderState( D3DRENDERSTATE_DIFFUSEMATERIALSOURCE,D3DMCS_COLOR1);
-	_renderer->setRenderState( D3DRENDERSTATE_SPECULARMATERIALSOURCE,D3DMCS_COLOR2);
-	_renderer->setRenderState( D3DRENDERSTATE_AMBIENTMATERIALSOURCE,D3DMCS_MATERIAL);
-	_renderer->setRenderState( D3DRENDERSTATE_EMISSIVEMATERIALSOURCE,D3DMCS_MATERIAL);
-	_renderer->setRenderState( D3DRENDERSTATE_VERTEXBLEND,D3DVBLEND_DISABLE);
-	_renderer->setRenderState( D3DRENDERSTATE_CLIPPLANEENABLE,false);
 }
 
 int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
@@ -1314,26 +1079,6 @@ int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
 int cGraph3dDirect3D::GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)
 {
 	return _renderer->get_texture_manager().getTextureFormatData(dwTexFormatID, pData) == MD3D_OK;
-}
-
-int cGraph3dDirect3D::SetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState)
-{
-	return _renderer->setRenderState(dwRenderStateType, dwRenderState) == MD3D_OK;
-}
-
-int cGraph3dDirect3D::GetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState)
-{
-	return _renderer->getRenderState(dwRenderStateType, lpdwRenderState) == MD3D_OK;
-}
-
-int cGraph3dDirect3D::SetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue)
-{
-	return _renderer->setTextureStageState(dwStage, dwState, dwValue) == MD3D_OK;
-}
-
-int cGraph3dDirect3D::SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend)
-{
-	return _renderer->setTextureBlendMode(tbRGBBlend, tbAlphaBlend) == MD3D_OK;
 }
 
 int cGraph3dDirect3D::SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)

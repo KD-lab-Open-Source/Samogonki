@@ -8,8 +8,6 @@
 #include "sound.h"
 #include "xsound.h"
 
-#include "Md3d.h"
-
 #include "iText.h"
 #include "HFONT.H"
 
@@ -782,9 +780,9 @@ void im_d3dOutSprite(float x,float y,float sx,float sy,int spr,int col,int alpha
 	gb_IGraph3d->SetSpriteMode(spr,MD3DSP_ALPHAFACTOR,alpha);
 	gb_IGraph3d->SetSpriteMode(spr,MD3DSP_ALPHAREF,0);
 
-	gb_IGraph3d->SetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_CLAMP);
+	gb_IGraph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS, TADDRESS_CLAMP);
 	gb_IGraph3d->DrawSprite(spr,(float)x,(float)y,mode,sx,sy,rotate);
-	gb_IGraph3d->SetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
+	gb_IGraph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS, TADDRESS_WRAP);
 }
 
 void im_d3dSaveSprite(int spr)

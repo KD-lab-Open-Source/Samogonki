@@ -94,10 +94,6 @@ public:
 	// legacy
 	virtual int EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray);
 	virtual int GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
-	virtual int SetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
-	virtual int GetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState);
-	virtual int SetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
-	virtual int SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
 	virtual int SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom);
 	virtual int Clear(uint32_t dwColor);
 	virtual int Flip(bool bWaitVerticalBlank);
@@ -105,7 +101,6 @@ public:
 
 private:
 	eModeGraph3d			GraphMode;
-	eMaterialMode			MaterialMode;
 	int						SwitchRenderScene;
 	int						xScr,yScr,xScrMin,yScrMin,xScrMax,yScrMax;
 	int						rBitShift,gBitShift,bBitShift;

@@ -11,7 +11,7 @@
 
 #include <sokol_gfx.h>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 
 namespace graphics
 {

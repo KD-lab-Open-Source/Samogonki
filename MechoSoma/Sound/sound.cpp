@@ -6,7 +6,6 @@
 
 #include "mechosoma.h"
 
-#include "Md3d.h"
 #include "xsound.h"
 
 #include "aci_parser.h"

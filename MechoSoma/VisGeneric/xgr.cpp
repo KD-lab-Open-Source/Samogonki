@@ -2,7 +2,7 @@
 #include "XGR.h"
 #include <cassert>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 
 int RenderMode=XGRAPH_HICOLOR;
 

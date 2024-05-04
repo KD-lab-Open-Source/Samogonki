@@ -1,11 +1,9 @@
 #ifndef __IGRAPH3D_H__
 #define __IGRAPH3D_H__
 
-#ifndef NULL
-#define NULL 0
-#endif
-
-#include <Md3d.h>
+#include <cassert>
+#include <cstdint>
+#include <algorithm>
 
 #define GET_INT_RGBA(r,g,b,a)		(((a)<<24)|((r)<<16)|((g)<<8)|(b))
 
@@ -121,36 +119,36 @@ enum eRenderStateOption
 
 enum eRenderStateCullMode
 {
-    RENDERSTATE_CULL_NONE				=	1,
-    RENDERSTATE_CULL_CW					=	2,
-    RENDERSTATE_CULL_CCW				=	3,
-    RENDERSTATE_CULL_FORCE				=	0x7fffffff,
+	RENDERSTATE_CULL_NONE				=	1,
+	RENDERSTATE_CULL_CW					=	2,
+	RENDERSTATE_CULL_CCW				=	3,
+	RENDERSTATE_CULL_FORCE				=	0x7fffffff,
 };
 enum eRenderStateTextureAddress 
 {
-    TADDRESS_WRAP						= 1,
-    TADDRESS_MIRROR						= 2,
-    TADDRESS_CLAMP						= 3,
-    TADDRESS_BORDER						= 4,
-    TADDRESS_FORCE_DWORD				= 0x7fffffff, 
+	TADDRESS_WRAP						= 1,
+	TADDRESS_MIRROR						= 2,
+	TADDRESS_CLAMP						= 3,
+	TADDRESS_BORDER						= 4,
+	TADDRESS_FORCE_DWORD				= 0x7fffffff, 
 };
 
 enum eBlendMode
 {
-    BLEND_ZERO              = 1,
-    BLEND_ONE               = 2,
-    BLEND_SRCCOLOR          = 3,
-    BLEND_INVSRCCOLOR       = 4,
-    BLEND_SRCALPHA          = 5,
-    BLEND_INVSRCALPHA       = 6,
-    BLEND_DESTALPHA         = 7,
-    BLEND_INVDESTALPHA      = 8,
-    BLEND_DESTCOLOR         = 9,
-    BLEND_INVDESTCOLOR      = 10,
-    BLEND_SRCALPHASAT       = 11,
-    BLEND_BOTHSRCALPHA      = 12,
-    BLEND_BOTHINVSRCALPHA   = 13,
-    BLEND_FORCE_DWORD       = 0x7fffffff, /* force 32-bit size enum */
+	BLEND_ZERO              = 1,
+	BLEND_ONE               = 2,
+	BLEND_SRCCOLOR          = 3,
+	BLEND_INVSRCCOLOR       = 4,
+	BLEND_SRCALPHA          = 5,
+	BLEND_INVSRCALPHA       = 6,
+	BLEND_DESTALPHA         = 7,
+	BLEND_INVDESTALPHA      = 8,
+	BLEND_DESTCOLOR         = 9,
+	BLEND_INVDESTCOLOR      = 10,
+	BLEND_SRCALPHASAT       = 11,
+	BLEND_BOTHSRCALPHA      = 12,
+	BLEND_BOTHINVSRCALPHA   = 13,
+	BLEND_FORCE_DWORD       = 0x7fffffff, /* force 32-bit size enum */
 };
 
 struct sVertexFix
@@ -186,6 +184,185 @@ struct sPolygonFix
 enum eVertexFormat
 {
 	VERTEXFMT_FIX		=	0,
+};
+
+typedef uint32_t MD3DERROR;
+
+struct MD3DMODE
+{
+	uint32_t dx, dy;
+	uint32_t bitPerPixel;
+};
+
+struct M3DTEXTUREFORMAT
+{
+	uint32_t dwTotalBitCount;
+	bool bPalette8;
+
+	uint32_t dwAlphaBitCount;
+	uint32_t dwRBitCount;
+	uint32_t dwGBitCount;
+	uint32_t dwBBitCount;
+
+	uint32_t dwAlphaBitMask;
+	uint32_t dwRBitMask;
+	uint32_t dwGBitMask;
+	uint32_t dwBBitMask;
+
+	uint32_t dwAlphaBitShift;
+	uint32_t dwRBitShift;
+	uint32_t dwGBitShift;
+	uint32_t dwBBitShift;
+};
+
+struct MD3DRECT
+{
+	int32_t left;
+	int32_t top;
+	int32_t right;
+	int32_t bottom;
+
+	bool operator==(const MD3DRECT& other) const
+	{
+		return std::equal(&left, &left + 4, &other.left);
+	}
+};
+
+struct D3DMATRIX
+{
+	float        _11, _12, _13, _14;
+	float        _21, _22, _23, _24;
+	float        _31, _32, _33, _34;
+	float        _41, _42, _43, _44;
+
+	bool operator==(const D3DMATRIX& other) const
+	{
+		return std::equal(&_11, &_11 + 16, &other._11);
+	}
+};
+
+struct DDGAMMARAMP
+{
+	uint16_t red[256];
+	uint16_t green[256];
+	uint16_t blue[256];
+};
+
+enum MD3DGAMMASUPPORT
+{
+	MD3DGAMMA_RAMDACCALIBRATED = 1,
+	MD3DGAMMA_RAMDAC = 2,
+	MD3DGAMMA_EMULATION = 3
+};
+
+typedef uint32_t D3DCOLOR;
+
+#define RGB_MAKE(r, g, b)       ((D3DCOLOR) (((r) << 16) | ((g) << 8) | (b)))
+#define RGBA_MAKE(r, g, b, a)   ((D3DCOLOR) (((a) << 24) | ((r) << 16) | ((g) << 8) | (b)))
+
+// Origins for d3dDrawSprite
+
+#define MD3DORG_TOPLEFT			1
+#define MD3DORG_CENTER			2
+
+#define MD3D_OK 0
+#define MD3DERR_ILLEGALCALL			0x8300000d	// Функцию нельзя вызывать в этом контексте
+
+// Sprite creation flags
+
+#define MD3DSP_USEALPHATEST		0x00000001
+#define MD3DSP_USEALPHABLEND	0x00000002
+
+// Sprite modes
+
+#define MD3DSP_ALPHATESTENABLE		1
+#define MD3DSP_ALPHAREF				2
+#define MD3DSP_ALPHABLENDENABLE		3
+#define MD3DSP_COLORFACTOR			4
+#define MD3DSP_ALPHAFACTOR			5
+
+// Back buffer formats
+
+#define MD3DBBFORMAT_RGB565		1
+#define MD3DBBFORMAT_RGB888		2
+#define MD3DBBFORMAT_RGB555		3
+
+// Texture formats
+
+#define D3DTEXFMT_RGB565		1
+#define D3DTEXFMT_RGB555		2
+#define D3DTEXFMT_ARGB4444		3
+#define D3DTEXFMT_ARGB1555		4
+#define D3DTEXFMT_RGBA8888		5
+#define D3DTEXFMT_PAL8			6
+
+#define MD3D_FULLSCREEN    0x00000001 // Use fullscreen mode
+#define MD3D_ALTDEVICE	   0x00000010 // Use alternative device (add-in card)
+
+template <typename T, size_t N>
+struct M3D_BUFFER_VIEW
+{
+	T *data = nullptr;
+	uint32_t count = 0;
+	uint32_t countLimit = 0;
+
+	void add(T x, T y)
+	{
+		assert(count + 2 < countLimit);
+		data[count++] = x;
+		data[count++] = y;
+	}
+
+	void add(T x, T y, T z)
+	{
+		assert(count + 3 < countLimit);
+		data[count++] = x;
+		data[count++] = y;
+		data[count++] = z;
+	}
+
+	void add(T x, T y, T z, T w)
+	{
+		assert(count + 4 < countLimit);
+		data[count++] = x;
+		data[count++] = y;
+		data[count++] = z;
+		data[count++] = w;
+	}
+};
+
+struct M3D_DRAW_COMMAND final
+{
+	M3D_BUFFER_VIEW<float, 3> positionBuffer;
+	M3D_BUFFER_VIEW<float, 4> diffuseColorBuffer;
+	M3D_BUFFER_VIEW<float, 4> specularColorBuffer;
+	M3D_BUFFER_VIEW<float, 2> uvBuffer;
+	M3D_BUFFER_VIEW<uint32_t, 3> indexBuffer;
+
+	inline void addPosition(float x, float y, float z)
+	{
+		positionBuffer.add(x, y, z);
+	}
+
+	inline void addDiffuseColor(int r, int g, int b, int a)
+	{
+		diffuseColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+	}
+
+	inline void addSpecularColor(int r, int g, int b, int a)
+	{
+		specularColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+	}
+
+	inline void addUV(float u, float v)
+	{
+		uvBuffer.add(u, v);
+	}
+
+	inline void addIndex(unsigned v1, unsigned v2, unsigned v3)
+	{
+		indexBuffer.add(v1, v2 ,v3);
+	}
 };
 
 class cInterfaceGraph3d
@@ -280,10 +457,6 @@ public:
 	// Legacy
 	virtual int EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)=0;
 	virtual int GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)=0;
-	virtual int SetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState)=0;
-	virtual int GetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t *lpdwRenderState)=0;
-	virtual int SetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue)=0;
-	virtual int SetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend)=0;
 	virtual int SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)=0;
 	virtual int Clear(uint32_t dwColor)=0;
 	virtual int Flip(bool bWaitVerticalBlank = true)=0;

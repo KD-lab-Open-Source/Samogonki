@@ -12,7 +12,7 @@
 #include <SDL2/SDL.h>
 #include <sokol_gfx.h>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 #include "render_state.h"
 
 namespace graphics {
@@ -43,12 +43,10 @@ class Renderer final {
   MD3DERROR endScene();
   MD3DERROR setProjectionMatrix(const D3DMATRIX &matrix);
   MD3DERROR resetProjectionMatrix();
-  MD3DERROR setRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
-  MD3DERROR getRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
-  MD3DERROR setTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
 
+  MD3DERROR setRenderState(eRenderStateOption option, int value);
+  MD3DERROR setMaterial(eMaterialMode material);
   MD3DERROR setTexture(uint32_t dwHandle, uint32_t dwStage);
-  MD3DERROR setTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
 
   MD3DERROR beginDrawCommand(M3D_DRAW_COMMAND &command);
   MD3DERROR endDrawCommand(const M3D_DRAW_COMMAND &command);
@@ -89,7 +87,7 @@ private:
   std::unique_ptr<TextureManager> _texture_manager;
 
   sg_pass_action defaultPassAction = {};
-  d3d::RenderState _render_state;
+  RenderState _render_state;
 
   struct BufferView
   {
@@ -109,7 +107,7 @@ private:
 
   struct DrawCommand
   {
-    d3d::RenderState render_state;
+    RenderState render_state;
     BufferView vertex_buffer_view;
     BufferView index_buffer_view;
   };
