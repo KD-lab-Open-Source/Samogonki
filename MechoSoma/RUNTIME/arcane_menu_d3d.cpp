@@ -926,16 +926,15 @@ void mchA_DarkenRect(int dwLeft,int dwTop,int dwRight,int dwBottom,int dwDarknes
 	drawCommand.addIndex(2, 1, 0);
 	drawCommand.addIndex(3, 2, 0);
 
-	gb_IGraph3d->SetRenderState( RENDERSTATE_ALPHABLEND, 1 );
-	gb_IGraph3d->SetRenderState( RENDERSTATE_SRCBLEND, BLEND_SRCALPHA );
-	gb_IGraph3d->SetRenderState( RENDERSTATE_DESTBLEND, BLEND_INVSRCALPHA );
-
 	gb_IGraph3d->SetRenderState( RENDERSTATE_ZTEST, 0 );
 	gb_IGraph3d->SetRenderState( RENDERSTATE_ZWRITE, 0 );
 
-	gb_IGraph3d->SetMaterial( MAT_COLOR_MOD_DIFFUSE );
+	gb_IGraph3d->SetMaterial( MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE );
 
 	gb_IGraph3d->EndDrawCommand(drawCommand);
+
+	gb_IGraph3d->SetRenderState( RENDERSTATE_ZTEST, 1 );
+	gb_IGraph3d->SetRenderState( RENDERSTATE_ZWRITE, 1 );
 }
 
 int mchA_d3dCheckMode(int mode,int color_depth)

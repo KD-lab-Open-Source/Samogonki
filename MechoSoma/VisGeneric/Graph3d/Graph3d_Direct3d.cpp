@@ -814,32 +814,21 @@ int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t 
 		}
 	}
 
-	eMaterialMode Attributes;
+	int Attributes = MAT_COLOR_MOD_DIFFUSE_TEXTURE1;
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
-		_renderer->setRenderState( RENDERSTATE_ALPHATEST, 1 );
+		Attributes |= MAT_ALPHA_MASK_TEXTURE1;
 		_renderer->setRenderState( RENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
-	} else {
-		_renderer->setRenderState( RENDERSTATE_ALPHATEST, 0 );
 	}
 
 	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
-		_renderer->setRenderState( RENDERSTATE_ALPHABLEND, 1 );
-		_renderer->setRenderState( RENDERSTATE_SRCBLEND, BLEND_SRCALPHA );
-		_renderer->setRenderState( RENDERSTATE_DESTBLEND, BLEND_INVSRCALPHA );
-	} else {
-		_renderer->setRenderState( RENDERSTATE_ALPHABLEND, 0 );
+		Attributes |= MAT_ALPHA_MOD_TEXTURE1;
 	}
 
-	if( _bSpriteZEnable ) {
-		_renderer->setRenderState( RENDERSTATE_ZTEST, 1 );
-		_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
-	} else {
+	if( !_bSpriteZEnable ) {
 		_renderer->setRenderState( RENDERSTATE_ZTEST, 0 );
 		_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
 	}
-
-	_renderer->setMaterial(MAT_COLOR_MOD_DIFFUSE_TEXTURE1);
 
 	M3D_DRAW_COMMAND drawCommand;
 	_renderer->beginDrawCommand(drawCommand);
@@ -859,7 +848,13 @@ int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t 
 	drawCommand.addIndex(2, 1, 0);
 	drawCommand.addIndex(3, 2, 0);
 
+	_renderer->setMaterial(eMaterialMode(Attributes));
 	_renderer->endDrawCommand(drawCommand);
+
+	if( !_bSpriteZEnable ) {
+		_renderer->setRenderState( RENDERSTATE_ZTEST, 1 );
+		_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
+	}
 
 	return 0;
 }
@@ -980,7 +975,6 @@ int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 	drawCommand.addIndex(0, 2, 1);
 	drawCommand.addIndex(3, 2, 0);
 
-	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
 	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
 
@@ -1013,7 +1007,6 @@ int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,
 	drawCommand.addIndex(0, 1, 2);
 	drawCommand.addIndex(2, 3, 0);
 
-	SetMaterial(MAT_NULL);
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
 	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 ); 
 

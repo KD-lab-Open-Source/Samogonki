@@ -70,6 +70,7 @@ enum eMaterialMode
 	MAT_ALPHA_MOD_TEXTURE1						=	1<<6,						// alpha*=Texture1
 	MAT_ALPHA_MASK_TEXTURE1						=	1<<7,						// alpha*=Texture1
 	MAT_COLOR_ADD_DIFFUSE						=	1<<8,
+	MAT_COLOR_MOD_TEXTURE2						=	1<<9,						// color*=Texture2
 	// смешанные материалы Diffuse & Texture1 & Specular
 	MAT_COLOR_MOD_DIFFUSE_TEXTURE1				=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_MOD_TEXTURE1,	// color=Texture1*Diffuse
 	MAT_COLOR_MOD_DIFFUSE_ADD_SPECULAR			=	MAT_COLOR_MOD_DIFFUSE	|	MAT_COLOR_ADD_SPECULAR,	// color=Diffuse+Specular

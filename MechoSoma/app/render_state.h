@@ -47,12 +47,12 @@ struct RenderState final {
 
   int color_operation1 = 0;
   int color_operation2 = 0;
-  std::array<std::optional<uint32_t>, 2> textures;
+  std::array<std::optional<uint32_t>, 2> textures{};
 
-  std::optional<D3DMATRIX> projection_matrix;
-  std::optional<MD3DRECT> viewport;
+  std::optional<D3DMATRIX> projection_matrix{};
+  std::optional<MD3DRECT> viewport{};
 };
 
 }
-  // namespace graphics::d3d
+
 #endif  // MOONSHINE_RUNNERS_RENDER_STATE_H

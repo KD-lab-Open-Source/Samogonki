@@ -509,31 +509,17 @@ MD3DERROR Renderer::setRenderState(eRenderStateOption option, int value) {
 }
 
 MD3DERROR Renderer::setMaterial(eMaterialMode material) {
-  // восстановление материалов
-  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MASK_TEXTURE1)) {
-    _render_state.is_alpha_test_enabled = false;
-    _render_state.is_alpha_blend_enabled = false;
-  }
-  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE)) {
-    _render_state.is_alpha_blend_enabled = false;
-  }
+  _render_state.is_alpha_blend_enabled = material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE);
+  _render_state.is_alpha_test_enabled = material & MAT_ALPHA_MASK_TEXTURE1;
+
   if (material & MAT_COLOR_ADD_DIFFUSE) {
+    _render_state.source_blend_mode = BLEND_ONE;
+    _render_state.destination_blend_mode = BLEND_ONE;
+  } else {
     _render_state.source_blend_mode = BLEND_SRCALPHA;
     _render_state.destination_blend_mode = BLEND_INVSRCALPHA;
   }
 
-  // установка материалов
-  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE)) {
-    _render_state.is_alpha_blend_enabled = true;
-  }
-  if (material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MASK_TEXTURE1)) {
-    _render_state.is_alpha_test_enabled = true;
-    _render_state.is_alpha_blend_enabled = true;
-  }
-  if (material & MAT_COLOR_ADD_DIFFUSE) {
-    _render_state.source_blend_mode = BLEND_ONE;
-    _render_state.destination_blend_mode = BLEND_ONE;
-  }
   switch (material & (MAT_COLOR_MOD_DIFFUSE | MAT_COLOR_MOD_TEXTURE1)) {
     case MAT_COLOR_MOD_DIFFUSE:
       _render_state.color_operation1 = 0;
@@ -549,6 +535,9 @@ MD3DERROR Renderer::setMaterial(eMaterialMode material) {
     default:
       assert(0);
   }
+
+  _render_state.color_operation2 = material & MAT_COLOR_MOD_TEXTURE2 ? 2 : 0;
+
   return MD3D_OK;
 }
 
