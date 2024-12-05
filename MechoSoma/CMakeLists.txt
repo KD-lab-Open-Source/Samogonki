@@ -1,5 +1,11 @@
 project(game CXX)
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-D_DEBUG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+endif()
+
 set(GAME_SOURCES
     # aciparser
     aciparser/aci_parser.cpp
@@ -178,7 +184,6 @@ set(GAME_SOURCES
     VisGeneric/PolyGrid.h
     VisGeneric/PolyMgr.cpp
     VisGeneric/PolyMgr.h
-    VisGeneric/PolyMgrD3D.cpp
     VisGeneric/PolyMgrDraw.cpp
     VisGeneric/PolyMgrTex.cpp
     VisGeneric/RenderDevice.cpp
@@ -456,10 +461,23 @@ set(GAME_SOURCES
     iScreen/hbm.h
     iScreen/iScript.cpp
     iScreen/iText.cpp
-    iScreen/savegame.cpp)
-set(LIBRARY_NAME game)
+    iScreen/savegame.cpp
+    # application
+    app/back_buffer.cpp
+    app/back_buffer.h
+    app/main.cpp
+    app/offscreen_buffer.cpp
+    app/offscreen_buffer.h
+    app/render_state.h
+    app/renderer.cpp
+    app/renderer.h
+    app/sokol-shader.h
+    app/texture_manager.cpp
+    app/texture_manager.h
+)
 
 include_directories(aciparser)
+include_directories(app)
 include_directories(FX)
 include_directories(IVisGeneric)
 include_directories(Sound)
@@ -480,15 +498,6 @@ include_directories(Xreal/Joystick)
 include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
-
-add_library(${LIBRARY_NAME} ${GAME_SOURCES})
-target_link_libraries(${LIBRARY_NAME} PUBLIC 3dsftk3 iniparser mpcdec)
-
-set_target_properties(${LIBRARY_NAME} PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
 
 include_directories(../3rdparty/sokol)
 
@@ -524,37 +533,21 @@ if (STEAM_VERSION)
     endif()
 endif()
 
-set(COMMON_APPLICATION_LIBRARIES ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
-
-set(APPLICATION_SOURCES
-    app/back_buffer.cpp
-    app/back_buffer.h
-    app/main.cpp
-    app/md3d.cpp
-    app/offscreen_buffer.cpp
-    app/offscreen_buffer.h
-    app/render_state.h
-    app/renderer.cpp
-    app/renderer.h
-    app/sokol-shader.h
-    app/texture_manager.cpp
-    app/texture_manager.h
-    app/vertex_type.h
-)
+set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
 
 if (MINGW)
-    add_executable(${APPLICATION_NAME} WIN32 ${APPLICATION_SOURCES})
-    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES})
+    add_executable(${APPLICATION_NAME} WIN32 ${GAME_SOURCES})
+    target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES})
     target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
     add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
             COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
 elseif (LINUX)
-    add_executable(${APPLICATION_NAME} ${APPLICATION_SOURCES})
-    target_link_libraries(${APPLICATION_NAME} ${LIBRARY_NAME} ${COMMON_APPLICATION_LIBRARIES}
+    add_executable(${APPLICATION_NAME} ${GAME_SOURCES})
+    target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES}
             X11 Xi Xcursor GL dl pthread)
 elseif (APPLE)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${APPLICATION_SOURCES})
+    add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${GAME_SOURCES})
     set_property(TARGET ${APPLICATION_NAME} PROPERTY MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Info.plist.in")
     target_link_libraries(${APPLICATION_NAME} PRIVATE
         "-framework AudioToolbox"
@@ -569,7 +562,6 @@ elseif (APPLE)
         "-framework Metal"
         "-framework OpenGL" 
         "-framework QuartzCore"
-        ${LIBRARY_NAME}
         ${COMMON_APPLICATION_LIBRARIES}
     )
 

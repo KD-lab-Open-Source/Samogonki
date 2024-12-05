@@ -1071,7 +1071,7 @@ int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
 
 int cGraph3dDirect3D::GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)
 {
-	return _renderer->get_texture_manager().getTextureFormatData(dwTexFormatID, pData) == MD3D_OK;
+	return _renderer->get_texture_manager().getTextureFormatData(dwTexFormatID, pData) != MD3D_OK;
 }
 
 int cGraph3dDirect3D::SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)

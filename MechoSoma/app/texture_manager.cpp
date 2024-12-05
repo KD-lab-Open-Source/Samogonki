@@ -227,6 +227,7 @@ MD3DERROR TextureManager::createTexture(uint32_t dwWidth, uint32_t dwHeight, uin
   auto p = std::find_if(texture_formats.cbegin(), texture_formats.cend(),
                         [&](const auto& format) { return format.dwFormatID == dwTexFormatID && format.bSupported; });
   if (p == texture_formats.cend()) {
+    printf("TextureManager::createTexture: unknown format=%x\n", dwTexFormatID);
     return MD3DERR_ILLEGALCALL;
   }
 
