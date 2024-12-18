@@ -11,7 +11,7 @@
 
 #include <sokol_gfx.h>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 
 namespace graphics
 {
@@ -32,11 +32,11 @@ class TextureManager final
   sg_image* get(uint32_t dwHandle);
   void delete_textures();
 
-  MD3DERROR d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
-  MD3DERROR d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle);
-  MD3DERROR d3dDeleteTexture(uint32_t dwHandle);
-  MD3DERROR d3dLockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch);
-  MD3DERROR d3dLockTexture(
+  MD3DERROR getTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
+  MD3DERROR createTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle);
+  MD3DERROR deleteTexture(uint32_t dwHandle);
+  MD3DERROR lockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch);
+  MD3DERROR lockTexture(
       uint32_t dwHandle,
       uint32_t dwLeft,
       uint32_t dwTop,
@@ -45,7 +45,7 @@ class TextureManager final
       void** lplpTexture,
       uint32_t* lpPitch
   );
-  MD3DERROR d3dUnlockTexture(uint32_t dwHandle);
+  MD3DERROR unlockTexture(uint32_t dwHandle);
 
  private:
   struct TextureEntry

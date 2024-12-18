@@ -18,6 +18,9 @@ class cLevin
 	Vect3f		Pos;										// точка рождения
 	Vect3f		Direction;									// направление
 	sColor4f	Color;
+
+	class M3D_DRAW_COMMAND DrawCommand;
+	int CurrentNumberPoint;
 public:
 	int	  size;											// минимальная длина ствола для var=4
 

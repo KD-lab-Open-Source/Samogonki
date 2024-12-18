@@ -3,6 +3,8 @@
 
 #include "IGraph3d.h"
 
+#include "renderer.h"
+
 class cGraph3dDirect3D : public cInterfaceGraph3d
 {
 public:
@@ -22,16 +24,17 @@ public:
 	virtual int Fill(int r,int g,int b);
 	virtual int Flush();
 
+	virtual void SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix);
+	virtual void ResetProjectionMatrix();
+
 	virtual int SetMaterial(eMaterialMode material);
 	virtual int SetRenderState(eRenderStateOption option,int value);
 	virtual int GetTextureFormatData(sTextureFormatData &TexFmtData);
 
-	virtual int PolygonFan(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonStrip(void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat=VERTEXFMT_FIX);
-	virtual int PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat=VERTEXFMT_FIX);
+	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command);
+	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command);
 
-	virtual int SetTexture(int hTexture);
+	virtual int SetTexture(int hTexture, uint32_t dwStage);
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine);
 	virtual int UnlockTexture(int hTexture);
 	virtual int CreateTexture(int x,int y,eTextureFormat TextureFormat);
@@ -87,9 +90,17 @@ public:
 	virtual int OutText(int x,int y,char *string,int r,int g,int b,int a);
 	virtual int DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,int a,int flag);
 	virtual void InitRenderState();
-//private:
+
+	// legacy
+	virtual int EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray);
+	virtual int GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
+	virtual int SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom);
+	virtual int Clear(uint32_t dwColor);
+	virtual int Flip(bool bWaitVerticalBlank);
+	virtual int SetClipRect(const MD3DRECT &lprcClipRect);
+
+private:
 	eModeGraph3d			GraphMode;
-	eMaterialMode			MaterialMode;
 	int						SwitchRenderScene;
 	int						xScr,yScr,xScrMin,yScrMin,xScrMax,yScrMax;
 	int						rBitShift,gBitShift,bBitShift;
@@ -98,6 +109,18 @@ public:
 	int						WaitVerticalBlank;
 
 	inline int GetColor(int r,int g,int b)										{ if(r>255) r=255; if(g>255) g=255; if(b>255) b=255; return ((r>>(8-rBitCount))<<rBitShift)+((g>>(8-gBitCount))<<gBitShift)+((b>>(8-bBitCount))<<bBitShift); }
+
+	std::unique_ptr<graphics::Renderer> _renderer;
+	bool _isActive = false;
+
+	class TSpriteSlot *_lpSpriteSlots = nullptr;
+	uint32_t _dwSpriteSlotsCount = 0;
+	uint32_t _dwSpriteSlotsUsed = 0;
+	float _dvSpriteZ = 0;
+	bool _bSpriteZEnable = false;
+
+	uint32_t FindUnusedSlot();
+	uint32_t CreateNewSlot();
 };
 
 #endif //__GRAPH3D_DIRECT3D_H__

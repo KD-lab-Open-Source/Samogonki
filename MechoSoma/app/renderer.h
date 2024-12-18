@@ -12,7 +12,7 @@
 #include <SDL2/SDL.h>
 #include <sokol_gfx.h>
 
-#include "Md3d.h"
+#include "IGraph3d.h"
 #include "render_state.h"
 
 namespace graphics {
@@ -33,35 +33,30 @@ class Renderer final {
 
   TextureManager& get_texture_manager();
   void setVideoMode(int width, int height, bool isFullScreen);
+  bool isInScene() const;
 
-  MD3DERROR d3dClear(uint32_t dwColor);
-  MD3DERROR d3dFlip(bool WaitVerticalBlank);
-  MD3DERROR d3dSetClipRect(const MD3DRECT &lprcClipRect);
-  MD3DERROR d3dResetClipRect();
-  MD3DERROR d3dBeginScene();
-  MD3DERROR d3dEndScene();
-  MD3DERROR d3dSetProjectionMatrix(const D3DMATRIX &matrix);
-  MD3DERROR d3dResetProjectionMatrix();
-  MD3DERROR d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState);
-  MD3DERROR d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState);
-  MD3DERROR d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue);
-  MD3DERROR d3dTriangleFan(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount);
-  MD3DERROR d3dTrianglesIndexed(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t* lpwIndices,
-                                uint32_t dwIndexCount);
+  MD3DERROR clear(uint32_t dwColor);
+  MD3DERROR flip(bool WaitVerticalBlank);
+  MD3DERROR setClipRect(const MD3DRECT &lprcClipRect);
+  MD3DERROR resetClipRect();
+  MD3DERROR beginScene();
+  MD3DERROR endScene();
+  MD3DERROR setProjectionMatrix(const D3DMATRIX &matrix);
+  MD3DERROR resetProjectionMatrix();
 
-  MD3DERROR d3dSetTexture(uint32_t dwHandle, uint32_t dwStage);
-  MD3DERROR d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend);
+  MD3DERROR setRenderState(eRenderStateOption option, int value);
+  MD3DERROR setMaterial(eMaterialMode material);
+  MD3DERROR setTexture(uint32_t dwHandle, uint32_t dwStage);
 
-  MD3DERROR d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void* lpvVertices, uint32_t dwVertexCount, uint16_t *lpwIndices,
-                                 uint32_t dwIndexCount, uint32_t dwHandleTex0, uint32_t dwHandleTex1);
+  MD3DERROR beginDrawCommand(M3D_DRAW_COMMAND &command);
+  MD3DERROR endDrawCommand(const M3D_DRAW_COMMAND &command);
 
-  MD3DERROR d3dLockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
-  MD3DERROR d3dUnlockBackBuffer();
-  MD3DERROR d3dFlushBackBuffer(MD3DRECT* lprcRect);
+  MD3DERROR lockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
+  MD3DERROR unlockBackBuffer();
+  MD3DERROR flushBackBuffer(MD3DRECT* lprcRect);
 
  private:
-  void prepare_render_state(size_t index_count);
-  void add_vertex(uint32_t vertex_type, void* vertices, uint32_t index);
+  void prepare_render_state();
 
 private:
   const size_t max_vertex_count = 100000;
@@ -74,12 +69,14 @@ private:
   sg_image _nullTexture;
 
   std::vector<float> _position_buffer;
-  std::vector<float> _color_buffer;
+  std::vector<float> _diffuse_color_buffer;
+  std::vector<float> _specular_color_buffer;
   std::vector<float> _uv_buffer;
   std::vector<uint32_t> _index_buffer;
 
   sg_buffer sg_position_buffer;
-  sg_buffer sg_color_buffer;
+  sg_buffer sg_diffuse_color_buffer;
+  sg_buffer sg_specular_color_buffer;
   sg_buffer sg_uv_buffer;
   sg_buffer sg_index_buffer;
   sg_sampler _clamp_sampler;
@@ -90,7 +87,7 @@ private:
   std::unique_ptr<TextureManager> _texture_manager;
 
   sg_pass_action defaultPassAction = {};
-  d3d::RenderState _render_state;
+  RenderState _render_state;
 
   struct BufferView
   {
@@ -110,13 +107,14 @@ private:
 
   struct DrawCommand
   {
-    d3d::RenderState render_state;
+    RenderState render_state;
     BufferView vertex_buffer_view;
     BufferView index_buffer_view;
   };
 
   std::vector<DrawCommand> _commands;
   bool _is_back_buffer_flush = false;
+  bool _is_in_scene = false;
 };
 
 }  // namespace graphics
