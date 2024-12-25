@@ -134,7 +134,7 @@ std::optional<fs::path> FileFinder::find_first(const std::string &path) {
 
 std::optional<fs::path> FileFinder::find_next() {
   while (_iterator != std::filesystem::end(_iterator)) {
-    if (_iterator->is_regular_file() && match(_path.u8string().c_str(), _iterator->path().filename().u8string().c_str())) {
+    if (_iterator->is_regular_file() && match(_path.string().c_str(), _iterator->path().filename().string().c_str())) {
       const auto p = _iterator->path();
       _iterator++;
       return p.filename();

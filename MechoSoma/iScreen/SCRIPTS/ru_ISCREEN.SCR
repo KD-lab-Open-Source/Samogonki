@@ -2423,7 +2423,7 @@ screen {
 		$OPT_RES_BODY
 		$OPT_OBJ_BODY
 
-		max_state	13
+		max_state	5
 
 		obj_index 1 $ACS_BACK_OPTION
 
@@ -2433,14 +2433,6 @@ screen {
 		state_str $ACS_1152_STR
 		state_str $ACS_1280_STR
 		state_str $ACS_1600_STR
-		state_str $ACS_1280_720_STR
-		state_str $ACS_1280_800_STR
-		state_str $ACS_1920_1080_STR
-		state_str $ACS_1920_1200_STR
-		state_str $ACS_2560_1440_STR
-		state_str $ACS_2560_1600_STR
-		state_str $ACS_3440_1440_STR
-		state_str $ACS_3840_2160_STR
 
 		#define OPT_CODE $ACS_OPT_RESOLUTION
 		$ALPHA_SET0
@@ -5261,6 +5253,47 @@ screen {
 				code	$ACS_CHANGE_SCREEN
 				ev_data $ACS_SPLIT_HS_SCR 0 0 0
 				start_time 0
+			}
+		}
+	}
+	object {
+		ID	4
+		type	$ACS_INPUT_FIELD_OBJ
+
+//		obj_index	1 $ACS_BACK_OPTION
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ONLINE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $OL_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_MAIN_MENU_DUMMY_SCR3 0 0 0
+					start_time 0
 			}
 		}
 	}

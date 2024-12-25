@@ -7,8 +7,11 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 set(GAME_SOURCES
-    # aciparser
-    aciparser/aci_parser.cpp
+    # ParserC
+    ParserC/math_exp.cpp
+    ParserC/prepare.cpp
+    ParserC/script_err.cpp
+    ParserC/script.cpp
     # FX
     FX/Hermit.h
     FX/XTList.h
@@ -477,7 +480,6 @@ set(GAME_SOURCES
     RUNTIME/aspect_ratio.cpp
     RUNTIME/aspect_ratio.h)
 
-include_directories(aciparser)
 include_directories(app)
 include_directories(FX)
 include_directories(IVisGeneric)
@@ -485,6 +487,7 @@ include_directories(Sound)
 include_directories(Terra)
 include_directories(RUNTIME)
 include_directories(RUNTIME/Scripts)
+include_directories(ParserC)
 include_directories(VisGeneric)
 include_directories(VisGeneric/md3d)
 include_directories(VisGeneric/Graph3d)

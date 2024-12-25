@@ -71,6 +71,8 @@ $town0 {
 
 	part	41 // Clown
 
+	enabled
+
 	name $town0_name
 	text $town0_text
 }
