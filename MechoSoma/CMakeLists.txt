@@ -476,7 +476,6 @@ set(GAME_SOURCES
     # widescreen fix
     RUNTIME/aspect_ratio.cpp
     RUNTIME/aspect_ratio.h)
-set(LIBRARY_NAME game)
 
 include_directories(aciparser)
 include_directories(app)
