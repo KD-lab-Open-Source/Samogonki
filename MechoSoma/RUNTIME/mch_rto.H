@@ -17,6 +17,7 @@ enum xgrModes
 	MCH_1920x1200,			// 10
 	MCH_2560x1440,			// 11
 	MCH_2560x1600,			// 12
+	MCH_3440x1440,			// 13
 
 	MCH_MAX_GRAPH_MODE
 };

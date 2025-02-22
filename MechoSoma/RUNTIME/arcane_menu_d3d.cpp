@@ -990,6 +990,9 @@ int mchA_d3dCheckMode(int mode,int color_depth)
 			case MCH_2560x1600:
 				sx=2560,sy=1600;
 				break;
+			case MCH_3440x1440:
+				sx=3440,sy=1440;
+				break;
 		}
 		for(i = 0; i < mchA_d3dNumModes; i ++){
 			if(mchA_d3dModes[i].dx == sx && mchA_d3dModes[i].dy == sy && mchA_d3dModes[i].bitPerPixel == color_depth)

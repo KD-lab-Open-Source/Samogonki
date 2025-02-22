@@ -12,6 +12,7 @@ AspectRatioInfo createAspectRatio(int sc_width, int sc_height, int cameraOffset)
         .width = width,
         .offset = width - 640,
         .cameraOffset = cameraOffset,
+		.ratio = (float)sc_width / sc_height,
     };
 }
 
@@ -20,26 +21,20 @@ AspectRatioInfo aspectRatios[] = {
     createAspectRatio(16, 9, 100),
     createAspectRatio(16, 10, 100),
     createAspectRatio(21, 9, 100),
+    createAspectRatio(43, 18, 100),
 };
 
 AspectRatioInfo *AR_CURRENT = &aspectRatios[0];
 
 void changeAspectRatio(int width, int height) {
-    if (((float)4 / 3) == ((float) width / height)) {
-        AR_CURRENT = &aspectRatios[AR_4x3];
-    }
+    float newRatio = (float) width / height;
 
-    if (((float)16 / 9) == ((float) width / height)) {
-        AR_CURRENT = &aspectRatios[AR_16x9];
-    }
-
-    if (((float)16 / 10) == ((float) width / height)) {
-        AR_CURRENT = &aspectRatios[AR_16x10];
-    }
-
-    if (((float)21 / 9) == ((float) width / height)) {
-        AR_CURRENT = &aspectRatios[AR_21x9];
-    }
+    for (auto& ratio : aspectRatios) {
+        if (ratio.ratio == newRatio) {
+            AR_CURRENT = &ratio;
+            break;
+        }
+	}
 }
 
 // Apply offsets for specific screen elements
