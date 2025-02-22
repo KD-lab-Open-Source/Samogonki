@@ -7,10 +7,10 @@
 #include <unordered_set>
 
 namespace localization {
-    std::unordered_set<std::string> supportedLanguages = {
-           "ru", "en", "it", "cz"
+    const std::unordered_set<std::string> supportedLanguages = {
+          "cz", "en", "fr", "it", "lt", "ru"
     };
-    std::unordered_set<std::string> localizedFiles = {
+    const std::unordered_set<std::string> localizedFiles = {
           "resource/iscreen/itext.scb",
           "resource/iscreen/iscreen.scb",
           "resource/iscreen/doggy.scb",

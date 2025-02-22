@@ -1,4 +1,3 @@
-#include "Md3d.h"
 #include "math.h"
 #include "BaseDefine.h"
 #include "assert.h"
@@ -10,21 +9,55 @@ fstream fxx("graph.txt",ios::out);
 #endif //_TEST_DIRECT3D_
 
 #include "port.h"
+#include "texture_manager.h"
 
-int sVertexD3D::fmt	=	D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
+// Sprites
 
-extern void xtRegisterSysFinitFnc(void (*fPtr)(void),int id);
-extern void xtDeactivateSysFinitFnc(int id);
-void D3D_FinitFnc(void)
+struct TVertex
 {
-	xtDeactivateSysFinitFnc(XD3D_SYSOBJ_ID);            
-//	d3dClose();
-}
+	float	x,y,z,rhw;
+	uint32_t rgba;
+	float	u,v;
+};
+
+struct TSpriteSlot {
+
+	uint32_t dwHandle;			// If the 31-st bit is 1, it's a child sprite
+							// otherwise it's a parent. 0 means the slot is free.
+
+	uint32_t dwWidth;			// Width of the sprite
+	uint32_t dwHeight;			// Height of the sprite
+
+	uint32_t dwFlags;			// Sprite modes etc.
+	uint32_t dwAlphaRef;		
+	uint32_t dwAlphaFactor;
+	uint32_t dwColorFactor;
+
+	TVertex Vertices[4];	// Vertices for the triangle fan
+
+	union {
+
+		// Parent sprite
+		struct {
+		uint32_t dwChildrenCount;		// Number of children for this parent
+		uint32_t dwTexHandle;			// Texture handle
+		};
+
+		// Child sprite 
+		struct {
+		uint32_t dwParentHandle;		// Handle of the parent sprite
+		uint32_t dwLeft;				// Coordinates of the upper-left corner 
+		uint32_t dwTop;				// on the parent sprite
+		};
+	};
+};
+
+#define SLOTS_INITIAL_SIZE 200
+#define SLOTS_EXPAND_CHUNK 50
 
 cGraph3dDirect3D::cGraph3dDirect3D()
 {
 	GraphMode=GRAPH3D_MODE_NULL;
-	MaterialMode=MAT_NULL;
 	SwitchRenderScene=-1;
 	xScr=yScr=xScrMin=yScrMin=xScrMax=yScrMax=0;
 	rBitShift=gBitShift=bBitShift=0;
@@ -34,6 +67,10 @@ cGraph3dDirect3D::cGraph3dDirect3D()
 }
 cGraph3dDirect3D::~cGraph3dDirect3D()
 {
+	free( _lpSpriteSlots );
+	_lpSpriteSlots = NULL;
+	_dwSpriteSlotsCount = 0;
+	_dwSpriteSlotsUsed = 0;
 }
 	
 int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,void *hIcon)
@@ -65,20 +102,15 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	extern char* mchWndTitle;
 	wnd_title = mchWndTitle;
 
-	error=d3dInit(xscr,yscr,ColorBit,DriverMode,nullptr,nullptr,wnd_title);
-	if(error!=MD3D_OK)
-			ErrH.Abort ("No compatible 3D devices found.");
-/*
-		if(error==MD3DERR_NOCOMPATIBLEDEVICES) 
-			ErrH.Abort ("No compatible 3D devices found.");
-		else 
-		{
-			XBuffer buf; 
-			buf < "Error initializing Direct3D. Code=" <= error < "."; 
-			ErrH.Abort (buf.address());
-		}
-*/	
-	xtRegisterSysFinitFnc(D3D_FinitFnc,XD3D_SYSOBJ_ID); 
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
+	_isActive = true;
+
+	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
+	assert( NULL != _lpSpriteSlots );
+	memset( _lpSpriteSlots, 0, sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
+	_dwSpriteSlotsCount = SLOTS_INITIAL_SIZE;
+	_dwSpriteSlotsUsed = 1;	// First slot is never used
+	_bSpriteZEnable = false;
 
 	SetClipRect(0,0,xscr-1,yscr-1);
 	Fill(0,0,0);
@@ -114,19 +146,7 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,void *hInst,char *szTitl
 	extern char* mchWndTitle;
 	wnd_title = mchWndTitle;
 
-	error=d3dReInit(xscr,yscr,ColorBit,DriverMode,nullptr,nullptr,wnd_title);
-	if(error!=MD3D_OK)
-		ErrH.Abort ("No compatible 3D devices found.");
-/*
-		if(error==MD3DERR_NOCOMPATIBLEDEVICES) 
-			ErrH.Abort ("No compatible 3D devices found.");
-		else 
-		{
-			XBuffer buf; 
-			buf < "Error initializing Direct3D. Code=" <= error < "."; 
-			ErrH.Abort (buf.address());
-		}
-*/
+	_renderer->setVideoMode(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
 	SetClipRect(0,0,xscr-1,yscr-1);
 	Fill(0,0,0);
 	Flush();
@@ -140,19 +160,18 @@ int cGraph3dDirect3D::ReInit(int xscr,int yscr,int mode,void *hInst,char *szTitl
 }
 int cGraph3dDirect3D::Release()
 {
-	d3dClose();
 	delete this;
 	return 0;
 }
 int cGraph3dDirect3D::IsActive()
 {
-	return d3dIsActive();
+	return _isActive;
 }
 
 int cGraph3dDirect3D::BeginScene()
 {
 	if(SwitchRenderScene>0) return 1;
-	int err=d3dBeginScene();
+	int err=_renderer->beginScene();
 	if(err==0) SwitchRenderScene=1;
 	else 
 	{
@@ -171,13 +190,13 @@ int cGraph3dDirect3D::EndScene()
 	if(SwitchRenderScene==0) return 1;
 	SwitchRenderScene=0;
 	SetMaterial(MAT_NULL);
-	d3dEndScene();
+	_renderer->endScene();
 	return 0;
 }
 int cGraph3dDirect3D::NullClipRect()
 {
 	MD3DRECT viewport{ xScrMin, yScrMin, xScrMax - xScrMin, yScrMax - yScrMin };
-	d3dSetClipRect(viewport);
+	_renderer->setClipRect(viewport);
 	return 0;
 }
 int cGraph3dDirect3D::GetClipRect(int *xmin,int *ymin,int *xmax,int *ymax)
@@ -196,13 +215,13 @@ int cGraph3dDirect3D::SetClipRect(int xmin,int ymin,int xmax,int ymax)
 int cGraph3dDirect3D::Fill(int r,int g,int b)
 {
 	if(SwitchRenderScene>0) EndScene();
-	d3dClear((r<<16)|(g<<8)|(b<<0));
+	_renderer->clear((r<<16)|(g<<8)|(b<<0));
 	return 0;
 }
 int cGraph3dDirect3D::Flush()
 {
 	if(SwitchRenderScene>0) EndScene();
-	d3dFlip((bool)WaitVerticalBlank);
+	_renderer->flip((bool)WaitVerticalBlank);
 	if(NumberPolygon&&MinNumberPolygon>NumberPolygon) MinNumberPolygon=NumberPolygon;
 	if(MaxNumberPolygon<NumberPolygon) MaxNumberPolygon=NumberPolygon;
 #ifdef _TEST_DIRECT3D_
@@ -212,56 +231,42 @@ int cGraph3dDirect3D::Flush()
 	return 0;
 }
 
-int cGraph3dDirect3D::PolygonFan(void *vertex,int NumberVertex,int VertexFormat)
+void cGraph3dDirect3D::SetProjectionMatrix(const MD3DRECT &Viewport, const D3DMATRIX &ProjectionMatrix)
 {
-	return 0;
-}
-int cGraph3dDirect3D::PolygonStrip(void *vertex,int NumberVertex,int VertexFormat)
-{
-	return 0;
-}
-int cGraph3dDirect3D::PolygonIndexed(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int VertexFormat)
-{
-	assert(polygon&&vertex);
-	assert(VertexFormat==VERTEXFMT_FIX);
-	assert((NumberVertex<65536)&&(NumberVertex>0)&&(NumberPolygon>0));
-	if(!SwitchRenderScene) return 1;
-	sVertexFix *vFix=(sVertexFix*)vertex;
-	sPolygonFix *pFix=(sPolygonFix*)polygon,*pFixEnd=&pFix[NumberPolygon];
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	d3dTrianglesIndexed(FixFormatd3d,vFix,NumberVertex,(unsigned short*)pFix,3*NumberPolygon);
-	cGraph3dDirect3D::NumberPolygon+=NumberPolygon;
-	return 0;
-}
-int cGraph3dDirect3D::PolygonIndexed2(void *polygon,int NumberPolygon,void *vertex,int NumberVertex,int hTexture,int hLightMap,int VertexFormat)
-{
-	assert(polygon&&vertex);
-	assert(VertexFormat==VERTEXFMT_FIX);
-	assert((NumberVertex<65536)&&(NumberVertex>0)&&(NumberPolygon>0));
-	if(!SwitchRenderScene) return 1;
-	sVertexFix *vFix=(sVertexFix*)vertex;
-	sPolygonFix *pFix=(sPolygonFix*)polygon,*pFixEnd=&pFix[NumberPolygon];
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	d3dTrianglesIndexed2(FixFormatd3d,vFix,NumberVertex,(unsigned short*)pFix,3*NumberPolygon,hTexture,hLightMap);
-	cGraph3dDirect3D::NumberPolygon+=NumberPolygon;
-	return 0;
+	_renderer->setClipRect(Viewport);
+	_renderer->setProjectionMatrix(ProjectionMatrix);
 }
 
-int cGraph3dDirect3D::SetTexture(int hTexture)
+void cGraph3dDirect3D::ResetProjectionMatrix()
+{
+	_renderer->resetClipRect();
+	_renderer->resetProjectionMatrix();
+}
+
+int cGraph3dDirect3D::BeginDrawCommand(M3D_DRAW_COMMAND &command)
+{
+	return _renderer->beginDrawCommand(command) == MD3D_OK;
+}
+int cGraph3dDirect3D::EndDrawCommand(const M3D_DRAW_COMMAND &command)
+{
+	return _renderer->endDrawCommand(command) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetTexture(int hTexture, uint32_t dwStage)
 {
 	assert(hTexture);
 	if(!SwitchRenderScene) return 1;
-	return d3dSetTexture((int)hTexture)!=MD3D_OK;
+	return _renderer->setTexture((int)hTexture, dwStage)!=MD3D_OK;
 }
 int cGraph3dDirect3D::LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)
 {
 	assert(hTexture);
-	return d3dLockTexture((uint32_t)hTexture,TextureBuffer,(uint32_t *)BytePerLine)!=MD3D_OK;
+	return _renderer->get_texture_manager().lockTexture((uint32_t)hTexture,TextureBuffer,(uint32_t *)BytePerLine)!=MD3D_OK;
 }
 int cGraph3dDirect3D::UnlockTexture(int hTexture)
 {
 	assert(hTexture);
-	return d3dUnlockTexture((int)hTexture)!=MD3D_OK;
+	return _renderer->get_texture_manager().unlockTexture((int)hTexture)!=MD3D_OK;
 }
 int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 {
@@ -285,14 +290,14 @@ int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 		default: 
 			assert(0);
 	}
-	if(d3dCreateTexture(x,y,TexFormat3d,&hTexture)==MD3D_OK) 
+	if(_renderer->get_texture_manager().createTexture(x,y,TexFormat3d,&hTexture)==MD3D_OK) 
 		return hTexture;
 	return 0;
 }
 int cGraph3dDirect3D::DeleteTexture(int hTexture)
 {
 	assert(hTexture);
-	return d3dDeleteTexture((int)hTexture)==MD3D_OK;
+	return _renderer->get_texture_manager().deleteTexture((int)hTexture)==MD3D_OK;
 }
 
 void* cGraph3dDirect3D::GetZBuffer()
@@ -310,217 +315,39 @@ void* cGraph3dDirect3D::GetInfo(int *graph3d)
 }
 int cGraph3dDirect3D::DrawLine(int x1,int y1,int x2,int y2,int c1,int c2)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-//	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	sPolygonFix pFix[2]={ 0,2,1, 1,2,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=0.001f; vFix[0].w=0.999f;
-	vFix[0].diffuse()=c1;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=0.001f; vFix[1].w=0.999f;
-	vFix[1].diffuse()=c2;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=0.001f; vFix[2].w=0.999f;
-	vFix[2].diffuse()=c1;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=0.001f; vFix[3].w=0.999f;
-	vFix[3].diffuse()=c2;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawLine(int x1,int y1,int x2,int y2,int r,int g,int b,int a)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-//	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	sPolygonFix pFix[2]={ 0,2,1, 1,2,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=0.001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=0.001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=0.001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=0.001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawLine(float x1,float y1,float z1,float x2,float y2,float z2,int r,int g,int b,int a)
 {
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x2<xScrMin||x1>xScrMax||x2>xScrMax||y1<yScrMin||y2<yScrMin||y1>yScrMax||y2>yScrMax) return 0;
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,1,2, 2,1,3 };
-	float dy=(float)(x1-x2),dx=(float)-(y1-y2);
-	float d=(float)sqrt(dx*dx+dy*dy);
-	if(d>=1) d=0.5f/d; else return 0;
-	dx*=d; dy*=d;
-	vFix[0].xe=(float)x1+dx; vFix[0].ye=(float)y1+dy; vFix[0].z=z1; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)x2+dx; vFix[1].ye=(float)y2+dy; vFix[1].z=z2; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)x1-dx; vFix[2].ye=(float)y1-dy; vFix[2].z=z1; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x2-dx; vFix[3].ye=(float)y2-dy; vFix[3].z=z2; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
+	assert(0);
 	return 0;
 }
 int cGraph3dDirect3D::DrawPixel(int x1,int y1,int r,int g,int b,int a)
 { 
-	if(!SwitchRenderScene) return 1;
-	if(x1<xScrMin||x1>xScrMax||y1<yScrMin||y1>yScrMax) return 0;
-	struct sPointFD
-	{
-		float xe,ye,z,w;
-		unsigned char drgba[4];
-		inline unsigned char& dr()			{ return drgba[2]; }
-		inline unsigned char& dg()			{ return drgba[1]; }
-		inline unsigned char& db()			{ return drgba[0]; }
-		inline unsigned char& da()			{ return drgba[3]; }
-	} vPoint;
-	vPoint.xe=(float)x1; vPoint.ye=(float)y1; vPoint.z=0.001f; vPoint.w=0.999f;
-	vPoint.dr()=r; vPoint.dg()=g; vPoint.db()=b; vPoint.da()=a;
-	SetMaterial(MAT_NULL);
-	SetMaterial(MAT_COLOR_MOD_DIFFUSE);
-	d3dPoints(D3DFVF_XYZRHW|D3DFVF_DIFFUSE,&vPoint,1);
+	assert(0);
 	return 0; 
 }
 int cGraph3dDirect3D::SetMaterial(eMaterialMode material)
 {
-	if(MaterialMode==material) return 0;
-	// восстановление материалов
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
-	{
-		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,false);
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	}
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		d3dSetRenderState(D3DRENDERSTATE_SPECULARENABLE,false);
-	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
-	{
-		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
-	}
-	// установка материалов
-	MaterialMode=material;
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MOD_DIFFUSE))
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
-	if(MaterialMode&(MAT_ALPHA_MOD_TEXTURE1|MAT_ALPHA_MASK_TEXTURE1))
-	{
-		d3dSetRenderState(D3DRENDERSTATE_ALPHATESTENABLE,true);
-		d3dSetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE,true);
-	}
-	if(MaterialMode&MAT_COLOR_ADD_SPECULAR)
-		d3dSetRenderState(D3DRENDERSTATE_SPECULARENABLE,true);
-	if(MaterialMode&MAT_COLOR_ADD_DIFFUSE)
-	{
-		d3dSetRenderState(D3DRENDERSTATE_SRCBLEND,D3DBLEND_ONE);
-		d3dSetRenderState(D3DRENDERSTATE_DESTBLEND,D3DBLEND_ONE);
-	}
-	switch(MaterialMode&(MAT_COLOR_MOD_DIFFUSE|MAT_COLOR_MOD_TEXTURE1))
-	{
-		case MAT_COLOR_MOD_DIFFUSE:
-			d3dSetTextureBlendMode(MD3DTB_DIFFUSE,MD3DTB_DIFFUSE);
-			break;
-		case MAT_COLOR_MOD_TEXTURE1:
-			d3dSetTextureBlendMode(MD3DTB_TEXTURE1,MD3DTB_TEXTURE1);
-			break;
-		case MAT_COLOR_MOD_DIFFUSE_TEXTURE1:
-			d3dSetTextureBlendMode(MD3DTB_TEXTURE1_MOD_DIFFUSE,MD3DTB_TEXTURE1_MOD_DIFFUSE);
-			break;
-		case MAT_NULL:
-			break;
-		default:
-			assert(0);
-	}
+	_renderer->setMaterial(material);
 	return 0;
 }
 int cGraph3dDirect3D::SetRenderState(eRenderStateOption option,int value)
 {
 	if(!SwitchRenderScene) return 1;
-	D3DRENDERSTATETYPE type;
-	switch(option)
+
+	if (option == RENDERSTATE_NULL)
 	{
-		case RENDERSTATE_NULL:
-			return 1;
-		case RENDERSTATE_ZTEST:
-			type=D3DRENDERSTATE_ZENABLE;
-			break;
-		case RENDERSTATE_ZWRITE:
-			type=D3DRENDERSTATE_ZWRITEENABLE;
-			break;
-		case RENDERSTATE_DITHER:
-			type=D3DRENDERSTATE_DITHERENABLE;
-			break;
-		case RENDERSTATE_SPECULAR:
-			type=D3DRENDERSTATE_SPECULARENABLE;
-			break;
-		case RENDERSTATE_TEXTUREPERSPECTIVE:
-			type=D3DRENDERSTATE_TEXTUREPERSPECTIVE;
-			break;
-		case RENDERSTATE_ZFUNC:
-			type=D3DRENDERSTATE_ZFUNC;
-			break;
-		case RENDERSTATE_ZBIAS:
-			type=D3DRENDERSTATE_ZBIAS;
-			break;
-		case RENDERSTATE_FILLMODE:
-			type=D3DRENDERSTATE_FILLMODE;
-			break;
-		case RENDERSTATE_CULLMODE:
-			type=D3DRENDERSTATE_CULLMODE;
-			break;
-		case RENDERSTATE_SHADEMODE:
-			type=D3DRENDERSTATE_SHADEMODE;
-			break;
-		case RENDERSTATE_SUBPIXEL:
-			type=D3DRENDERSTATE_SUBPIXEL;
-			break;
-		case RENDERSTATE_ALPHATEST:
-			type=D3DRENDERSTATE_ALPHATESTENABLE;
-			break;
-		case RENDERSTATE_ALPHAFUNC:
-			type=D3DRENDERSTATE_ALPHAFUNC;
-			break;
-		case RENDERSTATE_ALPHAREF:
-			type=D3DRENDERSTATE_ALPHAREF;
-			break;
-		case RENDERSTATE_ALPHABLEND:
-			type=D3DRENDERSTATE_ALPHABLENDENABLE;
-			break;
-		case RENDERSTATE_SRCBLEND:
-			type=D3DRENDERSTATE_SRCBLEND;
-			break;
-		case RENDERSTATE_DESTBLEND:
-			type=D3DRENDERSTATE_DESTBLEND;
-			break;
-		case RENDERSTATE_TEXTUREADDRESS:
-		    d3dSetTextureStageState(0,D3DTSS_ADDRESS,value);
-			return d3dSetTextureStageState(1,D3DTSS_ADDRESS,value);
-		case RENDERSTATE_TEXTUREPOINT:
-		case RENDERSTATE_TEXTURELINEAR:
-		default:
-			assert(0);
-	};
-	return d3dSetRenderState(type,value)!=MD3D_OK;
+		return 1;
+	}
+
+	return _renderer->setRenderState(option, value) != MD3D_OK;
 }
 int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 {
@@ -544,7 +371,7 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 		default: 
 			assert(0);
 	}
-	int error=d3dGetTextureFormatData(TexFormat3d,&d3dTexFmt);
+	int error=_renderer->get_texture_manager().getTextureFormatData(TexFormat3d,&d3dTexFmt);
 	TexFmtData.Set(TexFmtData.TextureFormat,
 		d3dTexFmt.dwRBitCount,d3dTexFmt.dwGBitCount,d3dTexFmt.dwBBitCount,d3dTexFmt.dwAlphaBitCount,
 		d3dTexFmt.dwRBitShift,d3dTexFmt.dwGBitShift,d3dTexFmt.dwBBitShift,d3dTexFmt.dwAlphaBitShift);
@@ -553,76 +380,536 @@ int cGraph3dDirect3D::GetTextureFormatData(sTextureFormatData &TexFmtData)
 ////////////////////////// начало прочие функции //////////////////////////
 int cGraph3dDirect3D::CreateSprite(uint32_t dwWidth,uint32_t dwHeight,uint32_t dwFormat,uint32_t dwFlags,uint32_t* lpdwHandle )
 {
-	return d3dCreateSprite(dwWidth,dwHeight,dwFormat,dwFlags,(uint32_t*)lpdwHandle);
+	uint32_t dwSlot;
+	if( 0 == ( dwSlot = FindUnusedSlot() ) )
+	{
+		// No unused slots. Try to create a new one.
+		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+	}
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwSlot];
+
+	// Create the texture
+
+	uint32_t hr;
+	uint32_t dwTexHandle;
+
+	assert(_renderer->get_texture_manager().createTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) == MD3D_OK);
+
+	// Fill the slot for the new parent sprite
+
+	lpSprite->dwHandle = dwSlot;
+	lpSprite->dwWidth = dwWidth;
+	lpSprite->dwHeight = dwHeight;
+	lpSprite->dwChildrenCount = 0;
+	lpSprite->dwTexHandle = dwTexHandle;
+
+	lpSprite->dwFlags = dwFlags;
+	lpSprite->dwAlphaRef = 0;
+	lpSprite->dwAlphaFactor = 255;
+	lpSprite->dwColorFactor = RGB_MAKE(255,255,255);
+
+	// Vertices
+
+	for( uint32_t i = 0; i < 4; i++ ) {
+		lpSprite->Vertices[i].x = 0.0f;
+		lpSprite->Vertices[i].y = 0.0f;
+		lpSprite->Vertices[i].z = 0.0f;
+		lpSprite->Vertices[i].rhw = 1.0f;
+		lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+	}
+	lpSprite->Vertices[0].u = 0.0f;
+	lpSprite->Vertices[0].v = 0.0f;
+	lpSprite->Vertices[1].u = 1.0f;
+	lpSprite->Vertices[1].v = 0.0f;
+	lpSprite->Vertices[2].u = 1.0f;
+	lpSprite->Vertices[2].v = 1.0f;
+	lpSprite->Vertices[3].u = 0.0f;
+	lpSprite->Vertices[3].v = 1.0f;
+
+	// Return the new handle
+	*lpdwHandle = dwSlot;
+
+	return 0;
 }
 int cGraph3dDirect3D::CreateChildSprite(uint32_t dwParentHandle,uint32_t dwLeft,uint32_t dwTop, 
 							    uint32_t dwWidth,uint32_t dwHeight,uint32_t* lpdwHandle)
 {
-	return d3dCreateChildSprite(dwParentHandle,dwLeft,dwTop,dwWidth,dwHeight,(uint32_t*)lpdwHandle);
+	assert( dwParentHandle > 0 && dwParentHandle < _dwSpriteSlotsUsed );
+	assert( _lpSpriteSlots[dwParentHandle].dwHandle == dwParentHandle );
+
+	// Try to find an unused slot.
+	uint32_t dwSlot;
+	if( 0 == ( dwSlot = FindUnusedSlot() ) )
+	{
+		// No unused slots. Try to create a new one.
+		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+	}
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwSlot];
+
+	// Pointer to the parent sprite
+	TSpriteSlot *lpParentSprite = &_lpSpriteSlots[dwParentHandle];
+
+
+	// Fill the slot and give the user the new handle
+
+	lpSprite->dwHandle = dwSlot | 0x80000000;
+	lpSprite->dwParentHandle = dwParentHandle;
+
+	lpSprite->dwLeft = dwLeft;
+	lpSprite->dwTop = dwTop;
+	lpSprite->dwWidth = dwWidth;
+	lpSprite->dwHeight = dwHeight;
+
+	lpSprite->dwFlags = lpParentSprite->dwFlags;
+	lpSprite->dwAlphaRef = lpParentSprite->dwAlphaRef;
+	lpSprite->dwAlphaFactor = lpParentSprite->dwAlphaFactor;
+	lpSprite->dwColorFactor = lpParentSprite->dwColorFactor;
+
+	for( uint32_t i = 0; i < 4; i++ ) {
+		lpSprite->Vertices[i].x = 0.0f;
+		lpSprite->Vertices[i].y = 0.0f;
+		lpSprite->Vertices[i].z = 0.0f;
+		lpSprite->Vertices[i].rhw = 1.0f;
+		lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+	}
+
+	float dvLeft = float(lpSprite->dwLeft) / float(lpParentSprite->dwWidth);
+	float dvTop = float(lpSprite->dwTop) / float(lpParentSprite->dwHeight);
+	float dvRight = float(lpSprite->dwLeft + lpSprite->dwWidth) / float(lpParentSprite->dwWidth);
+	float dvBottom = float(lpSprite->dwTop + lpSprite->dwHeight) / float(lpParentSprite->dwHeight);
+
+	lpSprite->Vertices[0].u = dvLeft;
+	lpSprite->Vertices[0].v = dvTop;
+	lpSprite->Vertices[1].u = dvRight;
+	lpSprite->Vertices[1].v = dvTop;
+	lpSprite->Vertices[2].u = dvRight;
+	lpSprite->Vertices[2].v = dvBottom;
+	lpSprite->Vertices[3].u = dvLeft;
+	lpSprite->Vertices[3].v = dvBottom;
+
+	// Increment parent sprite's child count
+	lpParentSprite->dwChildrenCount++;
+
+	// Return the handle
+	*lpdwHandle = dwSlot;
+
+	return 0;
 }
 int cGraph3dDirect3D::DeleteSprite(uint32_t dwHandle)
 {
-	return d3dDeleteSprite(dwHandle);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// If this is a child sprite, just free the slot
+	if( 0 != (lpSprite->dwHandle & 0x80000000) ) {
+		// Mark the slot as free
+		lpSprite->dwHandle = 0;
+
+		// Decrement the child count for the parent slot
+		_lpSpriteSlots[lpSprite->dwParentHandle].dwChildrenCount--;
+
+		return MD3D_OK;
+	}
+
+	// Else it's a parent slot
+
+	// First, free all the children if any
+	if( 0 != lpSprite->dwChildrenCount ) {
+		
+		uint32_t dwSlot;
+		for( dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+		{
+			if( (_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
+				 _lpSpriteSlots[dwSlot].dwParentHandle == dwHandle ) {
+
+				// Mark the child slot as free
+				_lpSpriteSlots[dwSlot].dwHandle = 0;
+
+#ifdef _DEBUG
+				lpSprite->dwChildrenCount--;
+#endif
+			}
+		}
+		assert( 0 == lpSprite->dwChildrenCount );
+	}
+
+	// Free the texture handle 
+	assert(_renderer->get_texture_manager().deleteTexture( lpSprite->dwTexHandle ) == MD3D_OK);
+
+	// Mark the slot as free
+	lpSprite->dwHandle = 0;
+
+	return 0;
 }
 int cGraph3dDirect3D::LockSprite(uint32_t dwHandle,void **lplpSprite,uint32_t *lplpPitch)
 {
-	return d3dLockSprite(dwHandle,lplpSprite,(uint32_t*)lplpPitch);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Lock the sprite texture
+	uint32_t hr;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
+		// It's a parent sprite
+		assert(_renderer->get_texture_manager().lockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch ) == MD3D_OK);
+	} else {
+		// It's a child sprite
+		uint32_t dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+		assert(_renderer->get_texture_manager().lockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
+							 lpSprite->dwLeft + lpSprite->dwWidth-1, 
+							 lpSprite->dwTop + lpSprite->dwHeight-1,	
+							 lplpSprite, lplpPitch ) == MD3D_OK);
+	}
+
+	return 0;
 }
 int cGraph3dDirect3D::UnlockSprite(uint32_t dwHandle)
 {
-	return UnlockSprite(dwHandle);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Get the texture handle
+	uint32_t dwTexHandle;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
+		// It's a parent sprite
+		dwTexHandle = lpSprite->dwTexHandle;
+	} else {
+		// It's a child sprite
+		dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+	}
+
+	return _renderer->get_texture_manager().unlockTexture( dwTexHandle );
 }
 int cGraph3dDirect3D::SetSpriteMode(uint32_t dwHandle,uint32_t dwMode,uint32_t dwValue)
 {
-	return d3dSetSpriteMode(dwHandle,dwMode,dwValue);
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+	uint32_t i;
+
+	// Set mode for this sprite
+
+	switch( dwMode ) {
+	case MD3DSP_ALPHATESTENABLE:
+		if( dwValue )
+			lpSprite->dwFlags |= MD3DSP_USEALPHATEST;
+		else
+			lpSprite->dwFlags &= ~MD3DSP_USEALPHATEST;
+
+		break;
+
+	case MD3DSP_ALPHABLENDENABLE:
+		if( dwValue )
+			lpSprite->dwFlags |= MD3DSP_USEALPHABLEND;
+		else
+			lpSprite->dwFlags &= ~MD3DSP_USEALPHABLEND;
+
+		break;
+
+	case MD3DSP_ALPHAREF:
+		lpSprite->dwAlphaRef = dwValue;
+		break;
+
+	case MD3DSP_COLORFACTOR:
+		lpSprite->dwColorFactor = dwValue & RGBA_MAKE(255,255,255,0);
+		for( i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+		}
+		break;
+
+	case MD3DSP_ALPHAFACTOR:
+		lpSprite->dwAlphaFactor = dwValue;
+		for( i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+		}
+		break;
+	}
+
+
+	// See if this sprite has children
+
+	if( (lpSprite->dwHandle & 0x80000000) == 0 && lpSprite->dwChildrenCount != 0) {
+		for( uint32_t dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+		{
+			if( (_lpSpriteSlots[dwSlot].dwHandle & 0x80000000) != 0 && 
+				 _lpSpriteSlots[dwSlot].dwParentHandle == dwHandle ) {
+
+				// Pointer to the child sprite
+				TSpriteSlot *lpChild = &_lpSpriteSlots[dwSlot];
+
+				// Set mode for this child
+
+				switch( dwMode ) {
+				case MD3DSP_ALPHATESTENABLE:
+					if( dwValue )
+						lpSprite->dwFlags |= MD3DSP_USEALPHATEST;
+					else
+						lpSprite->dwFlags &= ~MD3DSP_USEALPHATEST;
+
+					break;
+
+				case MD3DSP_ALPHABLENDENABLE:
+					if( dwValue )
+						lpSprite->dwFlags |= MD3DSP_USEALPHABLEND;
+					else
+						lpSprite->dwFlags &= ~MD3DSP_USEALPHABLEND;
+
+					break;
+
+				case MD3DSP_ALPHAREF:
+					lpSprite->dwAlphaRef = dwValue;
+					break;
+
+				case MD3DSP_COLORFACTOR:
+					lpSprite->dwColorFactor = dwValue & RGBA_MAKE(255,255,255,0);
+					for( i = 0; i < 4; i++ ) {
+						lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+					}
+					break;
+
+				case MD3DSP_ALPHAFACTOR:
+					lpSprite->dwAlphaFactor = dwValue;
+					for( i = 0; i < 4; i++ ) {
+						lpSprite->Vertices[i].rgba = lpSprite->dwColorFactor | RGBA_MAKE(0,0,0,lpSprite->dwAlphaFactor);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 int cGraph3dDirect3D::DrawSprite(uint32_t dwHandle,float dvX,float dvY,uint32_t dwOrigin,
 						float dvScaleX,float dvScaleY,float dvRotate )
 {
-	return d3dDrawSprite(dwHandle,dvX,dvY,dwOrigin,dvScaleX,dvScaleY,dvRotate);
+	assert( _renderer->isInScene() );
+
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Texutre handle
+	uint32_t dwTexHandle;
+	if( (lpSprite->dwHandle & 0x80000000) == 0 )
+		dwTexHandle = lpSprite->dwTexHandle;
+	else
+		dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
+
+	uint32_t hr;
+
+	// Set current texture to the sprite texture
+	hr = _renderer->setTexture( dwTexHandle, 0 );
+	if( hr < 0 )
+		return hr;
+
+	// Calculate coordinates
+
+	float dvWidth, dvHeight;
+	float dvLeft, dvTop, dvRight, dvBottom;
+
+	if( lpSprite->dwHandle & 0x80000000 )
+	{
+		// Child
+		dvWidth = float(lpSprite->dwWidth);
+		dvHeight = float(lpSprite->dwHeight);
+	} else {
+		dvWidth = float(lpSprite->dwWidth) * (lpSprite->Vertices[1].u - lpSprite->Vertices[0].u);
+		dvHeight = float(lpSprite->dwHeight) * (lpSprite->Vertices[2].v - lpSprite->Vertices[1].v);
+	}
+
+	switch(dwOrigin) {
+	case MD3DORG_CENTER:
+		if( dvScaleX == 1.0f ) {
+			dvLeft = dvX - dvWidth/2.0f;
+			dvRight = dvX + dvWidth/2.0f;
+		} else {
+			dvLeft = dvX - (dvWidth/2.0f)*dvScaleX;
+			dvRight = dvX + (dvWidth/2.0f)*dvScaleX;
+		}
+		if( dvScaleY == 1.0f ) {
+			dvTop = dvY - dvHeight/2.0f;
+			dvBottom = dvY + dvHeight/2.0f;
+		} else {
+			dvTop = dvY - (dvHeight/2.0f)*dvScaleY;
+			dvBottom = dvY + (dvHeight/2.0f)*dvScaleY;
+		}
+
+		break;
+
+	case MD3DORG_TOPLEFT:
+		dvLeft = dvX;
+		dvTop = dvY;
+
+		if( dvScaleX == 1.0f ) {
+			dvRight = dvX + dvWidth;
+		} else {
+			dvRight = dvX + dvWidth*dvScaleX;
+		}
+		if( dvScaleY == 1.0f ) {
+			dvBottom = dvY + dvHeight;
+		} else {
+			dvBottom = dvY + dvHeight*dvScaleY;
+		}
+
+		break;
+	}
+
+	lpSprite->Vertices[0].x = dvLeft;
+	lpSprite->Vertices[0].y = dvTop;
+
+	lpSprite->Vertices[1].x = dvRight;
+	lpSprite->Vertices[1].y = dvTop;
+
+	lpSprite->Vertices[2].x = dvRight;
+	lpSprite->Vertices[2].y = dvBottom;
+
+	lpSprite->Vertices[3].x = dvLeft;
+	lpSprite->Vertices[3].y = dvBottom;
+	
+	// See if we have to rotate the sprite
+
+	if( dvRotate != 0.0f ) {
+		float sin_a = (float)sin(dvRotate);
+		float cos_a = (float)cos(dvRotate);
+
+		float xc = (dvRight+dvLeft)/2.0f;
+		float yc = (dvBottom+dvTop)/2.0f;
+		float x;
+		float y;
+		for( uint32_t i = 0; i < 4; i++ ) {
+			x = lpSprite->Vertices[i].x - xc;
+			y = lpSprite->Vertices[i].y - yc;
+			lpSprite->Vertices[i].x = x*cos_a - y*sin_a + xc;
+			lpSprite->Vertices[i].y = x*sin_a + y*cos_a + yc;
+		}
+	}
+
+	// If Z is enabled, set z values in the vertices
+	if( _bSpriteZEnable ) {
+		for( uint32_t i = 0; i < 4; i++ ) {
+			lpSprite->Vertices[i].z = _dvSpriteZ;
+		}
+	}
+
+	int Attributes = MAT_COLOR_MOD_DIFFUSE_TEXTURE1;
+
+	if( lpSprite->dwFlags & MD3DSP_USEALPHATEST ) {
+		Attributes |= MAT_ALPHA_MASK_TEXTURE1;
+		_renderer->setRenderState( RENDERSTATE_ALPHAREF, lpSprite->dwAlphaRef );
+	}
+
+	if( lpSprite->dwFlags & MD3DSP_USEALPHABLEND ) {
+		Attributes |= MAT_ALPHA_MOD_TEXTURE1;
+	}
+
+	if( !_bSpriteZEnable ) {
+		_renderer->setRenderState( RENDERSTATE_ZTEST, 0 );
+		_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
+	}
+
+	M3D_DRAW_COMMAND drawCommand;
+	_renderer->beginDrawCommand(drawCommand);
+
+	for (int i = 0; i < 4; i++)
+	{
+		drawCommand.addPosition(lpSprite->Vertices[i].x, lpSprite->Vertices[i].y, lpSprite->Vertices[i].z);
+		drawCommand.addDiffuseColor(
+			((lpSprite->Vertices[i].rgba >> 16) & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 8) & 0xFF),
+			(lpSprite->Vertices[i].rgba & 0xFF),
+			((lpSprite->Vertices[i].rgba >> 24) & 0xFF)
+		);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+		drawCommand.addUV(lpSprite->Vertices[i].u, lpSprite->Vertices[i].v);
+	}
+	drawCommand.addIndex(2, 1, 0);
+	drawCommand.addIndex(3, 2, 0);
+
+	_renderer->setMaterial(eMaterialMode(Attributes));
+	_renderer->endDrawCommand(drawCommand);
+
+	if( !_bSpriteZEnable ) {
+		_renderer->setRenderState( RENDERSTATE_ZTEST, 1 );
+		_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
+	}
+
+	return 0;
 }
 int cGraph3dDirect3D::DrawSpriteZ(uint32_t dwHandle,float dvX,float dvY,float dvZ, 
 						 uint32_t dwOrigin,float dvScaleX,float dvScaleY, 
 						 float dvRotate )
 {
-	return d3dDrawSpriteZ(dwHandle,dvX,dvY,dvZ,dwOrigin,dvScaleX,dvScaleY,dvRotate);
+	_dvSpriteZ = dvZ;
+	_bSpriteZEnable = true;
+
+	MD3DERROR hr;
+	hr = DrawSprite( dwHandle, dvX, dvY, dwOrigin, dvScaleX, dvScaleY, dvRotate );
+
+	_bSpriteZEnable = false;
+
+	return hr;
 }
+
 int cGraph3dDirect3D::ScreenShot(void *lpBuffer,uint32_t dwSize)
 {
-	return d3dScreenShot(lpBuffer,dwSize);
+	return 0;
 }
 int cGraph3dDirect3D::CreateBackBuffer()
 {
-	return d3dCreateBackBuffer();
+	return 0;
 }
 int cGraph3dDirect3D::ReleaseBackBuffer()
 {
-	return d3dReleaseBackBuffer();
+	return 0;
 }
 int cGraph3dDirect3D::GetBackBufferFormat(uint32_t *dwFormat)
 {
-	return d3dGetBackBufferFormat(dwFormat);
+	*dwFormat = MD3DBBFORMAT_RGB565;
+	return 1;
 }
 int cGraph3dDirect3D::LockBackBuffer(void **lplpSurface,uint32_t *lpdwPitch)
 {
-	return d3dLockBackBuffer(lplpSurface,lpdwPitch);
+	return _renderer->lockBackBuffer(lplpSurface,lpdwPitch);
 }
 int cGraph3dDirect3D::UnlockBackBuffer()
 {
-	return UnlockBackBuffer();
+	return _renderer->unlockBackBuffer();
 }
 int cGraph3dDirect3D::FlushBackBuffer(MD3DRECT *lprcRect)
 {
 	if(SwitchRenderScene>0) EndScene();
-	return d3dFlushBackBuffer(lprcRect);
+	return _renderer->flushBackBuffer(lprcRect);
 }
 int cGraph3dDirect3D::SetBackBufferColorKey(uint32_t dwColor)
 {
-	return d3dSetBackBufferColorKey(dwColor);
+	return 0;
 }
 int cGraph3dDirect3D::EnableBackBufferColorKey(bool bEnable)
 {
-	return d3dEnableBackBufferColorKey(bEnable);
+	return 0;
 }
 int cGraph3dDirect3D::QueryGammaSupport( MD3DGAMMASUPPORT *gmGammaSupport )
 {
@@ -636,72 +923,96 @@ int cGraph3dDirect3D::CalibrateGamma( DDGAMMARAMP *lpRampData )
 }
 int cGraph3dDirect3D::SetAdjustedGamma( float fRGamma, float fGGamma, float fBGamma )
 {
-	return d3dSetAdjustedGamma(fRGamma,fGGamma,fBGamma);
+	return 0;
 }
 int cGraph3dDirect3D::GetAdjustedGamma( float *pfRGamma, float *pfGGamma, float *pfBGamma )
 {
-	return d3dGetAdjustedGamma(pfRGamma,pfGGamma,pfBGamma);
+	return 0;
 }
 int cGraph3dDirect3D::SetGammaFxHighlight( float fRHilight, float fGHilight, float fBHilight )
 {
-	return d3dSetGammaFxHighlight(fRHilight,fGHilight,fBHilight);
+	return 0;
 }
 int cGraph3dDirect3D::GetGammaFxHighlight( float *pfRHilight, float *pfGHilight, float *pfBHilight )
 {
-	return d3dGetGammaFxHighlight(pfRHilight,pfGHilight,pfBHilight );
+	return 0;
 }
 int cGraph3dDirect3D::SetGammaFxShadow( float fRShadow, float fGShadow, float fBShadow )
 {
-	return d3dSetGammaFxShadow(fRShadow,fGShadow,fBShadow);
+	return 0;
 }
 int cGraph3dDirect3D::GetGammaFxShadow( float *pfRShadow, float *pfGShadow, float *pfBShadow )
 {
-	return d3dGetGammaFxShadow(pfRShadow,pfGShadow,pfBShadow);
+	return 0;
 }
 int cGraph3dDirect3D::GetWindowHandle( void **hWnd )
 {
-	return d3dGetWindowHandle(hWnd);
+	return 0;
 }
 int cGraph3dDirect3D::SetViewColor(int r,int g,int b,int a)
 {
 	assert(SwitchRenderScene);
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,2,1, 3,2,0 };
-	vFix[0].xe=(float)0; vFix[0].ye=(float)0; vFix[0].z=0.0001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)xScr; vFix[1].ye=(float)0; vFix[1].z=0.0001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)xScr; vFix[2].ye=(float)yScr; vFix[2].z=0.0001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)0; vFix[3].ye=(float)yScr; vFix[3].z=0.0001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
+
+	M3D_DRAW_COMMAND drawCommand;
+	_renderer->beginDrawCommand(drawCommand);
+
+	drawCommand.addPosition(0, 0, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(xScr, 0, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(xScr, yScr, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(0, yScr, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addIndex(0, 2, 1);
+	drawCommand.addIndex(3, 2, 0);
+
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,	D3DCULL_NONE ); 
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 );
+
+	_renderer->endDrawCommand(drawCommand);
+
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
 	return 0;
 }
 int cGraph3dDirect3D::DrawRectangle(int x,int y,int dx,int dy,int r,int g,int b,int a,int flag)
 { 
-	sVertexFix vFix[4];
-	sPolygonFix pFix[2]={ 0,1,2, 2,3,0 };
-	vFix[0].xe=(float)x; vFix[0].ye=(float)y; vFix[0].z=0.0001f; vFix[0].w=0.999f;
-	vFix[0].dr()=r; vFix[0].dg()=g; vFix[0].db()=b; vFix[0].da()=a;
-	vFix[1].xe=(float)(x+dx); vFix[1].ye=(float)y; vFix[1].z=0.0001f; vFix[1].w=0.999f;
-	vFix[1].dr()=r; vFix[1].dg()=g; vFix[1].db()=b; vFix[1].da()=a;
-	vFix[2].xe=(float)(x+dx); vFix[2].ye=(float)(y+dy); vFix[2].z=0.0001f; vFix[2].w=0.999f;
-	vFix[2].dr()=r; vFix[2].dg()=g; vFix[2].db()=b; vFix[2].da()=a;
-	vFix[3].xe=(float)x; vFix[3].ye=(float)(y+dy); vFix[3].z=0.0001f; vFix[3].w=0.999f;
-	vFix[3].dr()=r; vFix[3].dg()=g; vFix[3].db()=b; vFix[3].da()=a;
-	int FixFormatd3d=D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX1;
-	SetMaterial(MAT_NULL);
+	M3D_DRAW_COMMAND drawCommand;
+	_renderer->beginDrawCommand(drawCommand);
+
+	drawCommand.addPosition(x, y, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x+dx, y, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x+dx, y+dy, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addPosition(x, y+dy, 0.0001f);
+	drawCommand.addDiffuseColor(r, g, b, a);
+	drawCommand.addSpecularColor(0, 0, 0, 0);
+
+	drawCommand.addIndex(0, 1, 2);
+	drawCommand.addIndex(2, 3, 0);
+
 	SetMaterial(MAT_COLOR_MOD_DIFFUSE_ALPHA_MOD_DIFFUSE);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	false ); 
-	d3dTrianglesIndexed(FixFormatd3d,vFix,4,(unsigned short*)pFix,3*2);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	true ); 
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 0 ); 
+
+	_renderer->endDrawCommand(drawCommand);
+
+	_renderer->setRenderState( RENDERSTATE_ZWRITE, 1 );
 	return 0; 
 }
 int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
@@ -722,103 +1033,125 @@ int cGraph3dDirect3D::OutText(int x,int y,char *string,int r,int g,int b,int a)
 ////////////////////////// PRIVATE //////////////////////////
 void cGraph3dDirect3D::InitRenderState()
 {
-	d3dSetProjectionMatrixToIdentity();
+}
 
-	d3dSetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);  
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
+int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
+{
+	*pNumVideoMode = 6;
+	auto modes = new MD3DMODE[*pNumVideoMode];
 
-	d3dSetTextureStageState( 1, D3DTSS_TEXCOORDINDEX, 1);  
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 1, D3DTSS_COLORARG2, D3DTA_CURRENT );
-	d3dSetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE ); // хинт D3DTSS_COLORARG1==D3DTA_TEXTURE, иначе может не работать
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-	d3dSetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
+	modes[0].dx = 640;
+	modes[0].dy = 480;
+	modes[0].bitPerPixel = 32;
 
-	d3dSetTextureStageState( 2, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-	d3dSetTextureStageState( 2, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
+	modes[1].dx = 800;
+	modes[1].dy = 600;
+	modes[1].bitPerPixel = 32;
 
-    d3dSetTextureStageState( 0, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 0, D3DTSS_MIPFILTER, D3DTFP_NONE);
-    d3dSetTextureStageState( 1, D3DTSS_MINFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 1, D3DTSS_MAGFILTER, D3DTFN_LINEAR );
-	d3dSetTextureStageState( 1, D3DTSS_MIPFILTER, D3DTFP_NONE);
+	modes[2].dx = 1024;
+	modes[2].dy = 768;
+	modes[2].bitPerPixel = 32;
 
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE,true);
-	d3dSetRenderState( D3DRENDERSTATE_ANTIALIAS,D3DANTIALIAS_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE,1);
-	d3dSetRenderState( D3DRENDERSTATE_FILLMODE,D3DFILL_SOLID);
-	d3dSetRenderState( D3DRENDERSTATE_SHADEMODE,D3DSHADE_GOURAUD);
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,1);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_LASTPIXEL,true);
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA);
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA);
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_CW);
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE,D3DCULL_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_ZFUNC,D3DCMP_LESSEQUAL);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,1);	// 0
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL); //D3DCMP_ALWAYS
-	d3dSetRenderState( D3DRENDERSTATE_DITHERENABLE,true);
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGCOLOR,0x00000000);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEMODE,D3DFOG_NONE);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLESTART,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEEND,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGTABLEDENSITY,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGSTART,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGEND,0);
-	d3dSetRenderState( D3DRENDERSTATE_FOGDENSITY,0);
-	d3dSetRenderState( D3DRENDERSTATE_COLORKEYENABLE,0);
-	d3dSetRenderState( D3DRENDERSTATE_ZBIAS,0);
-	d3dSetRenderState( D3DRENDERSTATE_RANGEFOGENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREFACTOR,0x80FFFFFF);
+	modes[3].dx = 1152;
+	modes[3].dy = 864;
+	modes[3].bitPerPixel = 32;
 
-	d3dSetRenderState( D3DRENDERSTATE_CLIPPING,1);
-	d3dSetRenderState( D3DRENDERSTATE_LIGHTING,0);
-	
-	d3dSetRenderState( D3DRENDERSTATE_AMBIENT,false);
-	d3dSetRenderState( D3DRENDERSTATE_FOGVERTEXMODE,false);
-	d3dSetRenderState( D3DRENDERSTATE_COLORVERTEX,1);
-	d3dSetRenderState( D3DRENDERSTATE_COLORKEYBLENDENABLE,false);
-	d3dSetRenderState( D3DRENDERSTATE_DIFFUSEMATERIALSOURCE,D3DMCS_COLOR1);
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARMATERIALSOURCE,D3DMCS_COLOR2);
-	d3dSetRenderState( D3DRENDERSTATE_AMBIENTMATERIALSOURCE,D3DMCS_MATERIAL);
-	d3dSetRenderState( D3DRENDERSTATE_EMISSIVEMATERIALSOURCE,D3DMCS_MATERIAL);
-	d3dSetRenderState( D3DRENDERSTATE_VERTEXBLEND,D3DVBLEND_DISABLE);
-	d3dSetRenderState( D3DRENDERSTATE_CLIPPLANEENABLE,false);
-/*
-	d3dSetRenderState( D3DRENDERSTATE_SPECULARENABLE, FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_DITHERENABLE, TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_ZWRITEENABLE,	TRUE ); 
-	d3dSetRenderState( D3DRENDERSTATE_ZENABLE, D3DZB_TRUE );
-	d3dSetRenderState( D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL );
-	d3dSetRenderState( D3DRENDERSTATE_ZBIAS, 0 );
-	d3dSetRenderState( D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID ); 
-//	d3dSetRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_CW ); 
-	d3dSetRenderState( D3DRENDERSTATE_CULLMODE, D3DCULL_NONE ); 
-	d3dSetRenderState( D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD );
+	modes[4].dx = 1280;
+	modes[4].dy = 1024;
+	modes[4].bitPerPixel = 32;
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHATESTENABLE,FALSE );
-//	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_ALWAYS );
-//	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,0xFF );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAFUNC,D3DCMP_GREATEREQUAL );
-	d3dSetRenderState( D3DRENDERSTATE_ALPHAREF,1 );
+	modes[5].dx = 1600;
+	modes[5].dy = 1200;
+	modes[5].bitPerPixel = 32;
 
-	d3dSetRenderState( D3DRENDERSTATE_ALPHABLENDENABLE,FALSE );
-	d3dSetRenderState( D3DRENDERSTATE_SRCBLEND,D3DBLEND_SRCALPHA );
-	d3dSetRenderState( D3DRENDERSTATE_DESTBLEND,D3DBLEND_INVSRCALPHA );
+	*ppArray = modes;
 
-    d3dSetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
-    d3dSetTextureStageState(1,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
-*/
+	return 1;
+}
+
+int cGraph3dDirect3D::GetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData)
+{
+	return _renderer->get_texture_manager().getTextureFormatData(dwTexFormatID, pData) != MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetSpriteRect(uint32_t dwHandle, float dvLeft, float dvTop, float dvRight, float dvBottom)
+{
+	// Check if the handle is valid
+	assert( dwHandle > 0 && dwHandle < _dwSpriteSlotsUsed );
+	assert( (_lpSpriteSlots[dwHandle].dwHandle & 0x7FFFFFFF) == dwHandle );
+
+	// Make sure the coordinates are valid
+	assert( dvLeft <= dvRight );
+	assert( dvTop <= dvBottom );
+	assert( dvLeft >= 0.0f && dvLeft <= 1.0f );
+	assert( dvTop >= 0.0f && dvTop <= 1.0f );
+	assert( dvRight >= 0.0f && dvRight <= 1.0f );
+	assert( dvBottom >= 0.0f && dvBottom <= 1.0f );
+
+	// Pointer to this sprite
+	TSpriteSlot *lpSprite = &_lpSpriteSlots[dwHandle];
+
+	// Change texture coordinates to the rectangle specified
+	lpSprite->Vertices[0].u = dvLeft;
+	lpSprite->Vertices[0].v = dvTop;
+	lpSprite->Vertices[1].u = dvRight;
+	lpSprite->Vertices[1].v = dvTop;
+	lpSprite->Vertices[2].u = dvRight;
+	lpSprite->Vertices[2].v = dvBottom;
+	lpSprite->Vertices[3].u = dvLeft;
+	lpSprite->Vertices[3].v = dvBottom;
+
+	return 0;
+}
+
+int cGraph3dDirect3D::Clear(uint32_t dwColor)
+{
+	return _renderer->clear(dwColor) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::Flip(bool bWaitVerticalBlank)
+{
+	return _renderer->flip(bWaitVerticalBlank) == MD3D_OK;
+}
+
+int cGraph3dDirect3D::SetClipRect(const MD3DRECT &lprcClipRect)
+{
+	return _renderer->setClipRect(lprcClipRect);
+}
+
+uint32_t cGraph3dDirect3D::FindUnusedSlot()
+{
+	uint32_t dwSlot;
+
+	for( dwSlot = 1; dwSlot < _dwSpriteSlotsUsed; dwSlot++ )
+	{
+		if( 0 == _lpSpriteSlots[dwSlot].dwHandle )
+			return dwSlot;	// Found
+	}
+
+	// Not found.
+	return 0;
+}
+
+uint32_t cGraph3dDirect3D::CreateNewSlot()
+{
+	if( _dwSpriteSlotsUsed < _dwSpriteSlotsCount )
+	{
+		// We still have free space
+		_dwSpriteSlotsUsed++;
+		return _dwSpriteSlotsUsed-1;
+	}
+
+	// Else we need to expand the array
+
+	assert( NULL != ( _lpSpriteSlots = (TSpriteSlot *)realloc( _lpSpriteSlots, 
+		 (_dwSpriteSlotsCount+SLOTS_EXPAND_CHUNK)*sizeof(TSpriteSlot) ) ) );
+
+	// Clear the newly allocated block
+	memset( _lpSpriteSlots + _dwSpriteSlotsCount, 0, SLOTS_EXPAND_CHUNK*sizeof(TSpriteSlot) );
+
+	_dwSpriteSlotsCount += SLOTS_EXPAND_CHUNK;
+
+	_dwSpriteSlotsUsed++;
+	return _dwSpriteSlotsUsed-1;
 }

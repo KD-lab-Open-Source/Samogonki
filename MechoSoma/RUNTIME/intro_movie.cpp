@@ -8,8 +8,6 @@
 #include "sound.h"
 #include "xsound.h"
 
-#include "Md3d.h"
-
 #include "iText.h"
 #include "HFONT.H"
 
@@ -139,7 +137,7 @@ void mchIntroMovieImage::load_image(int sl)
 
 	for(i = 0; i < IMG_PY; i ++){
 		for(j = 0; j < IMG_PX; j ++){
-			d3dLockSprite(im_d3dSprite[j + i * IMG_PX + slot * IMG_PX * IMG_PY],&spr_buf,&pitch);
+			gb_IGraph3d->LockSprite(im_d3dSprite[j + i * IMG_PX + slot * IMG_PX * IMG_PY],&spr_buf,&pitch);
 			uspr_buf = (unsigned short*)spr_buf;
 
 			idx = 0;
@@ -159,7 +157,7 @@ void mchIntroMovieImage::load_image(int sl)
 				idx += 256;
 				idx0 += SX;
 			}
-			d3dUnlockSprite(im_d3dSprite[j + i * IMG_PX + slot * IMG_PX * IMG_PY]);
+			gb_IGraph3d->UnlockSprite(im_d3dSprite[j + i * IMG_PX + slot * IMG_PX * IMG_PY]);
 		}
 	}
 
@@ -426,14 +424,14 @@ void mchIntroMovieDispatcher::init(void)
 	delete root;
 
 	int i;
-	if(d3dGetTextureFormatData(im_d3dTexMode,&im_d3dTexFmt)){
+	if(gb_IGraph3d->GetTextureFormatData(im_d3dTexMode,&im_d3dTexFmt)){
 		im_d3dTexMode = D3DTEXFMT_RGB555;
-		if(d3dGetTextureFormatData(im_d3dTexMode,&im_d3dTexFmt))
+		if(gb_IGraph3d->GetTextureFormatData(im_d3dTexMode,&im_d3dTexFmt))
 			ErrH.Abort("Error: Texture format not supported");
 	}
 
 	for(i = 0; i < IMG_PX * IMG_PY * 2; i ++)
-		d3dCreateSprite(256,256,im_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&im_d3dSprite[i]);
+		gb_IGraph3d->CreateSprite(256,256,im_d3dTexMode,MD3DSP_USEALPHABLEND | MD3DSP_USEALPHATEST,&im_d3dSprite[i]);
 }
 
 void mchIntroMovieDispatcher::text_quant(int dt)
@@ -487,7 +485,7 @@ mchIntroMovieDispatcher::~mchIntroMovieDispatcher(void)
 
 	int i;
 	for(i = 0; i < IMG_PX * IMG_PY * 2; i ++)
-		d3dDeleteSprite(im_d3dSprite[i]);
+		gb_IGraph3d->DeleteSprite(im_d3dSprite[i]);
 }
 
 void mchIntroMovieDispatcher::start(void)
@@ -781,13 +779,13 @@ void im_d3dOutSprite(float x,float y,float sx,float sy,int spr,int col,int alpha
 {
 	int mode = (center_flag) ? MD3DORG_CENTER : MD3DORG_TOPLEFT;
 
-	d3dSetSpriteMode(spr,MD3DSP_COLORFACTOR,col);
-	d3dSetSpriteMode(spr,MD3DSP_ALPHAFACTOR,alpha);
-	d3dSetSpriteMode(spr,MD3DSP_ALPHAREF,0);
+	gb_IGraph3d->SetSpriteMode(spr,MD3DSP_COLORFACTOR,col);
+	gb_IGraph3d->SetSpriteMode(spr,MD3DSP_ALPHAFACTOR,alpha);
+	gb_IGraph3d->SetSpriteMode(spr,MD3DSP_ALPHAREF,0);
 
-	d3dSetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_CLAMP);
-	d3dDrawSprite(spr,(float)x,(float)y,mode,sx,sy,rotate);
-	d3dSetTextureStageState(0,D3DTSS_ADDRESS,D3DTADDRESS_WRAP);
+	gb_IGraph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS, TADDRESS_CLAMP);
+	gb_IGraph3d->DrawSprite(spr,(float)x,(float)y,mode,sx,sy,rotate);
+	gb_IGraph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS, TADDRESS_WRAP);
 }
 
 void im_d3dSaveSprite(int spr)

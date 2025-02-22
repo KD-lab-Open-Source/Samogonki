@@ -6,16 +6,19 @@ uniform scene_vs_params {
 };
 
 in vec3 pos;
-in vec4 color0;
-in vec2 uv0;
+in vec4 diffuse_in;
+in vec4 specular_in;
+in vec2 uv_in;
 
-out vec4 color;
+out vec4 diffuse_color;
+out vec4 specular_color;
 out vec2 uv;
 
 void main() {
     gl_Position = projection_matrix * vec4(pos.x, pos.y, pos.z, 1.0f);
-    color = color0;
-    uv = uv0;
+    diffuse_color = diffuse_in;
+    specular_color = specular_in;
+    uv = uv_in;
 }
 @end
 
@@ -27,7 +30,8 @@ uniform scene_fs_params {
     int alpha_reference;
 };
 
-in vec4 color;
+in vec4 diffuse_color;
+in vec4 specular_color;
 in vec2 uv;
 
 uniform texture2D texture_1;
@@ -36,7 +40,9 @@ uniform texture2D texture_2;
 uniform sampler sampler_1;
 
 out vec4 result_color;
+
 void main() {
+    vec4 color = vec4(diffuse_color.rgb + specular_color.rgb, diffuse_color.a);
     // s_repeat
     switch (color_operation_1) {
         case 0: /* Disable */ {

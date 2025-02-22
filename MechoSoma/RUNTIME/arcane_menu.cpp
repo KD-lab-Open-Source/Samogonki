@@ -36,8 +36,6 @@
 
 #include "savegame.h"
 
-#include "Md3d.h"
-
 #include "arcane_menu_d3d.h"
 #include "parts_pool.h"
 

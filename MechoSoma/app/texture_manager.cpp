@@ -189,7 +189,7 @@ TextureManager::TextureManager() {
   }
 }
 
-MD3DERROR TextureManager::d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData) {
+MD3DERROR TextureManager::getTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData) {
   for (const auto& format : texture_formats) {
     if (format.dwFormatID == dwTexFormatID && format.bSupported) {
       pData->dwTotalBitCount = format.dwRGBBitCount;
@@ -216,7 +216,7 @@ MD3DERROR TextureManager::d3dGetTextureFormatData(uint32_t dwTexFormatID, M3DTEX
   return MD3DERR_ILLEGALCALL;
 }
 
-MD3DERROR TextureManager::d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle) {
+MD3DERROR TextureManager::createTexture(uint32_t dwWidth, uint32_t dwHeight, uint32_t dwTexFormatID, uint32_t* lpdwHandle) {
   assert(_textures.size() < max_textures_count);
   assert(dwWidth == dwHeight);
   assert(GetMaskBitCount(dwWidth) == 1);
@@ -227,6 +227,7 @@ MD3DERROR TextureManager::d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, 
   auto p = std::find_if(texture_formats.cbegin(), texture_formats.cend(),
                         [&](const auto& format) { return format.dwFormatID == dwTexFormatID && format.bSupported; });
   if (p == texture_formats.cend()) {
+    printf("TextureManager::createTexture: unknown format=%x\n", dwTexFormatID);
     return MD3DERR_ILLEGALCALL;
   }
 
@@ -256,7 +257,7 @@ MD3DERROR TextureManager::d3dCreateTexture(uint32_t dwWidth, uint32_t dwHeight, 
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dDeleteTexture(uint32_t dwHandle) {
+MD3DERROR TextureManager::deleteTexture(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -267,7 +268,7 @@ MD3DERROR TextureManager::d3dDeleteTexture(uint32_t dwHandle) {
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dLockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch) {
+MD3DERROR TextureManager::lockTexture(uint32_t dwHandle, void** lplpTexture, uint32_t* lpPitch) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -285,12 +286,12 @@ MD3DERROR TextureManager::d3dLockTexture(uint32_t dwHandle, void** lplpTexture, 
   return MD3D_OK;
 }
 
-MD3DERROR TextureManager::d3dLockTexture(uint32_t dwHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwRight, uint32_t dwBottom,
+MD3DERROR TextureManager::lockTexture(uint32_t dwHandle, uint32_t dwLeft, uint32_t dwTop, uint32_t dwRight, uint32_t dwBottom,
                                          void** lplpTexture, uint32_t* lpPitch) {
-  return d3dLockTexture(dwHandle, lplpTexture, lpPitch);
+  return lockTexture(dwHandle, lplpTexture, lpPitch);
 }
 
-MD3DERROR TextureManager::d3dUnlockTexture(uint32_t dwHandle) {
+MD3DERROR TextureManager::unlockTexture(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {

@@ -98,10 +98,12 @@ int main(int argc, char const *argv[]) {
   }
 
   using LanguagePair = std::pair<std::string_view, std::string_view>;
-  constexpr std::array<LanguagePair, 4> map{
-    LanguagePair("english", "en"),
+  constexpr std::array<LanguagePair, 6> map{
     LanguagePair("czech", "cz"),
+    LanguagePair("english", "en"),
+    LanguagePair("french", "fr"),
     LanguagePair("italian", "it"),
+    LanguagePair("lithuanian", "lt"),
     LanguagePair("russian", "ru")
   };
 

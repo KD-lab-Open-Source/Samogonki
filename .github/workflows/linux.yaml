@@ -50,7 +50,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build -j3 --config ${{env.BUILD_TYPE}}
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: moonshine-runners-linux
         path: build/MechoSoma/moonshine-runners

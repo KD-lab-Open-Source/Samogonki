@@ -14,6 +14,11 @@ The game is compatible with original release from 1C.
 
 Community in telegram: https://t.me/SamogonkiGame
 
+## Where to play
+
+* Windows/Linux/MacOs [Steam](https://store.steampowered.com/app/2599800/_/)
+* Web [GamePix](https://www.gamepix.com/play/moonshine-runners-samogonki)
+
 ## Building
 
 Look into buildscripts:

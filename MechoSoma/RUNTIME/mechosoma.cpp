@@ -68,8 +68,6 @@
 
 #define DBGCHECK
 
-#include "Md3d.h"
-
 #ifdef GPX
 #include <c/gamepix.h>
 #endif
@@ -901,12 +899,12 @@ int GameQuantRTO::Quant(void)
 {
 	static int is_active = -1;
 
-	if(is_active != d3dIsActive()){
+	if(is_active != gb_IGraph3d->IsActive()){
 		XKey.clear();
 		KeyBuf -> clear();
 	}
 
-	is_active = d3dIsActive();
+	is_active = gb_IGraph3d->IsActive();
 
 	if(mchA_isGammaSeqActive() && mchA_GetGammaSeqMode() == GS_HIDE_LOADING_IMAGE){
 //		gb_IGraph3d->BeginScene();
@@ -2637,7 +2635,7 @@ void ShowImageRTO::Init(int id)
 		mch_imgVideoObj.Open(fileNames[curFile]);
 
 		hWnd=XGR_hWnd;
-		if(!hWnd) d3dGetWindowHandle(&hWnd);
+		if(!hWnd) gb_IGraph3d->GetWindowHandle(&hWnd);
 
 		if(Flags[curFile] & IMG_RTO_AVI_FULLSCREEN){
 			mch_imgVideoObj.SetWin(hWnd,0,0,XGR_MAXX,XGR_MAXY);
@@ -2719,7 +2717,7 @@ int ShowImageRTO::Quant(void)
 		else 
 			SetGammaSeq(-1);
 
-		if(d3dIsActive()){
+		if(gb_IGraph3d->IsActive()){
 			if(!(Flags[curFile] & IMG_RTO_NO_IMAGE) || (Flags[curFile] & IMG_RTO_TEXT)){
 				if(Flags[curFile] & IMG_RTO_SCROLL_TEXT){
 					mchA_d3dLockBackBuffer();
@@ -2912,7 +2910,7 @@ ShowImageRTO::ShowImageRTO(void)
 
 void mchRestore(void)
 {
-	d3dFlipToGdiSurface();
+//	d3dFlipToGdiSurface();
 	mchFinitSound();
 	if(gb_IVisGeneric)
 	{
@@ -3355,7 +3353,7 @@ void mchPBEM_LoadingQuant(void)
 			}
 		}
 
-		if(d3dIsActive()){
+		if(gb_IGraph3d->IsActive()){
 /*			if(mchPBEM_CheckFlag(PBEM_SHOW_GAME)){
 				mchDrawQuant();
 			}
@@ -3523,7 +3521,7 @@ int LoadingRTO::Quant(void)
 
 	v = 255 - v;
 
-	if(d3dIsActive())
+	if(gb_IGraph3d->IsActive())
 		mchA_d3dFlushBackBuffer(0,0,XGR_MAXX,XGR_MAXY);
 
 // TODO: @caiiiycuk invesitigate this
@@ -3665,7 +3663,7 @@ int IntroMovieRTO::Quant(void)
 {
 	int k,ret = 0;
 
-	if(d3dIsActive()){
+	if(gb_IGraph3d->IsActive()){
 		ret = mch_introMovieD -> quant();
 
 		gb_IGraph3d->Flush();

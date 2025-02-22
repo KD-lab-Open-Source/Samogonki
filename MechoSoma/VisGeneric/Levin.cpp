@@ -3,6 +3,7 @@
 #include "Levin.h"
 #include "Unknown.h"
 #include "BaseDefine.h"
+#include "RenderDevice.h"
 
 #ifdef _MECHOSOMA_
 #include "mch_common.h" // For far target
@@ -20,7 +21,6 @@ void cLevin::Draw(cUnknownClass *UCameraList,int var)
 	{
 		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
 		cCamera *Camera=(cCamera*)CameraArray[nCamera];
-		P3D->SetClippingPlane(Camera);
 		cConvertor ConvertorObjectToScreen;
 		Camera->BuildMatrix(ConvertorObjectToScreen.GetMatrix(),Pos);
 		ConvertorObjectToScreen.BuildMatrix();
@@ -34,7 +34,10 @@ void cLevin::Draw(cUnknownClass *UCameraList,int var)
 		width.normalize(pePos.z*0.5f);
 		int RenderAttribute=RENDER_COLOR_MOD_DIFFUSE;
 		if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) RenderAttribute|=RENDER_CLIPPING3D;
-		P3D->InitFix(RenderAttribute);
+
+		RenderDevice->GetIGraph3d()->BeginDrawCommand(DrawCommand);
+		CurrentNumberPoint = 0;
+
 		switch(var)
 		{
 			case 1:
@@ -46,7 +49,8 @@ void cLevin::Draw(cUnknownClass *UCameraList,int var)
 			default: 
 				ErrAbort("Error: cLevin::Draw()\r\nUnknown var");
 		}
-		P3D->Draw((cUnknownClass*)Camera,(cUnknownClass*)RenderDevice);
+
+		RenderDevice->GetIGraph3d()->EndDrawCommand(DrawCommand);
 	}
 }
 void cLevin::GenerationLevin1(const Vect3f &pos,const Vect3f &dpos,const Vect2f &width,int level,int count)
@@ -57,19 +61,26 @@ void cLevin::GenerationLevin1(const Vect3f &pos,const Vect3f &dpos,const Vect2f 
 	{
 		int	r=Color.GetR(),g=Color.GetG(),b=Color.GetB(),a=Color.GetA();
 		assert(r<=255&&g<=255&&b<=255&&a<=255);
-		int NumberPoint=P3D->PointAttribute.length()=(P3D->PointFix.length()+=2);
+
+		CurrentNumberPoint += 2;
 		float div_zv=1/pos.z;
 		Vect3f pe(pos.x*div_zv+width.x,pos.y*div_zv+width.y,div_zv);
-		P3D->SetPointFix(NumberPoint-2,pe, r,g,b,a, pos);
+
+		DrawCommand.addPosition(pe.x, pe.y, pe.z);
+		DrawCommand.addDiffuseColor(r, g, b, a);
+		DrawCommand.addSpecularColor(0, 0, 0, 0);
+
 		pe.set(pos.x*div_zv-width.x,pos.y*div_zv-width.y,div_zv);
-		P3D->SetPointFix(NumberPoint-1,pe, r,g,b,a, pos);
-		if((P3D->PointAttribute[NumberPoint-2].clip&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))==0) 
-		if((P3D->PointAttribute[NumberPoint-1].clip&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))==0) 
-		if(NumberPoint>=4)
+
+		DrawCommand.addPosition(pe.x, pe.y, pe.z);
+		DrawCommand.addDiffuseColor(r, g, b, a);
+		DrawCommand.addSpecularColor(0, 0, 0, 0);
+
+		if(CurrentNumberPoint>=4)
 		{
-			P3D->AddPolygonFixTestPointFix(NumberPoint-2,NumberPoint-3,NumberPoint-1);
-			P3D->AddPolygonFixTestPointFix(NumberPoint-2,NumberPoint-4,NumberPoint-3);
-		}	
+			DrawCommand.addIndex(CurrentNumberPoint-2, CurrentNumberPoint-3, CurrentNumberPoint-1);
+			DrawCommand.addIndex(CurrentNumberPoint-2, CurrentNumberPoint-4, CurrentNumberPoint-3);
+		}
 	}
 	Vect3f posNew(
 		pos.x+step*dpos.x+(random_f()-0.5f)*pAberration.x,
@@ -95,18 +106,25 @@ void cLevin::GenerationLevin4(const Vect3f &pos,const Vect3f &dpos,const Vect2f 
 	{
 		int	r=Color.GetR(),g=Color.GetG(),b=Color.GetB(),a=Color.GetA();
 		assert(r<=255&&g<=255&&b<=255&&a<=255);
-		int NumberPoint=P3D->PointAttribute.length()=(P3D->PointFix.length()+=2);
+
+		CurrentNumberPoint += 2;
 		float div_zv=1/pos.z;
 		Vect3f pe(pos.x*div_zv+width.x,pos.y*div_zv+width.y,div_zv);
-		P3D->SetPointFix(NumberPoint-2,pe, r,g,b,a, pos);
+
+		DrawCommand.addPosition(pe.x, pe.y, pe.z);
+		DrawCommand.addDiffuseColor(r, g, b, a);
+		DrawCommand.addSpecularColor(0, 0, 0, 0);
+
 		pe.set(pos.x*div_zv-width.x,pos.y*div_zv-width.y,div_zv);
-		P3D->SetPointFix(NumberPoint-1,pe, r,g,b,a, pos);
-		if((P3D->PointAttribute[NumberPoint-2].clip&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))==0) 
-		if((P3D->PointAttribute[NumberPoint-1].clip&(CLIP_XMIN|CLIP_XMAX|CLIP_YMIN|CLIP_YMAX|CLIP_ZMIN|CLIP_ZMAX))==0) 
-		if(NumberPoint>=4)
+
+		DrawCommand.addPosition(pe.x, pe.y, pe.z);
+		DrawCommand.addDiffuseColor(r, g, b, a);
+		DrawCommand.addSpecularColor(0, 0, 0, 0);
+
+		if(CurrentNumberPoint>=4)
 		{
-			P3D->AddPolygonFixTestPointFix(NumberPoint-2,NumberPoint-3,NumberPoint-1);
-			P3D->AddPolygonFixTestPointFix(NumberPoint-2,NumberPoint-4,NumberPoint-3);
+			DrawCommand.addIndex(CurrentNumberPoint-2, CurrentNumberPoint-3, CurrentNumberPoint-1);
+			DrawCommand.addIndex(CurrentNumberPoint-2, CurrentNumberPoint-4, CurrentNumberPoint-3);
 		}
 	}
 	Vect3f posNew(

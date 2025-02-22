@@ -10,7 +10,6 @@
 #include "back_buffer.h"
 #include "offscreen_buffer.h"
 #include "texture_manager.h"
-#include "vertex_type.h"
 #include "xgraph.h"
 #include "xtool.h"
 
@@ -80,7 +79,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     .depth_format = SG_PIXELFORMAT_DEPTH
   };
   sg_setup(sg_desc {
-    .buffer_pool_size = 8,
+    .buffer_pool_size = 9,
     .image_pool_size = TextureManager::max_textures_count,
     .shader_pool_size = 3,
     .pipeline_pool_size = 1,
@@ -125,9 +124,18 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
-    _color_buffer.resize(max_vertex_count * 4);
-    sg_color_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _color_buffer.size() * sizeof(float),
+    _diffuse_color_buffer.resize(max_vertex_count * 4);
+    sg_diffuse_color_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = _diffuse_color_buffer.size() * sizeof(float),
+        .type = SG_BUFFERTYPE_VERTEXBUFFER,
+        .usage = SG_USAGE_DYNAMIC,
+    });
+  }
+
+  {
+    _specular_color_buffer.resize(max_vertex_count * 4);
+    sg_specular_color_buffer = sg_make_buffer(sg_buffer_desc{
+        .size = _specular_color_buffer.size() * sizeof(float),
         .type = SG_BUFFERTYPE_VERTEXBUFFER,
         .usage = SG_USAGE_DYNAMIC,
     });
@@ -219,7 +227,12 @@ void Renderer::setVideoMode(int width, int height, bool isFullScreen) {
   _backBuffer = std::make_unique<BackBuffer>(width, height);
 }
 
-MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
+bool Renderer::isInScene() const
+{
+  return _is_in_scene;
+}
+
+MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   _offscreenBuffer->flush();
   SDL_GL_SwapWindow(_window);
@@ -229,24 +242,27 @@ MD3DERROR Renderer::d3dFlip(bool WaitVerticalBlank) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetClipRect(const MD3DRECT &lprcClipRect) {
-  _render_state.set_viewport(lprcClipRect);
+MD3DERROR Renderer::setClipRect(const MD3DRECT &lprcClipRect) {
+  _render_state.viewport = lprcClipRect;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dResetClipRect() {
-  _render_state.reset_viewport();
+MD3DERROR Renderer::resetClipRect() {
+  _render_state.viewport = std::nullopt;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dBeginScene() {
+MD3DERROR Renderer::beginScene() {
   _commands.clear();
-  _render_state.reset_texture_stage();
+  _render_state = RenderState();
   _texture_manager->delete_textures();
+  _is_in_scene = true;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dEndScene() {
+MD3DERROR Renderer::endScene() {
+  _is_in_scene = false;
+
   if (_commands.empty()) {
     return MD3D_OK;
   }
@@ -262,9 +278,13 @@ MD3DERROR Renderer::d3dEndScene() {
       .ptr = _position_buffer.data(),
       .size = _position_buffer.size() * sizeof(float),
   });
-  sg_update_buffer(sg_color_buffer, sg_range{
-      .ptr = _color_buffer.data(),
-      .size = _color_buffer.size() * sizeof(float),
+  sg_update_buffer(sg_diffuse_color_buffer, sg_range{
+      .ptr = _diffuse_color_buffer.data(),
+      .size = _diffuse_color_buffer.size() * sizeof(float),
+  });
+  sg_update_buffer(sg_specular_color_buffer, sg_range{
+      .ptr = _specular_color_buffer.data(),
+      .size = _specular_color_buffer.size() * sizeof(float),
   });
   sg_update_buffer(sg_uv_buffer, sg_range{
       .ptr = _uv_buffer.data(),
@@ -276,6 +296,10 @@ MD3DERROR Renderer::d3dEndScene() {
   });
 
   for (const auto& command : _commands) {
+    if (command.index_buffer_view.length == 0) {
+      continue;
+    }
+
     sg_pipeline_desc pipeline = {};
     sg_bindings bindings = {};
 
@@ -283,56 +307,41 @@ MD3DERROR Renderer::d3dEndScene() {
     pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
 
     auto vs_params = scene_vs_params_t {};
-    const auto m = command.render_state.get_projection_matrix();
+    const auto m = command.render_state.projection_matrix;
     if (m) {
       std::copy(&m->_11, &m->_11 + 16, vs_params.projection_matrix);
     } else {
       std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), vs_params.projection_matrix);
     }
 
-    const auto viewport = command.render_state.get_viewport();
+    const auto viewport = command.render_state.viewport;
     if (viewport) {
       sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
     } else {
       sg_apply_viewport(0, 0, _offscreenBuffer->getWidth(), _offscreenBuffer->getHeight(), true);
     }
 
-    switch (command.render_state.get_option(D3DRENDERSTATE_CULLMODE)) {
-      case D3DCULL_CW: {
-        pipeline.cull_mode = SG_CULLMODE_BACK;
-        pipeline.face_winding = SG_FACEWINDING_CCW;
-        break;
-      }
+    pipeline.cull_mode = SG_CULLMODE_BACK;
+    pipeline.face_winding = SG_FACEWINDING_CCW;
 
-      case D3DCULL_NONE: {
-        pipeline.cull_mode = SG_CULLMODE_NONE;
-        pipeline.face_winding = SG_FACEWINDING_CCW;
-        break;
-      }
-
-      default:
-        break;
-    }
-
-    pipeline.depth.write_enabled = command.render_state.get_option(D3DRENDERSTATE_ZWRITEENABLE);
+    pipeline.depth.write_enabled = command.render_state.is_depth_write_enabled;
     pipeline.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
 
-    if (command.render_state.get_option(D3DRENDERSTATE_ALPHABLENDENABLE)) {
+    if (command.render_state.is_alpha_blend_enabled) {
       pipeline.colors[0].blend.enabled = true;
 
-      const auto source_blend = command.render_state.get_option(D3DRENDERSTATE_SRCBLEND);
-      switch (source_blend) {
-        case D3DBLEND_SRCALPHA:
+      switch (command.render_state.source_blend_mode) {
+        case BLEND_SRCALPHA:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
           break;
 
-        case D3DBLEND_INVSRCALPHA:
+        case BLEND_INVSRCALPHA:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           break;
 
-        case D3DBLEND_ONE:
+        case BLEND_ONE:
           pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE;
           pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
           break;
@@ -341,19 +350,18 @@ MD3DERROR Renderer::d3dEndScene() {
           break;
       }
 
-      const auto destination_blend = command.render_state.get_option(D3DRENDERSTATE_DESTBLEND);
-      switch (destination_blend) {
-        case D3DBLEND_SRCALPHA:
+      switch (command.render_state.destination_blend_mode) {
+        case BLEND_SRCALPHA:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
           break;
 
-        case D3DBLEND_INVSRCALPHA:
+        case BLEND_INVSRCALPHA:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
           break;
 
-        case D3DBLEND_ONE:
+        case BLEND_ONE:
           pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE;
           pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
           break;
@@ -363,13 +371,10 @@ MD3DERROR Renderer::d3dEndScene() {
       }
     }
 
-    const auto alpha_test_enabled = command.render_state.get_option(D3DRENDERSTATE_ALPHATESTENABLE);
-    const auto alpha_reference = command.render_state.get_option(D3DRENDERSTATE_ALPHAREF);
-
     for (uint32_t i = 0; i < 2; i++) {
       bindings.fs.images[i] = _nullTexture;
 
-      auto texture_handle = command.render_state.get_texture(i);
+      auto texture_handle = command.render_state.textures[i];
       if (texture_handle) {
         auto texture = _texture_manager->get(*texture_handle);
         if (texture != nullptr) {
@@ -378,78 +383,59 @@ MD3DERROR Renderer::d3dEndScene() {
       }
     }
 
-    const auto texture_address = command.render_state.get_texture_stage_state(0, D3DTSS_ADDRESS);
-    if (texture_address) {
-      switch (*texture_address) {
-        case D3DTADDRESS_CLAMP:
-          bindings.fs.samplers[0] = _clamp_sampler;
-          break;
+    switch (command.render_state.texture_address) {
+      case TADDRESS_CLAMP:
+        bindings.fs.samplers[0] = _clamp_sampler;
+        break;
 
-        case D3DTADDRESS_WRAP:
-          bindings.fs.samplers[0] = _repeat_sampler;
-          break;
+      case TADDRESS_WRAP:
+        bindings.fs.samplers[0] = _repeat_sampler;
+        break;
 
-        default:
-          break;
-      }
-    } else {
-      bindings.fs.samplers[0] = _repeat_sampler;
+      default:
+        bindings.fs.samplers[0] = _repeat_sampler;
+        break;
     }
 
-    auto parameters = command.render_state.get_fragment_shader_parameters();
     auto fs_params = scene_fs_params_t{
-        .color_operation_1 = (int) parameters.color_operation_1,
-        .color_operation_2 = (int) parameters.color_operation_2,
-        .alpha_test_enabled = (int) alpha_test_enabled,
-        .alpha_reference = (int) alpha_reference
+        .color_operation_1 = command.render_state.color_operation1,
+        .color_operation_2 = command.render_state.color_operation2,
+        .alpha_test_enabled = command.render_state.is_alpha_test_enabled,
+        .alpha_reference = command.render_state.alpha_reference
     };
 
     pipeline.layout.attrs[ATTR_scene_vs_pos].buffer_index = 0;
     pipeline.layout.attrs[ATTR_scene_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
 
-    pipeline.layout.attrs[ATTR_scene_vs_color0].buffer_index = 1;
-    pipeline.layout.attrs[ATTR_scene_vs_color0].format = SG_VERTEXFORMAT_FLOAT4;
+    pipeline.layout.attrs[ATTR_scene_vs_diffuse_in].buffer_index = 1;
+    pipeline.layout.attrs[ATTR_scene_vs_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
 
-    pipeline.layout.attrs[ATTR_scene_vs_uv0].buffer_index = 2;
-    pipeline.layout.attrs[ATTR_scene_vs_uv0].format = SG_VERTEXFORMAT_FLOAT2;
+    pipeline.layout.attrs[ATTR_scene_vs_specular_in].buffer_index = 2;
+    pipeline.layout.attrs[ATTR_scene_vs_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
+
+    pipeline.layout.attrs[ATTR_scene_vs_uv_in].buffer_index = 3;
+    pipeline.layout.attrs[ATTR_scene_vs_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
 
     bindings.vertex_buffers[0] = sg_position_buffer;
-    bindings.vertex_buffers[1] = sg_color_buffer;
-    bindings.vertex_buffers[2] = sg_uv_buffer;
+    bindings.vertex_buffers[1] = sg_diffuse_color_buffer;
+    bindings.vertex_buffers[2] = sg_specular_color_buffer;
+    bindings.vertex_buffers[3] = sg_uv_buffer;
 
-    if (command.index_buffer_view.length == 0) {
-      const auto count = command.vertex_buffer_view.length;
-      const auto base_element = command.vertex_buffer_view.offset;
-      assert(count > 0);
+    const auto count = command.index_buffer_view.length;
+    const auto base_element = command.index_buffer_view.offset;
 
-      bindings.vertex_buffer_offsets[0] = 0;
+    pipeline.index_type = SG_INDEXTYPE_UINT32;
+    bindings.index_buffer = sg_index_buffer;
+    bindings.index_buffer_offset = 0;
 
-      auto pip = sg_make_pipeline(pipeline);
-      sg_apply_pipeline(pip);
-      sg_apply_bindings(bindings);
-      sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_scene_vs_params, SG_RANGE(vs_params));
-      sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_scene_fs_params, SG_RANGE(fs_params));
+    auto pip = sg_make_pipeline(pipeline);
+    sg_apply_pipeline(pip);
+    sg_apply_bindings(bindings);
+    sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_scene_vs_params, SG_RANGE(vs_params));
+    sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_scene_fs_params, SG_RANGE(fs_params));
 
-      sg_draw(base_element, count, 1);
-      sg_destroy_pipeline(pip);
-    } else {
-      const auto count = command.index_buffer_view.length;
-      const auto base_element = command.index_buffer_view.offset; // * sizeof(uint32_t);
-      assert(count > 0);
-
-      pipeline.index_type = SG_INDEXTYPE_UINT32;
-      bindings.index_buffer = sg_index_buffer;
-      bindings.index_buffer_offset = 0;
-
-      auto pip = sg_make_pipeline(pipeline);
-      sg_apply_pipeline(pip);
-      sg_apply_bindings(bindings);
-      sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_scene_vs_params, SG_RANGE(vs_params));
-      sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_scene_fs_params, SG_RANGE(fs_params));
-
-      sg_draw(base_element, count, 1);
-      sg_destroy_pipeline(pip);
-    }
+    sg_draw(base_element, count, 1);
+    sg_destroy_pipeline(pip);
   }
 
   sg_end_pass();
@@ -462,17 +448,17 @@ MD3DERROR Renderer::d3dEndScene() {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetProjectionMatrix(const D3DMATRIX &matrix) {
-  _render_state.set_projection_matrix(matrix);
+MD3DERROR Renderer::setProjectionMatrix(const D3DMATRIX &matrix) {
+  _render_state.projection_matrix = matrix;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dResetProjectionMatrix() {
-  _render_state.reset_projection_matrix();
+MD3DERROR Renderer::resetProjectionMatrix() {
+  _render_state.projection_matrix = std::nullopt;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dClear(uint32_t dwColor) {
+MD3DERROR Renderer::clear(uint32_t dwColor) {
   const auto red = static_cast<float>((dwColor >> 16) & 0xFF) / 255.0f;
   const auto green = static_cast<float>((dwColor >> 8) & 0xFF) / 255.0f;
   const auto blue = static_cast<float>(dwColor & 0xFF) / 255.0f;
@@ -482,206 +468,180 @@ MD3DERROR Renderer::d3dClear(uint32_t dwColor) {
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dSetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t dwRenderState) {
-  _render_state.set_option(dwRenderStateType, dwRenderState);
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dGetRenderState(D3DRENDERSTATETYPE dwRenderStateType, uint32_t* lpdwRenderState) {
-  *lpdwRenderState = _render_state.get_option(dwRenderStateType);
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dSetTextureStageState(uint32_t dwStage, D3DTEXTURESTAGESTATETYPE dwState, uint32_t dwValue) {
-  _render_state.set_texture_stage_state(dwStage, dwState, dwValue);
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dTriangleFan(uint32_t dwVertexTypeDesc, void *lpvVertices, uint32_t dwVertexCount) {
-  // The system uses vertices v2, v3, and v1 to draw the first triangle;
-  // v3, v4, and v1 to draw the second triangle; v4, v5, and v1 to draw the third triangle; and so on.
-  // When flat shading is enabled, the system shades the triangle with the color from its first vertex.
-
-  if (dwVertexCount < 3) {
-    return MD3DERR_ILLEGALCALL;
-  }
-
-  prepare_render_state(0);
-
-  for (uint32_t i = 1; i < dwVertexCount - 1; i++) {
-    add_vertex(dwVertexTypeDesc, lpvVertices, 0);
-    add_vertex(dwVertexTypeDesc, lpvVertices, i);
-    add_vertex(dwVertexTypeDesc, lpvVertices, i + 1);
-  }
-
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dTrianglesIndexed(uint32_t dwVertexTypeDesc, void *lpvVertices, uint32_t dwVertexCount,
-                                        uint16_t *lpwIndices, uint32_t dwIndexCount) {
-  prepare_render_state(dwVertexCount);
-
-  auto& last_command = _commands.back();
-  const auto vertex_offset = last_command.vertex_buffer_view.end();
-
-  for (uint32_t i = 0; i < dwVertexCount; i++) {
-    add_vertex(dwVertexTypeDesc, lpvVertices, i);
-  }
-
-  const auto start_index = last_command.index_buffer_view.end();
-  assert(start_index + dwIndexCount < _index_buffer.size());
-  auto p = _index_buffer.data();
-  for (uint32_t i = 0; i < dwIndexCount; i++) {
-    p[start_index + i] = vertex_offset + lpwIndices[i];
-  }
-  last_command.index_buffer_view.length += dwIndexCount;
-
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dSetTexture(uint32_t dwHandle, uint32_t dwStage) {
-  _render_state.set_texture(dwHandle, dwStage);
-  return MD3D_OK;
-}
-
-MD3DERROR Renderer::d3dSetTextureBlendMode(MD3DTEXTUREBLEND tbRGBBlend, MD3DTEXTUREBLEND tbAlphaBlend) {
-  switch (tbRGBBlend) {
-    case MD3DTB_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+MD3DERROR Renderer::setRenderState(eRenderStateOption option, int value) {
+  switch (option) {
+    case RENDERSTATE_ZTEST:
+      _render_state.is_depth_test_enabled = value == 1;
       break;
-    case MD3DTB_TEXTURE1:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+
+    case RENDERSTATE_ZWRITE:
+      _render_state.is_depth_write_enabled = value == 1;
       break;
-    case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+
+    case RENDERSTATE_ALPHATEST:
+      _render_state.is_alpha_test_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_ALPHAREF:
+      _render_state.alpha_reference = value;
+      break;
+
+    case RENDERSTATE_ALPHABLEND:
+      _render_state.is_alpha_blend_enabled = value == 1;
+      break;
+
+    case RENDERSTATE_SRCBLEND:
+      _render_state.source_blend_mode = static_cast<eBlendMode>(value);
+      break;
+
+    case RENDERSTATE_DESTBLEND:
+      _render_state.destination_blend_mode = static_cast<eBlendMode>(value);
+      break;
+
+    case RENDERSTATE_TEXTUREADDRESS:
+      _render_state.texture_address = static_cast<eRenderStateTextureAddress>(value);
+      break;
+
+    default:
+      break;
+  }
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::setMaterial(eMaterialMode material) {
+  _render_state.is_alpha_blend_enabled = material & (MAT_ALPHA_MOD_TEXTURE1 | MAT_ALPHA_MOD_DIFFUSE);
+  _render_state.is_alpha_test_enabled = material & MAT_ALPHA_MASK_TEXTURE1;
+
+  if (material & MAT_COLOR_ADD_DIFFUSE) {
+    _render_state.source_blend_mode = BLEND_ONE;
+    _render_state.destination_blend_mode = BLEND_ONE;
+  } else {
+    _render_state.source_blend_mode = BLEND_SRCALPHA;
+    _render_state.destination_blend_mode = BLEND_INVSRCALPHA;
+  }
+
+  switch (material & (MAT_COLOR_MOD_DIFFUSE | MAT_COLOR_MOD_TEXTURE1)) {
+    case MAT_COLOR_MOD_DIFFUSE:
+      _render_state.color_operation1 = 0;
+      break;
+    case MAT_COLOR_MOD_TEXTURE1:
+      _render_state.color_operation1 = 1;
+      break;
+    case MAT_COLOR_MOD_DIFFUSE_TEXTURE1:
+      _render_state.color_operation1 = 2;
+      break;
+    case MAT_NULL:
       break;
     default:
-      return MD3DERR_INVALIDPARAM;
+      assert(0);
   }
 
-  switch (tbAlphaBlend) {
-    case MD3DTB_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-      break;
-    case MD3DTB_TEXTURE1:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-      break;
-    case MD3DTB_TEXTURE1_MOD_DIFFUSE:
-      d3dSetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-      break;
-    default:
-      return MD3DERR_INVALIDPARAM;
-  }
+  _render_state.color_operation2 = material & MAT_COLOR_MOD_TEXTURE2 ? 2 : 0;
 
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dTrianglesIndexed2(uint32_t dwVertexTypeDesc, void *lpvVertices, uint32_t dwVertexCount,
-                                         uint16_t *lpwIndices, uint32_t dwIndexCount, uint32_t dwHandleTex0,
-                                         uint32_t dwHandleTex1) {
-  d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
-  d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-
-  d3dSetTexture(dwHandleTex0, 0);
-  d3dSetTexture(dwHandleTex1, 1);
-  auto result = d3dTrianglesIndexed(dwVertexTypeDesc, lpvVertices, dwVertexCount, lpwIndices, dwIndexCount);
-
-  d3dSetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-  d3dSetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-  return result;
+MD3DERROR Renderer::setTexture(uint32_t dwHandle, uint32_t dwStage) {
+  assert(dwStage < 2);
+  _render_state.textures[dwStage] = dwHandle;
+  return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dLockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
+MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
+  auto vertex_count = [this]() -> size_t {
+    if (_commands.empty())
+    {
+      return 0;
+    }
+
+    auto &last_command = _commands.back();
+    return last_command.vertex_buffer_view.end();
+  }();
+
+  auto index_offset = [this]() -> size_t {
+    if (_commands.empty())
+    {
+      return 0;
+    }
+
+    auto &last_command = _commands.back();
+    return last_command.index_buffer_view.end();
+  }();
+
+  const auto vertex_offset = 3 * vertex_count;
+  assert(_position_buffer.size() > vertex_offset);
+  command.positionBuffer.data = _position_buffer.data() + vertex_offset;
+  command.positionBuffer.count = 0;
+  command.positionBuffer.countLimit = _position_buffer.size() - vertex_offset;
+
+  const auto color_offset = 4 * vertex_count;
+  assert(_diffuse_color_buffer.size() > color_offset);
+  command.diffuseColorBuffer.data = _diffuse_color_buffer.data() + color_offset;
+  command.diffuseColorBuffer.count = 0;
+  command.diffuseColorBuffer.countLimit = _diffuse_color_buffer.size() - color_offset;
+
+  assert(_specular_color_buffer.size() > color_offset);
+  command.specularColorBuffer.data = _specular_color_buffer.data() + color_offset;
+  command.specularColorBuffer.count = 0;
+  command.specularColorBuffer.countLimit = _specular_color_buffer.size() - color_offset;
+
+  const auto uv_offset = 2 * vertex_count;
+  assert(_uv_buffer.size() > uv_offset);
+  command.uvBuffer.data = _uv_buffer.data() + uv_offset;
+  command.uvBuffer.count = 0;
+  command.uvBuffer.countLimit = _uv_buffer.size() - uv_offset;
+
+  assert(_index_buffer.size() > index_offset);
+  command.indexBuffer.data = _index_buffer.data() + index_offset;
+  command.indexBuffer.count = 0;
+  command.indexBuffer.countLimit = _index_buffer.size() - index_offset;
+
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
+  prepare_render_state();
+  assert(command.positionBuffer.count % 3 == 0);
+
+  auto &last_command = _commands.back();
+  for (uint32_t i = 0; i < command.indexBuffer.count; i++) {
+    command.indexBuffer.data[i] += last_command.vertex_buffer_view.end();
+  }
+
+  last_command.vertex_buffer_view.length += command.positionBuffer.count / 3;
+  last_command.index_buffer_view.length += command.indexBuffer.count;
+
+  return MD3D_OK;
+}
+
+MD3DERROR Renderer::lockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
   const auto address = _backBuffer->lock();
   *lplpSurface = address.address;
   *lpdwPitch = address.pitch;
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dUnlockBackBuffer() {
+MD3DERROR Renderer::unlockBackBuffer() {
   _backBuffer->unlock();
   return MD3D_OK;
 }
 
-MD3DERROR Renderer::d3dFlushBackBuffer(MD3DRECT *lprcRect) {
+MD3DERROR Renderer::flushBackBuffer(MD3DRECT *lprcRect) {
   _is_back_buffer_flush = true;
   return MD3D_OK;
 }
 
-void Renderer::prepare_render_state(size_t index_count) {
+void Renderer::prepare_render_state() {
   if (_commands.empty()) {
     _commands.emplace_back(DrawCommand{_render_state, BufferView{0, 0}, BufferView{0, 0}});
     return;
   }
 
   const auto& last_command = _commands.back();
-
-  bool use_index = index_count > 0;
-  bool last_use_index = last_command.index_buffer_view.length > 0;
-
-  if (_render_state == last_command.render_state && last_use_index == use_index) {
+  if (_render_state == last_command.render_state) {
     return;
   }
 
   _commands.emplace_back(
       DrawCommand{_render_state, last_command.vertex_buffer_view.next(), last_command.index_buffer_view.next()});
-}
-
-void Renderer::add_vertex(uint32_t vertex_type, void *vertices, uint32_t index) {
-  assert(!_commands.empty());
-
-  auto& last_command = _commands.back();
-  size_t i = last_command.vertex_buffer_view.end();
-
-  VertexType type{vertex_type};
-  auto vertex_offset = static_cast<uint8_t*>(vertices) + type.get_vertex_size() * index;
-
-  if (vertex_type & D3DFVF_XYZRHW) {
-    auto p = reinterpret_cast<const float*>(vertex_offset);
-
-    auto position = _position_buffer.data();
-    const auto offset = 3 * i;
-    assert(offset + 3 < _position_buffer.size());
-    position[offset] = p[0];
-    position[offset + 1] = p[1];
-    position[offset + 2] = p[2];
-
-    vertex_offset += type.get_offset(D3DFVF_XYZRHW);
-  }
-
-  if (vertex_type & D3DFVF_DIFFUSE) {
-    auto p = reinterpret_cast<const uint32_t*>(vertex_offset);
-    const auto argb = p[0];
-
-    auto color = _color_buffer.data();
-    const auto offset = 4 * i;
-    assert(offset + 4 < _color_buffer.size());    
-    auto a = static_cast<float>((argb >> 24) & 0xFF) / 255.0f;
-    auto r = static_cast<float>((argb >> 16) & 0xFF) / 255.0f;
-    auto g = static_cast<float>((argb >> 8) & 0xFF) / 255.0f;
-    auto b = static_cast<float>(argb & 0xFF) / 255.0f;
-    color[offset] = r;
-    color[offset + 1] = g;
-    color[offset + 2] = b;
-    color[offset + 3] = a;
-
-    vertex_offset += type.get_offset(D3DFVF_DIFFUSE);
-  }
-
-  if (vertex_type & D3DFVF_SPECULAR) {
-    vertex_offset += type.get_offset(D3DFVF_SPECULAR);
-  }
-
-  if (vertex_type & D3DFVF_TEX1) {
-    auto p = reinterpret_cast<const float*>(vertex_offset);
-
-    auto uv = _uv_buffer.data();
-    const auto offset = 2 * i;
-    assert(offset + 2 < _uv_buffer.size());
-    uv[offset] = p[0];
-    uv[offset + 1] = p[1];
-  }
-
-  last_command.vertex_buffer_view.length += 1;
 }
