@@ -25,7 +25,7 @@ void xINI_FileKey::putValue(const char* p)
 	if(p[0] != '\"' || p[sz] != '\"'){
 		sz = strlen(p) + 1;
 		if(size < sz){
-			if(string) delete string;
+			if(string) delete[] string;
 			string = new char[sz];
 			size = sz;
 		}
@@ -34,7 +34,7 @@ void xINI_FileKey::putValue(const char* p)
 	else {
 		sz = strlen(p) - 1;
 		if(size < sz){
-			if(string) delete string;
+			if(string) delete[] string;
 			string = new char[sz];
 			size = sz;
 		}
