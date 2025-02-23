@@ -20,8 +20,8 @@ AspectRatioInfo aspectRatios[] = {
     createAspectRatio(4, 3, 0),
     createAspectRatio(16, 9, 100),
     createAspectRatio(16, 10, 100),
-    createAspectRatio(21, 9, 100),
-    createAspectRatio(43, 18, 100),
+    createAspectRatio(21, 9, 200),
+    createAspectRatio(43, 18, 200),
 };
 
 AspectRatioInfo *AR_CURRENT = &aspectRatios[0];
