@@ -234,7 +234,7 @@ class iWorldDispatcher
 	void SetAssemblyCamera(void);
 
 	void draw_AssemblyScreen(void);
-	void AssemblyQuant(void);
+	void AssemblyQuant(const float dt);
 	void AssemblyPartsQuant(int mode = 1);
 	void AssemblyCoordsQuant(void);
 
