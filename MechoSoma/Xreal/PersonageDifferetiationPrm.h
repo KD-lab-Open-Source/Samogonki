@@ -7,7 +7,6 @@
 extern float mechos_energy_max;
 #ifndef __XScript_struct_PersonageDifferetiationData__
 #define __XScript_struct_PersonageDifferetiationData__
-#pragma pack( push, __XScript_struct_pack__, 4 )
 struct PersonageDifferetiationData {
 	char const* name;
 	char const* russian_name;
@@ -45,7 +44,6 @@ struct PersonageDifferetiationData {
 	float mechos_engine_sphere_radius;
 	float mechos_engine_sphere_dz;
 };
-#pragma pack( pop, __XScript_struct_pack__)
 #endif  // __XScript_struct_PersonageDifferetiationData__
 extern PersonageDifferetiationData personage_diff_data[10];
 #ifndef __XScript_struct_WheelContactProperty__
