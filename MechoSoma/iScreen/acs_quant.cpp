@@ -32,6 +32,8 @@
 #include "IGraph3d.h"
 #include "GameClient.h"
 
+#include "aspect_ratio.h"
+
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 
 // acsEssenceData::flags
@@ -490,7 +492,7 @@ void acsStrLen3D(const void* str,int fnt,int space,int& sx,int& sy)
 
 	const unsigned char* p = (const unsigned char*)str;
 
-	float scale_x = (float)XGR_MAXX / 640.0f;
+	float scale_x = (float)XGR_MAXX / AR_CURRENT->width;
 	float scale_y = (float)XGR_MAXY / 480.0f;
 
 	fsx = round(acsFont3D_SizeX * acsFont3D_ScaleX[fnt]);
@@ -601,7 +603,7 @@ void mchA_OutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float
 
 	acsFont3D[ch] -> SetColor(sColor4f(r,g,b,a));
 
-	scale_x = (float)XGR_MAXX / 640.0f;
+	scale_x = (float)XGR_MAXX / AR_CURRENT->width;
 	scale_y = (float)XGR_MAXY / 480.0f;
 
 	Vect3f v1(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc);
@@ -632,7 +634,7 @@ void acsOutChar3D(float x,float y,float z,int fnt,int ch,float r,float g,float b
 
 	acsFont3D[ch] -> SetColor(sColor4f(r,g,b,a),sColor4f(0,0,0,0));
 
-	scale_x = (float)XGR_MAXX / 640.0f;
+	scale_x = (float)XGR_MAXX / AR_CURRENT->width;
 	scale_y = (float)XGR_MAXY / 480.0f;
 
 	Vect3f v1(acsFont3D_ScaleX[fnt] * scale_x * sc,acsFont3D_ScaleY[fnt] * scale_y * sc,acsFont3D_ScaleZ[fnt] * sc);
@@ -674,7 +676,7 @@ void acsOutString3D(int x,int y,const void* str,int fnt,int col,int space,int al
 	_x = x;
 	_y = y;
 
-	scale_x = (float)XGR_MAXX / 640.0f * sc;
+	scale_x = (float)XGR_MAXX / AR_CURRENT->width * sc;
 	scale_y = (float)XGR_MAXY / 480.0f * sc;
 	sx = round(acsFont3D_SizeX * acsFont3D_ScaleX[fnt] * scale_x);
 	sy = round(acsFont3D_SizeY * acsFont3D_ScaleY[fnt] * scale_y);
@@ -720,7 +722,7 @@ void mchA_OutString3D(float x,float y,const void* str,int fnt,int col,int space,
 	_x = x * mchA_d3dResX;
 	_y = y * mchA_d3dResY;
 
-	scale_x = (float)XGR_MAXX / 640.0f * sc;
+	scale_x = (float)XGR_MAXX / AR_CURRENT->width * sc;
 	scale_y = (float)XGR_MAXY / 480.0f * sc;
 	sx = round(acsFont3D_SizeX * acsFont3D_ScaleX[fnt] * scale_x);
 	sy = round(acsFont3D_SizeY * acsFont3D_ScaleY[fnt] * scale_y);
@@ -756,7 +758,7 @@ void mchA_StrLen3D(const void* str,int fnt,int space,int& sx,int& sy)
 {
 	acsStrLen3D(str,fnt,space,sx,sy);
 
-	float mchA_d3dResX = (float)XGR_MAXX / 640.0f;
+	float mchA_d3dResX = (float)XGR_MAXX / AR_CURRENT->width;
 	float mchA_d3dResY = (float)XGR_MAXY / 480.0f;
 
 	sx = round(float(sx) / mchA_d3dResX);
@@ -809,7 +811,7 @@ void acsScreenMatrix::build(aciScreen* p)
 	int i,len,x,y,sx,sy,_x,_y,_sx,_sy,ch,fnt,fl = 0;
 	unsigned char* str;
 
-	float scale_x = (float)XGR_MAXX / 640.0f;
+	float scale_x = (float)XGR_MAXX / AR_CURRENT->width;
 	float scale_y = (float)XGR_MAXY / 480.0f;
 
 	aciScreenInputField* ip;
@@ -1700,7 +1702,7 @@ void acsShowCredits(void)
 			memcpy(str,p -> string + idx,i - idx);
 			str[i - idx] = 0;
 
-			xx = (640 - acsStrLen(1,(unsigned char*)str,1)) / 2;
+			xx = (AR_CURRENT->width - acsStrLen(1,(unsigned char*)str,1)) / 2;
 			mchA_d3dOutString(xx,yy,mchA_FontScaleX[1],mchA_FontScaleY[1],str,mchA_ColorF[2],170,1,1);
 			yy += 30;
 			idx = i + 1;

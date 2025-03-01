@@ -15,6 +15,7 @@
 #include "Statistics.h"
 #include "MultibodyContact.h"
 #include "DebugPrm.h"
+#include "aspect_ratio.h"
 
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 extern cInterfaceVisGeneric	*gb_IVisGeneric;
@@ -1128,7 +1129,7 @@ void CameraDispatcher::setIvsCamera(const CameraCoords& coords)
 #ifdef GPX
     auto zOffset = (aspect - 1.33f) / (2.22f - 1.33f) * 100;
 #else
-    auto zOffset = 0;
+    auto zOffset = AR_CURRENT->cameraOffset;
 #endif
 	Vect3f camera_position = R*vg + Vect3f(0, -coords.CenteringDelta*coords.cameraDistance, coords.cameraDistance + zOffset);
 	camera_position.negate();

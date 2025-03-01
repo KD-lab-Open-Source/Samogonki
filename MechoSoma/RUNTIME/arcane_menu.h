@@ -564,6 +564,7 @@ void mchA_StartTimeHandler(void);
 void mchA_HandleStatsEvent(int objID,int ev_code,void* p = NULL,int n = 0);
 void mchA_AddArcaneStats(int arcID,int objID,int n = 0);
 
+void mchReInitArcaneScreen(void);
 void mchInitArcaneScreen(void);
 void mchA_CHQuant(int k);
 

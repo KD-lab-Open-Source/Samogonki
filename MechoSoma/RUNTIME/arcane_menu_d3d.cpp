@@ -14,6 +14,7 @@
 #include "Mesh3ds.h"
 #include "IGraph3d.h"
 #include "CameraDispatcher.h"
+#include "aspect_ratio.h"
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 /* ----------------------------- EXTERN SECTION ----------------------------- */
@@ -108,7 +109,7 @@ void mchA_d3dInit(void)
 	}
 #endif
 
-	mchA_d3dResX = (float)XGR_MAXX / 640.0f;
+	mchA_d3dResX = (float)XGR_MAXX / AR_CURRENT->width;
 	mchA_d3dResY = (float)XGR_MAXY / 480.0f;
 
 	gb_IGraph3d->GetTextureFormatData(mchA_d3dTexMode,&mchA_d3dTexFmt);
@@ -970,6 +971,27 @@ int mchA_d3dCheckMode(int mode,int color_depth)
 			case MCH_1600x1200:
 				sx = 1600;
 				sy = 1200;
+				break;
+			case MCH_1280x720:
+				sx=1280,sy=720;
+				break;
+			case MCH_1280x800:
+				sx=1280,sy=800;
+				break;
+			case MCH_1920x1080:
+				sx=1920,sy=1080;
+				break;
+			case MCH_1920x1200:
+				sx=1920,sy=1200;
+				break;
+			case MCH_2560x1440:
+				sx=2560,sy=1440;
+				break;
+			case MCH_2560x1600:
+				sx=2560,sy=1600;
+				break;
+			case MCH_3440x1440:
+				sx=3440,sy=1440;
 				break;
 		}
 		for(i = 0; i < mchA_d3dNumModes; i ++){

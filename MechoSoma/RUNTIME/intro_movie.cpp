@@ -15,6 +15,7 @@
 #include "arcane_menu_d3d.h"
 
 #include "mch_common.h" // For far target
+#include "aspect_ratio.h"
 
 #define MAX_PATH 1024
 
@@ -47,6 +48,7 @@ void im_d3dOutSprite(float x,float y,float sx,float sy,int spr,int col,int alpha
 const int IMG_PX = 5;
 const int IMG_PY = 3;
 
+// Changing 640.0 value breaks intro on Windows
 const float IMG_SCALE_X = 640.0f / (256.0f * float(IMG_PX)) + 0.005f;
 const float IMG_SCALE_Y = 480.0f / (256.0f * float(IMG_PY)) + 0.005f;
 
@@ -104,7 +106,8 @@ void mchIntroMovieImage::draw(int x,int y,int alpha)
 
 	for(j = 0; j < IMG_PY; j ++){
 		for(i = 0; i < IMG_PX; i ++){
-			xx = float(i << 8) * scale_x;
+			// widescreen fix, added offset multiplied by 2
+			xx = float(i << 8) * scale_x + AR_CURRENT->offset * 2;
 			yy = float(j << 8) * scale_y;
 			im_d3dOutSprite(float(x) + xx,float(y) + yy,scale_x,scale_y,im_d3dSprite[i + j * IMG_PX + slot * IMG_PX * IMG_PY],0xFFFFFF,alpha,0,0);
 		}
@@ -743,10 +746,10 @@ void mchIntroMovieText::draw(void)
 	sx = acsTextStrLenMax(2,(unsigned char*)buf,0);
 	sy = acsTextHeight(2,(unsigned char*)buf,-5);
 
-	x = (640 - sx) / 2;
+	x = (AR_CURRENT->width - sx) / 2;
 	y = 480 - sy - 10;
 
-	mchA_DrawTextWindow(0,y - 5,640,sy + 16,round(float(w_alpha) * float(alpha) / 255.0f),0,0);
+	mchA_DrawTextWindow(0,y - 5,AR_CURRENT->width,sy + 16,round(float(w_alpha) * float(alpha) / 255.0f),0,0);
 //	mchA_d3dOutString(x,y,mchA_FontScaleX[2],mchA_FontScaleY[2],buf,mchA_ColorF[7],alpha,2,0,1.0f,1,-6);
 
 	idx = 0;
@@ -756,7 +759,7 @@ void mchIntroMovieText::draw(void)
 		if(buf[i] == '\n'){
 			str[idx] = 0;
 			sx = acsTextStrLenMax(2,(unsigned char*)str,0);
-			x = (640 - sx) / 2;
+			x = (AR_CURRENT->width - sx) / 2;
 			mchA_d3dOutString(x,y,mchA_FontScaleX[2],mchA_FontScaleY[2],str,mchA_ColorF[7],alpha,2,0,1.0f,1);
 			y += acsFntTable[2] -> SizeY - 5;
 			idx = 0;
@@ -768,7 +771,7 @@ void mchIntroMovieText::draw(void)
 	}
 	str[idx] = 0;
 	sx = acsTextStrLenMax(2,(unsigned char*)str,0);
-	x = (640 - sx) / 2;
+	x = (AR_CURRENT->width - sx) / 2;
 	mchA_d3dOutString(x,y,mchA_FontScaleX[2],mchA_FontScaleY[2],str,mchA_ColorF[7],alpha,2,0,1.0f,1);
 }
 

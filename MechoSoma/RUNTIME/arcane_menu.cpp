@@ -53,6 +53,7 @@
 #include "online_game.h"
 
 #include "mch_common.h" // For far target
+#include "aspect_ratio.h"
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
 
@@ -638,11 +639,18 @@ void mchArcaneScreenElement::InitCoords(const char* name)
 	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeX = atoi(p);
 
+	applyScreenRatioOffset(this, name);
+
 	XBuf.init();
 	XBuf < name < "_sy";
 	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
 	if(strlen(p)) SizeY = atoi(p);
 
+	// element appearance direction
+	// 0 - from left
+	// 1 - from top
+	// 2 - from right
+	// 3 - from bottom
 	XBuf.init();
 	XBuf < name < "_show_dir";
 	p = getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address());
@@ -687,6 +695,7 @@ void mchArcaneScreenElement::InitCoords(const char* name)
 	InitR();
 }
 
+// initial position for animated elements
 void mchArcaneScreenElement::InitR(void)
 {
 	switch(showDir){
@@ -700,7 +709,8 @@ void mchArcaneScreenElement::InitR(void)
 			break;
 		case 2: // from right
 			R0 = R1 = R;
-			R0.x = 640 + 20;
+			// widescreen fix, set initial value off screen horizontally
+			R0.x = AR_CURRENT->width + 20;
 			break;
 		case 3: // from down
 			R0 = R1 = R;
@@ -1886,6 +1896,64 @@ void mchA_ShowEssenceEnergy(int x,int y,float phase,int alpha,int id)
 	if(RenderMode == DIRECT3D_HICOLOR){
 		mchA_SprD -> DrawEssence(x,y,id,phase,0.0f,2,alpha);
 	}
+}
+
+// redraw on screen elements after resolution change
+void mchReInitArcaneScreen(void)
+{
+	mch_arcScrD->objList->search(AE_SMALL_RECT1)->InitCoords("small_rect1");
+	mch_arcScrD->objList->search(AE_SMALL_RECT2)->InitCoords("small_rect2");
+	mch_arcScrD->objList->search(AE_BIG_RECT1)->InitCoords("big_rect1");
+	mch_arcScrD->objList->search(AE_BIG_RECT2)->InitCoords("big_rect2");
+
+	mch_arcScrD->objList->search(AE_PLAY_AGAIN_STR)->InitCoords("play_again_str");
+	mch_arcScrD->objList->search(AE_TRY_STR)->InitCoords("try_again_str");
+	mch_arcScrD->objList->search(AE_TRY_STR2)->InitCoords("try_again2_str");
+	mch_arcScrD->objList->search(AE_AWAY_STR)->InitCoords("go_away_str");
+	mch_arcScrD->objList->search(AE_AWAY_STR2)->InitCoords("go_away2_str");
+	mch_arcScrD->objList->search(AE_LOST_STR)->InitCoords("lost_str");
+	mch_arcScrD->objList->search(AE_NOT_LOST_STR)->InitCoords("not_lost_str");
+	mch_arcScrD->objList->search(AE_WON_STR0)->InitCoords("won_str0");
+	mch_arcScrD->objList->search(AE_WON_STR1)->InitCoords("won_str1");
+	mch_arcScrD->objList->search(AE_WINNER_STR)->InitCoords("winner_str");
+	mch_arcScrD->objList->search(AE_CONTINUE_STR)->InitCoords("continue_str");
+	mch_arcScrD->objList->search(AE_CONTINUE2_STR)->InitCoords("continue2_str");
+	// causes segfault
+	// mch_arcScrD->objList->search(AE_BONUS_PART)->InitCoords("bonus_part");
+	mch_arcScrD->objList->search(AE_PART_NAME)->InitCoords("bonus_part_str");
+	mch_arcScrD->objList->search(AE_PRICE_STR)->InitCoords("price_str");
+	mch_arcScrD->objList->search(AE_PRICE_STR2)->InitCoords("price2_str");
+	mch_arcScrD->objList->search(AE_BUY_IT_STR)->InitCoords("buy_it_str");
+	mch_arcScrD->objList->search(AE_NO_THANKS_STR)->InitCoords("no_thanks_str");
+	mch_arcScrD->objList->search(AE_NOT_ENOUGH_STR0)->InitCoords("not_enough0_str");
+	mch_arcScrD->objList->search(AE_NOT_ENOUGH_STR1)->InitCoords("not_enough1_str");
+	mch_arcScrD->objList->search(AE_NEXT_TIME_STR)->InitCoords("next_time_str");
+
+	mchArcaneScreenElement *curr = mch_arcScrD->objList->first();
+	mchArcaneScreenElement *last = mch_arcScrD->objList->last();
+	int figureIndex = 0;
+	do {
+		switch (curr->type) {
+			case AE_FIGURE_FACE:
+				curr->InitCoords("figure");
+				curr->R.y += curr->SizeY * figureIndex;
+				figureIndex++;
+				break;
+			case AE_ARROW:
+				curr->InitCoords("arrow");
+				break;
+			case AE_WORLD_MAP:
+				curr->InitCoords("map");
+				break;
+			case AE_SPEED_COUNTER:
+				curr->InitCoords("speed_counter");
+				break;
+			case AE_NAME_STATUS_STR:
+				curr->InitCoords("name_str");
+				break;
+		}
+		curr = curr->next;
+	} while (curr != last);
 }
 
 void mchInitArcaneScreen(void)
@@ -4830,10 +4898,11 @@ void mchA_ShowStartCount(int al)
 //	scale = (float)((mchA_TimerMax - cur_timer) % 1000) / (float)1000;
 	scale = (float)(cur_timer % 1000) / 1000.0f;
 
+	int x = AR_CURRENT->width / 2;
 	if(tm > 0){
 		al = 255 - round(250.0f * scale);
 		scale *= sc * 16.0f;
-		mchA_SprD -> DrawSprite(320,240,scale,scale,200 + tm,mchA_ColorF[2],al,0.0f,1);
+		mchA_SprD -> DrawSprite(x,240,scale,scale,200 + tm,mchA_ColorF[2],al,0.0f,1);
 	}
 	else {
 #ifdef _LOCAL_VERSION_
@@ -4841,10 +4910,10 @@ void mchA_ShowStartCount(int al)
 		if(al < 0) al = 0;
 
 		scale *= sc * 10.0f;
-		mchA_SprD -> DrawSprite(320,240,scale,scale,200,mchA_ColorF[2],al,0.0f,1);
+		mchA_SprD -> DrawSprite(x,240,scale,scale,200,mchA_ColorF[2],al,0.0f,1);
 
-		mchA_SprD -> DrawSprite(320 - 64 * scale,240,scale,scale,211,mchA_ColorF[2],al,0.0f,1);
-		mchA_SprD -> DrawSprite(320 + 64 * scale,240,scale,scale,212,mchA_ColorF[2],al,0.0f,1);
+		mchA_SprD -> DrawSprite(x - 64 * scale,240,scale,scale,211,mchA_ColorF[2],al,0.0f,1);
+		mchA_SprD -> DrawSprite(x + 64 * scale,240,scale,scale,212,mchA_ColorF[2],al,0.0f,1);
 #else
 		al = 255 - round(320.0f * scale);
 		if(al < 0) al = 0;
@@ -4878,7 +4947,7 @@ void mchA_ShowCount(int al,int time)
 	if(tm > 0){
 		al = 255 - round(250.0f * scale);
 		scale *= sc * 16.0f;
-		mchA_SprD -> DrawSprite(320,240,scale,scale,200 + tm,mchA_ColorF[2],al,0.0f,1);
+		mchA_SprD -> DrawSprite(AR_CURRENT->width / 2,240,scale,scale,200 + tm,mchA_ColorF[2],al,0.0f,1);
 	}
 }
 
@@ -5546,7 +5615,7 @@ void mchA_DrawLoadingScreen(int x,int y,int sx,int sy,int val,int max_val)
 	const int num_parts = NUM_ACTIVE_PARTS - 1;
 	const int sz = 50;
 
-	const int xc  = 320;
+	const int xc  = AR_CURRENT->width / 2;
 	const int yc  = 240;
 	const int xcl = xc - sz;
 
@@ -6383,12 +6452,12 @@ void mchArcaneRacerSet::init(int align)
 	int i;
 	mchGameWindow* wnd;
 
-	lapcntEl -> R.x = 320.0f;
+	lapcntEl -> R.x = AR_CURRENT->width / 2;
 	lapcntEl -> R.y = 240.0f;
 	lapcntEl -> SizeX = lapcntEl -> SizeY = 0;
 
 	cpEl -> SetString(0,1,mchA_DropStr);
-	cpEl -> R.x = (640 - cpEl -> SizeX)/2;
+	cpEl -> R.x = (AR_CURRENT->width - cpEl -> SizeX)/2;
 	cpEl -> R.y = (480 - cpEl -> SizeY)/2;
 
 	energyEl -> InitCoords("energy");
@@ -6414,7 +6483,7 @@ void mchArcaneRacerSet::init(int align)
 
 	if(align != -1){
 		cpEl -> SetString(1,1,mchA_DropStr);
-		cpEl -> R.x = (640 - cpEl -> SizeX)/2;
+		cpEl -> R.x = (AR_CURRENT->width - cpEl -> SizeX)/2;
 		cpEl -> R.y = (480 - cpEl -> SizeY)/2;
 
 		lapEl -> R.y += 17.0f;

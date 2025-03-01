@@ -473,8 +473,9 @@ set(GAME_SOURCES
     app/renderer.h
     app/sokol-shader.h
     app/texture_manager.cpp
-    app/texture_manager.h
-)
+    # widescreen fix
+    RUNTIME/aspect_ratio.cpp
+    RUNTIME/aspect_ratio.h)
 
 include_directories(aciparser)
 include_directories(app)
