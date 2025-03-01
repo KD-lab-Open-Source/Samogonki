@@ -686,7 +686,7 @@ void iWorldDispatcher::Quant(void)
 	KeyQuant();
 
 	if(AssemblyMode())
-		AssemblyQuant();
+		AssemblyQuant(dt);
 
 	if(TeleportMode())
 		TeleportQuant();
@@ -1849,9 +1849,11 @@ void iWorldDispatcher::AssemblyPartsQuant(int mode)
 	}
 }
 
-void iWorldDispatcher::AssemblyQuant(void)
+void iWorldDispatcher::AssemblyQuant(const float dt)
 {
-	const float da = 3.0f;
+	// const float da = 3.0f;
+	// 3 degrees per frame at 30 FPS = 360 degrees per 4s
+	const float da = 360 / 4 * dt;
 
 	AssemblyPartsQuant();
 
