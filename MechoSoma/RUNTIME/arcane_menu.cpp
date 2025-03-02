@@ -1537,11 +1537,12 @@ void mchArcaneScreenElement::ScaleQuant(const float dt)
 		Scale += (destScale > Scale) ? dtScale : -dtScale;
 }
 
-void mchArcaneScreenElement::PhaseQuant(int level,int mode)
+void mchArcaneScreenElement::PhaseQuant(int level,int mode,const float dt)
 {
 	float d;
 	int fl = 0;
-	const float dp = 0.2f;
+	// const float dp = 0.2f;
+	const float dp = 0.2f * 30 * dt;
 
 	if(!Active()) return;
 
@@ -2747,7 +2748,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 			fl = 1;
 			p = objList -> first();
 			while(p){
-				p -> PhaseQuant(phaseIndex,showMode);
+				p -> PhaseQuant(phaseIndex,showMode,dt);
 				if(p -> Active() && p -> showIndex <= phaseIndex && p -> CheckPhase())
 					fl = 0;
 				p = p -> next;
@@ -2759,7 +2760,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 			fl = 1;
 			p = objList -> first();
 			while(p){
-				p -> PhaseQuant(phaseIndex,showMode);
+				p -> PhaseQuant(phaseIndex,showMode,dt);
 //				if(p -> Active() && p -> showIndex >= phaseIndex && p -> CheckPhase())
 				if(p -> Active() && p -> CheckPhase())
 					fl = 0;

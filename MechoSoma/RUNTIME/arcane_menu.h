@@ -271,7 +271,7 @@ struct mchArcaneScreenElement
 	virtual void RedrawFnc(int x,int y);
 	virtual void Quant(float dt);
 
-	void PhaseQuant(int level,int mode = AE_SHOW_SCREEN);
+	void PhaseQuant(int level,int mode, const float dt);
 	int CheckPhase(void){ 
 		if(fabs(phase - dest_phase) < 0.1f)
 			return 0;
