@@ -269,7 +269,7 @@ void mchA_ShowStartCountDisable(void);
 
 void mchA_DropCPDisable(mchRacer* p);
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish = 0,mchArcaneRacerSet* owner = NULL);
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet*,const float dt);
 void mchA_ShowRacerLap(int x,int y,int al,mchArcaneRacerSet* owner = NULL);
 
 const char* mchA_GetNumSuffix(int v);
@@ -1046,10 +1046,10 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0,const float dt)
 			mchA_ShowRacerLap(x0,y0,Alpha,owner);
 			break;
 		case AE_PLACE_STR:
-			mchA_ShowRacerPlace(x0,y0,Alpha,0,owner);
+			mchA_ShowRacerPlace(x0,y0,Alpha,0,owner,dt);
 			break;
 		case AE_FINISH_PLACE_STR:
-			mchA_ShowRacerPlace(x0,y0,Alpha,1);
+			mchA_ShowRacerPlace(x0,y0,Alpha,1,NULL,dt);
 			break;
 		case AE_ENERGY_BAR:
 			if(owner && owner -> owner -> Type == MCH_RACER_TYPE_MECHOS)
@@ -5690,7 +5690,7 @@ void mchInitPartIDs(void)
 	mchA_PartID[2] = M3D_RB_WHEEL;
 }
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner, const float dt)
 {
 	float mul,tm;
 	int place,col;
@@ -5701,11 +5701,13 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 
 	place = r -> stPtr -> place + 1;
 
-	const int alpha_max = 250;
-	const int alpha_min = 70;
+	const float alpha_max = 250.0f;
+	const float alpha_min = 70.0f;
 
-	static int alpha = alpha_min;
+	static float alpha = alpha_min;
 	static int alpha_delta = 16;
+
+	const float dt_alpha = alpha_delta * 30 * dt;
 
 	static int place_colors[5] = { 13, 14, 14, 14, 15 };
 	mchA_XBuf.init();
@@ -5719,7 +5721,7 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 	al = 255 - al/2;
 
 	if(finish){
-		alpha += alpha_delta;
+		alpha += dt_alpha;
 		if(alpha > alpha_max){
 			alpha = alpha_max;
 			alpha_delta = -alpha_delta;
@@ -5729,7 +5731,7 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 			alpha_delta = -alpha_delta;
 		}
 		mul *= 1.5f;
-		al = alpha;
+		al = (int)alpha;
 	}
 	else {
 		if(mchSplitScreenGame) mul *= 0.7f;
