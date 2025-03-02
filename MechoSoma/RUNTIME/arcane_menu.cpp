@@ -1522,16 +1522,19 @@ void mchArcaneRoundMenu::Quant(float dt)
 	}
 }
 
-void mchArcaneScreenElement::ScaleQuant(void)
+void mchArcaneScreenElement::ScaleQuant(const float dt)
 {
 	float d;
 	if(!Active()) return;
 
+	// deltaScale at 30 FPS with delta time
+	const float dtScale = (deltaScale * 30) * dt;
+
 	d = destScale - Scale;
-	if(fabs(d) <= deltaScale)
+	if(fabs(d) <= dtScale)
 		Scale = destScale;
 	else
-		Scale += (destScale > Scale) ? deltaScale : -deltaScale;
+		Scale += (destScale > Scale) ? dtScale : -dtScale;
 }
 
 void mchArcaneScreenElement::PhaseQuant(int level,int mode)
@@ -2720,7 +2723,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 	p = objList -> first();
 	while(p){
 		if(p != activeEl) p -> flags &= ~AE_SELECTED;
-		p -> ScaleQuant();
+		p -> ScaleQuant(dt);
 		p = p -> next;
 	}
 

@@ -278,7 +278,7 @@ struct mchArcaneScreenElement
 		return 1;
 	}
 
-	void ScaleQuant(void);
+	void ScaleQuant(const float dt);
 
 	virtual void alloc(void);
 	virtual void free(void);
