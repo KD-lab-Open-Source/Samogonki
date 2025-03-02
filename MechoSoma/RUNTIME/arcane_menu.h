@@ -266,9 +266,9 @@ struct mchArcaneScreenElement
 	mchArcaneScreenElement* prev;
 	mchArcaneScreenElement* next;
 
-	virtual void Redraw(void);
+	virtual void Redraw(const float dt);
 	virtual void InitRedraw(void);
-	virtual void RedrawFnc(int x,int y);
+	virtual void RedrawFnc(int x,int y,const float dt);
 	virtual void Quant(float dt);
 
 	void PhaseQuant(int level,int mode, const float dt);
@@ -339,7 +339,7 @@ struct mchArcaneStatsDispatcher
 
 	mchArcaneScreenElement** data;
 
-	void Redraw(void);
+	void Redraw(const float dt);
 	void InitRedraw(void);
 
 	void Add(int arcID);
