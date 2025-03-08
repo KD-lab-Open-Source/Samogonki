@@ -266,19 +266,19 @@ struct mchArcaneScreenElement
 	mchArcaneScreenElement* prev;
 	mchArcaneScreenElement* next;
 
-	virtual void Redraw(void);
+	virtual void Redraw(const float dt);
 	virtual void InitRedraw(void);
-	virtual void RedrawFnc(int x,int y);
+	virtual void RedrawFnc(int x,int y,const float dt);
 	virtual void Quant(float dt);
 
-	void PhaseQuant(int level,int mode = AE_SHOW_SCREEN);
+	void PhaseQuant(int level,int mode, const float dt);
 	int CheckPhase(void){ 
 		if(fabs(phase - dest_phase) < 0.1f)
 			return 0;
 		return 1;
 	}
 
-	void ScaleQuant(void);
+	void ScaleQuant(const float dt);
 
 	virtual void alloc(void);
 	virtual void free(void);
@@ -339,7 +339,7 @@ struct mchArcaneStatsDispatcher
 
 	mchArcaneScreenElement** data;
 
-	void Redraw(void);
+	void Redraw(const float dt);
 	void InitRedraw(void);
 
 	void Add(int arcID);

@@ -209,8 +209,8 @@ int mchGetKeysConfig(void);
 void mchA_DrawRacersInfo(void);
 void mchA_DrawRacersEnergy(void);
 void mchA_DrawRacersPlace(void);
-void mchA_DrawRacerPlace(int x,int y,int id,int active);
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time);
+void mchA_DrawRacerPlace(int x,int y,int id,int active,const float dt);
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,const float dt);
 void mchA_DrawArrow(int x,int y,int sx,mchArcaneRacerSet* p = NULL);
 void mchA_DrawMouse(int mode = 0);
 void mchA_DrawMouseRect(int sx,int sy,int sz,int delta);
@@ -269,7 +269,7 @@ void mchA_ShowStartCountDisable(void);
 
 void mchA_DropCPDisable(mchRacer* p);
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish = 0,mchArcaneRacerSet* owner = NULL);
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet*,const float dt);
 void mchA_ShowRacerLap(int x,int y,int al,mchArcaneRacerSet* owner = NULL);
 
 const char* mchA_GetNumSuffix(int v);
@@ -734,7 +734,7 @@ void mchArcaneScreenElement::InitRedraw(void)
 
 #define AE_D3D_CH_SIZE	2.0f
 #define AE_D3D_CH_SIZE2 1.0f
-void mchArcaneScreenElement::RedrawFnc(int x0,int y0)
+void mchArcaneScreenElement::RedrawFnc(int x0,int y0,const float dt)
 {
 	int x,y,sx,sy,sy0,ch_sx,al,tm;
 	float sc;
@@ -786,14 +786,14 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0)
 			mchA_d3dOutSprite(x0 - round((Scale - 1.0f) * float(SizeX)/2.0f),y0 - round((Scale - 1.0f) * float(SizeY)/2.0f),Scale * float(SizeX)/16.0f,Scale * float(SizeY)/16.0f,AE_D3DSPR_DUMMY,mchA_ColorF[7],256 - Alpha,0.0f);*/
 			break;
 		case AE_FINISH_FIGURE_FACE:
-			mchA_DrawRacerFinishPlace(x0,y0,exDataParam[0],exDataParam[1],phase,(char*)exDataPtr,exDataParam[2],exDataParam[3],exDataParam[4]);
+			mchA_DrawRacerFinishPlace(x0,y0,exDataParam[0],exDataParam[1],phase,(char*)exDataPtr,exDataParam[2],exDataParam[3],exDataParam[4],dt);
 			if(phase == 1.0f)
 				exDataParam[2] ++;
 			break;
 		case AE_FIGURE_FACE:
 			if(mchSplitScreenGame) break;
 
-			mchA_DrawRacerPlace(x0,y0,exDataParam[0],exDataParam[1]);
+			mchA_DrawRacerPlace(x0,y0,exDataParam[0],exDataParam[1],dt);
 			break;
 		case AE_START_COUNTER:
 			mchA_ShowStartCount(Alpha);
@@ -1046,10 +1046,10 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0)
 			mchA_ShowRacerLap(x0,y0,Alpha,owner);
 			break;
 		case AE_PLACE_STR:
-			mchA_ShowRacerPlace(x0,y0,Alpha,0,owner);
+			mchA_ShowRacerPlace(x0,y0,Alpha,0,owner,dt);
 			break;
 		case AE_FINISH_PLACE_STR:
-			mchA_ShowRacerPlace(x0,y0,Alpha,1);
+			mchA_ShowRacerPlace(x0,y0,Alpha,1,NULL,dt);
 			break;
 		case AE_ENERGY_BAR:
 			if(owner && owner -> owner -> Type == MCH_RACER_TYPE_MECHOS)
@@ -1077,7 +1077,7 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0)
 	}
 }
 
-void mchArcaneScreenElement::Redraw(void)
+void mchArcaneScreenElement::Redraw(const float dt)
 {
 	int x,y;
 	if(flags & AE_GLOBAL_COORDS){
@@ -1091,7 +1091,7 @@ void mchArcaneScreenElement::Redraw(void)
 		y = R.yi();
 	}
 	if(flags & AE_WINDOW_CLIP) gameWnd -> set_clipping();
-	RedrawFnc(x,y);
+	RedrawFnc(x,y,dt);
 	if(flags & AE_WINDOW_CLIP) gameWnd -> remove_clipping();
 }
 
@@ -1522,23 +1522,27 @@ void mchArcaneRoundMenu::Quant(float dt)
 	}
 }
 
-void mchArcaneScreenElement::ScaleQuant(void)
+void mchArcaneScreenElement::ScaleQuant(const float dt)
 {
 	float d;
 	if(!Active()) return;
 
+	// deltaScale at 30 FPS with delta time
+	const float dtScale = (deltaScale * 30) * dt;
+
 	d = destScale - Scale;
-	if(fabs(d) <= deltaScale)
+	if(fabs(d) <= dtScale)
 		Scale = destScale;
 	else
-		Scale += (destScale > Scale) ? deltaScale : -deltaScale;
+		Scale += (destScale > Scale) ? dtScale : -dtScale;
 }
 
-void mchArcaneScreenElement::PhaseQuant(int level,int mode)
+void mchArcaneScreenElement::PhaseQuant(int level,int mode,const float dt)
 {
 	float d;
 	int fl = 0;
-	const float dp = 0.2f;
+	// const float dp = 0.2f;
+	const float dp = 0.2f * 30 * dt;
 
 	if(!Active()) return;
 
@@ -2720,7 +2724,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 	p = objList -> first();
 	while(p){
 		if(p != activeEl) p -> flags &= ~AE_SELECTED;
-		p -> ScaleQuant();
+		p -> ScaleQuant(dt);
 		p = p -> next;
 	}
 
@@ -2744,7 +2748,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 			fl = 1;
 			p = objList -> first();
 			while(p){
-				p -> PhaseQuant(phaseIndex,showMode);
+				p -> PhaseQuant(phaseIndex,showMode,dt);
 				if(p -> Active() && p -> showIndex <= phaseIndex && p -> CheckPhase())
 					fl = 0;
 				p = p -> next;
@@ -2756,7 +2760,7 @@ void mchArcaneScreenDispatcher::Quant(void)
 			fl = 1;
 			p = objList -> first();
 			while(p){
-				p -> PhaseQuant(phaseIndex,showMode);
+				p -> PhaseQuant(phaseIndex,showMode,dt);
 //				if(p -> Active() && p -> showIndex >= phaseIndex && p -> CheckPhase())
 				if(p -> Active() && p -> CheckPhase())
 					fl = 0;
@@ -2910,7 +2914,7 @@ void mchArcaneScreenDispatcher::Redraw(void)
 		if(Visible){
 			while(p){
 				if(!(p -> flags & (AE_HIDDEN | AE_FREE))){
-					p -> Redraw();
+					p -> Redraw(float(dt) / 1000.0f);
 					if(!(p -> flags & AE_GLOBAL_COORDS)) SetFlush(p -> R.xi(),p -> R.yi(),p -> SizeX,p -> SizeY);
 				}
 				p = p -> next;
@@ -2928,7 +2932,7 @@ void mchArcaneScreenDispatcher::Redraw(void)
 	}
 	else {
 		if(Visible){
-			playerSet1 -> starsEl -> Redraw();
+			playerSet1 -> starsEl -> Redraw(float(dt) / 1000.0f);
 /*
 			if(!iworld_D -> CurScreen()){
 				playerSet1 -> energyEl -> R.x -= 100.0f;
@@ -2937,16 +2941,16 @@ void mchArcaneScreenDispatcher::Redraw(void)
 			}
 */
 			if(!iworld_D -> ElectionaryMode()){
-				playerSet1 -> statD -> Redraw();
+				playerSet1 -> statD -> Redraw(float(dt) / 1000.0f);
 				if(!iworld_D -> AssemblyMode() && !(playerSet1 -> menu -> flags & (AE_HIDDEN | AE_FREE)))
-					playerSet1 -> menu -> Redraw();
+					playerSet1 -> menu -> Redraw(float(dt) / 1000.0f);
 			}
 		}
 		iworld_D -> Redraw();
 
 		if(mchSplitScreenGame){
 			if(Visible){
-				playerSet2 -> starsEl -> Redraw();
+				playerSet2 -> starsEl -> Redraw(float(dt) / 1000.0f);
 /*
 				if(!iworld_D2 -> CurScreen()){
 					playerSet2 -> energyEl -> R.x -= 100.0f;
@@ -2955,9 +2959,9 @@ void mchArcaneScreenDispatcher::Redraw(void)
 				}
 */
 				if(!iworld_D2 -> ElectionaryMode()){
-					playerSet2 -> statD -> Redraw();
+					playerSet2 -> statD -> Redraw(float(dt) / 1000.0f);
 					if(!iworld_D2 -> AssemblyMode() && !(playerSet2 -> menu -> flags & (AE_HIDDEN | AE_FREE)))
-						playerSet2 -> menu -> Redraw();
+						playerSet2 -> menu -> Redraw(float(dt) / 1000.0f);
 				}
 			}
 			iworld_D2 -> Redraw();
@@ -4032,12 +4036,12 @@ mchArcaneStatsDispatcher::~mchArcaneStatsDispatcher(void)
 	delete data;
 }
 
-void mchArcaneStatsDispatcher::Redraw(void)
+void mchArcaneStatsDispatcher::Redraw(const float dt)
 {
 	int i;
 	for(i = 0; i < AE_STATS_MAX; i ++){
 		if(!(data[i] -> flags & AE_HIDDEN))
-			data[i] -> Redraw();
+			data[i] -> Redraw(dt);
 	}
 }
 
@@ -5038,28 +5042,30 @@ void mchA_DrawRacersPlace(void)
 	}
 }
 
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time)
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,const float dt)
 {
 	int col = (active) ? 2 : 1,hrs,min,sec,num;
-	static int alpha = 0;
+	static float alpha = 0;
 	static int d_alpha = 10;
-	const int alpha_max = 150;
+	const float alpha_max = 150.0f;
+
+	const float dt_alpha = d_alpha * 30 * dt;
 
 	static int last_chr = -1;
 
 	if(active && !acsActiveFlag){
-		if((alpha += d_alpha) >= alpha_max){
+		if((alpha += dt_alpha) >= alpha_max){
 			d_alpha = -abs(d_alpha);
 			alpha = alpha_max;
 		}
-		if((alpha += d_alpha) < 0){
+		if((alpha += dt_alpha) < 0){
 			d_alpha = abs(d_alpha);
 			alpha = 0;
 		}
 	}
 
 	if(active)
-		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[7],250 - alpha,0.0f,0);
+		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[7],250 - (int)alpha,0.0f,0);
 	else
 		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[0],200,0.0f,0);
 	
@@ -5149,25 +5155,27 @@ void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char
 	}
 }
 
-void mchA_DrawRacerPlace(int x,int y,int id,int active)
+void mchA_DrawRacerPlace(int x,int y,int id,int active,const float dt)
 {
-	static int alpha = 0;
+	static float alpha = 0;
 	static int d_alpha = 10;
-	const int alpha_max = 150;
+	const float alpha_max = 150.0f;
+
+	const float dt_alpha = d_alpha * 30 * dt;
 
 	if(active && !acsActiveFlag){
-		if((alpha += d_alpha) >= alpha_max){
+		if((alpha += dt_alpha) >= alpha_max){
 			d_alpha = -abs(d_alpha);
 			alpha = alpha_max;
 		}
-		if((alpha += d_alpha) < 0){
+		if((alpha += dt_alpha) < 0){
 			d_alpha = abs(d_alpha);
-			alpha = 0;
+			alpha = 0.0f;
 		}
 	}
 
 	if(active)
-		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[7],250 - alpha,0.0f,0);
+		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[7],250 - (int)alpha,0.0f,0);
 	else
 		mchA_SprD -> DrawSprite(x,y,1.0f,1.0f,1,mchA_ColorF[0],200,0.0f,0);
 	
@@ -5682,7 +5690,7 @@ void mchInitPartIDs(void)
 	mchA_PartID[2] = M3D_RB_WHEEL;
 }
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner, const float dt)
 {
 	float mul,tm;
 	int place,col;
@@ -5693,11 +5701,13 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 
 	place = r -> stPtr -> place + 1;
 
-	const int alpha_max = 250;
-	const int alpha_min = 70;
+	const float alpha_max = 250.0f;
+	const float alpha_min = 70.0f;
 
-	static int alpha = alpha_min;
+	static float alpha = alpha_min;
 	static int alpha_delta = 16;
+
+	const float dt_alpha = alpha_delta * 30 * dt;
 
 	static int place_colors[5] = { 13, 14, 14, 14, 15 };
 	mchA_XBuf.init();
@@ -5711,7 +5721,7 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 	al = 255 - al/2;
 
 	if(finish){
-		alpha += alpha_delta;
+		alpha += dt_alpha;
 		if(alpha > alpha_max){
 			alpha = alpha_max;
 			alpha_delta = -alpha_delta;
@@ -5721,7 +5731,7 @@ void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner)
 			alpha_delta = -alpha_delta;
 		}
 		mul *= 1.5f;
-		al = alpha;
+		al = (int)alpha;
 	}
 	else {
 		if(mchSplitScreenGame) mul *= 0.7f;
