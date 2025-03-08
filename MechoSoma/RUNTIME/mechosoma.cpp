@@ -2744,6 +2744,12 @@ int ShowImageRTO::Quant(void)
 
 		gb_IGraph3d -> BeginScene();
 
+		// Set view color to update outro credits scene on each quant
+		// otherwise screen doesn't update
+		if (gb_IGraph3d -> IsActive() && (Flags[curFile] & IMG_RTO_SCROLL_TEXT) && !gammaDir) {
+			gb_IGraph3d -> SetViewColor(0, 0, 0, 0);
+		}
+
 		if(Flags[curFile] & IMG_RTO_INTRO_IMAGE){
 			mch_introD -> Quant();
 		}
