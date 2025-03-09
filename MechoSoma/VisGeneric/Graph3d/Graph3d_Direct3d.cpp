@@ -10,6 +10,7 @@ fstream fxx("graph.txt",ios::out);
 
 #include "port.h"
 #include "texture_manager.h"
+#include "xerrhand.h"
 
 // Sprites
 
@@ -290,14 +291,20 @@ int  cGraph3dDirect3D::CreateTexture(int x,int y,eTextureFormat TextureFormat)
 		default: 
 			assert(0);
 	}
-	if(_renderer->get_texture_manager().createTexture(x,y,TexFormat3d,&hTexture)==MD3D_OK) 
-		return hTexture;
-	return 0;
+	if (_renderer->get_texture_manager().createTexture(x,y,TexFormat3d,&hTexture) != MD3D_OK)
+	{
+		XAssert("create texture");
+	}
+	return hTexture;
 }
 int cGraph3dDirect3D::DeleteTexture(int hTexture)
 {
 	assert(hTexture);
-	return _renderer->get_texture_manager().deleteTexture((int)hTexture)==MD3D_OK;
+	if (_renderer->get_texture_manager().deleteTexture((int)hTexture) != MD3D_OK)
+	{
+		XAssert("delete texture");
+	}
+	return 0;
 }
 
 void* cGraph3dDirect3D::GetZBuffer()
@@ -395,7 +402,10 @@ int cGraph3dDirect3D::CreateSprite(uint32_t dwWidth,uint32_t dwHeight,uint32_t d
 	uint32_t hr;
 	uint32_t dwTexHandle;
 
-	assert(_renderer->get_texture_manager().createTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) == MD3D_OK);
+	if (_renderer->get_texture_manager().createTexture( dwWidth, dwHeight, dwFormat, &dwTexHandle ) != MD3D_OK)
+	{
+		XAssert("create texture");
+	}
 
 	// Fill the slot for the new parent sprite
 
@@ -542,7 +552,10 @@ int cGraph3dDirect3D::DeleteSprite(uint32_t dwHandle)
 	}
 
 	// Free the texture handle 
-	assert(_renderer->get_texture_manager().deleteTexture( lpSprite->dwTexHandle ) == MD3D_OK);
+	if (_renderer->get_texture_manager().deleteTexture( lpSprite->dwTexHandle ) != MD3D_OK)
+	{
+		XAssert("delete texture");
+	}
 
 	// Mark the slot as free
 	lpSprite->dwHandle = 0;
@@ -562,14 +575,26 @@ int cGraph3dDirect3D::LockSprite(uint32_t dwHandle,void **lplpSprite,uint32_t *l
 	uint32_t hr;
 	if( (lpSprite->dwHandle & 0x80000000) == 0 ) {
 		// It's a parent sprite
-		assert(_renderer->get_texture_manager().lockTexture( lpSprite->dwTexHandle, lplpSprite, lplpPitch ) == MD3D_OK);
+		if (_renderer->get_texture_manager().lockTexture(lpSprite->dwTexHandle, lplpSprite, lplpPitch) != MD3D_OK)
+		{
+			XAssert("lock texture");
+		}
 	} else {
 		// It's a child sprite
 		uint32_t dwTexHandle = _lpSpriteSlots[lpSprite->dwParentHandle].dwTexHandle;
-		assert(_renderer->get_texture_manager().lockTexture( dwTexHandle, lpSprite->dwLeft, lpSprite->dwTop,
-							 lpSprite->dwLeft + lpSprite->dwWidth-1, 
-							 lpSprite->dwTop + lpSprite->dwHeight-1,	
-							 lplpSprite, lplpPitch ) == MD3D_OK);
+		const auto result = _renderer->get_texture_manager().lockTexture(
+			dwTexHandle,
+			lpSprite->dwLeft,
+			lpSprite->dwTop,
+			lpSprite->dwLeft + lpSprite->dwWidth - 1,
+			lpSprite->dwTop + lpSprite->dwHeight - 1,
+			lplpSprite,
+			lplpPitch
+		);
+		if (result != MD3D_OK)
+		{
+			XAssert("lock texture");
+		}
 	}
 
 	return 0;
