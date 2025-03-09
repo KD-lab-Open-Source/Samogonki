@@ -391,7 +391,10 @@ int cGraph3dDirect3D::CreateSprite(uint32_t dwWidth,uint32_t dwHeight,uint32_t d
 	if( 0 == ( dwSlot = FindUnusedSlot() ) )
 	{
 		// No unused slots. Try to create a new one.
-		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+		if ( 0 == ( dwSlot = CreateNewSlot() ) )
+		{
+			XAssert("create new slot");
+		}
 	}
 
 	// Pointer to this sprite
@@ -454,7 +457,10 @@ int cGraph3dDirect3D::CreateChildSprite(uint32_t dwParentHandle,uint32_t dwLeft,
 	if( 0 == ( dwSlot = FindUnusedSlot() ) )
 	{
 		// No unused slots. Try to create a new one.
-		assert( 0 != ( dwSlot = CreateNewSlot() ) );
+		if ( 0 == ( dwSlot = CreateNewSlot() ) )
+		{
+			XAssert("create new slot");
+		}
 	}
 
 	// Pointer to this sprite
@@ -1197,8 +1203,10 @@ uint32_t cGraph3dDirect3D::CreateNewSlot()
 
 	// Else we need to expand the array
 
-	assert( NULL != ( _lpSpriteSlots = (TSpriteSlot *)realloc( _lpSpriteSlots, 
-		 (_dwSpriteSlotsCount+SLOTS_EXPAND_CHUNK)*sizeof(TSpriteSlot) ) ) );
+	if ( NULL == ( _lpSpriteSlots = (TSpriteSlot *)realloc( _lpSpriteSlots, (_dwSpriteSlotsCount+SLOTS_EXPAND_CHUNK)*sizeof(TSpriteSlot) ) ) )
+	{
+		XAssert("slots reallocate");
+	}
 
 	// Clear the newly allocated block
 	memset( _lpSpriteSlots + _dwSpriteSlotsCount, 0, SLOTS_EXPAND_CHUNK*sizeof(TSpriteSlot) );
