@@ -582,8 +582,10 @@ mchArcaneScreenElement::mchArcaneScreenElement(void)
 	type = AE_BASE_TYPE;
 	dataType = 0;
 
-	clockTimer = 0;
-	clockPeriod = 20;
+	clockTimer = 0.0f;
+	// 20 frames at 30 FPS
+	// clockPeriod = 20;
+	clockPeriod = 0.66f;
 
 	list = 0;
 	color = 1;
@@ -874,7 +876,7 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0,const float dt)
 				sc = (mchSplitScreenGame) ? 0.8f : 1.0f;
 
 				if(flags & AE_ROTATE)
-					angle = 2.0 * M_PI/(double)clockPeriod * (double)clockTimer;
+					angle = 2.0 * M_PI/ clockPeriod * clockTimer;
 				else
 					angle = 0.0;
 
@@ -1612,8 +1614,9 @@ void mchArcaneScreenElement::Quant(float dt)
 		}
 	}
 
-	if(++clockTimer >= clockPeriod){ 
-		clockTimer = 0;
+	clockTimer += dt;
+	if(clockTimer >= clockPeriod){ 
+		clockTimer = 0.0f;
 		if(flags & AE_END_ROTATE)
 			flags &= ~(AE_ROTATE | AE_END_ROTATE);
 	}
