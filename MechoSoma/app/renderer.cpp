@@ -74,6 +74,8 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     ErrH.Abort("SDL_GL_CreateContext", XERR_USER, 0, "");
   }
 
+  SDL_GL_SetSwapInterval(1);
+
   auto context = sg_context_desc {
     .color_format = SG_PIXELFORMAT_RGBA8,
     .depth_format = SG_PIXELFORMAT_DEPTH

@@ -23,7 +23,7 @@ enum xgrModes
 };
 
 
-const int RTO_GAME_QUANT_TIMER	= 0;		// 1000/25;
+const int RTO_GAME_QUANT_TIMER	= 1000/60;		// 1000/25;
 const int RTO_MAIN_MENU_TIMER	= 1000/30;
 const int RTO_IMAGE_TIMER		= 1000/30;
 const int RTO_LOADING_TIMER		= 1000/30;
