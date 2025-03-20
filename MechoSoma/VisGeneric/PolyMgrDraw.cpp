@@ -8,6 +8,7 @@
 #include "BaseTrail.h"
 #include "Scene.h"
 #include "TexMgr.h"
+#include "Levin.h"
 
 #ifdef _USE_TILEMAP_
 #include "TileMap.h"
@@ -19,6 +20,9 @@ float gb_LodValue=0.01f;
 //#define LOD_VALUE						gb_LodValue
 
 extern void ResetTextureMultiMaterialSurface565(cInterfaceGraph3d *IGraph3d,cMaterial *Material,cSurfaceReflectionMultiMaterial *Surface);
+
+namespace
+{
 
 void SetProjectionMatrix(cCamera *Camera, cInterfaceGraph3d *Graph3d, bool isRenderReflection)
 {
@@ -72,6 +76,8 @@ void SetProjectionMatrix(cCamera *Camera, cInterfaceGraph3d *Graph3d, bool isRen
 	}
 
 	Graph3d->SetProjectionMatrix(viewport, mat);
+}
+
 }
 
 void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
@@ -1425,6 +1431,50 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		Graph3d->EndDrawCommand(drawCommand);
 		Graph3d->ResetProjectionMatrix();
 	}
+}
+
+void cPolyDispatcher::Draw(cUnknownClass *UCamera,cLevin *Levin)
+{
+	assert(UCamera->GetKind(KIND_CAMERA));
+	auto Camera = static_cast<cCamera *>(UCamera);
+
+	cRenderDevice *RenderDevice = GetRenderDevice(0);
+	cInterfaceGraph3d *Graph3d = RenderDevice->GetIGraph3d();
+
+	M3D_DRAW_COMMAND drawCommand;
+	Graph3d->BeginDrawCommand(drawCommand);
+
+	int RenderAttribute = RENDER_COLOR_MOD_DIFFUSE;
+	if (Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE))
+	{
+		RenderAttribute |= RENDER_CLIPPING3D;
+	}
+	SetProjectionMatrix(Camera, Graph3d, 0);
+	Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(RenderAttribute)));
+
+	const auto &Color = Levin->GetColor();
+	const int r = Color.GetR();
+	const int g = Color.GetG();
+	const int b = Color.GetB();
+	const int a = Color.GetA();
+	assert(r <= 255 && g <= 255 && b <= 255 && a <= 255);
+
+	const auto &Positions = Levin->GetPositions();
+	for (unsigned i = 0; i < Positions.size(); i++)
+	{
+		drawCommand.addPosition(Positions[i].x, Positions[i].y, Positions[i].z);
+		drawCommand.addDiffuseColor(r, g, b, a);
+		drawCommand.addSpecularColor(0, 0, 0, 0);
+
+		if (i >= 4)
+		{
+			drawCommand.addIndex(i - 2, i - 3, i - 1);
+			drawCommand.addIndex(i - 2, i - 4, i - 3);
+		}
+	}
+
+	Graph3d->EndDrawCommand(drawCommand);
+	Graph3d->ResetProjectionMatrix();
 }
 
 //////////////////// PARTICLE RASTERIZATION ////////////////////
