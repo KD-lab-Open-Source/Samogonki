@@ -1,6 +1,8 @@
 #ifndef __LEVIN_H__
 #define __LEVIN_H__
 
+#include <vector>
+
 #include "UMATH.H"
 #include "BaseClass.h"
 
@@ -19,8 +21,7 @@ class cLevin
 	Vect3f		Direction;									// направление
 	sColor4f	Color;
 
-	class M3D_DRAW_COMMAND DrawCommand;
-	int CurrentNumberPoint;
+	std::vector<Vect3f> Positions;
 public:
 	int	  size;											// минимальная длина ствола для var=4
 
@@ -34,6 +35,10 @@ public:
 		float pXLevel,float pYLevel,float pZLevel)							{ pStop=p_Stop; pNascency=p_Nascency; pAberration.set(pX,pY,pZ); pLevel.set(pXLevel,pYLevel,pZLevel); }
 	void SetPosition(float xPos,float yPos,float zPos,float Vx,float Vy,float Vz=0)	{ Pos.set(xPos,yPos,zPos); Direction.set(Vx,Vy,Vz); }
 	void SetColor(float rLevin,float gLevin,float bLevin,float aLevin=1.f)	{ Color.set(rLevin,gLevin,bLevin,aLevin); }
+
+	const sColor4f &GetColor() const;
+	const std::vector<Vect3f> &GetPositions() const;
+
 private:
 	void GenerationLevin1(const Vect3f &pos,const Vect3f &dpos,const Vect2f &width,int level,int count=0);
 	void GenerationLevin4(const Vect3f &pos,const Vect3f &dpos,const Vect2f &width,int length,int level,int count=0);

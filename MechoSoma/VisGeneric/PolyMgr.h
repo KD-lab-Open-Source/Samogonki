@@ -59,6 +59,7 @@ class cRenderDevice;
 class cBasePolyGrid;
 class cWorldPolyGrid;
 class cSurfaceReflectionMultiMaterial;
+class cLevin;
 struct sTextureChild;
 struct sTileMap;
 struct sTexture;
@@ -121,6 +122,8 @@ public:
 	void Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *SunArray);
 
 	void Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrail);
+
+	void Draw(cUnknownClass *UCamera,cLevin *Levin);
 
 	void SetViewColor(cUnknownClass *UCamera,const sColor4f &Diffuse,const sColor4f &Specular,int zWrite=0);
 	void BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf &Matrix); // для трехмерных эффектов
