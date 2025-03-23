@@ -225,8 +225,8 @@ struct mchArcaneScreenElement
 
 	float Timer;
 
-	int clockTimer;
-	int clockPeriod;
+	float clockTimer;
+	float clockPeriod;
 
 	Vect3f R;
 	Vect3f R0;
