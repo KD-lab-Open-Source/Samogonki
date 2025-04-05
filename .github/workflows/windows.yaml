@@ -37,7 +37,7 @@ jobs:
       run: git clone --depth 1 --branch release-2.26.5 https://github.com/libsdl-org/SDL.git SDL
     - name: SDL -- configure
       if: steps.cache-sdl.outputs.cache-hit != 'true'
-      run: msys2 -c 'cmake -B cmake-build-debug -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-debug'
+      run: msys2 -c 'cmake -B cmake-build-debug -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-debug'
       working-directory: SDL
     - name: SDL -- build and install
       if: steps.cache-sdl.outputs.cache-hit != 'true'
