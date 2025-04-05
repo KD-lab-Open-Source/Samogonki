@@ -247,6 +247,7 @@ Samogonki@kdlab.com
 #define ACS_2560_1440_STR  "2560x1440"
 #define ACS_2560_1600_STR  "2560x1600"
 #define ACS_3440_1440_STR  "3440x1440"
+#define ACS_3840_2160_STR  "3840x2160"
 #define	ACS_GR_SKY_STR	"меан"
 #define	ACS_HIGH_STR	"нркхвмне"
 #define	ACS_LOW_STR	"унпньее"

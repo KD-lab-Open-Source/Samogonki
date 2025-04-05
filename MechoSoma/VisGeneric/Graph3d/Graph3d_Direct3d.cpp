@@ -1068,7 +1068,7 @@ void cGraph3dDirect3D::InitRenderState()
 
 int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
 {
-	*pNumVideoMode = 13;
+	*pNumVideoMode = 14;
 	auto modes = new MD3DMODE[*pNumVideoMode];
 
 	modes[0].dx = 640;
@@ -1122,6 +1122,10 @@ int cGraph3dDirect3D::EnumVideoMode(int* pNumVideoMode, MD3DMODE** ppArray)
 	modes[12].dx = 3440;
 	modes[12].dy = 1440;
 	modes[12].bitPerPixel = 32;
+
+	modes[13].dx = 3840;
+	modes[13].dy = 2160;
+	modes[13].bitPerPixel = 32;
 
 	*ppArray = modes;
 

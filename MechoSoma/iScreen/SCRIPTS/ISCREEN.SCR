@@ -2423,7 +2423,7 @@ screen {
 		$OPT_RES_BODY
 		$OPT_OBJ_BODY
 
-		max_state	12
+		max_state	13
 
 		obj_index 1 $ACS_BACK_OPTION
 
@@ -2440,6 +2440,7 @@ screen {
 		state_str $ACS_2560_1440_STR
 		state_str $ACS_2560_1600_STR
 		state_str $ACS_3440_1440_STR
+		state_str $ACS_3840_2160_STR
 
 		#define OPT_CODE $ACS_OPT_RESOLUTION
 		$ALPHA_SET0

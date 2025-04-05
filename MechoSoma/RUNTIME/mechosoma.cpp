@@ -3157,6 +3157,9 @@ void mchReInitGraph(int mode)
 		case MCH_3440x1440:
 			dwScrX=3440,dwScrY=1440;
 			break;
+		case MCH_3840x2160:
+			dwScrX=3840,dwScrY=2160;
+			break;
 	}
 	xgrInitMode = mode;
 
