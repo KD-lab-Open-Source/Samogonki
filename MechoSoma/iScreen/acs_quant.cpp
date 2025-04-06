@@ -777,7 +777,9 @@ void acsOutMouse3D(void)
 	x = XGR_MouseObj.PosX + XGR_MouseObj.SizeX/2;
 	y = XGR_MouseObj.PosY + XGR_MouseObj.SizeY/2;
 
-	Vect3f v1(acsMouseScale);
+	// Vect3f v1(acsMouseScale);
+	// Scale mouse pointer size proportionally to the screen width
+	Vect3f v1(max(xgrScreenSizeX / 800.0f, 2.0f));
 	gb_IVisGeneric -> SetObjectScale((cUnknownClass*)acsMouse3D,&v1);
 
 	f = acsCalcForce(acsMouseZ - acsMouse3D -> rmaxTotal()/2.0f,acsMouseZ + acsMouse3D -> rmaxTotal()/2.0f,acsWaterZ);
