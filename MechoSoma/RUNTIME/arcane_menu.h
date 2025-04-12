@@ -266,19 +266,19 @@ struct mchArcaneScreenElement
 	mchArcaneScreenElement* prev;
 	mchArcaneScreenElement* next;
 
-	virtual void Redraw(const float dt);
+	virtual void Redraw(float dt);
 	virtual void InitRedraw(void);
-	virtual void RedrawFnc(int x,int y,const float dt);
+	virtual void RedrawFnc(int x,int y,float dt);
 	virtual void Quant(float dt);
 
-	void PhaseQuant(int level,int mode, const float dt);
+	void PhaseQuant(int level,int mode,float dt);
 	int CheckPhase(void){ 
 		if(fabs(phase - dest_phase) < 0.1f)
 			return 0;
 		return 1;
 	}
 
-	void ScaleQuant(const float dt);
+	void ScaleQuant(float dt);
 
 	virtual void alloc(void);
 	virtual void free(void);
@@ -339,7 +339,7 @@ struct mchArcaneStatsDispatcher
 
 	mchArcaneScreenElement** data;
 
-	void Redraw(const float dt);
+	void Redraw(float dt);
 	void InitRedraw(void);
 
 	void Add(int arcID);
@@ -405,9 +405,9 @@ struct mchArcaneMenu : public mchArcaneScreenElement
 
 	mchArcaneStatsDispatcher* statD;
 
-	virtual void InitRedraw(void);
-	virtual void MouseHandler(int bt);
-	virtual void RedrawFnc(int x,int y);
+	void InitRedraw(void) override;
+	void MouseHandler(int bt) override;
+	void RedrawFnc(int x,int y,float dt) override;
 
 	virtual void KeyHandler(int id);
 	void SetArcane(mchArcaneMenuElement* p);
@@ -418,12 +418,12 @@ struct mchArcaneMenu : public mchArcaneScreenElement
 	void removeElement(int type,int id);
 
 	void ChangeState(void);
-	void SetState(int st);
+	void SetState(int st) override;
 
 	void Scale(float sc);
 
 	mchArcaneMenu(void);
-	~mchArcaneMenu(void);
+	~mchArcaneMenu(void) override;
 };
 
 struct mchArcaneRoundMenu : public mchArcaneMenu
@@ -439,12 +439,12 @@ struct mchArcaneRoundMenu : public mchArcaneMenu
 
 	mchArcaneScreenElement* textEl;
 
-	virtual void InitRedraw(void);
-	virtual void RedrawFnc(int x,int y);
-	virtual void KeyHandler(int id){ Change(id); }
-	virtual void MouseHandler(int bt);
-	virtual void Quant(float dt);
-	virtual void SetState(int st);
+	void InitRedraw(void) override;
+	void RedrawFnc(int x,int y,float dt) override;
+	void KeyHandler(int id) override { Change(id); }
+	void MouseHandler(int bt) override;
+	void Quant(float dt) override;
+	void SetState(int st) override;
 
 	void SetTextEl(mchArcaneScreenElement* p);
 
@@ -455,7 +455,7 @@ struct mchArcaneRoundMenu : public mchArcaneMenu
 	int CheckMouse(void);
 
 	mchArcaneRoundMenu(int tp);
-	~mchArcaneRoundMenu(void);
+	~mchArcaneRoundMenu(void) override;
 };
 
 enum mchA_ShowActions 

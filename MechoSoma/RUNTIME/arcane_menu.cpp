@@ -209,8 +209,8 @@ int mchGetKeysConfig(void);
 void mchA_DrawRacersInfo(void);
 void mchA_DrawRacersEnergy(void);
 void mchA_DrawRacersPlace(void);
-void mchA_DrawRacerPlace(int x,int y,int id,int active,const float dt);
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,const float dt);
+void mchA_DrawRacerPlace(int x,int y,int id,int active,float dt);
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,float dt);
 void mchA_DrawArrow(int x,int y,int sx,mchArcaneRacerSet* p = NULL);
 void mchA_DrawMouse(int mode = 0);
 void mchA_DrawMouseRect(int sx,int sy,int sz,int delta);
@@ -269,7 +269,7 @@ void mchA_ShowStartCountDisable(void);
 
 void mchA_DropCPDisable(mchRacer* p);
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet*,const float dt);
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet*,float dt);
 void mchA_ShowRacerLap(int x,int y,int al,mchArcaneRacerSet* owner = NULL);
 
 const char* mchA_GetNumSuffix(int v);
@@ -736,7 +736,7 @@ void mchArcaneScreenElement::InitRedraw(void)
 
 #define AE_D3D_CH_SIZE	2.0f
 #define AE_D3D_CH_SIZE2 1.0f
-void mchArcaneScreenElement::RedrawFnc(int x0,int y0,const float dt)
+void mchArcaneScreenElement::RedrawFnc(int x0,int y0,float dt)
 {
 	int x,y,sx,sy,sy0,ch_sx,al,tm;
 	float sc;
@@ -1079,7 +1079,7 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0,const float dt)
 	}
 }
 
-void mchArcaneScreenElement::Redraw(const float dt)
+void mchArcaneScreenElement::Redraw(float dt)
 {
 	int x,y;
 	if(flags & AE_GLOBAL_COORDS){
@@ -1324,7 +1324,7 @@ void mchArcaneRoundMenu::InitRedraw(void)
 	}
 }
 
-void mchArcaneRoundMenu::RedrawFnc(int x0,int y0)
+void mchArcaneRoundMenu::RedrawFnc(int x0,int y0,float dt)
 {
 	int i,sz,mx,my,mx0,my0,mz0;
 	float el_sz = 16.0f;
@@ -1491,7 +1491,7 @@ void mchArcaneMenu::InitRedraw(void)
 {
 }
 
-void mchArcaneMenu::RedrawFnc(int x0,int y0)
+void mchArcaneMenu::RedrawFnc(int x0,int y0,float dt)
 {
 	int y = 0;
 	mchArcaneMenuElement* p;
@@ -1524,7 +1524,7 @@ void mchArcaneRoundMenu::Quant(float dt)
 	}
 }
 
-void mchArcaneScreenElement::ScaleQuant(const float dt)
+void mchArcaneScreenElement::ScaleQuant(float dt)
 {
 	float d;
 	if(!Active()) return;
@@ -1539,7 +1539,7 @@ void mchArcaneScreenElement::ScaleQuant(const float dt)
 		Scale += (destScale > Scale) ? dtScale : -dtScale;
 }
 
-void mchArcaneScreenElement::PhaseQuant(int level,int mode,const float dt)
+void mchArcaneScreenElement::PhaseQuant(int level,int mode,float dt)
 {
 	float d;
 	int fl = 0;
@@ -4039,7 +4039,7 @@ mchArcaneStatsDispatcher::~mchArcaneStatsDispatcher(void)
 	delete data;
 }
 
-void mchArcaneStatsDispatcher::Redraw(const float dt)
+void mchArcaneStatsDispatcher::Redraw(float dt)
 {
 	int i;
 	for(i = 0; i < AE_STATS_MAX; i ++){
@@ -5045,7 +5045,7 @@ void mchA_DrawRacersPlace(void)
 	}
 }
 
-void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,const float dt)
+void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char* name,int chr,int star,int time,float dt)
 {
 	int col = (active) ? 2 : 1,hrs,min,sec,num;
 	static float alpha = 0;
@@ -5158,7 +5158,7 @@ void mchA_DrawRacerFinishPlace(int x,int y,int id,int active,float ph,const char
 	}
 }
 
-void mchA_DrawRacerPlace(int x,int y,int id,int active,const float dt)
+void mchA_DrawRacerPlace(int x,int y,int id,int active,float dt)
 {
 	static float alpha = 0;
 	static int d_alpha = 10;
@@ -5693,7 +5693,7 @@ void mchInitPartIDs(void)
 	mchA_PartID[2] = M3D_RB_WHEEL;
 }
 
-void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner, const float dt)
+void mchA_ShowRacerPlace(int x,int y,int al,int finish,mchArcaneRacerSet* owner,float dt)
 {
 	float mul,tm;
 	int place,col;

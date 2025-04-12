@@ -1850,7 +1850,7 @@ void iWorldDispatcher::AssemblyPartsQuant(int mode)
 	}
 }
 
-void iWorldDispatcher::AssemblyQuant(const float dt)
+void iWorldDispatcher::AssemblyQuant(float dt)
 {
 	// const float da = 3.0f;
 	// 3 degrees per frame at 30 FPS = 360 degrees per 4s
