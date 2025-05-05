@@ -137,7 +137,7 @@ void hbm_Image::free(void)
 		for(i = 0; i < numFrames; i ++){
 			scr_frameTable[i] -> free();
 		}
-		delete scr_frameTable;
+		delete[] scr_frameTable;
 		scr_frameTable = NULL;
 	}
 }
@@ -434,12 +434,12 @@ void hbm_Frame::compress(int mode)
 		}
 		flags |= mode;
 
-		delete dataPtr;
+		delete[] dataPtr;
 		dataPtr = new char[idx0];
 
 		dataSize = idx0;
 		memcpy(dataPtr,tmp_ptr,idx0);
-		delete tmp_ptr;
+		delete[] tmp_ptr;
 	}
 }
 

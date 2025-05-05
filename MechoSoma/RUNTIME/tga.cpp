@@ -33,7 +33,7 @@ tgaFile::tgaFile(void)
 	bitsPerPixel = 24;
 	imageSize = 0;
 	image = NULL;
-	memset(ID,256,0);
+	memset(ID,0,256);
 }
 
 tgaFile::~tgaFile(void)

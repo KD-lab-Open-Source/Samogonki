@@ -559,7 +559,7 @@ mchRaceDispatcher::~mchRaceDispatcher(void)
 	for(i = 0; i < 10; i ++)
 		delete cpBackup[i];
 
-	delete cpBackup;
+	delete[] cpBackup;
 
 	mchRacer* rp = racerLst -> first();
 	while(rp){

@@ -241,13 +241,13 @@ void scrDataBlock::freeData(void)
 	if(flags & SCR_ALLOC_DATA){
 		switch(dataType){
 			case SCR_INT_DATA:
-				delete i_dataPtr;
+				delete[] i_dataPtr;
 				break;
 			case SCR_DOUBLE_DATA:
-				delete d_dataPtr;
+				delete[] d_dataPtr;
 				break;
 			case SCR_CHAR_DATA:
-				delete c_dataPtr;
+				delete[] c_dataPtr;
 				break;
 		}
 		flags ^= SCR_ALLOC_DATA;
@@ -360,7 +360,7 @@ void saveScript(const char* fname,scrDataBlock* p)
 		fh.write(p1,sz1);
 		fh.close();
 
-		delete p0;
-		delete p1;
+		delete[] p0;
+		delete[] p1;
 	}
 }

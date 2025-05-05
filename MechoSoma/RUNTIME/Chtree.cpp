@@ -155,7 +155,7 @@ void aciCHTree::save(char* fname)
 	fh.close();
 
 	delete XBuf;
-	delete p1;
+	delete[] p1;
 }
 
 void aciCHTree::load(char* fname)

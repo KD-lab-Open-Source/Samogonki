@@ -35,7 +35,7 @@ void ogBuffer::realloc(unsigned int sz)
 	memcpy(p,buf,size);
 	size = sz;
 
-	delete buf;
+	delete[] buf;
 	buf = p;
 }
 
