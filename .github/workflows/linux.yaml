@@ -44,7 +44,7 @@ jobs:
       working-directory: SDL
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSTEAM_VERSION=1
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build -j3 --config ${{env.BUILD_TYPE}}

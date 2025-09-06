@@ -52,7 +52,7 @@ jobs:
       run: |
         mkdir build-mingw
         cd build-mingw
-        cmake -G "Unix Makefiles" ..
+        cmake -G "Unix Makefiles" .. -DSTEAM_VERSION=1
         make -j4
         cd ..
     - name: prepare release folder

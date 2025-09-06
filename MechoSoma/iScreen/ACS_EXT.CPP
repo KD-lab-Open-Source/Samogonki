@@ -32,6 +32,10 @@
 #include "mch_common.h" // For far target
 #include "IGraph3d.h" // For far target
 
+#ifdef STEAM_VERSION
+#include "online_game_setup.h"
+#endif
+
 #define MK_LBUTTON 0x0001
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
@@ -185,6 +189,8 @@ extern HFont** acsFntTable;
 extern int acsCurrentSave;
 extern int acsNumSaves;
 
+extern int mchPBEM_DataFlag;
+
 #ifdef _ACS_MOVE_OBJECTS_
 extern aciScreenObject* acsMoveObj;
 #endif
@@ -202,6 +208,7 @@ void mchInitDemo(void);
 void acsInitDemo(int tb_mode);
 
 void acsInitOnlineMenu(void);
+void acsSetupOnlineGame(int argument);
 
 void acsInitShop(int pl);
 void acsFinitShop(int mode = 0);
@@ -787,6 +794,11 @@ void acsHandleExtEvent(int code,int data0,int data1,int data2)
 		case ACS_EXT_INIT_ONLINE_MENU:
 			acsInitOnlineMenu();
 			break;
+#ifdef STEAM_VERSION
+		case ACS_EXT_SETUP_ONLINE_GAME:
+			acsSetupOnlineGame(data0);
+			break;
+#endif
 		case ACS_EXT_SET_ZBUF:
 			acsExtSetCamera(data0);
 			break;
@@ -3069,3 +3081,11 @@ void acsInitOnlineMenu(void)
 	else
 		p -> flags &= ~(ACS_BLOCKED | ACS_HIDDEN);
 }
+
+#ifdef STEAM_VERSION
+void acsSetupOnlineGame(int argument)
+{
+	auto command = static_cast<network::OnlineGameSetup::Command>(argument);
+	network::OnlineGameSetup::get().handle_command(command);
+}
+#endif

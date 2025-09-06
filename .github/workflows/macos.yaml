@@ -46,7 +46,7 @@ jobs:
       working-directory: SDL
 
     - name: Game -- configure
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSTEAM_VERSION=1
     - name: Game -- build
       run: ninja
       working-directory: ${{github.workspace}}/build

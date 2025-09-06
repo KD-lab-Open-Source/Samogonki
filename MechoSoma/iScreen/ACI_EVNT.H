@@ -93,6 +93,7 @@
 #define ACS_EXT_SET_ZBUF			53
 #define ACS_EXT_CHANGE_PLAYER			54
 #define ACS_EXT_INIT_ONLINE_MENU		55
+#define ACS_EXT_SETUP_ONLINE_GAME		56
 
 // Options
 #define ACS_OPT_RESOLUTION			0

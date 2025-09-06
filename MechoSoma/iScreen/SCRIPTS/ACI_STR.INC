@@ -217,6 +217,7 @@ Samogonki@kdlab.com
 #define	ACS_HOT_SEAT2_STR	"ндмнбпелеммши унр-яхр"
 #define	ACS_ONLINE_STR	"нмкюим"
 #define	ACS_ONLINE_URL_STR	"http://www.samogonki.ru/games"
+#define	ACS_ONLINE_GAME_STR	"хцпю"
 #define	ACS_START_STR	"ярюпр!"
 #define	ACS_WORLD_STR	"рПЮЯЯЮ: "
 #define	ACS_DISABLED_STR	"нрйкчвем"

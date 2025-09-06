@@ -40,6 +40,7 @@
 #define ACS_DEMO_SCR			32
 #define ACS_NA_SCR			33
 #define ACS_MAIN_MENU_DUMMY_SCR3	34
+#define ACS_ONLINE_GAME_CFG_SCR	35
 
 // Backgrounds...
 #define ACS_MAIN_MENU_BACK	1001
@@ -209,6 +210,9 @@
 
 #define ACS_JOY_PRM2			2115
 #define ACS_JOY_TXT2			2116
+
+#define ACS_ONLINE_GAME_PRM		2117
+#define ACS_ONLINE_GAME_TEXT	2118
 
 #define ACS_SAVE_SLOT00			2201
 #define ACS_SAVE_SLOT01			2202

@@ -59,6 +59,10 @@
 
 #include "mch_common.h" // For far target
 
+#ifdef STEAM_VERSION
+#include "online_game_setup.h"
+#endif
+
 #define TRUE 1
 #define FALSE 0
 #define MAX_PATH 1024
@@ -1133,8 +1137,12 @@ int MainMenuRTO::Quant(void)
 	if(mch_iScreen){
 		if(mchSkipMainMenu)
 			ret = (mchPBEM_Game) ? 4 : 2;
-		else
+		else {
+#ifdef STEAM_VERSION
+			network::OnlineGameSetup::get().quant();
+#endif
 			ret = acsQuant();
+		}
 
 		if(ret > 1){
 			mchNewGameMode = ret;
@@ -3484,15 +3492,11 @@ void LoadingRTO::Init(int id)
 	XStream fh;
 	XBuffer obj_buf;
 
-	char* header;
-
 	mchA_d3dCreateBackBuffer();
 
 	mchA_PrepareLoadingImage(mchCurrentWorld,mchCurrentTrack);
 	startTimer = clocki();
 
-// TODO: @caiiiycuk uncomment this
-#ifdef NETWORK
 	if(mchPBEM_DataFlag){
 		wi_D.connect(wiServerName,wiServerPort);
 
@@ -3512,11 +3516,10 @@ void LoadingRTO::Init(int id)
 			}
 		}
 		else {
-			header = "Content-type: application/x-www-form-urlencoded\r\n";
+			const char *header = "Content-type: application/x-www-form-urlencoded\r\n";
 			wi_D.open_request(WI_POST,wiGameURL,header,strlen(header),wi_D.output_buffer(),wi_D.output_size());
 		}
 	}
-#endif
 }
 
 int LoadingRTO::Quant(void)
@@ -3536,8 +3539,6 @@ int LoadingRTO::Quant(void)
 	if(gb_IGraph3d->IsActive())
 		mchA_d3dFlushBackBuffer(0,0,XGR_MAXX,XGR_MAXY);
 
-// TODO: @caiiiycuk invesitigate this
-#ifdef WTF
 	if(mchPBEM_DataFlag){
 		ogQuant();
 
@@ -3559,7 +3560,6 @@ int LoadingRTO::Quant(void)
 		if(v >= 255)
 			gb_IGraph3d->Flush();
 	}
-#endif
 
 	if(v < 255){
 		gb_IGraph3d->BeginScene();

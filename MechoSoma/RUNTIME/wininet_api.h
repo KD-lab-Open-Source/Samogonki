@@ -2,6 +2,10 @@
 #ifndef __WININET_API_H__
 #define __WININET_API_H__
 
+#ifdef STEAM_VERSION
+#include <memory>
+#endif
+
 struct wiCriticalSection
 {
 	void* csection;
@@ -44,6 +48,11 @@ class wiDispatcher
 
 //	char tmpBuffer[WI_TEMP_BUFFER_SIZE];
 
+#ifdef STEAM_VERSION
+	struct Properties;
+	std::unique_ptr<Properties> _properties;
+#endif
+
 public:
 	void set_error(void){ 
 		status = WI_ERROR; 
@@ -55,7 +64,7 @@ public:
 
 	int get_status(void) const { return status; }
 	int get_request_status(void);
-	char* get_request_status_str(void);
+	const char* get_request_status_str(void);
 
 	void alloc_inbuf(int sz);
 	void expand_inbuf(int sz);

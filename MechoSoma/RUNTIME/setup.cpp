@@ -20,11 +20,8 @@
 #include "Base.h"
 #include "Mesh3ds.h"
 
-// TODO: @caiiiycuk netowkr game
-#ifdef NETWORK
 #include "wininet_api.h"
 #include "online_game.h"
-#endif
 
 #define _MAX_PATH 1024
 #define MAX_PATH 1024
@@ -271,11 +268,9 @@ void mchSetup(void)
 		xgrColorDepth = 16 + 16 * flag;
 	}
 
-#ifdef NETWORK
 	wiServerPort = atoi(getIniKey(mch_mainINI,"online","server_port"));
 	wiServerName = strdup(getIniKey(mch_mainINI,"online","server"));
 	wiGameURL = strdup(getIniKey(mch_mainINI,"online","url"));
-#endif
 
 	mchPBEM_DisableReturnFlag = atoi(getIniKey(mch_mainINI,"online","disable_return"));
 
@@ -701,7 +696,6 @@ void mchOptionData::Update(void)
 
 void hsOnlineSetup(void)
 {
-#ifdef NETWORK
 	int i;
 	ogPlayerInfo* p;
 
@@ -753,7 +747,6 @@ void hsOnlineSetup(void)
 
 //	if(mchPBEM_CurPlayer == -1)
 //		mchPBEM_CurPlayer = 0;
-#endif
 }
 
 void cdCheck(char* f0,char* f1)

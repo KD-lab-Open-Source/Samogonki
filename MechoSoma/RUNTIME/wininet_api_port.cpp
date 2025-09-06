@@ -91,7 +91,7 @@ int wiDispatcher::get_request_status(void)
 	return 0;
 }
 
-char* wiDispatcher::get_request_status_str(void)
+const char* wiDispatcher::get_request_status_str(void)
 {
     return nullptr;
 }

@@ -104,7 +104,6 @@ set(GAME_SOURCES
     RUNTIME/timer.cpp
     RUNTIME/track.cpp
     RUNTIME/track.h
-    RUNTIME/wininet_api_port.cpp
     RUNTIME/wininet_api.h
     RUNTIME/xINI.cpp
     RUNTIME/xINI_File.cpp
@@ -478,7 +477,8 @@ set(GAME_SOURCES
     app/texture_manager.cpp
     # widescreen fix
     RUNTIME/aspect_ratio.cpp
-    RUNTIME/aspect_ratio.h)
+    RUNTIME/aspect_ratio.h
+)
 
 include_directories(app)
 include_directories(FX)
@@ -535,6 +535,11 @@ if (STEAM_VERSION)
     else()
         message(FATAL_ERROR "Steam version supports only Windows, Linux and macOS platforms")
     endif()
+
+    list(APPEND GAME_SOURCES RUNTIME/online_game_setup.cpp)
+    list(APPEND GAME_SOURCES RUNTIME/wininet_api_steam.cpp)
+else()
+    list(APPEND GAME_SOURCES RUNTIME/wininet_api_port.cpp)
 endif()
 
 set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})

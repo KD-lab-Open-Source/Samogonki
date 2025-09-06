@@ -93,7 +93,10 @@ int game_main(int argc, char const *argv[]) {
 #else
 int main(int argc, char const *argv[]) {
   #ifdef STEAM_VERSION
-  if (!SteamAPI_Init()) {
+  SteamErrMsg error_message;
+  const auto result = SteamAPI_InitEx(&error_message);
+  if (result != k_ESteamAPIInitResult_OK) {
+    printf("Steam initialization error=%d, message=%s\n", static_cast<unsigned>(result), error_message);
     return 1;
   }
 

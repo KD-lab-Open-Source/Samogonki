@@ -3207,6 +3207,185 @@ screen {
 */
 }
 
+screen {
+	ID	$ACS_ONLINE_GAME_CFG_SCR
+
+	event {
+		code	$ACS_STARTUP_KEY
+
+		ev_comm {
+			code	$ACS_EXT_EVENT
+			ev_data $ACS_EXT_SETUP_ONLINE_GAME 0 0 0
+			start_time 0
+		}
+	}
+
+	object {
+		ID	$ACS_BACK_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_CANCEL_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_ESCAPE
+
+			time 1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_CHANGE_SCREEN
+				ev_data $ACS_MULTIPLAYER_SCR 0 0 0
+				start_time 0
+			}
+		}
+	}
+	object {
+		ID	$ACS_CONTINUE_OPTION
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x404
+
+		str_len 25
+		string	$ACS_CONTINUE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		$BACK_COORDS
+		x	430
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+			code	$VK_ESCAPE
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SETUP_ONLINE_GAME 4 0 0
+				start_time 0
+			}
+		}
+	}
+
+	#define OPT_MENU_SZ	2
+
+	#define INTRO_Y		1
+
+	#define PRM_X0		50
+	#define PRM_X		"$OPT_X0 + $OPT_DX + $OPT_SX0"
+
+	object {
+		ID	$ACS_ONLINE_GAME_TEXT
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET00
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ONLINE_GAME_STR
+		font	$PRM_FNT
+		$COLOR_SET00
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X0
+		y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $INTRO_Y * ($OPT_SY0 + $OPT_DY)"
+
+		size_x	$PRM_MENU_SX0
+		size_y	$PRM_MENU_SY
+	}
+	object {
+		ID	$ACS_ONLINE_GAME_PRM
+		type	$ACS_INPUT_FIELD_OBJ
+		$ALPHA_SET0
+
+		flag	0x404
+
+		str_len 5
+
+		font	$PRM_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	$PRM_X
+		y	"-30 + (480 - ($OPT_SY0 + $OPT_DY) * $OPT_MENU_SZ)/2 + $INTRO_Y * ($OPT_SY0 + $OPT_DY)" 
+
+		size_x	$OPT_SX1
+		size_y	$PRM_MENU_SY
+
+		flag	$ACS_MOUSE_SELECT	
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_RIGHT
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SETUP_ONLINE_GAME 3 0 0
+				start_time 0
+			}
+		}
+		event {
+			code	$VK_MOUSE_RIGHT
+			code	$VK_LEFT
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_SETUP_ONLINE_GAME 2 0 0
+				start_time 0
+			}
+		}
+	}
+}
+
 #define PRM_EV	event { 								\
 		code	$VK_MOUSE_LEFT							\
 		code	$VK_RIGHT	\
@@ -5261,6 +5440,47 @@ screen {
 				code	$ACS_CHANGE_SCREEN
 				ev_data $ACS_SPLIT_HS_SCR 0 0 0
 				start_time 0
+			}
+		}
+	}
+	object {
+		ID	4
+		type	$ACS_INPUT_FIELD_OBJ
+
+//		obj_index	1 $ACS_BACK_OPTION
+
+		$ALPHA_SET0
+
+		flag	0x04
+
+		str_len 25
+		string	$ACS_ONLINE_STR
+		font	$MAIN_FNT
+		$COLOR_SET0
+
+		palette $ACS_MAIN_MENU_PAL0
+
+		x	"(640 - $MAIN_MENU_SX) / 2 + $MENU_DX"
+		y	"$MAIN_MENU_START_Y + (480 - ($MAIN_MENU_SY + $MAIN_MENU_DELTA) * $MAIN_MENU_SIZE)/2 + ($MAIN_MENU_SY + $MAIN_MENU_DELTA ) * $OL_Y"
+
+		size_x	$MAIN_MENU_SX
+		size_y	$MAIN_MENU_SY
+
+		event {
+			code	$VK_MOUSE_LEFT
+			code	$VK_MOUSE_RIGHT
+
+			time	1
+
+			ev_comm {
+				code	$ACS_EXT_EVENT
+				ev_data $ACS_EXT_START_SOUND $EFF_MAIN_MENU_BUTTON 0 0
+				start_time 0
+			}
+			ev_comm {
+					code	$ACS_CHANGE_SCREEN
+					ev_data $ACS_ONLINE_GAME_CFG_SCR 0 0 0
+					start_time 0
 			}
 		}
 	}
