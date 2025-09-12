@@ -4,6 +4,8 @@ project(MOONSHINE_RUNNERS VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
 
+option(BUILD_SCRIPT_TOOL "Build script tool" OFF)
+
 set(APPLICATION_NAME moonshine-runners)
 
 if (UNIX AND NOT APPLE)
@@ -40,6 +42,10 @@ add_subdirectory(3rdparty/iniparser)
 add_subdirectory(3rdparty/musepack_src_r475)
 
 add_subdirectory(MechoSoma)
+
+if(BUILD_SCRIPT_TOOL)
+    add_subdirectory(ScriptTool)
+endif(BUILD_SCRIPT_TOOL)
 
 set_target_properties(${APPLICATION_NAME} PROPERTIES
     CXX_STANDARD 17

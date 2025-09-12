@@ -1,0 +1,439 @@
+
+#include "iScreen\Scripts\aci_str.inc"
+#include "iScreen\iTextID.h"
+
+itext $iTXT_WORLD {
+	string	$ACS_WORLD_STR
+}
+
+itext $iTXT_DROP_CP {
+	string	$mchA_DropStr
+}
+
+itext $iTXT_TRY_AGAIN {
+	string	$mchA_TryAgainStr
+}
+
+itext $iTXT_GO_AWAY {
+	string	$mchA_GoAwayStr
+}
+
+itext $iTXT_LOST {
+	string	$mchA_LostStr
+}
+
+itext $iTXT_CONTINUE {
+	string	$mchA_ContinueStr
+}
+
+itext $iTXT_BONANZA_RACE {
+	string	$mchA_NotLostStr
+}
+
+itext $iTXT_WON_SPELL0 {
+	string	$mchA_WonSpellStr0
+}
+
+itext $iTXT_WON_SPELL1 {
+	string	$mchA_WonSpellStr1
+}
+
+itext $iTXT_WINNER {
+	string	$mchA_WinnerStr
+}
+
+itext $iTXT_BUY_SPELL {
+	string	$mchA_BuyStr
+}
+
+itext $iTXT_BUY_IT {
+	string	$mchA_BuyItStr
+}
+
+itext $iTXT_NO_THANKS {
+	string	$mchA_NoThanksStr
+}
+
+itext $iTXT_NOT_ENOUGH {
+	string	$mchA_NotEnoughStr0
+}
+
+itext $iTXT_NEXT_TIME {
+	string	$mchA_NextTimeStr
+}
+
+itext $iTXT_PLAY_AGAIN {
+	string	$mchA_PlayAgainStr
+}
+
+itext $iTXT_PRESS_KEY {
+	string	$mchA_PressStr
+}
+
+itext $iTXT_WAIT_TURN {
+	string	$mchA_WaitTurnStr
+}
+
+itext $iTXT_TURN {
+	string	$mchA_TurnStr
+}
+
+itext $iTXT_LAP {
+	string	$mchA_LapStr
+}
+
+itext $iTXT_FINAL_LAP {
+	string	$mchA_FinalLapStr
+}
+
+itext $iTXT_TURNS {
+	string	$mchA_TurnsStr
+}
+
+itext $iTXT_PRICE {
+	string	$mchA_PriceStr
+}
+
+itext $iTXT_COST {
+	string	$mchA_CostsStr
+}
+
+itext $iTXT_NOT_ENOUGH1 {
+	string	$mchA_NotEnoughStr1
+}
+
+itext $iTXT_TIPS00 {
+	string	$mchA_TipStr00
+}
+
+itext $iTXT_TIPS01 {
+	string	$mchA_TipStr01
+}
+
+itext $iTXT_TIPS02 {
+	string	$mchA_TipStr02
+}
+
+itext $iTXT_TIPS03 {
+	string	$mchA_TipStr03
+}
+
+itext $iTXT_TIPS04 {
+	string	$mchA_TipStr04
+}
+
+itext $iTXT_TIPS1 {
+	string	$mchA_TipStr1
+}
+
+itext $iTXT_CONTACTS {
+	string	$mchContactsText
+}
+
+itext $iTXT_SPELL_NA {
+	string	$iwSpellStr
+}
+
+itext $iTXT_WAIT {
+	string	$iwWaitStr
+}
+
+itext $iTXT_TB_MODE {
+	string	$iwTurnBasedStr
+}
+
+itext $iTXT_RT_MODE {
+	string	$iwRealTimeStr
+}
+
+itext $iTXT_TO_BUY {
+	string	$iwToBuyStr
+}
+
+itext $iTXT_TRACK_NA1 {
+	string	$iwTrackNA_Str1
+}
+
+itext $iTXT_TRACK_NA2 {
+	string	$iwTrackNA_Str2
+}
+
+itext $iTXT_COME_LATER {
+	string	$iwComeLaterStr
+}
+
+itext $iTXT_PRIZE {
+	string	$iwPrizeStr
+}
+
+itext $iTXT_MAILTO {
+	string	$ACS_MAILTO_TXT
+}
+
+itext $iTXT_CONTINUE_WITH {
+	string	$ACS_CONTINUE_WITH_STR
+}
+
+itext $iTXT_ENG_LAYOUT {
+	string	$ACS_ENG_LAYOUT
+}
+
+itext $iTXT_LOCAL_LAYOUT {
+	string	$ACS_LOCAL_LAYOUT
+}
+
+itext $iTXT_OTHER_LAYOUT {
+	string	$ACS_OTHER_LAYOUT
+}
+
+itext $iTXT_REPLAY_TURN {
+	string	$mchA_ReplayTurnStr
+}
+
+itext $iTXT_NONE {
+	string	$ACS_NoneStr
+}
+
+itext $iTXT_VERSION_ID {
+	string	$mchVersionMM_Text
+}
+
+itext $iTXT_OK {
+	string	$ACS_OK_STR
+}
+
+itext $iTXT_WAIT_TURN_FINISHED {
+	string	$mchA_WaitTurnStrF
+}
+
+itext $iTXT_REPLAY_GAME {
+	string	$mchA_ReplayGameStr
+}
+
+itext $iTXT_ERROR {
+	string	$ACS_ERROR_STR
+}
+
+itext $iTXT_CONNECT {
+	string	$ACS_CONNECT_STR
+}
+
+itext $iTXT_SEND {
+	string	$ACS_SEND_STR
+}
+
+itext $iTXT_RECEIVE {
+	string	$ACS_RECEIVE_STR
+}
+
+itext $iTXT_RETRY {
+	string	$ACS_RETRY_STR
+}
+
+itext $iTXT_SENT_OK {
+	string	$mchA_SentOkStr
+}
+
+itext $iTXT_EDIT_TURN {
+	string	$mchA_EditTurnStr
+}
+
+itext $iTXT_WAITING_FOR {
+	string	$mchA_WaitingForStr
+}
+
+itext $iTXT_REFRESH {
+	string	$mchA_RefreshStr
+}
+
+itext $iTXT_CHANGE_PLAYER {
+	string	$mchA_ChangePlayerStr
+}
+
+itext $iTXT_CHANGE_PLAYER_T {
+	string	$mchA_ChangePlayerTitleStr
+}
+
+itext $iTXT_USE_ARROWS {
+	string	$mchA_UseArrowsStr
+}
+
+itext $iTXT_CHANGE_CONTINUE {
+	string	$mchA_ChContinueStr
+}
+
+itext $iTXT_GAME_TITLE {
+	string	$mchA_GameTitle
+}
+
+itext $iTXT_NAME00 {
+	string	$acsName00
+}
+
+itext "$iTXT_NAME00 + 1" {
+	string	$acsName01
+}
+
+itext "$iTXT_NAME00 + 2" {
+	string	$acsName02
+}
+
+itext "$iTXT_NAME00 + 3" {
+	string	$acsName03
+}
+
+itext "$iTXT_NAME00 + 4" {
+	string	$acsName04
+}
+
+itext "$iTXT_NAME00 + 5" {
+	string	$acsName05
+}
+
+itext "$iTXT_NAME00 + 6" {
+	string	$acsName06
+}
+
+itext "$iTXT_NAME00 + 7" {
+	string	$acsName07
+}
+
+itext "$iTXT_NAME00 + 8" {
+	string	$acsName08
+}
+
+itext "$iTXT_NAME00 + 9" {
+	string	$acsName09
+}
+
+itext "$iTXT_NAME00 + 10" {
+	string	$acsName10
+}
+
+itext "$iTXT_NAME00 + 11" {
+	string	$acsName11
+}
+
+itext "$iTXT_NAME00 + 12" {
+	string	$acsName12
+}
+
+itext "$iTXT_NAME00 + 13" {
+	string	$acsName13
+}
+
+itext "$iTXT_NAME00 + 14" {
+	string	$acsName14
+}
+
+itext $iTXT_PLACE0 {
+	string	$acsPlace0
+}
+
+itext "$iTXT_PLACE0 + 1" {
+	string	$acsPlace1
+}
+
+itext "$iTXT_PLACE0 + 2" {
+	string	$acsPlace2
+}
+
+itext "$iTXT_PLACE0 + 3" {
+	string	$acsPlace3
+}
+
+itext "$iTXT_PLACE0 + 4" {
+	string	$acsPlace4
+}
+
+itext $iTXT_LATE_TURN {
+	string	$mchA_SentLateStr
+}
+
+itext $iTXT_INTRO_SCENE1 {
+	string	$imScene1
+}
+
+itext $iTXT_INTRO_SCENE2 {
+	string	$imScene2
+}
+
+itext $iTXT_INTRO_SCENE3 {
+	string	$imScene3
+}
+
+itext $iTXT_INTRO_SCENE4 {
+	string	$imScene4
+}
+
+itext $iTXT_INTRO_SCENE5 {
+	string	$imScene5
+}
+
+itext $iTXT_INTRO_SCENE6 {
+	string	$imScene6
+}
+
+itext $iTXT_INTRO_SCENE7 {
+	string	$imScene7
+}
+
+itext "$iTXT_CHAR00 + 0" {
+	string	$acs_charTxt00
+}
+
+itext "$iTXT_CHAR00 + 1" {
+	string	$acs_charTxt01
+}
+
+itext "$iTXT_CHAR00 + 2" {
+	string	$acs_charTxt02
+}
+
+itext "$iTXT_CHAR00 + 3" {
+	string	$acs_charTxt03
+}
+
+itext "$iTXT_CHAR00 + 4" {
+	string	$acs_charTxt04
+}
+
+itext "$iTXT_CHAR00 + 5" {
+	string	$acs_charTxt05
+}
+
+itext "$iTXT_CHAR00 + 6" {
+	string	$acs_charTxt06
+}
+
+itext "$iTXT_CHAR00 + 7" {
+	string	$acs_charTxt07
+}
+
+itext "$iTXT_CHAR00 + 8" {
+	string	$acs_charTxt08
+}
+
+itext "$iTXT_CHAR00 + 9" {
+	string	$acs_charTxt09
+}
+
+itext $iTXT_OUTRO {
+	string	$acsOutroTxt
+}
+
+itext $iTXT_BAD_PACKET {
+	string	$ACS_BAD_PACKET_STR
+}
+
+itext $iTXT_ONLINE_URL {
+	string	$ACS_ONLINE_URL_STR
+}
+
+itext $iTXT_NOCD_MSG {
+	string	$mchErr_NoCD
+}
+
+itext $iTXT_EXE_ACTIVE {
+	string	$mchErr_AlreadyLaunched
+}
