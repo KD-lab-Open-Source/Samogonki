@@ -13,6 +13,12 @@
 #include "xgraph.h"
 #include "xtool.h"
 
+#ifdef EMSCRIPTEN
+#include "sokol-shader-em.h"
+#else
+#include "sokol-scene-shader.h"
+#endif
+
 #ifdef GPX
 extern void frameReady();
 #endif
@@ -76,19 +82,20 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
 
   SDL_GL_SetSwapInterval(1);
 
-  auto context = sg_context_desc {
-    .color_format = SG_PIXELFORMAT_RGBA8,
-    .depth_format = SG_PIXELFORMAT_DEPTH
-  };
-  sg_setup(sg_desc {
-    .buffer_pool_size = 9,
-    .image_pool_size = TextureManager::max_textures_count,
-    .shader_pool_size = 3,
-    .pipeline_pool_size = 1,
-    .context = context
-  });
-  if (!sg_isvalid()) {
-    ErrH.Abort("sg_setup", XERR_USER, 0, "");
+  {
+    sg_desc description{};
+    description.buffer_pool_size = 9;
+    description.image_pool_size = TextureManager::max_textures_count;
+    description.view_pool_size = TextureManager::max_textures_count;
+    description.shader_pool_size = 3;
+    description.pipeline_pool_size = 1;
+    description.environment.defaults.color_format = SG_PIXELFORMAT_RGBA8;
+    description.environment.defaults.depth_format = SG_PIXELFORMAT_DEPTH_STENCIL;
+
+    sg_setup(&description);
+    if (!sg_isvalid()) {
+      ErrH.Abort("sg_setup", XERR_USER, 0, "");
+    }
   }
 
   _sceneShader = sg_make_shader(scene_shader_desc(sg_query_backend()));
@@ -106,10 +113,10 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     description.height = 1;
     description.num_slices = 1;
     description.num_mipmaps = 1;
-    description.usage = SG_USAGE_IMMUTABLE;
+    description.usage.immutable = true;
     description.pixel_format = SG_PIXELFORMAT_RGBA8;
     description.sample_count = 1;
-    description.data.subimage[0][0] = data;
+    description.data.mip_levels[0] = data;
     _nullTexture = sg_make_image(description);
     if (_nullTexture.id == SG_INVALID_ID) {
       ErrH.Abort("sg_make_image", XERR_USER, 0, "");
@@ -117,48 +124,57 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
   }
 
   {
+    sg_view_desc description{};
+    description.texture.image = _nullTexture;
+    _nullTextureView = sg_make_view(&description);
+    if (_nullTextureView.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_view", XERR_USER, 0, "");
+    }
+  }
+
+  {
     _position_buffer.resize(max_vertex_count * 3);
-    sg_position_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _position_buffer.size() * sizeof(float),
-        .type = SG_BUFFERTYPE_VERTEXBUFFER,
-        .usage = SG_USAGE_DYNAMIC,
-    });
+    sg_buffer_desc description{};
+    description.size = _position_buffer.size() * sizeof(float);
+    description.usage.vertex_buffer = true;
+    description.usage.dynamic_update = true;
+    sg_position_buffer = sg_make_buffer(&description);
   }
 
   {
     _diffuse_color_buffer.resize(max_vertex_count * 4);
-    sg_diffuse_color_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _diffuse_color_buffer.size() * sizeof(float),
-        .type = SG_BUFFERTYPE_VERTEXBUFFER,
-        .usage = SG_USAGE_DYNAMIC,
-    });
+    sg_buffer_desc description{};
+    description.size = _diffuse_color_buffer.size() * sizeof(float),
+    description.usage.vertex_buffer = true;
+    description.usage.dynamic_update = true;
+    sg_diffuse_color_buffer = sg_make_buffer(&description);
   }
 
   {
     _specular_color_buffer.resize(max_vertex_count * 4);
-    sg_specular_color_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _specular_color_buffer.size() * sizeof(float),
-        .type = SG_BUFFERTYPE_VERTEXBUFFER,
-        .usage = SG_USAGE_DYNAMIC,
-    });
+    sg_buffer_desc description{};
+    description.size = _specular_color_buffer.size() * sizeof(float);
+    description.usage.vertex_buffer = true;
+    description.usage.dynamic_update = true;
+    sg_specular_color_buffer = sg_make_buffer(&description);
   }
 
   {
     _uv_buffer.resize(max_vertex_count * 2);
-    sg_uv_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _uv_buffer.size() * sizeof(float),
-        .type = SG_BUFFERTYPE_VERTEXBUFFER,
-        .usage = SG_USAGE_DYNAMIC,
-    });
+    sg_buffer_desc description{};
+    description.size = _uv_buffer.size() * sizeof(float);
+    description.usage.vertex_buffer = true;
+    description.usage.dynamic_update = true;
+    sg_uv_buffer = sg_make_buffer(&description);
   }
 
   {
     _index_buffer.resize(max_vertex_count * 3);
-    sg_index_buffer = sg_make_buffer(sg_buffer_desc{
-        .size = _index_buffer.size() * sizeof(uint32_t),
-        .type = SG_BUFFERTYPE_INDEXBUFFER,
-        .usage = SG_USAGE_DYNAMIC,
-    });
+    sg_buffer_desc description{};
+    description.size = _index_buffer.size() * sizeof(uint32_t);
+    description.usage.index_buffer = true;
+    description.usage.dynamic_update = true;
+    sg_index_buffer = sg_make_buffer(&description);
   }
 
   {
@@ -269,7 +285,7 @@ MD3DERROR Renderer::endScene() {
     return MD3D_OK;
   }
 
-  sg_begin_pass(_offscreenBuffer->getRenderingPass(), defaultPassAction);
+  _offscreenBuffer->begin_pass(defaultPassAction);
 
   if (_is_back_buffer_flush) {
     _backBuffer->flush();
@@ -374,28 +390,28 @@ MD3DERROR Renderer::endScene() {
     }
 
     for (uint32_t i = 0; i < 2; i++) {
-      bindings.fs.images[i] = _nullTexture;
+      bindings.views[i] = _nullTextureView;
 
       auto texture_handle = command.render_state.textures[i];
       if (texture_handle) {
         auto texture = _texture_manager->get(*texture_handle);
         if (texture != nullptr) {
-          bindings.fs.images[i] = *texture;
+          bindings.views[i] = *texture;
         }
       }
     }
 
     switch (command.render_state.texture_address) {
       case TADDRESS_CLAMP:
-        bindings.fs.samplers[0] = _clamp_sampler;
+        bindings.samplers[SMP_sampler_1] = _clamp_sampler;
         break;
 
       case TADDRESS_WRAP:
-        bindings.fs.samplers[0] = _repeat_sampler;
+        bindings.samplers[SMP_sampler_1] = _repeat_sampler;
         break;
 
       default:
-        bindings.fs.samplers[0] = _repeat_sampler;
+        bindings.samplers[SMP_sampler_1] = _repeat_sampler;
         break;
     }
 
@@ -406,17 +422,17 @@ MD3DERROR Renderer::endScene() {
         .alpha_reference = command.render_state.alpha_reference
     };
 
-    pipeline.layout.attrs[ATTR_scene_vs_pos].buffer_index = 0;
-    pipeline.layout.attrs[ATTR_scene_vs_pos].format = SG_VERTEXFORMAT_FLOAT3;
+    pipeline.layout.attrs[ATTR_scene_pos].buffer_index = 0;
+    pipeline.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
 
-    pipeline.layout.attrs[ATTR_scene_vs_diffuse_in].buffer_index = 1;
-    pipeline.layout.attrs[ATTR_scene_vs_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
+    pipeline.layout.attrs[ATTR_scene_diffuse_in].buffer_index = 1;
+    pipeline.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
 
-    pipeline.layout.attrs[ATTR_scene_vs_specular_in].buffer_index = 2;
-    pipeline.layout.attrs[ATTR_scene_vs_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
+    pipeline.layout.attrs[ATTR_scene_specular_in].buffer_index = 2;
+    pipeline.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
 
-    pipeline.layout.attrs[ATTR_scene_vs_uv_in].buffer_index = 3;
-    pipeline.layout.attrs[ATTR_scene_vs_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+    pipeline.layout.attrs[ATTR_scene_uv_in].buffer_index = 3;
+    pipeline.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
 
     bindings.vertex_buffers[0] = sg_position_buffer;
     bindings.vertex_buffers[1] = sg_diffuse_color_buffer;
@@ -433,8 +449,8 @@ MD3DERROR Renderer::endScene() {
     auto pip = sg_make_pipeline(pipeline);
     sg_apply_pipeline(pip);
     sg_apply_bindings(bindings);
-    sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_scene_vs_params, SG_RANGE(vs_params));
-    sg_apply_uniforms(SG_SHADERSTAGE_FS, SLOT_scene_fs_params, SG_RANGE(fs_params));
+    sg_apply_uniforms(UB_scene_vs_params, SG_RANGE(vs_params));
+    sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
 
     sg_draw(base_element, count, 1);
     sg_destroy_pipeline(pip);

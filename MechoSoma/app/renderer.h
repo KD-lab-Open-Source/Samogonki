@@ -67,6 +67,7 @@ private:
 
   sg_shader _sceneShader;
   sg_image _nullTexture;
+  sg_view _nullTextureView;
 
   std::vector<float> _position_buffer;
   std::vector<float> _diffuse_color_buffer;

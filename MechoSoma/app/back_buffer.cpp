@@ -5,7 +5,7 @@
 #ifdef EMSCRIPTEN
 #include "sokol-shader-em.h"
 #else
-#include "sokol-shader.h"
+#include "sokol-back-buffer-shader.h"
 #endif
 
 #include "xtool.h"
@@ -25,12 +25,21 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
     description.height = height;
     description.num_slices = 1;
     description.num_mipmaps = 1;
-    description.usage = SG_USAGE_DYNAMIC;
+    description.usage.dynamic_update = true;
     description.pixel_format = SG_PIXELFORMAT_R16UI;
     description.sample_count = 1;
     _texture = sg_make_image(description);
     if (_texture.id == SG_INVALID_ID) {
       ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+    }
+  }
+
+  {
+    sg_view_desc description{};
+    description.texture.image = _texture;
+    _textureView = sg_make_view(&description);
+    if (_textureView.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_view", XERR_USER, 0, "");
     }
   }
 
@@ -41,18 +50,27 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
     description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
     description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
     _sampler = sg_make_sampler(description);
+    if (_sampler.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_sampler", XERR_USER, 0, "");
+    }
   }
 
-  sg_buffer_desc buffer_description{};
-  buffer_description.size = 1;
-  buffer_description.type = SG_BUFFERTYPE_VERTEXBUFFER;
-  buffer_description.usage = SG_USAGE_DYNAMIC;
-  _dummyBuffer = sg_make_buffer(buffer_description);
+  {
+    sg_buffer_desc description{};
+    description.size = 1;
+    description.usage.vertex_buffer = true;
+    description.usage.dynamic_update = true;
+    _dummyBuffer = sg_make_buffer(description);
+    if (_dummyBuffer.id == SG_INVALID_ID) {
+      ErrH.Abort("sg_make_buffer", XERR_USER, 0, "");
+    }
+  }
 }
 
 BackBuffer::~BackBuffer() {
   sg_destroy_buffer(_dummyBuffer);
   sg_destroy_sampler(_sampler);
+  sg_destroy_view(_textureView);
   sg_destroy_image(_texture);
   sg_destroy_shader(_quadShader);
 }
@@ -69,10 +87,8 @@ void BackBuffer::unlock() {
 
   _isLocked = false;
   sg_image_data data;
-  data.subimage[0][0] = sg_range{
-      .ptr = _buffer.data(),
-      .size = _buffer.size() * sizeof(uint16_t)
-  };
+  data.mip_levels[0].ptr = _buffer.data();
+  data.mip_levels[0].size = _buffer.size() * sizeof(uint16_t);
   sg_update_image(_texture, data);
 }
 
@@ -85,8 +101,8 @@ void BackBuffer::flush() {
   description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
 
   sg_bindings bindings = {};
-  bindings.fs.images[0] = _texture;
-  bindings.fs.samplers[0] = _sampler;
+  bindings.views[VIEW_texture_1] = _textureView;
+  bindings.samplers[SMP_sampler_1] = _sampler;
   bindings.vertex_buffers[0] = _dummyBuffer;
 
   auto pipeline = sg_make_pipeline(description);

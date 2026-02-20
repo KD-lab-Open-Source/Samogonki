@@ -13,6 +13,8 @@
 #define SOKOL_GLCORE33
 #endif
 
+#undef STEAM_VERSION
+
 #ifdef STEAM_VERSION
 #include <algorithm>
 #include <array>
@@ -23,6 +25,7 @@
 #endif
 
 #define SOKOL_GFX_IMPL
+#define SOKOL_GLCORE
 #include <sokol_gfx.h>
 
 #include "xtool.h"

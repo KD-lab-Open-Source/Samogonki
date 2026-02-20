@@ -5,18 +5,11 @@
 #ifndef MOONSHINE_RUNNERS_RENDER_STATE_H
 #define MOONSHINE_RUNNERS_RENDER_STATE_H
 
-#include <algorithm>
 #include <array>
 #include <optional>
 
 #include "IGraph3d.h"
 #include "xerrhand.h"
-
-#ifdef EMSCRIPTEN
-#include "sokol-shader-em.h"
-#else
-#include "sokol-shader.h"
-#endif
 
 namespace graphics {
 struct RenderState final {

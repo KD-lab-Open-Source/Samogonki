@@ -474,7 +474,6 @@ set(GAME_SOURCES
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
-    app/sokol-shader.h
     app/texture_manager.cpp
     # widescreen fix
     RUNTIME/aspect_ratio.cpp
