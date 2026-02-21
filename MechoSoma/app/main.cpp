@@ -13,8 +13,6 @@
 #define SOKOL_GLCORE33
 #endif
 
-#undef STEAM_VERSION
-
 #ifdef STEAM_VERSION
 #include <algorithm>
 #include <array>
