@@ -239,17 +239,24 @@ MD3DERROR TextureManager::createTexture(uint32_t dwWidth, uint32_t dwHeight, uin
   description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
   description.sample_count = 1;
   assert(p->bPalette8 == false);
-  description.usage = SG_USAGE_DYNAMIC;
+  description.usage.dynamic_update = true;
   auto texture = sg_make_image(description);
   if (texture.id == SG_INVALID_ID) {
     ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+  }
+
+  sg_view_desc view_description{};
+  view_description.texture.image = texture;
+  auto view = sg_make_view(&view_description);
+  if (view.id == SG_INVALID_ID) {
+    ErrH.Abort("sg_make_view", XERR_USER, 0, "");
   }
 
   *lpdwHandle = _lastTextureKey;
 
   const uint32_t pitch = dwWidth * (p->dwRGBBitCount / 8);
   auto t = std::make_unique<TextureEntry>(
-    TextureEntry{dwTexFormatID, texture, std::vector<char>(pitch * dwHeight), pitch, false, false, false}
+    TextureEntry{dwTexFormatID, texture, view, std::vector<char>(pitch * dwHeight), pitch, false, false, false}
   );
   _textures.emplace(_lastTextureKey, std::move(t));
 
@@ -404,15 +411,15 @@ void TextureManager::update_texture(TextureEntry& entry) {
     } break;
   }
 
-  sg_image_data imageData;
-  imageData.subimage[0][0] = {
+  sg_image_data imageData{};
+  imageData.mip_levels[0] = {
       .ptr = _rgba_buffer.data(),
       .size = size,
   };
   sg_update_image(entry.texture, imageData);
 }
 
-sg_image* TextureManager::get(uint32_t dwHandle) {
+sg_view* TextureManager::get(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
@@ -424,12 +431,13 @@ sg_image* TextureManager::get(uint32_t dwHandle) {
     entry->second->is_need_update = false;
   }
 
-  return &entry->second->texture;
+  return &entry->second->view;
 }
 
 void TextureManager::delete_textures() {
   for (auto i = _textures.begin(); i != _textures.end(); ) {
     if (i->second->is_deleted) {
+      sg_destroy_view(i->second->view);
       sg_destroy_image(i->second->texture);
       i = _textures.erase(i);
     } else {

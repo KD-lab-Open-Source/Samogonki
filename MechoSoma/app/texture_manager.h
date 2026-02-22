@@ -29,7 +29,7 @@ class TextureManager final
   TextureManager& operator=(const TextureManager&) = delete;
   TextureManager& operator=(TextureManager&&) = delete;
 
-  sg_image* get(uint32_t dwHandle);
+  sg_view* get(uint32_t dwHandle);
   void delete_textures();
 
   MD3DERROR getTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
@@ -52,6 +52,7 @@ class TextureManager final
   {
     uint32_t original_format_id;
     sg_image texture{SG_INVALID_ID};
+    sg_view view{SG_INVALID_ID};
     std::vector<char> lock_buffer;
     uint32_t pitch;
     bool is_locked;
