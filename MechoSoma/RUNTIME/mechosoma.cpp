@@ -2594,7 +2594,7 @@ void ShowImageRTO::Init(int id)
 	if(!curFile){
 		mchA_d3dReleaseBackBuffer();
 #ifndef _MAKE_INTRO_MOVIE_
-		mchReInitGraph(MCH_800x600);
+		mchReInitGraph(xgrGameMode);
 #else
 		mchReInitGraph(MCH_640x480);
 #endif
