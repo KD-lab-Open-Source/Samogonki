@@ -2594,7 +2594,7 @@ void ShowImageRTO::Init(int id)
 	if(!curFile){
 		mchA_d3dReleaseBackBuffer();
 #ifndef _MAKE_INTRO_MOVIE_
-		mchReInitGraph(MCH_800x600);
+		mchReInitGraph(xgrGameMode);
 #else
 		mchReInitGraph(MCH_640x480);
 #endif
@@ -2603,6 +2603,7 @@ void ShowImageRTO::Init(int id)
 		mchStopSound();
 	}
 	mchA_d3dLockBackBuffer();
+	XGR_Obj.fill16(0);
 
 	XKey.init((void *)&mchShowImageKeyPress,NULL);
 	XGR_MouseInit(XGR_MAXX/2,XGR_MAXY/2,0,0,1,NULL);
@@ -2620,11 +2621,6 @@ void ShowImageRTO::Init(int id)
 			XGR_Obj.putspr16(x,y,sx,sy,ptr,XGR_BLACK_FON);
 			delete[] ptr;
 		}
-		else
-			XGR_Obj.fill(0);
-	}
-	else {
-		XGR_Obj.fill(0);
 	}
 
 	if(Flags[curFile] & IMG_RTO_AVI){

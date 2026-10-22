@@ -2,6 +2,7 @@
 #define __PORT_H
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 
 /**
@@ -32,7 +33,7 @@ inline int BitSR(int x) {
 }
 
 #ifndef _WIN32
-char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
+char *_fullpath(char *absPath, const char *relPath, std::size_t maxLength);
 #endif
 
 uint32_t GetPrivateProfileString(
