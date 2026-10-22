@@ -102,7 +102,7 @@ const char* port_ultoa( unsigned long value, char* result, int base ) {
 }
 
 #ifndef _WIN32
-char *_fullpath(char *absPath, const char *relPath, size_t maxLength)
+char *_fullpath(char *absPath, const char *relPath, std::size_t maxLength)
 {
 	const auto absolute_path = std::filesystem::absolute(relPath).native();
 	absolute_path.copy(absPath, absolute_path.size());
