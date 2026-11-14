@@ -672,6 +672,10 @@ void mchArcaneScreenElement::InitCoords(const char* name)
 			XBuf.init();
 			XBuf < name < "_y0";
 			R0.y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
+
+			// custom start position must live in the same wide-screen frame as the target position
+			if(AR_CURRENT->offset && !strcmp(name, "finish_star_counter"))
+				R0.x += AR_CURRENT->offset;
 		}
 	}
 
@@ -1925,9 +1929,11 @@ void mchReInitArcaneScreen(void)
 	mch_arcScrD->objList->search(AE_WINNER_STR)->InitCoords("winner_str");
 	mch_arcScrD->objList->search(AE_CONTINUE_STR)->InitCoords("continue_str");
 	mch_arcScrD->objList->search(AE_CONTINUE2_STR)->InitCoords("continue2_str");
-	// causes segfault
-	// mch_arcScrD->objList->search(AE_BONUS_PART)->InitCoords("bonus_part");
+	// bonus part model: AE_BONUS_PART is the element type, the element itself has ID AE_PART_EL
+	mchArcaneScreenElement* partEl = mch_arcScrD->objList->search(AE_PART_EL);
+	if(partEl) partEl -> InitCoords("bonus_part");
 	mch_arcScrD->objList->search(AE_PART_NAME)->InitCoords("bonus_part_str");
+	mch_arcScrD->objList->search(AE_BUY_STR)->InitCoords("buy_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR)->InitCoords("price_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR2)->InitCoords("price2_str");
 	mch_arcScrD->objList->search(AE_BUY_IT_STR)->InitCoords("buy_it_str");
@@ -1957,6 +1963,9 @@ void mchReInitArcaneScreen(void)
 				break;
 			case AE_NAME_STATUS_STR:
 				curr->InitCoords("name_str");
+				break;
+			case AE_FINISH_STAR_COUNTER:
+				curr->InitCoords("finish_star_counter");
 				break;
 		}
 		curr = curr->next;
