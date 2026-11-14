@@ -90,9 +90,14 @@ namespace {
 #ifdef GPX
 
 int game_main(int argc, char const *argv[]) {
+  set_signal_handler();
+  run_crash_test_from_env();
   localization::setLanguage(gpx()->sys()->getLanguage().c_str());
 #else
 int main(int argc, char const *argv[]) {
+  set_signal_handler();
+  run_crash_test_from_env();
+
   #ifdef STEAM_VERSION
   if (!SteamAPI_Init()) {
     return 1;

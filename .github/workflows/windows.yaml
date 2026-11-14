@@ -52,9 +52,19 @@ jobs:
       run: |
         mkdir build-mingw
         cd build-mingw
-        cmake -G "Unix Makefiles" ..
+        cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
         make -j4
         cd ..
+
+    - name: generate pdb
+      shell: msys2 {0}
+      run: |
+        cd build-mingw
+        wget -q https://github.com/rainers/cv2pdb/releases/download/v0.54/cv2pdb-0.54.zip
+        unzip -q -o cv2pdb-0.54.zip -d cv2pdb
+        ./cv2pdb/cv2pdb64.exe MechoSoma/moonshine-runners.exe MechoSoma/moonshine-runners.exe MechoSoma/moonshine-runners.pdb
+        cd ..
+
     - name: prepare release folder
       run: |
         msys2 -c 'cp /mingw64/bin/libiconv-2.dll build-mingw/MechoSoma/'
@@ -66,4 +76,5 @@ jobs:
         name: moonshine-runners-windows
         path: |
           build-mingw/MechoSoma/moonshine-runners.exe
+          build-mingw/MechoSoma/moonshine-runners.pdb
           build-mingw/MechoSoma/*.dll

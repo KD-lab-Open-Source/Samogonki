@@ -17,6 +17,7 @@ MechoSoma/Debug
 build
 .vscode
 .idea
+.tools
 
 # Cmake
 cmake-build-debug

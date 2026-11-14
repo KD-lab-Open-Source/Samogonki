@@ -47,9 +47,18 @@ struct XErrorHandler {
   void Exit();
   void RTC(const char* file, unsigned int line, const char* expr);
   void WriteLog(char* error, char* msg);
+  void Log(const char* message);
 };
 
 extern XErrorHandler ErrH;
+
+// Installs the process-wide crash handler (unhandled exceptions, signals,
+// std::terminate). Call as early as possible in main().
+void set_signal_handler();
+
+// Optional self-test: reads MOONSHINE_CRASH_TEST (av|abort|exception|stack)
+// and triggers the corresponding crash. Used to verify crash reporting.
+void run_crash_test_from_env();
 
 // Use this macro for after any operation for errors diagnostic
 #define XAssert(expr) ErrH.RTC(__FILE__, __LINE__, expr)

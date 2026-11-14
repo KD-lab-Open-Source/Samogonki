@@ -8,6 +8,41 @@ option(BUILD_SCRIPT_TOOL "Build script tool" OFF)
 
 set(APPLICATION_NAME moonshine-runners)
 
+# Build identification shown in crash reports.
+if(NOT DEFINED GIT_BRANCH)
+    if(DEFINED ENV{GITHUB_REF_NAME} AND NOT "$ENV{GITHUB_REF_NAME}" STREQUAL "")
+        set(GIT_BRANCH "$ENV{GITHUB_REF_NAME}")
+    else()
+        execute_process(
+            COMMAND git rev-parse --abbrev-ref HEAD
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE GIT_BRANCH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET)
+    endif()
+endif()
+
+if(NOT DEFINED GIT_COMMIT_HASH)
+    if(DEFINED ENV{GITHUB_SHA} AND NOT "$ENV{GITHUB_SHA}" STREQUAL "")
+        set(GIT_COMMIT_HASH "$ENV{GITHUB_SHA}")
+    else()
+        execute_process(
+            COMMAND git rev-parse --short HEAD
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE GIT_COMMIT_HASH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET)
+    endif()
+endif()
+
+if(NOT GIT_BRANCH)
+    set(GIT_BRANCH "unknown")
+endif()
+if(NOT GIT_COMMIT_HASH)
+    set(GIT_COMMIT_HASH "unknown")
+endif()
+add_compile_definitions(GIT_BRANCH="${GIT_BRANCH}" GIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
+
 if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif ()

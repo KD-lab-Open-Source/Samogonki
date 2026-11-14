@@ -515,7 +515,7 @@ find_package(Iconv REQUIRED)
 
 if (WIN32)
     set(BCRYPT_LIBRARY bcrypt)
-    set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32)
+    set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32 dbghelp user32)
 endif(WIN32)
 
 if (STEAM_VERSION)
@@ -548,6 +548,8 @@ elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES}
             X11 Xi Xcursor GL dl pthread)
+    # Export symbols so backtrace_symbols() can name functions in crash reports.
+    target_link_options(${APPLICATION_NAME} PRIVATE -rdynamic)
 elseif (APPLE)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${GAME_SOURCES})
@@ -582,3 +584,9 @@ elseif (APPLE)
         )
     endif()
 endif(MINGW)
+
+if (TARGET ${APPLICATION_NAME})
+    # The game links SDL, so crash reports can use SDL_ShowSimpleMessageBox on
+    # every desktop platform. ScriptTool has no SDL and keeps the log/stdout path.
+    target_compile_definitions(${APPLICATION_NAME} PRIVATE XERRH_USE_SDL)
+endif()
