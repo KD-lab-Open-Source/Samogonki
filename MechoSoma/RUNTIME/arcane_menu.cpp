@@ -1925,8 +1925,9 @@ void mchReInitArcaneScreen(void)
 	mch_arcScrD->objList->search(AE_WINNER_STR)->InitCoords("winner_str");
 	mch_arcScrD->objList->search(AE_CONTINUE_STR)->InitCoords("continue_str");
 	mch_arcScrD->objList->search(AE_CONTINUE2_STR)->InitCoords("continue2_str");
-	// causes segfault
-	// mch_arcScrD->objList->search(AE_BONUS_PART)->InitCoords("bonus_part");
+	// bonus part model: AE_BONUS_PART is the element type, the element itself has ID AE_PART_EL
+	mchArcaneScreenElement* partEl = mch_arcScrD->objList->search(AE_PART_EL);
+	if(partEl) partEl -> InitCoords("bonus_part");
 	mch_arcScrD->objList->search(AE_PART_NAME)->InitCoords("bonus_part_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR)->InitCoords("price_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR2)->InitCoords("price2_str");
