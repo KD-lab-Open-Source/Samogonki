@@ -26,6 +26,8 @@
 
 #include "PlayWSC.h"
 
+#include "aspect_ratio.h"
+
 #include "mch_common.h" // For far target
 
 #pragma warning( disable : 4244 )
@@ -161,9 +163,10 @@ int sndPanXY(int x,int y)
 int sndPanScrXY(int x,int y)
 {
 	int xx,pan;
+	const int w = AR_CURRENT->width;
 
-	xx = x - 320;
-	pan = (xx * abs(xx) * 10000) / (640 * 640) / 1;
+	xx = x - w / 2;
+	pan = (xx * abs(xx) * 10000) / (w * w) / 1;
 
 	if(pan > 10000) pan = 10000;
 	if(pan < -10000) pan = -10000;

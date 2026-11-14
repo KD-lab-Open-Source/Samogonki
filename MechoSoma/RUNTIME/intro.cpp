@@ -19,6 +19,8 @@
 #include "sound.h"
 #include "sound_api.h"
 
+#include "aspect_ratio.h"
+
 #include "mch_common.h" // For far target
 
 /* ----------------------------- STRUCT SECTION ----------------------------- */
@@ -200,36 +202,39 @@ void mchIntroChar::setRndR(int dist_flag)
 {
 	float x,y,z;
 
+	const int w = AR_CURRENT->width;
+	const int h = 480;
+
 	int max_z = round(INTRO_MAX_Z) * 10;
 	const int delta = 100;
 
 	if(!dist_flag){
 		if(XRnd(2)){
-			x = float(XRnd(640));
-			y = XRnd(2) ? -float(XRnd(delta) + 20) : 480.0f + float(XRnd(delta) + 20);
+			x = float(XRnd(w));
+			y = XRnd(2) ? -float(XRnd(delta) + 20) : float(h) + float(XRnd(delta) + 20);
 		}
 		else {
-			x = XRnd(2) ? -float(XRnd(delta) + 20) : 640.0f + float(XRnd(delta) + 20);
-			y = float(XRnd(480));
+			x = XRnd(2) ? -float(XRnd(delta) + 20) : float(w) + float(XRnd(delta) + 20);
+			y = float(XRnd(h));
 		}
 	}
 	else {
 		if(R1.x < 0.0f){
-			x = 640.0f + float(XRnd(delta) + 20);
-			y = float(XRnd(480));
+			x = float(w) + float(XRnd(delta) + 20);
+			y = float(XRnd(h));
 		}
 		else {
-			if(R1.x > 640.0f){
+			if(R1.x > float(w)){
 				x = -float(XRnd(delta) + 20);
-				y = float(XRnd(480));
+				y = float(XRnd(h));
 			}
 			else {
 				if(R1.y < 0.0f){
-					x = float(XRnd(640));
-					y = 480.0f + float(XRnd(delta) + 20);
+					x = float(XRnd(w));
+					y = float(h) + float(XRnd(delta) + 20);
 				}
 				else {
-					x = float(XRnd(640));
+					x = float(XRnd(w));
 					y = -float(XRnd(delta) + 20);
 				}
 			}
@@ -320,6 +325,7 @@ void mchIntroDispatcher::Redraw(void)
 		data[i].Redraw();
 
 	static int string_offs[6] = { 20,54,100,196,256,320 };
+	const int string_xoff = (AR_CURRENT->width - 640) / 2;
 
 	if(stringAlphaDir){
 		v = (curTime - stringStartTime);
@@ -349,7 +355,7 @@ void mchIntroDispatcher::Redraw(void)
 */
 			}
 
-			mchA_SprD -> DrawSprite(128 + string_offs[i],380,1.0f,1.0f,400 + i,mchA_ColorF[7],alpha,0.0f,0);
+			mchA_SprD -> DrawSprite(128 + string_offs[i] + string_xoff,380,1.0f,1.0f,400 + i,mchA_ColorF[7],alpha,0.0f,0);
 		}
 	}
 #ifdef _MAKE_INTRO_MOVIE_
@@ -586,7 +592,7 @@ void mchIntroDispatcher::Init(int sx,int sy,void* text,void* bitmap,void* mask)
 	fsx = float(acsFntTable[INTRO_FNT] -> SizeX + INTRO_SP) * INTRO_SCALE_X;
 	fsy = float(acsFntTable[INTRO_FNT] -> SizeY + INTRO_VSP) * INTRO_SCALE_Y;
 
-	x = (640.0f - fsx * float(sx + 1)) / 2.0f;
+	x = (float(AR_CURRENT->width) - fsx * float(sx + 1)) / 2.0f;
 	y = (480.0f - fsy * float(sy + 1)) / 2.0f - 30.0f;
 
 	x1 = x;
@@ -662,7 +668,7 @@ void mchIntroCharSpline::Init(mchIntroChar* p0, mchIntroChar* p1)
 
 	if(dist > 120.0f || dist < 80.0f) return;
 
-	r0 = Vect2f(320,240);
+	r0 = Vect2f(float(AR_CURRENT->width) / 2.0f,240.0f);
 
 	phase = 0.0f;
 
