@@ -56,9 +56,19 @@ In case of unexpected problems try to unpack *resource.pak* and set *resources=0
 
 ## Crash reports
 
-On Windows any crash (access violation, abort, unhandled C++ exception, signal)
-shows a message box and writes a report to **XErrH.log** next to the executable.
-The Windows build also writes a minidump **crash-*.dmp** next to the executable.
+Any crash (access violation/segfault, abort, unhandled C++ exception, fatal
+signal) shows a message box with instructions and writes a report to
+**XErrH.log** next to the executable (or to the user data directory when the
+game folder is read-only).
+
+* **Windows**: unhandled exceptions are caught with `SetUnhandledExceptionFilter`;
+  the report contains registers, a stack trace and, when a matching PDB is next
+  to the executable, function names with `file(line)`. A minidump
+  **crash-*.dmp** is written next to the executable as well.
+* **Linux/macOS**: fatal signals (`SIGSEGV`, `SIGBUS`, `SIGFPE`, `SIGILL`,
+  `SIGABRT`) and `std::terminate` are reported with a `backtrace()`. The dialog
+  is shown through SDL. There is no minidump; use the printed addresses with
+  `addr2line` (Linux) or `atos` (macOS) on a build with debug info.
 
 Please attach the log (and the dump, if present) to a GitHub issue:
 https://github.com/KD-lab-Open-Source/Samogonki/issues

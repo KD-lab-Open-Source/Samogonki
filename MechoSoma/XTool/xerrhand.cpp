@@ -24,10 +24,15 @@
 
 #include <dbghelp.h>
 #else
+#include <signal.h>
 #include <unistd.h>
 #if defined(__linux__) || defined(__APPLE__)
 #include <execinfo.h>
 #endif
+#endif
+
+#ifdef XERRH_USE_SDL
+#include <SDL2/SDL.h>
 #endif
 
 #ifndef GIT_BRANCH
@@ -59,6 +64,15 @@ std::string executableDirectory() {
 }
 #else
 std::string executableDirectory() {
+#ifdef XERRH_USE_SDL
+  // SDL knows how to locate the executable on every supported desktop OS.
+  char* base = SDL_GetBasePath();
+  if (base) {
+    std::string path(base);
+    SDL_free(base);
+    return path;
+  }
+#endif
   return {};
 }
 #endif
@@ -83,7 +97,17 @@ std::string& logPath() {
     if (probe) {
       fclose(probe);
     } else {
+#ifdef XERRH_USE_SDL
+      char* pref = SDL_GetPrefPath("KD-lab", "Moonshine Runners");
+      if (pref) {
+        path = std::string(pref) + "XErrH.log";
+        SDL_free(pref);
+      } else {
+        path = tempLogPath();
+      }
+#else
       path = tempLogPath();
+#endif
     }
   }
   return path;
@@ -123,6 +147,14 @@ void appendInstructions(std::string& out, const std::string& dumpPath) {
     out += "\n";
   }
   out += "  - your savegame (save*.dat) if the crash happened during a race\n";
+#ifndef _WIN32
+  out += "\nTo resolve raw addresses in this report (build with debug info):\n";
+#ifdef __APPLE__
+  out += "  atos -o <path-to-moonshine-runners> <address>\n";
+#else
+  out += "  addr2line -e <path-to-moonshine-runners> -f -C <address>\n";
+#endif
+#endif
 }
 
 void writeLog(const std::string& text) {
@@ -139,16 +171,24 @@ bool messageBoxEnabled() {
 }
 
 void showReport(const std::string& report) {
-#ifdef _WIN32
   if (!messageBoxEnabled()) return;
 
-  // MessageBox has a hard limit around 64 KiB; be conservative.
+  // The native/SDL dialog has a hard limit around 64 KiB; be conservative.
   const size_t maxLength = 32000;
-  std::string text = report.size() > maxLength ? report.substr(0, maxLength) + "\n...[truncated]" : report;
+  const std::string text = report.size() > maxLength ? report.substr(0, maxLength) + "\n...[truncated]" : report;
+
+#ifdef XERRH_USE_SDL
+  if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Moonshine Runners - crash report", text.c_str(), nullptr) == 0) {
+    return;
+  }
+#endif
+
+#ifdef _WIN32
+  // Works even when SDL is not initialized or is in a bad state.
   MessageBoxA(nullptr, text.c_str(), "Moonshine Runners - crash report",
               MB_OK | MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
 #else
-  (void)report;
+  (void)text;
 #endif
 }
 
@@ -421,6 +461,9 @@ void signalHandler(int sig) {
     case SIGFPE: name = "SIGFPE (arithmetic error)"; break;
     case SIGILL: name = "SIGILL (illegal instruction)"; break;
     case SIGSEGV: name = "SIGSEGV (invalid memory access)"; break;
+#ifdef SIGBUS
+    case SIGBUS: name = "SIGBUS (bus error)"; break;
+#endif
     case SIGINT: name = "SIGINT"; break;
     case SIGTERM: name = "SIGTERM"; break;
     default: break;
@@ -546,9 +589,31 @@ void set_signal_handler() {
   signal(SIGABRT, signalHandler);
   signal(SIGFPE, signalHandler);
   signal(SIGILL, signalHandler);
-  signal(SIGSEGV, signalHandler);
   signal(SIGINT, signalHandler);
   signal(SIGTERM, signalHandler);
+
+#if defined(__linux__) || defined(__APPLE__)
+  // Run the fatal-fault handlers on a separate stack so a stack overflow can
+  // still produce a report.
+  static char alternateStack[256 * 1024];
+  stack_t stack{};
+  stack.ss_sp = alternateStack;
+  stack.ss_size = sizeof(alternateStack);
+  stack.ss_flags = 0;
+  sigaltstack(&stack, nullptr);
+
+  struct sigaction action {};
+  sigemptyset(&action.sa_mask);
+  action.sa_handler = signalHandler;
+  action.sa_flags = SA_ONSTACK;
+
+  sigaction(SIGSEGV, &action, nullptr);
+#ifdef SIGBUS
+  sigaction(SIGBUS, &action, nullptr);
+#endif
+#else
+  signal(SIGSEGV, signalHandler);
+#endif
 #endif
 }
 
