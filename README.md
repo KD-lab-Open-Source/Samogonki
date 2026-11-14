@@ -54,6 +54,37 @@ cp -r 3rdparty/SDL/target-debug/lib 3rdparty/SDL-2.26.5/
 Copy *moonshine-runners* binary into original folder of the game and run it.
 In case of unexpected problems try to unpack *resource.pak* and set *resources=0* in *game.ini*.
 
+## Crash reports
+
+On Windows any crash (access violation, abort, unhandled C++ exception, signal)
+shows a message box and writes a report to **XErrH.log** next to the executable.
+The Windows build also writes a minidump **crash-*.dmp** next to the executable.
+
+Please attach the log (and the dump, if present) to a GitHub issue:
+https://github.com/KD-lab-Open-Source/Samogonki/issues
+
+### Symbolized stack traces (PDB)
+
+The stack trace contains function names and `file(line)` only when a matching
+PDB is available next to the executable. MinGW builds carry DWARF debug info,
+which is converted to a PDB with cv2pdb:
+
+```
+.\scripts\make-pdb.ps1 -Exe build-mingw\MechoSoma\moonshine-runners.exe
+```
+
+The script uses `cv2pdb64.exe` from `PATH`/`.tools` or downloads the pinned
+release. Build with `-DCMAKE_BUILD_TYPE=RelWithDebInfo` (the Windows CI does
+this) and keep `moonshine-runners.pdb` next to `moonshine-runners.exe` when
+shipping the build with symbols. PDB files are optional: without them the
+report still lists modules and offsets.
+
+### Crash report self-test
+
+Set `MOONSHINE_CRASH_TEST` to `av`, `abort`, `exception` or `stack` to trigger a
+test crash at startup, and `MOONSHINE_CRASH_NO_DIALOG=1` to suppress the dialog
+(useful for automated checks).
+
 ## Suppport
 
 Feel free to open bug report on github or ask directly in game telegram channel

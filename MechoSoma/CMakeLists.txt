@@ -515,7 +515,7 @@ find_package(Iconv REQUIRED)
 
 if (WIN32)
     set(BCRYPT_LIBRARY bcrypt)
-    set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32)
+    set(WINDOWS_COMMON_LIBRARIES SetupAPI Imm32 Version Winmm Cfgmgr32 dbghelp user32)
 endif(WIN32)
 
 if (STEAM_VERSION)

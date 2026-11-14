@@ -52,6 +52,11 @@ include_directories(${PARENT_DIR}/MechoSoma/iScreen)
 add_executable(${APPLICATION_NAME} ${SOURCES})
 target_link_libraries(${APPLICATION_NAME} PRIVATE ZLIB::ZLIB Iconv::Iconv)
 
+if(WIN32)
+    # xerrhand.cpp implements the crash reporter with dbghelp + MessageBox.
+    target_link_libraries(${APPLICATION_NAME} PRIVATE dbghelp user32)
+endif()
+
 set_target_properties(${APPLICATION_NAME} PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
