@@ -672,6 +672,10 @@ void mchArcaneScreenElement::InitCoords(const char* name)
 			XBuf.init();
 			XBuf < name < "_y0";
 			R0.y = atoi(getIniKey("RESOURCE/ISCREEN/iscreen.ini","world_interface",XBuf.address()));
+
+			// custom start position must live in the same wide-screen frame as the target position
+			if(AR_CURRENT->offset && !strcmp(name, "finish_star_counter"))
+				R0.x += AR_CURRENT->offset;
 		}
 	}
 
@@ -1929,6 +1933,7 @@ void mchReInitArcaneScreen(void)
 	mchArcaneScreenElement* partEl = mch_arcScrD->objList->search(AE_PART_EL);
 	if(partEl) partEl -> InitCoords("bonus_part");
 	mch_arcScrD->objList->search(AE_PART_NAME)->InitCoords("bonus_part_str");
+	mch_arcScrD->objList->search(AE_BUY_STR)->InitCoords("buy_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR)->InitCoords("price_str");
 	mch_arcScrD->objList->search(AE_PRICE_STR2)->InitCoords("price2_str");
 	mch_arcScrD->objList->search(AE_BUY_IT_STR)->InitCoords("buy_it_str");
@@ -1958,6 +1963,9 @@ void mchReInitArcaneScreen(void)
 				break;
 			case AE_NAME_STATUS_STR:
 				curr->InitCoords("name_str");
+				break;
+			case AE_FINISH_STAR_COUNTER:
+				curr->InitCoords("finish_star_counter");
 				break;
 		}
 		curr = curr->next;

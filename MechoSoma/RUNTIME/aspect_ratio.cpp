@@ -89,6 +89,7 @@ void applyScreenRatioOffset(mchArcaneScreenElement *el, const char *name) {
 			|| strcmp(name, "not_enough0_str") == 0
 			|| strcmp(name, "not_enough1_str") == 0
 			|| strcmp(name, "next_time_str") == 0
+			|| strcmp(name, "finish_star_counter") == 0
 		) {
 			el->R.x += AR_CURRENT->offset;
 		}
