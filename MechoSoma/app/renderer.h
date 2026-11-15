@@ -59,7 +59,10 @@ class Renderer final {
   void prepare_render_state();
 
 private:
-  const size_t max_vertex_count = 100000;
+  // A single frame accumulates vertices from every draw command (scene,
+  // meshes, effects, split-screen cameras). 100k was not enough and caused an
+  // out-of-bounds write in M3D_BUFFER_VIEW::add(); double it for now.
+  const size_t max_vertex_count = 200000;
 
   SDL_Window *_window = nullptr;
   SDL_GLContext _context = nullptr;
