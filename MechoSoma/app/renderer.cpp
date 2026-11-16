@@ -172,16 +172,10 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     }
   }
 
-  _position_buffer.resize(3 * initial_vertex_count);
-  _diffuse_color_buffer.resize(4 * initial_vertex_count);
-  _specular_color_buffer.resize(4 * initial_vertex_count);
-  _uv_buffer.resize(2 * initial_vertex_count);
+  _vertex_buffer.resize(initial_vertex_count);
   _index_buffer.resize(3 * initial_vertex_count);
 
-  sg_position_buffer = make_frame_buffer<float>(_position_buffer.size(), false);
-  sg_diffuse_color_buffer = make_frame_buffer<float>(_diffuse_color_buffer.size(), false);
-  sg_specular_color_buffer = make_frame_buffer<float>(_specular_color_buffer.size(), false);
-  sg_uv_buffer = make_frame_buffer<float>(_uv_buffer.size(), false);
+  sg_vertex_buffer = make_frame_buffer<M3D_VERTEX>(_vertex_buffer.size(), false);
   sg_index_buffer = make_frame_buffer<uint32_t>(_index_buffer.size(), true);
 
   {
@@ -295,10 +289,7 @@ MD3DERROR Renderer::endScene() {
   // Upload only what this frame used, before the pass in case a buffer is recreated.
   const size_t vertex_count = _commands.back().vertex_buffer_view.end();
   const size_t index_count = _commands.back().index_buffer_view.end();
-  upload_frame_buffer(sg_position_buffer, _position_buffer, 3 * vertex_count, false, "position");
-  upload_frame_buffer(sg_diffuse_color_buffer, _diffuse_color_buffer, 4 * vertex_count, false, "diffuse");
-  upload_frame_buffer(sg_specular_color_buffer, _specular_color_buffer, 4 * vertex_count, false, "specular");
-  upload_frame_buffer(sg_uv_buffer, _uv_buffer, 2 * vertex_count, false, "uv");
+  upload_frame_buffer(sg_vertex_buffer, _vertex_buffer, vertex_count, false, "vertex");
   upload_frame_buffer(sg_index_buffer, _index_buffer, index_count, true, "index");
 
   _offscreenBuffer->begin_pass(defaultPassAction);
@@ -363,10 +354,7 @@ MD3DERROR Renderer::endScene() {
         .alpha_reference = command.render_state.alpha_reference
     };
 
-    bindings.vertex_buffers[0] = sg_position_buffer;
-    bindings.vertex_buffers[1] = sg_diffuse_color_buffer;
-    bindings.vertex_buffers[2] = sg_specular_color_buffer;
-    bindings.vertex_buffers[3] = sg_uv_buffer;
+    bindings.vertex_buffers[0] = sg_vertex_buffer;
 
     const auto count = command.index_buffer_view.length;
     const auto base_element = command.index_buffer_view.offset;
@@ -497,10 +485,10 @@ MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
   const size_t vertex_offset = _commands.empty() ? 0 : _commands.back().vertex_buffer_view.end();
   const size_t index_offset = _commands.empty() ? 0 : _commands.back().index_buffer_view.end();
 
-  command.positionBuffer.attach(_position_buffer, 3 * vertex_offset);
-  command.diffuseColorBuffer.attach(_diffuse_color_buffer, 4 * vertex_offset);
-  command.specularColorBuffer.attach(_specular_color_buffer, 4 * vertex_offset);
-  command.uvBuffer.attach(_uv_buffer, 2 * vertex_offset);
+  command.positionBuffer.attach(_vertex_buffer, vertex_offset);
+  command.diffuseColorBuffer.attach(_vertex_buffer, vertex_offset);
+  command.specularColorBuffer.attach(_vertex_buffer, vertex_offset);
+  command.uvBuffer.attach(_vertex_buffer, vertex_offset);
   command.indexBuffer.attach(_index_buffer, index_offset);
 
   return MD3D_OK;
@@ -508,7 +496,6 @@ MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
 
 MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
   prepare_render_state();
-  assert(command.positionBuffer.count % 3 == 0);
 
   // The game numbers vertices from 0 within a command; make the indices refer to
   // the frame arrays.
@@ -519,7 +506,7 @@ MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
     indices[i] += first_vertex;
   }
 
-  last_command.vertex_buffer_view.length += command.positionBuffer.count / 3;
+  last_command.vertex_buffer_view.length += command.positionBuffer.count;
   last_command.index_buffer_view.length += command.indexBuffer.count;
 
   return MD3D_OK;
@@ -605,16 +592,19 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
   description.colors[0].blend.dst_factor_rgb = key.destination;
   description.colors[0].blend.dst_factor_alpha = key.destination;
 
-  description.layout.attrs[ATTR_scene_pos].buffer_index = 0;
+  // One interleaved M3D_VERTEX per vertex; the colour bytes arrive in the shader as 0..1.
+  description.layout.buffers[0].stride = sizeof(M3D_VERTEX);
+
+  description.layout.attrs[ATTR_scene_pos].offset = offsetof(M3D_VERTEX, x);
   description.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
 
-  description.layout.attrs[ATTR_scene_diffuse_in].buffer_index = 1;
-  description.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
+  description.layout.attrs[ATTR_scene_diffuse_in].offset = offsetof(M3D_VERTEX, diffuse);
+  description.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_UBYTE4N;
 
-  description.layout.attrs[ATTR_scene_specular_in].buffer_index = 2;
-  description.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
+  description.layout.attrs[ATTR_scene_specular_in].offset = offsetof(M3D_VERTEX, specular);
+  description.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_UBYTE4N;
 
-  description.layout.attrs[ATTR_scene_uv_in].buffer_index = 3;
+  description.layout.attrs[ATTR_scene_uv_in].offset = offsetof(M3D_VERTEX, u);
   description.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
 
   const auto pipeline = sg_make_pipeline(description);
