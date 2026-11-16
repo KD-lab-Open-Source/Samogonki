@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <SDL2/SDL.h>
@@ -116,6 +117,28 @@ private:
   std::vector<DrawCommand> _commands;
   bool _is_back_buffer_flush = false;
   bool _is_in_scene = false;
+
+  // The part of a command's render state that a scene pipeline depends on. Everything
+  // else in it (shader, vertex layout, culling, depth compare) is the same for all draws.
+  struct ScenePipelineKey
+  {
+    bool depth_write;
+    bool blend;
+    sg_blend_factor source;
+    sg_blend_factor destination;
+
+    bool operator==(const ScenePipelineKey &other) const
+    {
+      return depth_write == other.depth_write && blend == other.blend && source == other.source &&
+             destination == other.destination;
+    }
+  };
+
+  // The pipeline for a command's render state, created the first time it is needed.
+  sg_pipeline scene_pipeline(const RenderState &state);
+
+  // Only a handful of entries, so a list is enough.
+  std::vector<std::pair<ScenePipelineKey, sg_pipeline>> _scene_pipelines;
 };
 
 }  // namespace graphics

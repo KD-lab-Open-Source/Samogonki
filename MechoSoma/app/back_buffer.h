@@ -23,6 +23,7 @@ class BackBuffer final {
   const int _width;
   const int _height;
   sg_shader _quadShader;
+  sg_pipeline _pipeline;
   sg_buffer _dummyBuffer;
   sg_image _texture;
   sg_view _textureView;

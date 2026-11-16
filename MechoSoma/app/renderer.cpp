@@ -88,7 +88,9 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     description.image_pool_size = TextureManager::max_textures_count;
     description.view_pool_size = TextureManager::max_textures_count;
     description.shader_pool_size = 3;
-    description.pipeline_pool_size = 1;
+    // Pipelines are created once and kept: the scene's (scene_pipeline(), 6 in
+    // practice and at most 26) plus one each for the back buffer and the window copy.
+    description.pipeline_pool_size = 64;
     description.environment.defaults.color_format = SG_PIXELFORMAT_RGBA8;
     description.environment.defaults.depth_format = SG_PIXELFORMAT_DEPTH_STENCIL;
 
@@ -318,11 +320,7 @@ MD3DERROR Renderer::endScene() {
       continue;
     }
 
-    sg_pipeline_desc pipeline = {};
     sg_bindings bindings = {};
-
-    pipeline.shader = _sceneShader;
-    pipeline.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
 
     auto vs_params = scene_vs_params_t {};
     const auto m = command.render_state.projection_matrix;
@@ -337,56 +335,6 @@ MD3DERROR Renderer::endScene() {
       sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
     } else {
       sg_apply_viewport(0, 0, _offscreenBuffer->getWidth(), _offscreenBuffer->getHeight(), true);
-    }
-
-    pipeline.cull_mode = SG_CULLMODE_BACK;
-    pipeline.face_winding = SG_FACEWINDING_CCW;
-
-    pipeline.depth.write_enabled = command.render_state.is_depth_write_enabled;
-    pipeline.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
-
-    if (command.render_state.is_alpha_blend_enabled) {
-      pipeline.colors[0].blend.enabled = true;
-
-      switch (command.render_state.source_blend_mode) {
-        case BLEND_SRCALPHA:
-          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
-          break;
-
-        case BLEND_INVSRCALPHA:
-          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-          break;
-
-        case BLEND_ONE:
-          pipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_ONE;
-          pipeline.colors[0].blend.src_factor_alpha = SG_BLENDFACTOR_ONE;
-          break;
-
-        default:
-          break;
-      }
-
-      switch (command.render_state.destination_blend_mode) {
-        case BLEND_SRCALPHA:
-          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_SRC_ALPHA;
-          break;
-
-        case BLEND_INVSRCALPHA:
-          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-          break;
-
-        case BLEND_ONE:
-          pipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE;
-          pipeline.colors[0].blend.dst_factor_alpha = SG_BLENDFACTOR_ONE;
-          break;
-
-        default:
-          break;
-      }
     }
 
     for (uint32_t i = 0; i < 2; i++) {
@@ -422,18 +370,6 @@ MD3DERROR Renderer::endScene() {
         .alpha_reference = command.render_state.alpha_reference
     };
 
-    pipeline.layout.attrs[ATTR_scene_pos].buffer_index = 0;
-    pipeline.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
-
-    pipeline.layout.attrs[ATTR_scene_diffuse_in].buffer_index = 1;
-    pipeline.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
-
-    pipeline.layout.attrs[ATTR_scene_specular_in].buffer_index = 2;
-    pipeline.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
-
-    pipeline.layout.attrs[ATTR_scene_uv_in].buffer_index = 3;
-    pipeline.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
-
     bindings.vertex_buffers[0] = sg_position_buffer;
     bindings.vertex_buffers[1] = sg_diffuse_color_buffer;
     bindings.vertex_buffers[2] = sg_specular_color_buffer;
@@ -442,18 +378,15 @@ MD3DERROR Renderer::endScene() {
     const auto count = command.index_buffer_view.length;
     const auto base_element = command.index_buffer_view.offset;
 
-    pipeline.index_type = SG_INDEXTYPE_UINT32;
     bindings.index_buffer = sg_index_buffer;
     bindings.index_buffer_offset = 0;
 
-    auto pip = sg_make_pipeline(pipeline);
-    sg_apply_pipeline(pip);
+    sg_apply_pipeline(scene_pipeline(command.render_state));
     sg_apply_bindings(bindings);
     sg_apply_uniforms(UB_scene_vs_params, SG_RANGE(vs_params));
     sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
 
     sg_draw(base_element, count, 1);
-    sg_destroy_pipeline(pip);
   }
 
   sg_end_pass();
@@ -662,4 +595,75 @@ void Renderer::prepare_render_state() {
 
   _commands.emplace_back(
       DrawCommand{_render_state, last_command.vertex_buffer_view.next(), last_command.index_buffer_view.next()});
+}
+
+namespace {
+  // The sokol blend factor for one of the game's blend modes. Only the modes the game
+  // uses are mapped; any other gets `fallback`, which is sokol's default for that side.
+  sg_blend_factor blend_factor(eBlendMode mode, sg_blend_factor fallback) {
+    switch (mode) {
+      case BLEND_SRCALPHA:
+        return SG_BLENDFACTOR_SRC_ALPHA;
+      case BLEND_INVSRCALPHA:
+        return SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+      case BLEND_ONE:
+        return SG_BLENDFACTOR_ONE;
+      default:
+        return fallback;
+    }
+  }
+}
+
+sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
+  ScenePipelineKey key{state.is_depth_write_enabled, state.is_alpha_blend_enabled, SG_BLENDFACTOR_ONE,
+                       SG_BLENDFACTOR_ZERO};
+  if (key.blend) {
+    key.source = blend_factor(state.source_blend_mode, SG_BLENDFACTOR_ONE);
+    key.destination = blend_factor(state.destination_blend_mode, SG_BLENDFACTOR_ZERO);
+  }
+
+  for (const auto &entry : _scene_pipelines) {
+    if (entry.first == key) {
+      return entry.second;
+    }
+  }
+
+  // Built from the key alone, so commands with the same key share a pipeline.
+  sg_pipeline_desc description = {};
+  description.shader = _sceneShader;
+  description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
+  description.index_type = SG_INDEXTYPE_UINT32;
+  description.cull_mode = SG_CULLMODE_BACK;
+  description.face_winding = SG_FACEWINDING_CCW;
+
+  description.depth.write_enabled = key.depth_write;
+  description.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
+
+  description.colors[0].blend.enabled = key.blend;
+  description.colors[0].blend.src_factor_rgb = key.source;
+  description.colors[0].blend.src_factor_alpha = key.source;
+  description.colors[0].blend.dst_factor_rgb = key.destination;
+  description.colors[0].blend.dst_factor_alpha = key.destination;
+
+  description.layout.attrs[ATTR_scene_pos].buffer_index = 0;
+  description.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
+
+  description.layout.attrs[ATTR_scene_diffuse_in].buffer_index = 1;
+  description.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_FLOAT4;
+
+  description.layout.attrs[ATTR_scene_specular_in].buffer_index = 2;
+  description.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_FLOAT4;
+
+  description.layout.attrs[ATTR_scene_uv_in].buffer_index = 3;
+  description.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+
+  const auto pipeline = sg_make_pipeline(description);
+  if (sg_query_pipeline_state(pipeline) != SG_RESOURCESTATE_VALID) {
+    ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
+  }
+  _scene_pipelines.emplace_back(key, pipeline);
+  SDL_Log("Renderer: scene pipeline %u created (depth write %d, blend %d, factors %d/%d)",
+          static_cast<unsigned>(_scene_pipelines.size()), key.depth_write ? 1 : 0, key.blend ? 1 : 0,
+          static_cast<int>(key.source), static_cast<int>(key.destination));
+  return pipeline;
 }

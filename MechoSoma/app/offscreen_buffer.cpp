@@ -18,6 +18,17 @@ OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int 
   }
 
   {
+    sg_pipeline_desc description{};
+    description.shader = _shader;
+    description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
+    description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
+    _pipeline = sg_make_pipeline(description);
+    if (sg_query_pipeline_state(_pipeline) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
+    }
+  }
+
+  {
     sg_sampler_desc description{};
     description.min_filter = SG_FILTER_LINEAR;
     description.mag_filter = SG_FILTER_LINEAR;
@@ -97,6 +108,7 @@ OffscreenBuffer::~OffscreenBuffer() {
   sg_destroy_view(_colorTextureView);
   sg_destroy_view(_colorAttachmentView);
   sg_destroy_image(_colorTexture);
+  sg_destroy_pipeline(_pipeline);
   sg_destroy_shader(_shader);
 }
 
@@ -122,18 +134,12 @@ void OffscreenBuffer::flush() {
   pass.swapchain.gl.framebuffer = 0;
   sg_begin_pass(&pass);
 
-  sg_pipeline_desc description = {};
-  description.shader = _shader;
-  description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
-  description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
-
   sg_bindings bindings = {};
   bindings.views[VIEW_texture_1] = _colorTextureView;
   bindings.samplers[SMP_sampler_1] = _sampler;
   bindings.vertex_buffers[0] = _dummyBuffer;
 
-  auto pipeline = sg_make_pipeline(description);
-  sg_apply_pipeline(pipeline);
+  sg_apply_pipeline(_pipeline);
   sg_apply_bindings(bindings);
 
   auto vs_params = flush_vs_params_t{
@@ -142,7 +148,6 @@ void OffscreenBuffer::flush() {
   sg_apply_uniforms(UB_flush_vs_params, SG_RANGE(vs_params));
 
   sg_draw(0, 6, 1);
-  sg_destroy_pipeline(pipeline);
 
   sg_end_pass();
   sg_commit();
