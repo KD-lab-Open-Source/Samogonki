@@ -180,7 +180,65 @@ constexpr uint32_t GetMaskBitCount(uint32_t dwBits) {
   return dwBitCount;
 }
 
-TextureManager::TextureManager() {
+namespace {
+  // Halves a square RGBA8 image of src_size x src_size into dst. Colours are averaged
+  // weighted by alpha, so fully transparent texels, whose colour is arbitrary (often
+  // black), don't bleed into the edges of sprites and masks. For opaque texels this
+  // is the plain average.
+  void downsample(const uint8_t* src, uint32_t src_size, uint8_t* dst) {
+    const uint32_t dst_size = src_size / 2;
+    for (uint32_t y = 0; y < dst_size; y++) {
+      const uint8_t* row0 = src + 4 * (2 * y) * src_size;
+      const uint8_t* row1 = row0 + 4 * src_size;
+      for (uint32_t x = 0; x < dst_size; x++) {
+        const uint8_t* p[4] = {row0 + 8 * x, row0 + 8 * x + 4, row1 + 8 * x, row1 + 8 * x + 4};
+        const uint32_t alpha = p[0][3] + p[1][3] + p[2][3] + p[3][3];
+        uint8_t* out = dst + 4 * (y * dst_size + x);
+        for (int c = 0; c < 3; c++) {
+          if (alpha == 0) {
+            out[c] = static_cast<uint8_t>((p[0][c] + p[1][c] + p[2][c] + p[3][c] + 2) / 4);
+          } else {
+            const uint32_t sum = p[0][c] * p[0][3] + p[1][c] * p[1][3] + p[2][c] * p[2][3] + p[3][c] * p[3][3];
+            out[c] = static_cast<uint8_t>((sum + alpha / 2) / alpha);
+          }
+        }
+        out[3] = static_cast<uint8_t>((alpha + 2) / 4);
+      }
+    }
+  }
+
+  sg_image make_image(uint32_t width, uint32_t height, int mipmap_count, const sg_image_data* data) {
+    sg_image_desc description = {};
+    description.width = width;
+    description.height = height;
+    description.num_slices = 1;
+    description.num_mipmaps = mipmap_count;
+    description.pixel_format = SG_PIXELFORMAT_RGBA8;
+    description.sample_count = 1;
+    if (data != nullptr) {
+      description.data = *data;  // immutable, filled at creation
+    } else {
+      description.usage.dynamic_update = true;
+    }
+    const auto image = sg_make_image(description);
+    if (sg_query_image_state(image) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_image", XERR_USER, 0, "");
+    }
+    return image;
+  }
+
+  sg_view make_view(sg_image image) {
+    sg_view_desc description{};
+    description.texture.image = image;
+    const auto view = sg_make_view(&description);
+    if (sg_query_view_state(view) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_view", XERR_USER, 0, "");
+    }
+    return view;
+  }
+}
+
+TextureManager::TextureManager(bool mipmaps) : _mipmaps(mipmaps) {
   for (auto& format : texture_formats) {
     format.dwRBitShift = GetMaskBitShift(format.dwRBitMask);
     format.dwGBitShift = GetMaskBitShift(format.dwGBitMask);
@@ -231,33 +289,17 @@ MD3DERROR TextureManager::createTexture(uint32_t dwWidth, uint32_t dwHeight, uin
     return MD3DERR_ILLEGALCALL;
   }
 
-  sg_image_desc description = {};
-  description.width = dwWidth;
-  description.height = dwHeight;
-  description.num_slices = 1;
-  description.num_mipmaps = 1;
-  description.pixel_format = p->bPalette8 ? SG_PIXELFORMAT_R8 : SG_PIXELFORMAT_RGBA8;
-  description.sample_count = 1;
   assert(p->bPalette8 == false);
-  description.usage.dynamic_update = true;
-  auto texture = sg_make_image(description);
-  if (texture.id == SG_INVALID_ID) {
-    ErrH.Abort("sg_make_image", XERR_USER, 0, "");
-  }
-
-  sg_view_desc view_description{};
-  view_description.texture.image = texture;
-  auto view = sg_make_view(&view_description);
-  if (view.id == SG_INVALID_ID) {
-    ErrH.Abort("sg_make_view", XERR_USER, 0, "");
-  }
 
   *lpdwHandle = _lastTextureKey;
 
-  const uint32_t pitch = dwWidth * (p->dwRGBBitCount / 8);
-  auto t = std::make_unique<TextureEntry>(
-    TextureEntry{dwTexFormatID, texture, view, std::vector<char>(pitch * dwHeight), pitch, false, false, false}
-  );
+  // The GPU image is made at the first upload (update_texture), once the pixels exist.
+  auto t = std::make_unique<TextureEntry>();
+  t->original_format_id = dwTexFormatID;
+  t->width = dwWidth;
+  t->height = dwHeight;
+  t->pitch = dwWidth * (p->dwRGBBitCount / 8);
+  t->lock_buffer.resize(t->pitch * dwHeight);
   _textures.emplace(_lastTextureKey, std::move(t));
 
   _lastTextureKey++;
@@ -315,12 +357,27 @@ MD3DERROR TextureManager::unlockTexture(uint32_t dwHandle) {
   return MD3D_OK;
 }
 
+int TextureManager::mipmap_count(const TextureEntry& entry) const {
+  // The game's textures are square powers of two (createTexture asserts it); give
+  // anything else a single level rather than guess.
+  const bool square_power_of_two = entry.width == entry.height && (entry.width & (entry.width - 1)) == 0;
+  if (!_mipmaps || !square_power_of_two || entry.width == 0) {
+    return 1;
+  }
+  int count = 1;
+  for (uint32_t size = entry.width; size > 1; size /= 2) {
+    count++;
+  }
+  return count;  // 256 x 256: 9 levels, down to 1 x 1
+}
+
 void TextureManager::update_texture(TextureEntry& entry) {
-  const auto info = sg_query_image_desc(entry.texture);
-  const auto image_height = info.height;
-  const auto image_width = info.width;
-  const size_t size = 4 * image_width * image_height;
-  _rgba_buffer.resize(size);
+  const int levels = mipmap_count(entry);
+  size_t total = 0;
+  for (int level = 0; level < levels; level++) {
+    total += 4 * static_cast<size_t>(entry.width >> level) * (entry.height >> level);
+  }
+  _rgba_buffer.resize(total);
 
   switch (entry.original_format_id) {
     case D3DTEXFMT_RGB565: {
@@ -411,12 +468,36 @@ void TextureManager::update_texture(TextureEntry& entry) {
     } break;
   }
 
+  // Level 0 is converted above; each further level halves the one before it.
   sg_image_data imageData{};
-  imageData.mip_levels[0] = {
-      .ptr = _rgba_buffer.data(),
-      .size = size,
-  };
-  sg_update_image(entry.texture, imageData);
+  size_t offset = 0;
+  for (int level = 0; level < levels; level++) {
+    const uint32_t width = entry.width >> level;
+    const uint32_t height = entry.height >> level;
+    const size_t size = 4 * static_cast<size_t>(width) * height;
+    uint8_t* pixels = _rgba_buffer.data() + offset;
+    if (level > 0) {
+      downsample(pixels - 4 * static_cast<size_t>(2 * width) * (2 * height), 2 * width, pixels);
+    }
+    imageData.mip_levels[level] = {pixels, size};
+    offset += size;
+  }
+
+  if (entry.texture.id == SG_INVALID_ID) {
+    entry.texture = make_image(entry.width, entry.height, levels, &imageData);
+    entry.view = make_view(entry.texture);
+  } else if (!entry.is_dynamic) {
+    // Uploaded a second time: the game draws into this texture (shadows into a light
+    // map, a terrain tile rebuilt from the colour map), so it stays dynamic from now on.
+    sg_destroy_view(entry.view);
+    sg_destroy_image(entry.texture);
+    entry.texture = make_image(entry.width, entry.height, levels, nullptr);
+    entry.view = make_view(entry.texture);
+    entry.is_dynamic = true;
+    sg_update_image(entry.texture, imageData);
+  } else {
+    sg_update_image(entry.texture, imageData);
+  }
 }
 
 sg_view* TextureManager::get(uint32_t dwHandle) {
@@ -431,14 +512,21 @@ sg_view* TextureManager::get(uint32_t dwHandle) {
     entry->second->is_need_update = false;
   }
 
+  // A texture that was never unlocked has no image yet; the renderer then binds its
+  // empty null texture.
+  if (entry->second->view.id == SG_INVALID_ID) {
+    return nullptr;
+  }
   return &entry->second->view;
 }
 
 void TextureManager::delete_textures() {
   for (auto i = _textures.begin(); i != _textures.end(); ) {
     if (i->second->is_deleted) {
-      sg_destroy_view(i->second->view);
-      sg_destroy_image(i->second->texture);
+      if (i->second->view.id != SG_INVALID_ID) {
+        sg_destroy_view(i->second->view);
+        sg_destroy_image(i->second->texture);
+      }
       i = _textures.erase(i);
     } else {
       i++;
