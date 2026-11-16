@@ -39,17 +39,16 @@ layout(binding = 0) uniform sampler sampler_1;
 out vec4 result_color;
 
 void main() {
-    vec4 color = vec4(diffuse_color.rgb + specular_color.rgb, diffuse_color.a);
     // s_repeat
     switch (color_operation_1) {
         case 0: /* Disable */ {
-            result_color = color;
+            result_color = diffuse_color;
         } break;
         case 1: /* Texture */ {
             result_color = texture(sampler2D(texture_1, sampler_1), uv);
         } break;
         case 2: /* Modulate */ {
-            result_color = texture(sampler2D(texture_1, sampler_1), uv) * color;
+            result_color = texture(sampler2D(texture_1, sampler_1), uv) * diffuse_color;
         } break;
         default: {
             result_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -60,6 +59,11 @@ void main() {
     if (color_operation_2 == 2 /* Modulate */) {
         result_color *= texture(sampler2D(texture_2, sampler_1), uv);
     }
+
+    // As Direct3D did with SPECULARENABLE: the specular colour is added after all the
+    // texture stages, to RGB only, and saturated. The game writes a non-zero specular
+    // only for materials with MAT_COLOR_ADD_SPECULAR (metal highlights, AddCol flashes).
+    result_color.rgb = min(result_color.rgb + specular_color.rgb, 1.0f);
 
     if (alpha_test_enabled != 0 && (255.0f * result_color.a) < alpha_reference) {
         discard;
