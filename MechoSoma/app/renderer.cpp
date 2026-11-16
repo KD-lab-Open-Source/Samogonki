@@ -565,8 +565,11 @@ namespace {
 }
 
 sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
-  ScenePipelineKey key{state.is_depth_write_enabled, state.is_alpha_blend_enabled, SG_BLENDFACTOR_ONE,
-                       SG_BLENDFACTOR_ZERO};
+  // RENDERSTATE_ZTEST was D3D's ZENABLE: turned off, the depth buffer is neither tested
+  // nor written, whatever RENDERSTATE_ZWRITE says.
+  const bool depth_test = state.is_depth_test_enabled;
+  ScenePipelineKey key{depth_test, depth_test && state.is_depth_write_enabled, state.is_alpha_blend_enabled,
+                       SG_BLENDFACTOR_ONE, SG_BLENDFACTOR_ZERO};
   if (key.blend) {
     key.source = blend_factor(state.source_blend_mode, SG_BLENDFACTOR_ONE);
     key.destination = blend_factor(state.destination_blend_mode, SG_BLENDFACTOR_ZERO);
@@ -587,7 +590,7 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
   description.face_winding = SG_FACEWINDING_CCW;
 
   description.depth.write_enabled = key.depth_write;
-  description.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
+  description.depth.compare = key.depth_test ? SG_COMPAREFUNC_LESS_EQUAL : SG_COMPAREFUNC_ALWAYS;
 
   description.colors[0].blend.enabled = key.blend;
   description.colors[0].blend.src_factor_rgb = key.source;
@@ -615,8 +618,8 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
     ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
   }
   _scene_pipelines.emplace_back(key, pipeline);
-  SDL_Log("Renderer: scene pipeline %u created (depth write %d, blend %d, factors %d/%d)",
-          static_cast<unsigned>(_scene_pipelines.size()), key.depth_write ? 1 : 0, key.blend ? 1 : 0,
-          static_cast<int>(key.source), static_cast<int>(key.destination));
+  SDL_Log("Renderer: scene pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)",
+          static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
+          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination));
   return pipeline;
 }
