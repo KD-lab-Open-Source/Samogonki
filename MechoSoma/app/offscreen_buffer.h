@@ -23,6 +23,7 @@ class OffscreenBuffer final {
   float _clipSpaceMaxX;
 
   sg_shader _shader;
+  sg_pipeline _pipeline;
   sg_image _colorTexture;
   sg_view _colorAttachmentView;
   sg_view _colorTextureView;

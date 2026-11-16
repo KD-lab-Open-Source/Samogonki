@@ -20,6 +20,17 @@ BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(
   }
 
   {
+    sg_pipeline_desc description{};
+    description.shader = _quadShader;
+    description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
+    description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
+    _pipeline = sg_make_pipeline(description);
+    if (sg_query_pipeline_state(_pipeline) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
+    }
+  }
+
+  {
     sg_image_desc description{};
     description.width = width;
     description.height = height;
@@ -72,6 +83,7 @@ BackBuffer::~BackBuffer() {
   sg_destroy_sampler(_sampler);
   sg_destroy_view(_textureView);
   sg_destroy_image(_texture);
+  sg_destroy_pipeline(_pipeline);
   sg_destroy_shader(_quadShader);
 }
 
@@ -95,19 +107,12 @@ void BackBuffer::unlock() {
 void BackBuffer::flush() {
   assert(!_isLocked);
 
-  sg_pipeline_desc description = {};
-  description.shader = _quadShader;
-  description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
-  description.layout.attrs[0].format = SG_VERTEXFORMAT_FLOAT3;
-
   sg_bindings bindings = {};
   bindings.views[VIEW_texture_1] = _textureView;
   bindings.samplers[SMP_sampler_1] = _sampler;
   bindings.vertex_buffers[0] = _dummyBuffer;
 
-  auto pipeline = sg_make_pipeline(description);
-  sg_apply_pipeline(pipeline);
+  sg_apply_pipeline(_pipeline);
   sg_apply_bindings(bindings);
   sg_draw(0, 3, 1);
-  sg_destroy_pipeline(pipeline);
 }
