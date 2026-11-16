@@ -60,6 +60,44 @@ namespace graphics
   // clang-format on
 }
 
+namespace {
+  // A GPU buffer that the frame's vertices or indices are uploaded into, one element
+  // of type T per array element.
+  template <typename T>
+  sg_buffer make_frame_buffer(size_t count, bool is_index_buffer) {
+    sg_buffer_desc description{};
+    description.size = count * sizeof(T);
+    if (is_index_buffer) {
+      description.usage.index_buffer = true;
+    } else {
+      description.usage.vertex_buffer = true;
+    }
+    description.usage.dynamic_update = true;
+    const auto buffer = sg_make_buffer(&description);
+    if (sg_query_buffer_state(buffer) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_buffer", XERR_USER, 0, "");
+    }
+    return buffer;
+  }
+
+  // Uploads the first `count` elements of `array`. If the frame has grown `array`
+  // past what `buffer` holds, `buffer` is first recreated at the array's new size.
+  template <typename T>
+  void upload_frame_buffer(sg_buffer &buffer, const std::vector<T> &array, size_t count, bool is_index_buffer,
+                           const char *name) {
+    if (count == 0) {
+      return;  // sokol does not accept an empty update
+    }
+    const size_t capacity = array.size() * sizeof(T);
+    if (sg_query_buffer_size(buffer) < capacity) {
+      sg_destroy_buffer(buffer);
+      buffer = make_frame_buffer<T>(array.size(), is_index_buffer);
+      SDL_Log("Renderer: %s buffer grown to %u KiB", name, static_cast<unsigned>(capacity / 1024));
+    }
+    sg_update_buffer(buffer, sg_range{array.data(), count * sizeof(T)});
+  }
+}
+
 using namespace graphics;
 
 Renderer::Renderer(int width, int height, bool isFullScreen) {
@@ -132,50 +170,17 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     }
   }
 
-  {
-    _position_buffer.resize(max_vertex_count * 3);
-    sg_buffer_desc description{};
-    description.size = _position_buffer.size() * sizeof(float);
-    description.usage.vertex_buffer = true;
-    description.usage.dynamic_update = true;
-    sg_position_buffer = sg_make_buffer(&description);
-  }
+  _position_buffer.resize(3 * initial_vertex_count);
+  _diffuse_color_buffer.resize(4 * initial_vertex_count);
+  _specular_color_buffer.resize(4 * initial_vertex_count);
+  _uv_buffer.resize(2 * initial_vertex_count);
+  _index_buffer.resize(3 * initial_vertex_count);
 
-  {
-    _diffuse_color_buffer.resize(max_vertex_count * 4);
-    sg_buffer_desc description{};
-    description.size = _diffuse_color_buffer.size() * sizeof(float),
-    description.usage.vertex_buffer = true;
-    description.usage.dynamic_update = true;
-    sg_diffuse_color_buffer = sg_make_buffer(&description);
-  }
-
-  {
-    _specular_color_buffer.resize(max_vertex_count * 4);
-    sg_buffer_desc description{};
-    description.size = _specular_color_buffer.size() * sizeof(float);
-    description.usage.vertex_buffer = true;
-    description.usage.dynamic_update = true;
-    sg_specular_color_buffer = sg_make_buffer(&description);
-  }
-
-  {
-    _uv_buffer.resize(max_vertex_count * 2);
-    sg_buffer_desc description{};
-    description.size = _uv_buffer.size() * sizeof(float);
-    description.usage.vertex_buffer = true;
-    description.usage.dynamic_update = true;
-    sg_uv_buffer = sg_make_buffer(&description);
-  }
-
-  {
-    _index_buffer.resize(max_vertex_count * 3);
-    sg_buffer_desc description{};
-    description.size = _index_buffer.size() * sizeof(uint32_t);
-    description.usage.index_buffer = true;
-    description.usage.dynamic_update = true;
-    sg_index_buffer = sg_make_buffer(&description);
-  }
+  sg_position_buffer = make_frame_buffer<float>(_position_buffer.size(), false);
+  sg_diffuse_color_buffer = make_frame_buffer<float>(_diffuse_color_buffer.size(), false);
+  sg_specular_color_buffer = make_frame_buffer<float>(_specular_color_buffer.size(), false);
+  sg_uv_buffer = make_frame_buffer<float>(_uv_buffer.size(), false);
+  sg_index_buffer = make_frame_buffer<uint32_t>(_index_buffer.size(), true);
 
   {
     sg_sampler_desc description{};
@@ -285,33 +290,21 @@ MD3DERROR Renderer::endScene() {
     return MD3D_OK;
   }
 
+  // Upload only what this frame used, before the pass in case a buffer is recreated.
+  const size_t vertex_count = _commands.back().vertex_buffer_view.end();
+  const size_t index_count = _commands.back().index_buffer_view.end();
+  upload_frame_buffer(sg_position_buffer, _position_buffer, 3 * vertex_count, false, "position");
+  upload_frame_buffer(sg_diffuse_color_buffer, _diffuse_color_buffer, 4 * vertex_count, false, "diffuse");
+  upload_frame_buffer(sg_specular_color_buffer, _specular_color_buffer, 4 * vertex_count, false, "specular");
+  upload_frame_buffer(sg_uv_buffer, _uv_buffer, 2 * vertex_count, false, "uv");
+  upload_frame_buffer(sg_index_buffer, _index_buffer, index_count, true, "index");
+
   _offscreenBuffer->begin_pass(defaultPassAction);
 
   if (_is_back_buffer_flush) {
     _backBuffer->flush();
     _is_back_buffer_flush = false;
   }
-
-  sg_update_buffer(sg_position_buffer, sg_range{
-      .ptr = _position_buffer.data(),
-      .size = _position_buffer.size() * sizeof(float),
-  });
-  sg_update_buffer(sg_diffuse_color_buffer, sg_range{
-      .ptr = _diffuse_color_buffer.data(),
-      .size = _diffuse_color_buffer.size() * sizeof(float),
-  });
-  sg_update_buffer(sg_specular_color_buffer, sg_range{
-      .ptr = _specular_color_buffer.data(),
-      .size = _specular_color_buffer.size() * sizeof(float),
-  });
-  sg_update_buffer(sg_uv_buffer, sg_range{
-      .ptr = _uv_buffer.data(),
-      .size = _uv_buffer.size() * sizeof(float),
-  });
-  sg_update_buffer(sg_index_buffer, sg_range{
-      .ptr = _index_buffer.data(),
-      .size = _index_buffer.size() * sizeof(uint32_t),
-  });
 
   for (const auto& command : _commands) {
     if (command.index_buffer_view.length == 0) {
@@ -566,53 +559,16 @@ MD3DERROR Renderer::setTexture(uint32_t dwHandle, uint32_t dwStage) {
 }
 
 MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
-  auto vertex_count = [this]() -> size_t {
-    if (_commands.empty())
-    {
-      return 0;
-    }
+  // A command starts after the last one that was ended, so whatever a command that was
+  // begun but never ended wrote gets overwritten.
+  const size_t vertex_offset = _commands.empty() ? 0 : _commands.back().vertex_buffer_view.end();
+  const size_t index_offset = _commands.empty() ? 0 : _commands.back().index_buffer_view.end();
 
-    auto &last_command = _commands.back();
-    return last_command.vertex_buffer_view.end();
-  }();
-
-  auto index_offset = [this]() -> size_t {
-    if (_commands.empty())
-    {
-      return 0;
-    }
-
-    auto &last_command = _commands.back();
-    return last_command.index_buffer_view.end();
-  }();
-
-  const auto vertex_offset = 3 * vertex_count;
-  assert(_position_buffer.size() > vertex_offset);
-  command.positionBuffer.data = _position_buffer.data() + vertex_offset;
-  command.positionBuffer.count = 0;
-  command.positionBuffer.countLimit = _position_buffer.size() - vertex_offset;
-
-  const auto color_offset = 4 * vertex_count;
-  assert(_diffuse_color_buffer.size() > color_offset);
-  command.diffuseColorBuffer.data = _diffuse_color_buffer.data() + color_offset;
-  command.diffuseColorBuffer.count = 0;
-  command.diffuseColorBuffer.countLimit = _diffuse_color_buffer.size() - color_offset;
-
-  assert(_specular_color_buffer.size() > color_offset);
-  command.specularColorBuffer.data = _specular_color_buffer.data() + color_offset;
-  command.specularColorBuffer.count = 0;
-  command.specularColorBuffer.countLimit = _specular_color_buffer.size() - color_offset;
-
-  const auto uv_offset = 2 * vertex_count;
-  assert(_uv_buffer.size() > uv_offset);
-  command.uvBuffer.data = _uv_buffer.data() + uv_offset;
-  command.uvBuffer.count = 0;
-  command.uvBuffer.countLimit = _uv_buffer.size() - uv_offset;
-
-  assert(_index_buffer.size() > index_offset);
-  command.indexBuffer.data = _index_buffer.data() + index_offset;
-  command.indexBuffer.count = 0;
-  command.indexBuffer.countLimit = _index_buffer.size() - index_offset;
+  command.positionBuffer.attach(_position_buffer, 3 * vertex_offset);
+  command.diffuseColorBuffer.attach(_diffuse_color_buffer, 4 * vertex_offset);
+  command.specularColorBuffer.attach(_specular_color_buffer, 4 * vertex_offset);
+  command.uvBuffer.attach(_uv_buffer, 2 * vertex_offset);
+  command.indexBuffer.attach(_index_buffer, index_offset);
 
   return MD3D_OK;
 }
@@ -621,9 +577,13 @@ MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
   prepare_render_state();
   assert(command.positionBuffer.count % 3 == 0);
 
+  // The game numbers vertices from 0 within a command; make the indices refer to
+  // the frame arrays.
   auto &last_command = _commands.back();
-  for (uint32_t i = 0; i < command.indexBuffer.count; i++) {
-    command.indexBuffer.data[i] += last_command.vertex_buffer_view.end();
+  const auto first_vertex = static_cast<uint32_t>(last_command.vertex_buffer_view.end());
+  uint32_t *indices = _index_buffer.data() + command.indexBuffer.offset;
+  for (size_t i = 0; i < command.indexBuffer.count; i++) {
+    indices[i] += first_vertex;
   }
 
   last_command.vertex_buffer_view.length += command.positionBuffer.count / 3;

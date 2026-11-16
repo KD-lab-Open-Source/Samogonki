@@ -2,8 +2,10 @@
 #define __IGRAPH3D_H__
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <algorithm>
+#include <vector>
 
 #define GET_INT_RGBA(r,g,b,a)		(((a)<<24)|((r)<<16)|((g)<<8)|(b))
 
@@ -300,35 +302,68 @@ typedef uint32_t D3DCOLOR;
 #define MD3D_FULLSCREEN    0x00000001 // Use fullscreen mode
 #define MD3D_ALTDEVICE	   0x00000010 // Use alternative device (add-in card)
 
+// One draw command's part of a per-frame vertex or index array owned by the renderer.
+// add() writes after what the command has written so far and grows the array when it
+// is full, so a frame has no vertex limit and a write can never land past the end.
+// The view keeps the array and an offset, never a pointer into it: growing moves the
+// array, and a pointer kept by another open draw command would then point at freed
+// memory.
 template <typename T, size_t N>
 struct M3D_BUFFER_VIEW
 {
-	T *data = nullptr;
-	uint32_t count = 0;
-	uint32_t countLimit = 0;
+	std::vector<T> *storage = nullptr;
+	size_t offset = 0;	// where this command's elements start in *storage
+	size_t count = 0;	// how many elements this command has written
+
+	// Starts an empty view at element `first` of `array`.
+	void attach(std::vector<T> &array, size_t first)
+	{
+		storage = &array;
+		offset = first;
+		count = 0;
+	}
 
 	void add(T x, T y)
 	{
-		assert(count + 2 < countLimit);
-		data[count++] = x;
-		data[count++] = y;
+		T *p = append(2);
+		p[0] = x;
+		p[1] = y;
 	}
 
 	void add(T x, T y, T z)
 	{
-		assert(count + 3 < countLimit);
-		data[count++] = x;
-		data[count++] = y;
-		data[count++] = z;
+		T *p = append(3);
+		p[0] = x;
+		p[1] = y;
+		p[2] = z;
 	}
 
 	void add(T x, T y, T z, T w)
 	{
-		assert(count + 4 < countLimit);
-		data[count++] = x;
-		data[count++] = y;
-		data[count++] = z;
-		data[count++] = w;
+		T *p = append(4);
+		p[0] = x;
+		p[1] = y;
+		p[2] = z;
+		p[3] = w;
+	}
+
+private:
+	// Makes room for n more elements and returns where they go.
+	T *append(size_t n)
+	{
+		const size_t end = offset + count;
+		if (end + n > storage->size())
+		{
+			// Double, so that a frame much bigger than the last one grows only a few times.
+			size_t size = storage->size() * 2;
+			if (size < end + n)
+			{
+				size = end + n;
+			}
+			storage->resize(size);
+		}
+		count += n;
+		return storage->data() + end;
 	}
 };
 

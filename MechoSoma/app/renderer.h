@@ -59,7 +59,10 @@ class Renderer final {
   void prepare_render_state();
 
 private:
-  const size_t max_vertex_count = 100000;
+  // How many vertices the per-frame arrays hold at start. A frame that needs more
+  // grows them (M3D_BUFFER_VIEW::add), and endScene() then recreates the GPU buffers
+  // at the new size.
+  static constexpr size_t initial_vertex_count = 100000;
 
   SDL_Window *_window = nullptr;
   SDL_GLContext _context = nullptr;
