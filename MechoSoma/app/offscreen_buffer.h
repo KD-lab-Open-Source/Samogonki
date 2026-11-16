@@ -10,7 +10,8 @@ class OffscreenBuffer final {
   ~OffscreenBuffer();
 
   void begin_pass(sg_pass_action action);
-  void flush();
+  // Draws the buffer into the window (Display::swapchain()) and ends the frame.
+  void flush(const sg_swapchain& swapchain);
 
   int getWidth() const;
   int getHeight() const;
@@ -18,8 +19,6 @@ class OffscreenBuffer final {
  private:
   const int _width;
   const int _height;
-  const int _drawableWidth;
-  const int _drawableHeight;
   float _clipSpaceMaxX;
 
   sg_shader _shader;

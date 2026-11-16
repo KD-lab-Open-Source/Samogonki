@@ -468,12 +468,15 @@ set(GAME_SOURCES
     # application
     app/back_buffer.cpp
     app/back_buffer.h
+    app/display.cpp
+    app/display.h
     app/main.cpp
     app/offscreen_buffer.cpp
     app/offscreen_buffer.h
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
+    app/sokol_gfx.cpp
     app/texture_manager.cpp
     # widescreen fix
     RUNTIME/aspect_ratio.cpp
