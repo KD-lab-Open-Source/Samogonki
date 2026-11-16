@@ -117,9 +117,10 @@ private:
   bool _is_in_scene = false;
 
   // The part of a command's render state that a scene pipeline depends on. Everything
-  // else in it (shader, vertex layout, culling, depth compare) is the same for all draws.
+  // else in it (shader, vertex layout, culling) is the same for all draws.
   struct ScenePipelineKey
   {
+    bool depth_test;
     bool depth_write;
     bool blend;
     sg_blend_factor source;
@@ -127,8 +128,8 @@ private:
 
     bool operator==(const ScenePipelineKey &other) const
     {
-      return depth_write == other.depth_write && blend == other.blend && source == other.source &&
-             destination == other.destination;
+      return depth_test == other.depth_test && depth_write == other.depth_write && blend == other.blend &&
+             source == other.source && destination == other.destination;
     }
   };
 

@@ -105,8 +105,10 @@ OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int 
 OffscreenBuffer::~OffscreenBuffer() {
   sg_destroy_buffer(_dummyBuffer);
   sg_destroy_sampler(_sampler);
+  sg_destroy_view(_depthTextureView);
   sg_destroy_view(_colorTextureView);
   sg_destroy_view(_colorAttachmentView);
+  sg_destroy_image(_depthTexture);
   sg_destroy_image(_colorTexture);
   sg_destroy_pipeline(_pipeline);
   sg_destroy_shader(_shader);
