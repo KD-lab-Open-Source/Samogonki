@@ -302,13 +302,25 @@ typedef uint32_t D3DCOLOR;
 #define MD3D_FULLSCREEN    0x00000001 // Use fullscreen mode
 #define MD3D_ALTDEVICE	   0x00000010 // Use alternative device (add-in card)
 
+// One vertex as the renderer uploads it, interleaved: 28 bytes. Colours are bytes, as
+// Direct3D's D3DCOLOR was, and the GPU turns them into 0..1 (SG_VERTEXFORMAT_UBYTE4N),
+// which is exactly the c / 255 the CPU used to compute.
+struct M3D_VERTEX
+{
+	float x, y, z;
+	uint8_t diffuse[4];		// r, g, b, a
+	uint8_t specular[4];	// r, g, b, a
+	float u, v;
+};
+static_assert(sizeof(M3D_VERTEX) == 28, "the renderer's vertex layout assumes M3D_VERTEX has no padding");
+
 // One draw command's part of a per-frame vertex or index array owned by the renderer.
-// add() writes after what the command has written so far and grows the array when it
-// is full, so a frame has no vertex limit and a write can never land past the end.
+// It writes after what the command has written so far and grows the array when it is
+// full, so a frame has no vertex limit and a write can never land past the end.
 // The view keeps the array and an offset, never a pointer into it: growing moves the
 // array, and a pointer kept by another open draw command would then point at freed
 // memory.
-template <typename T, size_t N>
+template <typename T>
 struct M3D_BUFFER_VIEW
 {
 	std::vector<T> *storage = nullptr;
@@ -323,11 +335,10 @@ struct M3D_BUFFER_VIEW
 		count = 0;
 	}
 
-	void add(T x, T y)
+	// The view's next element. The reference is valid until the array grows again.
+	T &next()
 	{
-		T *p = append(2);
-		p[0] = x;
-		p[1] = y;
+		return *append(1);
 	}
 
 	void add(T x, T y, T z)
@@ -336,15 +347,6 @@ struct M3D_BUFFER_VIEW
 		p[0] = x;
 		p[1] = y;
 		p[2] = z;
-	}
-
-	void add(T x, T y, T z, T w)
-	{
-		T *p = append(4);
-		p[0] = x;
-		p[1] = y;
-		p[2] = z;
-		p[3] = w;
 	}
 
 private:
@@ -367,37 +369,61 @@ private:
 	}
 };
 
+// The vertices and indices of one draw. All four vertex attributes go into the same
+// vertex array, each through its own view, so callers may add positions, colours and
+// UVs in any order: the n-th addPosition() and the n-th addUV() fill the same vertex.
 struct M3D_DRAW_COMMAND final
 {
-	M3D_BUFFER_VIEW<float, 3> positionBuffer;
-	M3D_BUFFER_VIEW<float, 4> diffuseColorBuffer;
-	M3D_BUFFER_VIEW<float, 4> specularColorBuffer;
-	M3D_BUFFER_VIEW<float, 2> uvBuffer;
-	M3D_BUFFER_VIEW<uint32_t, 3> indexBuffer;
+	M3D_BUFFER_VIEW<M3D_VERTEX> positionBuffer;
+	M3D_BUFFER_VIEW<M3D_VERTEX> diffuseColorBuffer;
+	M3D_BUFFER_VIEW<M3D_VERTEX> specularColorBuffer;
+	M3D_BUFFER_VIEW<M3D_VERTEX> uvBuffer;
+	M3D_BUFFER_VIEW<uint32_t> indexBuffer;
 
 	inline void addPosition(float x, float y, float z)
 	{
-		positionBuffer.add(x, y, z);
+		M3D_VERTEX &vertex = positionBuffer.next();
+		vertex.x = x;
+		vertex.y = y;
+		vertex.z = z;
 	}
 
 	inline void addDiffuseColor(int r, int g, int b, int a)
 	{
-		diffuseColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+		setColor(diffuseColorBuffer.next().diffuse, r, g, b, a);
 	}
 
 	inline void addSpecularColor(int r, int g, int b, int a)
 	{
-		specularColorBuffer.add(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+		setColor(specularColorBuffer.next().specular, r, g, b, a);
 	}
 
 	inline void addUV(float u, float v)
 	{
-		uvBuffer.add(u, v);
+		M3D_VERTEX &vertex = uvBuffer.next();
+		vertex.u = u;
+		vertex.v = v;
 	}
 
 	inline void addIndex(unsigned v1, unsigned v2, unsigned v3)
 	{
 		indexBuffer.add(v1, v2 ,v3);
+	}
+
+private:
+	// A colour channel outside 0..255 is clamped, as Direct3D's colour maths saturated;
+	// stored as-is it would wrap around in the byte.
+	static uint8_t toByte(int value)
+	{
+		return static_cast<uint8_t>(value < 0 ? 0 : (value > 255 ? 255 : value));
+	}
+
+	static void setColor(uint8_t *color, int r, int g, int b, int a)
+	{
+		color[0] = toByte(r);
+		color[1] = toByte(g);
+		color[2] = toByte(b);
+		color[3] = toByte(a);
 	}
 };
 

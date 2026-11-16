@@ -61,8 +61,8 @@ class Renderer final {
 
 private:
   // How many vertices the per-frame arrays hold at start. A frame that needs more
-  // grows them (M3D_BUFFER_VIEW::add), and endScene() then recreates the GPU buffers
-  // at the new size.
+  // grows them (M3D_BUFFER_VIEW), and endScene() then recreates the GPU buffers at
+  // the new size.
   static constexpr size_t initial_vertex_count = 100000;
 
   SDL_Window *_window = nullptr;
@@ -73,16 +73,10 @@ private:
   sg_image _nullTexture;
   sg_view _nullTextureView;
 
-  std::vector<float> _position_buffer;
-  std::vector<float> _diffuse_color_buffer;
-  std::vector<float> _specular_color_buffer;
-  std::vector<float> _uv_buffer;
+  std::vector<M3D_VERTEX> _vertex_buffer;
   std::vector<uint32_t> _index_buffer;
 
-  sg_buffer sg_position_buffer;
-  sg_buffer sg_diffuse_color_buffer;
-  sg_buffer sg_specular_color_buffer;
-  sg_buffer sg_uv_buffer;
+  sg_buffer sg_vertex_buffer;
   sg_buffer sg_index_buffer;
   sg_sampler _clamp_sampler;
   sg_sampler _repeat_sampler;
