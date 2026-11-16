@@ -8,9 +8,6 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
-#define SOKOL_GLES3
-#else
-#define SOKOL_GLCORE33
 #endif
 
 #ifdef STEAM_VERSION
@@ -21,10 +18,6 @@
 
 #include <steam/steam_api.h>
 #endif
-
-#define SOKOL_GFX_IMPL
-#define SOKOL_GLCORE
-#include <sokol_gfx.h>
 
 #include "xtool.h"
 
@@ -132,25 +125,12 @@ int main(int argc, char const *argv[]) {
   #endif
 #endif
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  // The window and its GL context are set up by graphics::Display.
 
 #ifdef EMSCRIPTEN
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_SetHint("SDL_EMSCRIPTEN_ASYNCIFY", "0");
   SDL_SetHint("SDL_HINT_TOUCH_MOUSE_EVENTS", "1");
   SDL_SetHint("SDL_HINT_MOUSE_TOUCH_EVENTS", "0");
-#else
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
 
   initclock();

@@ -11,7 +11,7 @@
 using namespace graphics;
 
 OffscreenBuffer::OffscreenBuffer(int width, int height,  int drawableWidth, int drawableHeight) 
-  : _width(width), _height(height), _drawableWidth(drawableWidth), _drawableHeight(drawableHeight) {
+  : _width(width), _height(height) {
   _shader = sg_make_shader(flush_shader_desc(sg_query_backend()));
   if (_shader.id == SG_INVALID_ID) {
     ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
@@ -122,18 +122,14 @@ void OffscreenBuffer::begin_pass(sg_pass_action action) {
   sg_begin_pass(&pass);
 }
 
-void OffscreenBuffer::flush() {
+void OffscreenBuffer::flush(const sg_swapchain& swapchain) {
   sg_pass_action defaultPassAction = {};
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   defaultPassAction.colors[0].clear_value = {0, 0, 0, 1};
 
   sg_pass pass{};
   pass.action = defaultPassAction;
-  pass.swapchain.width = _drawableWidth;
-  pass.swapchain.height = _drawableHeight;
-  pass.swapchain.color_format = SG_PIXELFORMAT_RGBA8;
-  pass.swapchain.depth_format = SG_PIXELFORMAT_DEPTH_STENCIL;
-  pass.swapchain.gl.framebuffer = 0;
+  pass.swapchain = swapchain;
   sg_begin_pass(&pass);
 
   sg_bindings bindings = {};

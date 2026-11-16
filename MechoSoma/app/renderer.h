@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include <SDL2/SDL.h>
 #include <sokol_gfx.h>
 
 #include "IGraph3d.h"
@@ -19,6 +18,7 @@
 namespace graphics {
 
 class BackBuffer;
+class Display;
 class OffscreenBuffer;
 class TextureManager;
 
@@ -66,8 +66,8 @@ private:
   // the new size.
   static constexpr size_t initial_vertex_count = 100000;
 
-  SDL_Window *_window = nullptr;
-  SDL_GLContext _context = nullptr;
+  // The window and its context. Declared first, so it is destroyed last.
+  std::unique_ptr<Display> _display;
   std::array<float, 16> _projectionMatrix;
 
   sg_shader _sceneShader;

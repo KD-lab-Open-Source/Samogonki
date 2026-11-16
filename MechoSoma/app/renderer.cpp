@@ -7,7 +7,10 @@
 #include <algorithm>
 #include <cassert>
 
+#include <SDL2/SDL.h>
+
 #include "back_buffer.h"
+#include "display.h"
 #include "offscreen_buffer.h"
 #include "texture_manager.h"
 #include "xgraph.h"
@@ -101,24 +104,7 @@ namespace {
 using namespace graphics;
 
 Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps) {
-  _window = SDL_CreateWindow(
-    "Moonshine Runners",
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    width,
-    height,
-    SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
-  );
-  if (_window == nullptr) {
-    ErrH.Abort("SDL_CreateWindow", XERR_USER, 0, "");
-  }
-  _context = SDL_GL_CreateContext(_window);
-  if (_context == nullptr) {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_GL_CreateContext(): %s\n", SDL_GetError());
-    ErrH.Abort("SDL_GL_CreateContext", XERR_USER, 0, "");
-  }
-
-  SDL_GL_SetSwapInterval(1);
+  _display = std::make_unique<Display>(width, height);
 
   {
     sg_desc description{};
@@ -129,8 +115,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
     // Pipelines are created once and kept: the scene's (scene_pipeline(), 6 in
     // practice and at most 26) plus one each for the back buffer and the window copy.
     description.pipeline_pool_size = 64;
-    description.environment.defaults.color_format = SG_PIXELFORMAT_RGBA8;
-    description.environment.defaults.depth_format = SG_PIXELFORMAT_DEPTH_STENCIL;
+    description.environment = _display->environment();
 
     sg_setup(&description);
     if (!sg_isvalid()) {
@@ -211,39 +196,21 @@ Renderer::~Renderer() {
   _offscreenBuffer = nullptr;
 
   sg_shutdown();
-  SDL_GL_DeleteContext(_context);
-  SDL_DestroyWindow(_window);
+  _display = nullptr;
 }
 
 TextureManager& Renderer::get_texture_manager() { return *_texture_manager; }
 
 void Renderer::setVideoMode(int width, int height, bool isFullScreen) {
-  if (!isFullScreen) {
-    SDL_SetWindowFullscreen(_window, 0);
-    SDL_SetWindowSize(_window, width, height);
-    SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-    SDL_ShowCursor(SDL_ENABLE);
-
-    XGR_WindowScaleX = 1.0f;
-    XGR_WindowScaleY = 1.0f;
-  } else {
-    SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    SDL_SetWindowPosition(_window, 0, 0);
-    SDL_ShowCursor(SDL_DISABLE);
-
-    SDL_DisplayMode displayMode{};
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    XGR_WindowScaleX = 1.0f * width / displayMode.w;
-    XGR_WindowScaleY = 1.0f * height / displayMode.h;
-  }
+  const auto scale = _display->setVideoMode(width, height, isFullScreen);
+  XGR_WindowScaleX = scale.x;
+  XGR_WindowScaleY = scale.y;
 
   _projectionMatrix = make_ortho_projection(0, width, height, 0, -1, 1);
 
   _offscreenBuffer = nullptr;
-  int drawableWidth = 0;
-  int drawableHeight = 0;
-  SDL_GL_GetDrawableSize(_window, &drawableWidth, &drawableHeight);
-  _offscreenBuffer = std::make_unique<OffscreenBuffer>(width, height, drawableWidth, drawableHeight);
+  _offscreenBuffer =
+      std::make_unique<OffscreenBuffer>(width, height, _display->drawableWidth(), _display->drawableHeight());
 
   _backBuffer = nullptr;
   _backBuffer = std::make_unique<BackBuffer>(width, height);
@@ -256,8 +223,8 @@ bool Renderer::isInScene() const
 
 MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
-  _offscreenBuffer->flush();
-  SDL_GL_SwapWindow(_window);
+  _offscreenBuffer->flush(_display->swapchain());
+  _display->present();
 #ifdef GPX
   frameReady();
 #endif
