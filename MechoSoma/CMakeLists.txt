@@ -504,8 +504,13 @@ include_directories(iScreen/SCRIPTS)
 
 include_directories(../3rdparty/sokol)
 
-include_directories(../3rdparty/SDL-2.26.5/include)
-link_directories(../3rdparty/SDL-2.26.5/lib)
+# SDL's own CMake package, from 3rdparty only, never a system SDL. Asking for the
+# SDL2-static component fails configure if SDL wasn't built static, and
+# SDL2::SDL2-static is the static library itself: -lSDL2 (like SDL2::SDL2) picks the
+# import library and SDL2.dll whenever SDL was also built shared. The target also
+# brings SDL's include directories and the system libraries it needs.
+find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2-static
+    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/SDL-2.26.5" NO_DEFAULT_PATH)
 
 include_directories(../3rdparty/miniaudio)
 include_directories(../3rdparty/stb)
@@ -536,7 +541,7 @@ if (STEAM_VERSION)
     endif()
 endif()
 
-set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2 ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
+set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2::SDL2-static ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
 
 if (MINGW)
     add_executable(${APPLICATION_NAME} WIN32 ${GAME_SOURCES})
