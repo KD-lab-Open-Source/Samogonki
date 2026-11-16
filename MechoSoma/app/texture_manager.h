@@ -22,7 +22,8 @@ class TextureManager final
   static constexpr unsigned int max_textures_count = 2048;
 
  public:
-  TextureManager();
+  // mipmaps: give each texture a full mip chain (for trilinear filtering).
+  explicit TextureManager(bool mipmaps);
 
   TextureManager(const TextureManager&) = delete;
   TextureManager(TextureManager&&) = delete;
@@ -51,23 +52,32 @@ class TextureManager final
   struct TextureEntry
   {
     uint32_t original_format_id;
+    uint32_t width;
+    uint32_t height;
+    // Created at the first upload, immutable: most textures are uploaded once, and
+    // sokol keeps one GPU copy of an immutable image but two of a dynamic one. A
+    // texture uploaded again is one the game draws into, and becomes dynamic.
     sg_image texture{SG_INVALID_ID};
     sg_view view{SG_INVALID_ID};
     std::vector<char> lock_buffer;
     uint32_t pitch;
-    bool is_locked;
-    bool is_deleted;
-    bool is_need_update;
+    bool is_locked = false;
+    bool is_deleted = false;
+    bool is_need_update = false;
+    bool is_dynamic = false;
   };
 
   void update_texture(TextureEntry& entry);
+  int mipmap_count(const TextureEntry& entry) const;
 
  private:
   using TextureEntryPtr = std::unique_ptr<TextureEntry>;
   std::unordered_map<uint32_t, TextureEntryPtr> _textures;
   uint32_t _lastTextureKey = 0;
+  const bool _mipmaps;
 
-  std::vector<char> _rgba_buffer;
+  // The converted RGBA8 image: level 0, then each mip level, back to back.
+  std::vector<uint8_t> _rgba_buffer;
 };
 
 }

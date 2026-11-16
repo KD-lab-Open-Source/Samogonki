@@ -103,7 +103,12 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	extern char* mchWndTitle;
 	wnd_title = mchWndTitle;
 
-	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN);
+	// Trilinear texture filtering. The original never used mipmaps (D3DTSS_MIPFILTER was
+	// D3DTFP_NONE), so it is off unless game.ini turns it on: [m3d] TextureMipmaps=1.
+	extern const char* getIniKey(const char* fname,const char* section,const char* key);
+	const bool textureMipmaps = atoi(getIniKey(mch_mainINI,"m3d","TextureMipmaps")) != 0;
+
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps);
 	_isActive = true;
 
 	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );

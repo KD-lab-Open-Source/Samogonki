@@ -24,7 +24,8 @@ class TextureManager;
 
 class Renderer final {
  public:
-  Renderer(int width, int height, bool isFullScreen);
+  // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
+  Renderer(int width, int height, bool isFullScreen, bool textureMipmaps);
   ~Renderer();
 
   Renderer(const Renderer&) = delete;

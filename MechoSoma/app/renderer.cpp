@@ -100,7 +100,7 @@ namespace {
 
 using namespace graphics;
 
-Renderer::Renderer(int width, int height, bool isFullScreen) {
+Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps) {
   _window = SDL_CreateWindow(
     "Moonshine Runners",
     SDL_WINDOWPOS_CENTERED,
@@ -182,6 +182,8 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     sg_sampler_desc description{};
     description.min_filter = SG_FILTER_LINEAR;
     description.mag_filter = SG_FILTER_LINEAR;
+    // Trilinear when the texture has mipmaps; a single-level texture samples as before.
+    description.mipmap_filter = SG_FILTER_LINEAR;
     description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
     description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
     _clamp_sampler = sg_make_sampler(description);
@@ -191,6 +193,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
     sg_sampler_desc description{};
     description.min_filter = SG_FILTER_LINEAR;
     description.mag_filter = SG_FILTER_LINEAR;
+    description.mipmap_filter = SG_FILTER_LINEAR;
     description.wrap_u = SG_WRAP_REPEAT;
     description.wrap_v = SG_WRAP_REPEAT;
     _repeat_sampler = sg_make_sampler(description);
@@ -198,7 +201,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen) {
 
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
 
-  _texture_manager = std::make_unique<TextureManager>();
+  _texture_manager = std::make_unique<TextureManager>(textureMipmaps);
   setVideoMode(width, height, isFullScreen);
 }
 
