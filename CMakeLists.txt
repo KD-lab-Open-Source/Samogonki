@@ -51,12 +51,6 @@ add_definitions(-D_MECHOSOMA_ -D_USE_TILEMAP_ -D_USE_TERRA_ -DNASSERT -D_FINAL_V
 
 if (LINUX)
     add_definitions(-D__forceinline=inline -Dstricmp=strcasecmp -D_DEBUG)
-
-    add_custom_target(sokol-shaders
-            COMMAND "${CMAKE_CURRENT_LIST_DIR}/3rdparty/sokol-tools-bin/bin/linux/sokol-shdc"
-            --input "${CMAKE_CURRENT_LIST_DIR}/MechoSoma/app/sokol/shader.glsl"
-            --output "${CMAKE_CURRENT_LIST_DIR}/MechoSoma/app/sokol-shader.h"
-            --slang glsl330)
 endif (LINUX)
 
 add_compile_options(-fsigned-char)
