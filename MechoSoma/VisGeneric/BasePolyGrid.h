@@ -90,16 +90,11 @@ public:
                 }
 	}
 	void New(int xSize,int ySize,float xStep,float yStep);
-//	int Draw(cCamera *Camera);
 	void SetPosition(float x,float y,float z);
 	inline int GetNumber(int i,int j)						{ return (i%xsize)+(j%ysize)*xsize; }
 	inline float& x()										{ return Matrix.trans().x; }
 	inline float& y()										{ return Matrix.trans().y; }
 	inline float& z()										{ return Matrix.trans().z; }
-protected:
-//	int DrawSpecialCycl(cCamera *Camera,cMaterial &Material);
-//	int DrawCycl(cCamera *Camera,int i1,int j1,int i2,int j2,cMaterial &Material);
-//	int DrawTilePolyGrid(cCamera *Camera,int i1,int j1,int i2,int j2,cMaterial &Material);
 };
 
 class cWorldPolyGrid : public cBasePolyGrid
@@ -151,7 +146,5 @@ public:
 	cBaseWaveProcess(unsigned int type=BASEOBJECT_TYPE_BASEWAVEPROCESS,unsigned int kind=BASEOBJECT_KIND_PHYSICPROCESS) : cBaseObject(type,kind) { Pos.set(0,0,0); Time=1.f; dTime=0.01f; Amplitude=1.f; dAmplitude=0.01f; Phase=0.f; dPhase=0.01f; }
 	int Update()							{ Time-=dTime; Amplitude-=dAmplitude; Phase+=dPhase; if(Time>0) return 1; BaseObject()->Type|=BASEOBJECT_TYPE_DELETE; return 0; }
 };
-
-extern void* BaseObject_BaseWaveProcess_Create(float x,float y,float z,float TimeLife=1.f,float dPhase=0.3f);
 
 #endif // __BASEPOLYGRID_H__
