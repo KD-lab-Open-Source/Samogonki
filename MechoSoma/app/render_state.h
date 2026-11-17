@@ -26,7 +26,8 @@ struct RenderState final {
       && color_operation2 == other.color_operation2
       && textures == other.textures
       && projection_matrix == other.projection_matrix
-      && viewport == other.viewport;
+      && viewport == other.viewport
+      && shadow_camera == other.shadow_camera;
   }
 
   bool is_depth_test_enabled = true;
@@ -44,6 +45,9 @@ struct RenderState final {
 
   std::optional<D3DMATRIX> projection_matrix{};
   std::optional<MD3DRECT> viewport{};
+
+  // Not -1: the geometry takes this camera's dynamic shadows (M3D_DRAW_COMMAND::shadowCamera).
+  int shadow_camera = -1;
 };
 
 }

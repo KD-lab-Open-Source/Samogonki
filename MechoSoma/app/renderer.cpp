@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstring>
 
 #include <SDL2/SDL.h>
@@ -127,6 +128,25 @@ namespace {
     }
   }
 
+  // a * b for 3x4 row-major affine matrices: b's transform, then a's.
+  void multiply_3x4(const float *a, const float *b, float *out) {
+    for (int row = 0; row < 3; row++) {
+      for (int column = 0; column < 4; column++) {
+        float sum = column == 3 ? a[row * 4 + 3] : 0.0f;
+        for (int k = 0; k < 3; k++) {
+          sum += a[row * 4 + k] * b[k * 4 + column];
+        }
+        out[row * 4 + column] = sum;
+      }
+    }
+  }
+
+  void transform_3x4(const float *m, const float *point, float *out) {
+    for (int row = 0; row < 3; row++) {
+      out[row] = m[row * 4] * point[0] + m[row * 4 + 1] * point[1] + m[row * 4 + 2] * point[2] + m[row * 4 + 3];
+    }
+  }
+
   // A dynamic single-channel image for one terrain map, and its texture view.
   void make_terrain_map(int width, int height, sg_image &image, sg_view &view) {
     sg_image_desc description{};
@@ -147,12 +167,13 @@ namespace {
 
 using namespace graphics;
 
-Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool renderStats)
+Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool gpuShadows,
+                   bool renderStats)
 #ifdef EMSCRIPTEN
-    // The web build's shader header (sokol-shader-em.h) has no mesh program.
-    : _gpu_meshes(false),
+    // The web build's shader header (sokol-shader-em.h) has no mesh or shadow program.
+    : _gpu_meshes(false), _gpu_shadows(false),
 #else
-    : _gpu_meshes(gpuMeshes),
+    : _gpu_meshes(gpuMeshes), _gpu_shadows(gpuMeshes && gpuShadows),
 #endif
       _render_stats(renderStats), _stats_start(Clock::now()), _scene_begin(_stats_start) {
   _display = std::make_unique<Display>(width, height);
@@ -161,10 +182,11 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
     sg_desc description{};
     // The frame buffers and the back buffer's, plus two for each GPU mesh.
     description.buffer_pool_size = 9 + 2 * max_meshes;
-    // The textures, plus the two terrain maps of the mesh shadow test.
-    description.image_pool_size = TextureManager::max_textures_count + 2;
-    description.view_pool_size = TextureManager::max_textures_count + 2;
-    description.shader_pool_size = 4;
+    // The textures, the two terrain maps of the mesh shadow test, and the shadow maps
+    // (each with an attachment and a texture view) with the stand-in for draws without.
+    description.image_pool_size = TextureManager::max_textures_count + 2 + max_shadow_cameras + 1;
+    description.view_pool_size = TextureManager::max_textures_count + 2 + 2 * max_shadow_cameras + 1;
+    description.shader_pool_size = 8;
     // Pipelines are created once and kept: the scene's (scene_pipeline(), a few in
     // practice and at most 52 with the mesh ones) plus one each for the back buffer
     // and the window copy.
@@ -188,8 +210,19 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
     if (sg_query_shader_state(_meshShader) != SG_RESOURCESTATE_VALID) {
       SDL_Log("Renderer: the mesh shader failed, meshes are drawn on the CPU");
       _gpu_meshes = false;
+      _gpu_shadows = false;
     }
+  }
+  if (_gpu_shadows) {
+    _shadowShader = sg_make_shader(shadow_shader_desc(sg_query_backend()));
+    if (sg_query_shader_state(_shadowShader) != SG_RESOURCESTATE_VALID) {
+      SDL_Log("Renderer: the shadow shader failed, shadows are made on the CPU");
+      _gpu_shadows = false;
+    }
+  }
 
+  // Every scene_fs draw binds the terrain attribute map and a shadow map, real or not.
+  {
     // The terrain maps are read with texelFetch, so filtering never applies.
     sg_sampler_desc description{};
     description.min_filter = SG_FILTER_NEAREST;
@@ -198,8 +231,32 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
     description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
     _terrain_sampler = sg_make_sampler(description);
   }
+  {
+    // Filtered depth comparison: each tap is already a 2 x 2 average of lit or not.
+    sg_sampler_desc description{};
+    description.min_filter = SG_FILTER_LINEAR;
+    description.mag_filter = SG_FILTER_LINEAR;
+    description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+    description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+    description.compare = SG_COMPAREFUNC_LESS_EQUAL;
+    _shadow_sampler = sg_make_sampler(description);
+  }
+  {
+    sg_image_desc description{};
+    description.usage.depth_stencil_attachment = true;
+    description.width = 1;
+    description.height = 1;
+    description.pixel_format = SG_PIXELFORMAT_DEPTH;
+    _null_shadow_map = sg_make_image(&description);
+    sg_view_desc view_description{};
+    view_description.texture.image = _null_shadow_map;
+    _null_shadow_map_view = sg_make_view(&view_description);
+    if (sg_query_view_state(_null_shadow_map_view) != SG_RESOURCESTATE_VALID) {
+      ErrH.Abort("sg_make_view", XERR_USER, 0, "");
+    }
+  }
 #endif
-  SDL_Log("Renderer: GPU meshes %s", _gpu_meshes ? "on" : "off");
+  SDL_Log("Renderer: GPU meshes %s, GPU shadows %s", _gpu_meshes ? "on" : "off", _gpu_shadows ? "on" : "off");
 
   {
     sg_range data = {
@@ -323,12 +380,14 @@ void Renderer::report_stats(Clock::time_point now) {
     // The frame vertex array holds the CPU-built vertices and the animated meshes' poses.
     SDL_Log("Renderer stats: %.1f ms/frame = scene %.2f + submit %.2f + present %.2f + other %.2f; "
             "per frame %.0f draws (%.0f GPU meshes, %.0f of them animated), %.0f vertices and %.0f indices "
-            "from the CPU, %.0f pose vertices; %u GPU meshes (%u KiB), %u terrain uploads",
+            "from the CPU, %.0f pose vertices, %.1f shadow maps (%.0f casters); %u GPU meshes (%u KiB), "
+            "%u terrain uploads",
             frame_ms, scene_ms, submit_ms, present_ms, frame_ms - scene_ms - submit_ms - present_ms,
             _stats.draws / frames, _stats.mesh_draws / frames, _stats.animated_mesh_draws / frames,
             (_stats.vertices - _stats.pose_vertices) / frames, _stats.indices / frames,
-            _stats.pose_vertices / frames, static_cast<unsigned>(_meshes.size()),
-            static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads);
+            _stats.pose_vertices / frames, _stats.shadow_maps / frames, _stats.shadow_casters / frames,
+            static_cast<unsigned>(_meshes.size()), static_cast<unsigned>(_mesh_bytes / 1024),
+            _stats.terrain_uploads);
 
     // Vertices (and draw commands) per frame, by what the game draws with them.
     const auto per_frame = [&](eDrawSource source, const decltype(Stats::source_vertices) &counts) {
@@ -375,6 +434,9 @@ MD3DERROR Renderer::endScene() {
 
   if (_commands.empty()) {
     destroy_deleted_meshes();
+    for (auto &shadow : _shadow_cameras) {
+      shadow.is_set = false;
+    }
     return MD3D_OK;
   }
 
@@ -385,10 +447,22 @@ MD3DERROR Renderer::endScene() {
   _stats.indices += index_count;
   upload_frame_buffer(sg_vertex_buffer, _vertex_buffer, vertex_count, false, "vertex");
   upload_frame_buffer(sg_index_buffer, _index_buffer, index_count, true, "index");
+  // The shadow receivers skip the terrain's static shadow cells, read from its map.
+  for (const auto &shadow : _shadow_cameras) {
+    if (shadow.is_set && _has_terrain) {
+      _is_terrain_needed = true;
+    }
+  }
   if (_is_terrain_needed) {
     upload_terrain();
     _is_terrain_needed = false;
   }
+
+#ifndef EMSCRIPTEN
+  if (_gpu_shadows) {
+    render_shadow_maps();
+  }
+#endif
 
   _offscreenBuffer->begin_pass(defaultPassAction);
 
@@ -417,9 +491,23 @@ MD3DERROR Renderer::endScene() {
 
     auto vs_params = scene_vs_params_t {};
     copy_projection(command.render_state, vs_params.projection_matrix);
+#ifndef EMSCRIPTEN
+    const int shadow_camera = command.render_state.shadow_camera;
+    const bool takes_shadow = shadow_camera >= 0 && _shadow_cameras[shadow_camera].has_map;
+    if (takes_shadow) {
+      const auto &shadow = _shadow_cameras[shadow_camera];
+      float view_to_clip[12];
+      multiply_3x4(shadow.light_to_clip, shadow.view_to_light, view_to_clip);
+      to_mat4(view_to_clip, vs_params.view_to_shadow);
+      to_mat4(shadow.camera.viewToWorld, vs_params.view_to_world);
+    }
+#endif
 
     apply_viewport(command.render_state);
     bind_textures(command.render_state, bindings);
+#ifndef EMSCRIPTEN
+    bind_shadow(takes_shadow ? shadow_camera : -1, bindings);
+#endif
     const auto fs_params = scene_fs_params(command.render_state);
 
     bindings.vertex_buffers[0] = sg_vertex_buffer;
@@ -434,6 +522,9 @@ MD3DERROR Renderer::endScene() {
     sg_apply_bindings(bindings);
     sg_apply_uniforms(UB_scene_vs_params, SG_RANGE(vs_params));
     sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
+#ifndef EMSCRIPTEN
+    apply_shadow_uniforms(takes_shadow ? shadow_camera : -1);
+#endif
 
     sg_draw(base_element, count, 1);
   }
@@ -441,6 +532,11 @@ MD3DERROR Renderer::endScene() {
   sg_end_pass();
   sg_commit();
   destroy_deleted_meshes();
+  // The game sets its shadow cameras again for the next frame.
+  for (auto &shadow : _shadow_cameras) {
+    shadow.is_set = false;
+    shadow.has_map = false;
+  }
   _stats.submit_ms += milliseconds(Clock::now() - submit_start);
 
   if (defaultPassAction.colors[0].load_action == SG_LOADACTION_CLEAR) {
@@ -611,6 +707,9 @@ MD3DERROR Renderer::beginDrawCommand(M3D_DRAW_COMMAND &command) {
 }
 
 MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
+  // Part of the render state, so geometry that takes shadows never merges with any other.
+  const bool takes_shadow = _gpu_shadows && command.shadowCamera >= 0 && command.shadowCamera < max_shadow_cameras;
+  _render_state.shadow_camera = takes_shadow ? command.shadowCamera : -1;
   prepare_render_state();
 
   // The game numbers vertices from 0 within a command; make the indices refer to
@@ -649,6 +748,14 @@ uint32_t Renderer::createMesh(const M3D_MESH_VERTEX *vertices, int vertexCount, 
   Mesh mesh{};
   mesh.vertex_count = vertexCount;
   mesh.index_count = indexCount;
+  mesh.bounds = {vertices[0].x, vertices[0].y, vertices[0].z, vertices[0].x, vertices[0].y, vertices[0].z};
+  for (int i = 1; i < vertexCount; i++) {
+    const float position[3] = {vertices[i].x, vertices[i].y, vertices[i].z};
+    for (int axis = 0; axis < 3; axis++) {
+      mesh.bounds[axis] = std::min(mesh.bounds[axis], position[axis]);
+      mesh.bounds[axis + 3] = std::max(mesh.bounds[axis + 3], position[axis]);
+    }
+  }
   mesh.bytes = vertexCount * sizeof(M3D_MESH_VERTEX) + indexCount * sizeof(uint16_t);
   {
     sg_buffer_desc description{};
@@ -729,6 +836,21 @@ void Renderer::drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_ME
   command.mesh = handle;
   command.is_animated = pose != nullptr;
   command.mesh_draw = draw;
+  if (!_gpu_shadows || draw.shadowCamera < 0 || draw.shadowCamera >= max_shadow_cameras) {
+    command.mesh_draw.shadowCamera = -1;
+  } else if (pose != nullptr) {
+    // A shadow caster's box, which the shadow map is fitted to: this frame's pose.
+    command.bounds = {pose[0].x, pose[0].y, pose[0].z, pose[0].x, pose[0].y, pose[0].z};
+    for (int i = 1; i < mesh->second.vertex_count; i++) {
+      const float position[3] = {pose[i].x, pose[i].y, pose[i].z};
+      for (int axis = 0; axis < 3; axis++) {
+        command.bounds[axis] = std::min(command.bounds[axis], position[axis]);
+        command.bounds[axis + 3] = std::max(command.bounds[axis + 3], position[axis]);
+      }
+    }
+  } else {
+    command.bounds = mesh->second.bounds;
+  }
   if (!_has_terrain) {
     command.mesh_draw.renderShade = 0;
   }
@@ -742,6 +864,15 @@ void Renderer::setTerrain(const M3D_TERRAIN &terrain) {
   _terrain = terrain;
   _has_terrain = terrain.heights != nullptr && terrain.attributes != nullptr && terrain.width > 0 &&
                  terrain.height > 0;
+}
+
+bool Renderer::setShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow) {
+  if (!_gpu_shadows || camera < 0 || camera >= max_shadow_cameras) {
+    return false;
+  }
+  _shadow_cameras[camera].is_set = true;
+  _shadow_cameras[camera].camera = shadow;
+  return true;
 }
 
 void Renderer::upload_terrain() {
@@ -837,6 +968,9 @@ void Renderer::draw_mesh_command(const DrawCommand &command) {
   }
   bindings.index_buffer = mesh->second.indices;
 
+  // Meshes take no dynamic shadows; scene_fs still needs its shadow bindings.
+  bind_shadow(-1, bindings);
+
   const auto fs_params = scene_fs_params(command.render_state);
 
   apply_viewport(command.render_state);
@@ -845,9 +979,212 @@ void Renderer::draw_mesh_command(const DrawCommand &command) {
   sg_apply_bindings(bindings);
   sg_apply_uniforms(UB_mesh_vs_params, SG_RANGE(vs_params));
   sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
+  apply_shadow_uniforms(-1);
   sg_draw(0, mesh->second.index_count, 1);
 #endif
 }
+
+#ifndef EMSCRIPTEN
+void Renderer::bind_shadow(int camera, sg_bindings &bindings) {
+  bindings.views[VIEW_shadow_map] = camera >= 0 ? _shadow_cameras[camera].texture : _null_shadow_map_view;
+  bindings.views[VIEW_shadow_cells] =
+      camera >= 0 && _is_terrain_uploaded ? _terrain_attributes_view : _nullTextureView;
+  bindings.samplers[SMP_shadow_sampler] = _shadow_sampler;
+  bindings.samplers[SMP_shadow_cells_sampler] = _terrain_sampler;
+}
+
+void Renderer::apply_shadow_uniforms(int camera) {
+  scene_shadow_params_t params{};
+  if (camera >= 0) {
+    const auto &shadow = _shadow_cameras[camera];
+    params.shadow[0] = 1.0f;
+    params.shadow[1] = shadow.camera.darkness;
+    params.shadow[2] = shadow.filter_step;
+    params.shadow[3] = shadow.depth_bias;
+    params.shadow_terrain[0] = static_cast<float>(_terrain.worldMaskX);
+    params.shadow_terrain[1] = static_cast<float>(_terrain.worldMaskY);
+    params.shadow_terrain[2] = _is_terrain_uploaded ? 1.0f : 0.0f;
+  }
+  sg_apply_uniforms(UB_scene_shadow_params, SG_RANGE(params));
+}
+
+sg_pipeline Renderer::shadow_pipeline(bool animated) {
+  sg_pipeline &pipeline = _shadow_pipelines[animated ? 1 : 0];
+  if (pipeline.id != SG_INVALID_ID) {
+    return pipeline;
+  }
+
+  // Depth only. No culling: the CPU raster draws both sides of every polygon.
+  sg_pipeline_desc description{};
+  description.shader = _shadowShader;
+  description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
+  description.index_type = SG_INDEXTYPE_UINT16;
+  description.cull_mode = SG_CULLMODE_NONE;
+  description.colors[0].pixel_format = SG_PIXELFORMAT_NONE;
+  description.depth.pixel_format = SG_PIXELFORMAT_DEPTH;
+  description.depth.write_enabled = true;
+  description.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
+  if (animated) {
+    // This frame's pose in the frame vertex array.
+    description.layout.buffers[0].stride = sizeof(M3D_VERTEX);
+    description.layout.attrs[ATTR_shadow_pos].offset = offsetof(M3D_VERTEX, x);
+    description.layout.attrs[ATTR_shadow_uv_in].offset = offsetof(M3D_VERTEX, u);
+  } else {
+    description.layout.buffers[0].stride = sizeof(M3D_MESH_VERTEX);
+    description.layout.attrs[ATTR_shadow_pos].offset = offsetof(M3D_MESH_VERTEX, x);
+    description.layout.attrs[ATTR_shadow_uv_in].offset = offsetof(M3D_MESH_VERTEX, u);
+  }
+  description.layout.attrs[ATTR_shadow_pos].format = SG_VERTEXFORMAT_FLOAT3;
+  description.layout.attrs[ATTR_shadow_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+
+  pipeline = sg_make_pipeline(description);
+  if (sg_query_pipeline_state(pipeline) != SG_RESOURCESTATE_VALID) {
+    ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
+  }
+  SDL_Log("Renderer: %s shadow pipeline created", animated ? "animated" : "static");
+  return pipeline;
+}
+
+void Renderer::render_shadow_maps() {
+  for (int index = 0; index < max_shadow_cameras; index++) {
+    ShadowCamera &shadow = _shadow_cameras[index];
+    if (!shadow.is_set) {
+      continue;
+    }
+
+    // Light space, anchored to the world so that its texels stay put as the camera moves:
+    // x and y across the light, z towards it.
+    const float *l = shadow.camera.light;
+    float right[3] = {l[1], -l[0], 0.0f};  // light x (0, 0, 1)
+    float length = std::sqrt(right[0] * right[0] + right[1] * right[1]);
+    if (length < 1e-4f) {
+      right[0] = 1.0f, right[1] = 0.0f, length = 1.0f;
+    }
+    right[0] /= length, right[1] /= length;
+    const float up[3] = {l[1] * right[2] - l[2] * right[1], l[2] * right[0] - l[0] * right[2],
+                         l[0] * right[1] - l[1] * right[0]};
+    const float world_to_light[12] = {right[0], right[1], right[2], 0.0f, up[0], up[1], up[2], 0.0f,
+                                      l[0],     l[1],     l[2],     0.0f};
+    multiply_3x4(world_to_light, shadow.camera.viewToWorld, shadow.view_to_light);
+
+    // The casters' boxes in light space.
+    float low[3] = {1e30f, 1e30f, 1e30f};
+    float high[3] = {-1e30f, -1e30f, -1e30f};
+    int casters = 0;
+    for (const auto &command : _commands) {
+      if (command.mesh == 0 || command.mesh_draw.shadowCamera != index) {
+        continue;
+      }
+      float object_to_light[12];
+      multiply_3x4(shadow.view_to_light, command.mesh_draw.objectToView, object_to_light);
+      for (int corner = 0; corner < 8; corner++) {
+        const float point[3] = {command.bounds[corner & 1 ? 3 : 0], command.bounds[corner & 2 ? 4 : 1],
+                                command.bounds[corner & 4 ? 5 : 2]};
+        float light[3];
+        transform_3x4(object_to_light, point, light);
+        for (int axis = 0; axis < 3; axis++) {
+          low[axis] = std::min(low[axis], light[axis]);
+          high[axis] = std::max(high[axis], light[axis]);
+        }
+      }
+      casters++;
+    }
+    if (casters == 0) {
+      continue;
+    }
+
+    // A square map whose size only changes by powers of two, at whole texels: the same
+    // world point keeps falling on the same texel from frame to frame.
+    constexpr float margin = 2.0f;
+    float extent = 16.0f;
+    while (extent < std::max(high[0] - low[0], high[1] - low[1]) + 2 * margin) {
+      extent *= 2.0f;
+    }
+    const float texel = extent / shadow_map_size;
+    const float x0 = std::floor(((low[0] + high[0]) * 0.5f - extent * 0.5f) / texel) * texel;
+    const float y0 = std::floor(((low[1] + high[1]) * 0.5f - extent * 0.5f) / texel) * texel;
+    // Depth from the casters' top (nearest the light) to their bottom; whatever lies
+    // beyond is the ground they shade.
+    const float near = high[2] + margin;
+    const float far = low[2] - margin;
+    const float depth = near - far;
+    const float light_to_clip[12] = {2.0f / extent, 0.0f, 0.0f, -2.0f * x0 / extent - 1.0f,
+                                     0.0f, 2.0f / extent, 0.0f, -2.0f * y0 / extent - 1.0f,
+                                     0.0f, 0.0f, -2.0f / depth, 2.0f * near / depth - 1.0f};
+    std::copy(light_to_clip, light_to_clip + 12, shadow.light_to_clip);
+    // Taps half a world unit apart (at least a texel): about the softness of the CPU
+    // shadows' filtered 2-unit light map texels, without their blocks.
+    shadow.filter_step = std::max(texel, 0.5f) / extent;
+    shadow.depth_bias = 0.1f / depth;
+
+    if (shadow.map.id == SG_INVALID_ID) {
+      sg_image_desc description{};
+      description.usage.depth_stencil_attachment = true;
+      description.width = shadow_map_size;
+      description.height = shadow_map_size;
+      description.pixel_format = SG_PIXELFORMAT_DEPTH;
+      shadow.map = sg_make_image(&description);
+      sg_view_desc attachment{};
+      attachment.depth_stencil_attachment.image = shadow.map;
+      shadow.attachment = sg_make_view(&attachment);
+      sg_view_desc texture{};
+      texture.texture.image = shadow.map;
+      shadow.texture = sg_make_view(&texture);
+      if (sg_query_view_state(shadow.attachment) != SG_RESOURCESTATE_VALID ||
+          sg_query_view_state(shadow.texture) != SG_RESOURCESTATE_VALID) {
+        ErrH.Abort("sg_make_view", XERR_USER, 0, "shadow map");
+      }
+      SDL_Log("Renderer: shadow map %d (%dx%d)", index, shadow_map_size, shadow_map_size);
+    }
+
+    sg_pass pass{};
+    pass.action.depth.load_action = SG_LOADACTION_CLEAR;
+    pass.action.depth.clear_value = 1.0f;
+    pass.attachments.depth_stencil = shadow.attachment;
+    sg_begin_pass(&pass);
+    for (const auto &command : _commands) {
+      if (command.mesh == 0 || command.mesh_draw.shadowCamera != index) {
+        continue;
+      }
+      const auto mesh = _meshes.find(command.mesh);
+      if (mesh == _meshes.end()) {
+        continue;
+      }
+
+      shadow_vs_params_t vs_params{};
+      float object_to_light[12], object_to_clip[12];
+      multiply_3x4(shadow.view_to_light, command.mesh_draw.objectToView, object_to_light);
+      multiply_3x4(shadow.light_to_clip, object_to_light, object_to_clip);
+      to_mat4(object_to_clip, vs_params.object_to_shadow);
+      // Masked tiles cast through their texture, with the alpha test they are drawn with.
+      shadow_fs_params_t fs_params{};
+      fs_params.alpha_test[0] = command.render_state.is_alpha_test_enabled ? 1.0f : 0.0f;
+      fs_params.alpha_test[1] = static_cast<float>(command.render_state.alpha_reference);
+
+      sg_bindings bindings{};
+      bind_textures(command.render_state, bindings);
+      bindings.views[VIEW_texture_2] = {};  // not in the shadow program
+      if (command.is_animated) {
+        bindings.vertex_buffers[0] = sg_vertex_buffer;
+        bindings.vertex_buffer_offsets[0] = static_cast<int>(command.vertex_buffer_view.offset * sizeof(M3D_VERTEX));
+      } else {
+        bindings.vertex_buffers[0] = mesh->second.vertices;
+      }
+      bindings.index_buffer = mesh->second.indices;
+
+      sg_apply_pipeline(shadow_pipeline(command.is_animated));
+      sg_apply_bindings(bindings);
+      sg_apply_uniforms(UB_shadow_vs_params, SG_RANGE(vs_params));
+      sg_apply_uniforms(UB_shadow_fs_params, SG_RANGE(fs_params));
+      sg_draw(0, mesh->second.index_count, 1);
+      _stats.shadow_casters++;
+    }
+    sg_end_pass();
+    shadow.has_map = true;
+    _stats.shadow_maps++;
+  }
+}
+#endif
 
 MD3DERROR Renderer::lockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
   const auto address = _backBuffer->lock();

@@ -392,6 +392,8 @@ struct M3D_DRAW_COMMAND final
 	M3D_BUFFER_VIEW<M3D_VERTEX> uvBuffer;
 	M3D_BUFFER_VIEW<uint32_t> indexBuffer;
 	eDrawSource source = eDrawSource::other;
+	// Not -1: the geometry takes the dynamic shadows of this camera (SetShadowCamera).
+	int shadowCamera = -1;
 
 	inline void addPosition(float x, float y, float z)
 	{
@@ -477,6 +479,17 @@ struct M3D_MESH_DRAW
 	int renderMetal;			// the metal highlight
 	int renderShade;			// the terrain shadow test (needs SetTerrain)
 	int clampNearZ;				// a perspective camera: z within 1 of the eye becomes 1
+	int shadowCamera;			// not -1: casts a dynamic shadow for this camera (SetShadowCamera)
+};
+
+// One camera's dynamic shadows on the GPU (SetShadowCamera). The renderer fits a shadow
+// map to that camera's casters (DrawMesh with shadowCamera) and darkens the geometry that
+// takes them (M3D_DRAW_COMMAND::shadowCamera), except where the terrain is in static shadow.
+struct M3D_SHADOW_CAMERA
+{
+	float viewToWorld[12];		// 3x4 row-major, camera space (as objectToView maps) to world
+	float light[3];				// world direction towards the light, unit length
+	float darkness;				// what a shadowed colour is multiplied by
 };
 
 // The voxel world's height and attribute maps, as the shadow test reads them (GetAt,
@@ -533,6 +546,9 @@ public:
 	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose)=0;
 	// The terrain maps the mesh shadow test reads, for this frame's DrawMesh calls.
 	virtual void SetTerrain(const M3D_TERRAIN &terrain)=0;
+	// Dynamic shadows on the GPU for this frame's draws of a camera. 0 if the renderer
+	// doesn't draw them, and the caller then makes them the CPU way.
+	virtual int SetShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow)=0;
 
 	virtual int SetTexture(int hTexture, uint32_t dwStage = 0)=0;
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)=0;

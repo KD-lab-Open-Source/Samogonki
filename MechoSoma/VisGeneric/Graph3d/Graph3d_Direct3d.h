@@ -39,6 +39,7 @@ public:
 	virtual void DeleteMesh(uint32_t hMesh);
 	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
 	virtual void SetTerrain(const M3D_TERRAIN &terrain);
+	virtual int SetShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow);
 
 	virtual int SetTexture(int hTexture, uint32_t dwStage);
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine);

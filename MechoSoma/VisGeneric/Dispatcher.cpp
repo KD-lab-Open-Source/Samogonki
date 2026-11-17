@@ -9,6 +9,7 @@
 #include "BaseObject.h"
 #include "BaseDefine.h"
 #include "TexMgr.h"
+#include "PolyMgr.h"
 
 #include "Scene.h"
 #include "scenemesh.h"	// для чтения импортированных файлов
@@ -1008,6 +1009,8 @@ void cM3D::Animate(cUnknownClass *UCameraList,int CurrentTime,int PreviousTime)
 }
 void cM3D::ShadeDynamic(cUnknownClass *UCameraList,cUnknownClass *UTileMap)
 {
+	// With GPU shadows the meshes cast them as they are drawn (cPolyDispatcher::Draw).
+	if(P3D->SetGpuShadows(UCameraList)) return;
 	if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW))
 		for(cList *start=MeshList->next;start;start=start->next)
 			if(((!start->Mesh->GetAttribute(MESH_NOT_SHADE|MESH_STATIC_SHADE))&&(start->Mesh->isVisibleTotal(UCameraList)&CONST_VISIBLE_FRUSTUM))||(start->Mesh->GetAttribute(MESH_SHADE_ALWAYS)))
