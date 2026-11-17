@@ -105,6 +105,7 @@ extern unsigned char	*CosNChar;
 extern float			SinFloat[GRAD_TO_DGRAD(360)],CosFloat[GRAD_TO_DGRAD(360)];
 extern int				DivSqrt[SIZE_DIV_SQRT_INT];
 extern float			*ShareFloat;
+extern int				ShareFloatRadius;	// the planet radius ShareFloat was made for (InitArrayShare)
 
 //for Light - Omni
 extern unsigned char	*OmniLightMap;

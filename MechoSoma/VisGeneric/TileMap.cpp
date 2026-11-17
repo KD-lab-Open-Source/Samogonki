@@ -100,6 +100,7 @@ int cTileMap::Load3ds(const char *fname)
 	if(f.Open(fname,2)==0) return 0;
 	xTile=yTile=16;
 	_xTile=_yTile=7;
+	ReleaseGpuTiles();
 	if(Tile) delete [] Tile;
 	Tile=new sTileMap[xTile*yTile];
 	float dx=1.f/(1<<_xTile), dy=1.f/(1<<_yTile);
@@ -303,6 +304,7 @@ void cTileMap::Load(const char *filename)
 	}
 	int TotalNumberPoint=0,TotalNumberPolygon=0;
 //	if(!in.open(fname,XS_IN)) { XBuffer buf; buf<"Warning: cTileMap::cTileMap()\r\nFile not found "<fname; ErrAbort(buf.address()); }
+	ReleaseGpuTiles();
 	if(Tile) delete [] Tile; 
 	GetZReflectionSurface()=-1;
 	in>=xTile>=yTile;
@@ -465,9 +467,11 @@ cTileMap::cTileMap() : cUnknownClass(KIND_WORLD_TILEMAP)
 cTileMap::~cTileMap()								
 { 
 	UNKNOWN_DESTRUCTOR;
+	ReleaseGpuTiles();
 }
 void cTileMap::Release()
 {
+	ReleaseGpuTiles();
 	if(Tile) delete [] Tile; Tile=0; 
 }
 void cTileMap::TestVisible(cUnknownClass *UCameraList)

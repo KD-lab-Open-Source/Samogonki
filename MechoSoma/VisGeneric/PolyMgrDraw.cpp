@@ -24,6 +24,9 @@ float gb_LodValue=0.01f;
 //#define LOD_VALUE						gb_LodValue
 
 extern void ResetTextureMultiMaterialSurface565(cInterfaceGraph3d *IGraph3d,cMaterial *Material,cSurfaceReflectionMultiMaterial *Surface);
+#ifdef _MECHOSOMA_
+extern int mchCurrentTrack;		// RUNTIME/mechosoma.cpp
+#endif
 
 namespace
 {
@@ -383,6 +386,102 @@ int SetGpuTerrain(cInterfaceGraph3d *Graph3d)
 #endif
 }
 
+#ifdef _USE_TILEMAP_
+// Adds one part of a terrain tile to the world's set: its points before the bend, coloured
+// as the CPU path colours them (white; with Alpha, the point's own alpha, for the ice
+// surface), and its polygons as a range of the set's indices.
+void AddGpuTile(cBaseDynArray<sPointTile> &Point,cBaseDynArray<sPolygonFix> &Polygon,bool Alpha,
+				std::vector<M3D_TILE_VERTEX> &Vertices,std::vector<uint32_t> &Indices,int &First,int &Count)
+{
+	First=(int)Indices.size(); Count=0;
+	if(Point.length()==0||Polygon.length()==0) return;
+	const uint32_t Base=(uint32_t)Vertices.size();
+	for(int i=0;i<Point.length();i++)
+	{
+		sPointTile &p=Point[i];
+		M3D_TILE_VERTEX v;
+		v.x=(float)((int)p.xw+(int)p.dx);
+		v.y=(float)((int)p.yw+(int)p.dy);
+		v.z=(float)((int)p.zw+(int)p.dz);
+		v.color[0]=v.color[1]=v.color[2]=255;
+		v.color[3]=Alpha?(uint8_t)p.da():255;
+		v.u=p.u; v.v=p.v;
+		Vertices.push_back(v);
+	}
+	for(int i=0;i<Polygon.length();i++)
+	{
+		Indices.push_back(Base+Polygon[i].p1);
+		Indices.push_back(Base+Polygon[i].p2);
+		Indices.push_back(Base+Polygon[i].p3);
+	}
+	Count=3*Polygon.length();
+}
+
+// The tiles' geometry never changes after cTileMap::Load, so the whole world goes to the
+// GPU at its first draw, in one set: drawing one tile after another then changes only
+// textures and uniforms.
+void CreateGpuTiles(cTileMap *TileMap,cInterfaceGraph3d *Graph3d)
+{
+	TileMap->GpuTilesTried=true;
+#ifdef _MECHOSOMA_
+	// A new world: name the renderer's stats after it, CPU or GPU terrain alike.
+	if(vMap)
+	{
+		char Label[96];
+		snprintf(Label,sizeof(Label),"%s, track %d",vMap->wTable[vMap->cWorld].name,mchCurrentTrack);
+		Graph3d->SetStatsLabel(Label);
+	}
+#endif
+	std::vector<M3D_TILE_VERTEX> Vertices;
+	std::vector<uint32_t> Indices;
+	sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());
+	for(sTileMap *Tile=bTile;Tile<eTile;Tile++)
+	{
+		AddGpuTile(Tile->Point,Tile->Polygon,false,Vertices,Indices,Tile->GpuFirst[0],Tile->GpuCount[0]);
+		AddGpuTile(Tile->PointReflection,Tile->PolygonReflection,true,Vertices,Indices,Tile->GpuFirst[1],Tile->GpuCount[1]);
+	}
+	if(!Indices.empty())
+		TileMap->GpuTiles=Graph3d->CreateTiles(Vertices.data(),(int)Vertices.size(),Indices.data(),(int)Indices.size());
+	if(TileMap->GpuTiles==0)
+		for(sTileMap *Tile=bTile;Tile<eTile;Tile++)
+			Tile->GpuCount[0]=Tile->GpuCount[1]=0;
+}
+
+// The tile's material, with its light map when the CPU drew shadows into it.
+void SetTileMaterial(cInterfaceGraph3d *Graph3d,sTileMap *Tile,int Attribute)
+{
+	if(GET_RENDER_TUNING(RENDER_TUNING_SHADOW)&&Tile->GetLightMap()->GetStatus(STATUS_TEXTURE_SHADOW))
+	{
+		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)|MAT_COLOR_MOD_TEXTURE2));
+		Graph3d->SetTexture(Tile->GetLightMap()->nTexture,1);
+	}
+	else
+		Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+}
+
+// Draws a part of a tile from the world's GPU set (0: Polygon, 1: PolygonReflection) with
+// the textures and material set. The shader does what the CPU loop does for each point:
+// the bend (SHARE_FLOAT), DrawMatrix and ConvertPoint.
+void DrawGpuTile(cCamera *Camera,int nCamera,cTileMap *TileMap,sTileMap *Tile,int Part,int ShadowCamera,
+				 cInterfaceGraph3d *Graph3d)
+{
+	cConvertor ConvertorObjectToScreen;
+	ConvertorObjectToScreen.GetMatrix()=Tile->DrawMatrix[nCamera];
+	ConvertorObjectToScreen.BuildMatrix();
+	M3D_TILE_DRAW Draw;
+	Draw.firstIndex=Tile->GpuFirst[Part];
+	Draw.indexCount=Tile->GpuCount[Part];
+	CopyMatrix(ConvertorObjectToScreen.GetMatrix(),Draw.tileToView);
+	const Vect3f &ShareOfs=Tile->ShareOfs[nCamera];
+	Draw.shareOffset[0]=round(ShareOfs.x-Camera->GetPos().x);
+	Draw.shareOffset[1]=round(ShareOfs.y-Camera->GetPos().y);
+	Draw.shareRadius=ShareFloatRadius;
+	Draw.clampNearZ=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)?1:0;
+	Draw.shadowCamera=ShadowCamera;
+	Graph3d->DrawTile(TileMap->GpuTiles,Draw);
+}
+#endif //_USE_TILEMAP_
+
 }
 
 void sTile::ReleaseGpuMesh()
@@ -391,6 +490,15 @@ void sTile::ReleaseGpuMesh()
 	GpuMesh=0;
 	GpuMeshFailed=false;
 }
+
+#ifdef _USE_TILEMAP_
+void cTileMap::ReleaseGpuTiles()
+{
+	if(GpuTiles) ReleasedGpuMeshes().push_back(GpuTiles);
+	GpuTiles=0;
+	GpuTilesTried=false;
+}
+#endif //_USE_TILEMAP_
 
 int cPolyDispatcher::SetGpuShadows(cUnknownClass *UCameraList)
 {
@@ -893,6 +1001,8 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 		cRenderDevice *RenderDevice=Camera->GetViewPort();
 		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
 		Graph3d->SetRenderState(RENDERSTATE_TEXTUREADDRESS,TADDRESS_CLAMP);
+		DeleteReleasedGpuMeshes(Graph3d);
+		if(!TileMap->GpuTilesTried) CreateGpuTiles(TileMap,Graph3d);
 
 		if(TileMap->GetZReflectionSurface()>=0)
 			for(sTileMap *bTile=TileMap->GetTile(0,0),*eTile=TileMap->GetTile(0,TileMap->NumberTileY());bTile<eTile;bTile++)
@@ -913,6 +1023,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) AttributeRender|=RENDER_CLIPPING3D;
 
 						Attribute = AttributeRender;
+						if(bTile->GpuCount[1])
+						{
+							SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+							SetTileMaterial(Graph3d,bTile,Attribute);
+							DrawGpuTile(Camera,nCamera,TileMap,bTile,1,GpuShadows?nCamera:-1,Graph3d);
+							Graph3d->ResetProjectionMatrix();
+							continue;
+						}
 						M3D_DRAW_COMMAND drawCommand;
 						Graph3d->BeginDrawCommand(drawCommand);
 						drawCommand.source=eDrawSource::terrain;
@@ -978,6 +1096,14 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				if(Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)) AttributeRender|=RENDER_CLIPPING3D;
 
 				Attribute = AttributeRender;
+				if(bTile->GpuCount[0])
+				{
+					SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+					SetTileMaterial(Graph3d,bTile,Attribute);
+					DrawGpuTile(Camera,nCamera,TileMap,bTile,0,GpuShadows?nCamera:-1,Graph3d);
+					Graph3d->ResetProjectionMatrix();
+					continue;
+				}
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
 				drawCommand.source=eDrawSource::terrain;

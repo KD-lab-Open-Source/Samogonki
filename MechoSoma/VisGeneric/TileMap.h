@@ -70,6 +70,9 @@ struct sTileMap : public sAttribute
 	char						TotalVisibleCamera[NUMBER_CAMERA_MAX];	// видимость из камеры 
 	MatXf						DrawMatrix[NUMBER_CAMERA_MAX];
 	Vect3f						ShareOfs[NUMBER_CAMERA_MAX];
+	// Polygon ([0]) and PolygonReflection ([1]) in the world's GPU tile set
+	// (cTileMap::GpuTiles): the first index and the count, 0 if not there.
+	int							GpuFirst[2]={0,0},GpuCount[2]={0,0};
 
 	sTileMap()												{ xPos=yPos=0; zReflectionSurface=0; memset(TotalVisibleCamera,CONST_VISIBLE_SHOW,NUMBER_CAMERA_MAX); }
 	~sTileMap()												{ if(GetMaterial()->Opacity) GetMaterial()->Opacity->texture=0; } 
@@ -97,6 +100,12 @@ class cTileMap : public cUnknownClass, public sAttribute
 	// для итеррации по полигонам карты
 	int			nTile,nPolygon;
 public:
+	// Every tile's points and polygons on the GPU in one set (CreateTiles), made at the
+	// first draw of the world and released with its tiles; 0 draws them the CPU way.
+	unsigned int GpuTiles=0;
+	bool		GpuTilesTried=false;
+	void ReleaseGpuTiles();								// PolyMgrDraw.cpp
+
 	cTileMap();
 	~cTileMap();
 	void Release();
