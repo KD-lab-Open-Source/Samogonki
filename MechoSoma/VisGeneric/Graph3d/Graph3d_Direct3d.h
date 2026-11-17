@@ -38,6 +38,10 @@ public:
 								const uint16_t *indices, int indexCount);
 	virtual void DeleteMesh(uint32_t hMesh);
 	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
+	virtual uint32_t CreateTiles(const M3D_TILE_VERTEX *vertices, int vertexCount,
+								 const uint32_t *indices, int indexCount);
+	virtual void DrawTile(uint32_t hTiles, const M3D_TILE_DRAW &draw);
+	virtual void SetStatsLabel(const char *label);
 	virtual void SetTerrain(const M3D_TERRAIN &terrain);
 	virtual int SetShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow);
 

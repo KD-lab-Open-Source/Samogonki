@@ -8,6 +8,7 @@ unsigned char	*CosNChar=0;
 float			SinFloat[GRAD_TO_DGRAD(360)],CosFloat[GRAD_TO_DGRAD(360)];
 int				DivSqrt[SIZE_DIV_SQRT_INT];
 float			*ShareFloat=0;
+int				ShareFloatRadius=0;
 
 unsigned char	*OmniLightMap=0;
 
@@ -56,6 +57,7 @@ void InitArrayShare(int RadiusShare)
 {
 	if(ShareFloat) delete[] ShareFloat;
 	ShareFloat=new float[SIZE_SHARE_FLOAT];
+	ShareFloatRadius=RadiusShare;
 	for(int i=0;i<SIZE_SHARE_FLOAT;i++)
 	{
 		int d=RadiusShare*RadiusShare-i*(1<<5);

@@ -9,6 +9,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -30,9 +31,10 @@ class Renderer final {
   // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
   // gpuMeshes: keep meshes on the GPU (createMesh); off, createMesh always refuses.
   // gpuShadows: dynamic shadows from shadow maps (setShadowCamera); needs gpuMeshes.
+  // gpuTerrain: keep terrain tiles on the GPU (createTiles); off, createTiles always refuses.
   // renderStats: log where the frame time goes, every 5 seconds.
   Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool gpuShadows,
-           bool renderStats);
+           bool gpuTerrain, bool renderStats);
   ~Renderer();
 
   Renderer(const Renderer&) = delete;
@@ -65,6 +67,13 @@ class Renderer final {
   void deleteMesh(uint32_t handle);
   // pose: an animated mesh's positions and texture coordinates this frame, or null.
   void drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
+  // A world's terrain tiles kept on the GPU in one pair of buffers, each tile a range of
+  // the indices, bent into the planet in a shader. The set shares the mesh handles:
+  // deleteMesh deletes it.
+  uint32_t createTiles(const M3D_TILE_VERTEX *vertices, int vertexCount, const uint32_t *indices, int indexCount);
+  void drawTile(uint32_t handle, const M3D_TILE_DRAW &draw);
+  // Names the frames in the stats lines; a new label ends the report so far.
+  void setStatsLabel(const char *label);
   void setTerrain(const M3D_TERRAIN &terrain);
   // A camera's dynamic shadows for this frame; false if the renderer doesn't draw them.
   bool setShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow);
@@ -91,6 +100,7 @@ private:
 
   sg_shader _sceneShader;
   sg_shader _meshShader{};
+  sg_shader _tileShader{};
   sg_image _nullTexture;
   sg_view _nullTextureView;
 
@@ -130,22 +140,27 @@ private:
     RenderState render_state;
     BufferView vertex_buffer_view;
     BufferView index_buffer_view;
-    // Non-zero: this command draws a GPU mesh (drawMesh) instead of frame geometry. An
-    // animated mesh's pose is in the frame vertex array, at vertex_buffer_view.
+    // Non-zero: this command draws a GPU mesh (drawMesh) or terrain tile (drawTile)
+    // instead of frame geometry. An animated mesh's pose is in the frame vertex array, at
+    // vertex_buffer_view.
     uint32_t mesh = 0;
     bool is_animated = false;
+    bool is_tile = false;
     M3D_MESH_DRAW mesh_draw{};
+    M3D_TILE_DRAW tile_draw{};
     // A shadow caster's box in object space: minimum x, y, z, then maximum.
     std::array<float, 6> bounds{};
   };
 
   std::vector<DrawCommand> _commands;
   void draw_mesh_command(const DrawCommand &command);
+  void draw_tile_command(const DrawCommand &command);
   bool _is_back_buffer_flush = false;
   bool _is_in_scene = false;
 
-  // GPU meshes: two immutable buffers each, made by createMesh. A deleted mesh is kept
-  // until the end of the frame, as a command recorded before the delete may still use it.
+  // GPU meshes and terrain tile sets: two immutable buffers each, made by createMesh and
+  // createTiles. A deleted one is kept until the end of the frame, as a command recorded
+  // before the delete may still use it.
   static constexpr size_t max_meshes = 4096;
   struct Mesh
   {
@@ -155,9 +170,13 @@ private:
     int index_count;
     size_t bytes;
     std::array<float, 6> bounds;  // in object space: minimum x, y, z, then maximum
+    bool is_tile;                 // a tile set: M3D_TILE_VERTEX vertices, 32-bit indices
   };
   bool _gpu_meshes;
+  bool _gpu_terrain;
   std::unordered_map<uint32_t, Mesh> _meshes;
+  size_t _tile_set_count = 0;
+  uint32_t add_mesh(Mesh mesh, sg_range vertices, sg_range indices);
   std::vector<uint32_t> _deleted_meshes;
   uint32_t _last_mesh = 0;
   size_t _mesh_bytes = 0;
@@ -219,6 +238,7 @@ private:
     frame,          // the frame vertex and index arrays (scene shader)
     mesh,           // a GPU mesh (mesh shader)
     animated_mesh,  // a GPU mesh, positions and texture coordinates from the frame array
+    tile,           // a GPU terrain tile (tile shader)
   };
 
   // The part of a command's render state that a scene pipeline depends on, and what it
@@ -258,6 +278,7 @@ private:
     uint64_t draws = 0;
     uint64_t mesh_draws = 0;
     uint64_t animated_mesh_draws = 0;
+    uint64_t tile_draws = 0;
     uint64_t pose_vertices = 0;
     uint64_t shadow_maps = 0;
     uint64_t shadow_casters = 0;
@@ -272,6 +293,7 @@ private:
   Stats _stats;
   Clock::time_point _stats_start;
   Clock::time_point _scene_begin;
+  std::string _stats_label;
   void report_stats(Clock::time_point now);
 };
 

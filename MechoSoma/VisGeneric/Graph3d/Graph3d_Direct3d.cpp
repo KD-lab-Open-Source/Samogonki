@@ -119,11 +119,16 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	const char* gpuShadowsKey = getIniKey(mch_mainINI,"m3d","GpuShadows");
 	const bool gpuShadows = gpuMeshes && (*gpuShadowsKey == 0 || atoi(gpuShadowsKey) != 0);
 
+	// Terrain tiles kept on the GPU and bent into the planet by a shader (CreateTile). On
+	// unless game.ini turns it off with [m3d] GpuTerrain=0, which builds them on the CPU.
+	const char* gpuTerrainKey = getIniKey(mch_mainINI,"m3d","GpuTerrain");
+	const bool gpuTerrain = *gpuTerrainKey == 0 || atoi(gpuTerrainKey) != 0;
+
 	// [m3d] RenderStats=1: a log line every 5 seconds with where the frame time goes.
 	const bool renderStats = atoi(getIniKey(mch_mainINI,"m3d","RenderStats")) != 0;
 
 	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps,
-													 gpuMeshes, gpuShadows, renderStats);
+													 gpuMeshes, gpuShadows, gpuTerrain, renderStats);
 	_isActive = true;
 
 	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
@@ -293,6 +298,19 @@ void cGraph3dDirect3D::SetTerrain(const M3D_TERRAIN &terrain)
 int cGraph3dDirect3D::SetShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow)
 {
 	return _renderer->setShadowCamera(camera, shadow) ? 1 : 0;
+}
+uint32_t cGraph3dDirect3D::CreateTiles(const M3D_TILE_VERTEX *vertices, int vertexCount,
+									   const uint32_t *indices, int indexCount)
+{
+	return _renderer->createTiles(vertices, vertexCount, indices, indexCount);
+}
+void cGraph3dDirect3D::DrawTile(uint32_t hTiles, const M3D_TILE_DRAW &draw)
+{
+	_renderer->drawTile(hTiles, draw);
+}
+void cGraph3dDirect3D::SetStatsLabel(const char *label)
+{
+	_renderer->setStatsLabel(label);
 }
 
 int cGraph3dDirect3D::SetTexture(int hTexture, uint32_t dwStage)

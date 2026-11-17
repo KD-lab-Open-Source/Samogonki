@@ -462,6 +462,30 @@ struct M3D_MESH_POSE
 	float u, v;
 };
 
+// A vertex of a terrain tile kept on the GPU (CreateTiles): its point in tile coordinates,
+// before the planet bend, and its colour (white; the ice surface's alpha in color[3]).
+struct M3D_TILE_VERTEX
+{
+	float x, y, z;
+	uint8_t color[4];
+	float u, v;
+};
+static_assert(sizeof(M3D_TILE_VERTEX) == 24, "M3D_TILE_VERTEX must match the tile vertex layout");
+
+// One draw of a GPU terrain tile, with the render state set the usual way. The shader
+// bends the tile as cPolyDispatcher::Draw(cTileMap) did: a point (x, y, z) is drawn at
+// z - SHARE_FLOAT(xr * xr + yr * yr), xr = shareOffset[0] + x, yr = shareOffset[1] + y.
+struct M3D_TILE_DRAW
+{
+	int firstIndex;				// the tile's triangles in the set's index array (CreateTiles)
+	int indexCount;
+	float tileToView[12];		// 3x4 row-major, tile to camera space (cConvertor's matrix)
+	int shareOffset[2];			// the tile's offset from the camera, in world units
+	int shareRadius;			// the planet radius the bend table is made for (ShareFloatRadius)
+	int clampNearZ;				// a perspective camera: z within 1 of the eye becomes 1
+	int shadowCamera;			// not -1: takes this camera's dynamic shadows (SetShadowCamera)
+};
+
 // What one draw of a GPU mesh needs besides the render state (material, texture,
 // projection) set the usual way. The colours are the 0..255 values the CPU path uses.
 struct M3D_MESH_DRAW
@@ -544,6 +568,15 @@ public:
 								const uint16_t *indices, int indexCount)=0;
 	virtual void DeleteMesh(uint32_t hMesh)=0;
 	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose)=0;
+	// A world's terrain tiles kept on the GPU, uploaded once into one vertex and one index
+	// buffer, so that drawing tile after tile only changes textures and uniforms. A tile
+	// is a range of the indices (M3D_TILE_DRAW). CreateTiles returns 0 if it can't keep
+	// them, and the caller then draws them the CPU way. DeleteMesh deletes the set.
+	virtual uint32_t CreateTiles(const M3D_TILE_VERTEX *vertices, int vertexCount,
+								 const uint32_t *indices, int indexCount)=0;
+	virtual void DrawTile(uint32_t hTiles, const M3D_TILE_DRAW &draw)=0;
+	// What the renderer's stats lines name the frames after, such as the world and track.
+	virtual void SetStatsLabel(const char *label)=0;
 	// The terrain maps the mesh shadow test reads, for this frame's DrawMesh calls.
 	virtual void SetTerrain(const M3D_TERRAIN &terrain)=0;
 	// Dynamic shadows on the GPU for this frame's draws of a camera. 0 if the renderer
