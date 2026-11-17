@@ -113,11 +113,17 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	const char* gpuMeshesKey = getIniKey(mch_mainINI,"m3d","GpuMeshes");
 	const bool gpuMeshes = *gpuMeshesKey == 0 || atoi(gpuMeshesKey) != 0;
 
+	// Dynamic shadows from a shadow map (SetShadowCamera), cast by the GPU meshes. On unless
+	// game.ini turns it off with [m3d] GpuShadows=0, which paints them into the terrain's
+	// light maps on the CPU as before; GpuMeshes=0 turns them off too.
+	const char* gpuShadowsKey = getIniKey(mch_mainINI,"m3d","GpuShadows");
+	const bool gpuShadows = gpuMeshes && (*gpuShadowsKey == 0 || atoi(gpuShadowsKey) != 0);
+
 	// [m3d] RenderStats=1: a log line every 5 seconds with where the frame time goes.
 	const bool renderStats = atoi(getIniKey(mch_mainINI,"m3d","RenderStats")) != 0;
 
 	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps,
-													 gpuMeshes, renderStats);
+													 gpuMeshes, gpuShadows, renderStats);
 	_isActive = true;
 
 	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
@@ -283,6 +289,10 @@ void cGraph3dDirect3D::DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const
 void cGraph3dDirect3D::SetTerrain(const M3D_TERRAIN &terrain)
 {
 	_renderer->setTerrain(terrain);
+}
+int cGraph3dDirect3D::SetShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow)
+{
+	return _renderer->setShadowCamera(camera, shadow) ? 1 : 0;
 }
 
 int cGraph3dDirect3D::SetTexture(int hTexture, uint32_t dwStage)

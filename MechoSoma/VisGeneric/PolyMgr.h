@@ -105,6 +105,11 @@ public:
 	
 	void Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMesh *Mesh,Vect3f *vReflection=0);
 
+	// Dynamic shadows on the GPU (a shadow map per camera) instead of painting the terrain's
+	// light maps: SetGpuShadows gives the renderer each camera's light and says whether it
+	// took them; GpuShadows then has the meshes cast and the terrain take them as drawn.
+	int								GpuShadows = 0;
+	int SetGpuShadows(cUnknownClass *UCameraList);
 	void BuildShade(short *shade,int xShade,int yShade,Vect3f &PosShade,cTileMap *TileMap);
 	void UnlockTexture(cUnknownClass *UCameraList,cTileMap *TileMap);
 	void CreateTexture(cTileMap *TileMap);

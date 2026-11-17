@@ -29,8 +29,10 @@ class Renderer final {
  public:
   // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
   // gpuMeshes: keep meshes on the GPU (createMesh); off, createMesh always refuses.
+  // gpuShadows: dynamic shadows from shadow maps (setShadowCamera); needs gpuMeshes.
   // renderStats: log where the frame time goes, every 5 seconds.
-  Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool renderStats);
+  Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool gpuShadows,
+           bool renderStats);
   ~Renderer();
 
   Renderer(const Renderer&) = delete;
@@ -64,6 +66,8 @@ class Renderer final {
   // pose: an animated mesh's positions and texture coordinates this frame, or null.
   void drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
   void setTerrain(const M3D_TERRAIN &terrain);
+  // A camera's dynamic shadows for this frame; false if the renderer doesn't draw them.
+  bool setShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow);
 
   MD3DERROR lockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
   MD3DERROR unlockBackBuffer();
@@ -131,6 +135,8 @@ private:
     uint32_t mesh = 0;
     bool is_animated = false;
     M3D_MESH_DRAW mesh_draw{};
+    // A shadow caster's box in object space: minimum x, y, z, then maximum.
+    std::array<float, 6> bounds{};
   };
 
   std::vector<DrawCommand> _commands;
@@ -148,6 +154,7 @@ private:
     int vertex_count;
     int index_count;
     size_t bytes;
+    std::array<float, 6> bounds;  // in object space: minimum x, y, z, then maximum
   };
   bool _gpu_meshes;
   std::unordered_map<uint32_t, Mesh> _meshes;
@@ -174,6 +181,37 @@ private:
   sg_view _terrain_attributes_view{};
   sg_sampler _terrain_sampler{};
   void upload_terrain();
+
+  // Dynamic shadows: a depth map per camera (split screen has two), fitted each frame to
+  // the camera's casters in a light space anchored to the world, and drawn before the
+  // scene. The terrain draws that take them sample it with a comparison sampler.
+  static constexpr int max_shadow_cameras = 4;
+  static constexpr int shadow_map_size = 2048;
+  struct ShadowCamera
+  {
+    bool is_set = false;      // setShadowCamera this frame
+    bool has_map = false;     // its map holds this frame's casters
+    M3D_SHADOW_CAMERA camera{};
+    float view_to_light[12]{};   // 3x4 row-major: camera space to light space
+    float light_to_clip[12]{};   // 3x4 row-major: light space to the map's clip space
+    float filter_step = 0;       // between filter taps, in map texture coordinates
+    float depth_bias = 0;        // in map depth
+    sg_image map{};
+    sg_view attachment{};
+    sg_view texture{};
+  };
+  bool _gpu_shadows;
+  std::array<ShadowCamera, max_shadow_cameras> _shadow_cameras;
+  sg_shader _shadowShader{};
+  sg_pipeline _shadow_pipelines[2]{};  // static and animated casters
+  sg_sampler _shadow_sampler{};
+  sg_image _null_shadow_map{};
+  sg_view _null_shadow_map_view{};
+  void render_shadow_maps();
+  sg_pipeline shadow_pipeline(bool animated);
+  // The shadow bindings and uniforms every scene_fs draw needs; camera -1 for none.
+  void bind_shadow(int camera, sg_bindings &bindings);
+  void apply_shadow_uniforms(int camera);
 
   // What a command draws, which decides the shader and the vertex layout.
   enum class Geometry
@@ -221,6 +259,8 @@ private:
     uint64_t mesh_draws = 0;
     uint64_t animated_mesh_draws = 0;
     uint64_t pose_vertices = 0;
+    uint64_t shadow_maps = 0;
+    uint64_t shadow_casters = 0;
     uint64_t vertices = 0;
     uint64_t indices = 0;
     unsigned terrain_uploads = 0;

@@ -392,6 +392,44 @@ void sTile::ReleaseGpuMesh()
 	GpuMeshFailed=false;
 }
 
+int cPolyDispatcher::SetGpuShadows(cUnknownClass *UCameraList)
+{
+	GpuShadows=0;
+	if(!GET_RENDER_TUNING(RENDER_TUNING_SHADOW)) return 0;
+	assert(UCameraList->GetKind(KIND_ARRAYCAMERA));
+	cUnkClassDynArrayPointer &CameraArray=*(cUnkClassDynArrayPointer*)UCameraList;
+	if(CameraArray.length()==0) return 0;
+	for(int nCamera=0;nCamera<CameraArray.length();nCamera++)
+	{
+		assert(CameraArray[nCamera]->GetKind(KIND_CAMERA));
+		cCamera *Camera=(cCamera*)CameraArray[nCamera];
+		cRenderDevice *RenderDevice=Camera->GetViewPort();
+		cInterfaceGraph3d *Graph3d=RenderDevice->GetIGraph3d();
+		M3D_SHADOW_CAMERA Shadow;
+		// Camera space as the meshes and the terrain are drawn in (their
+		// ConvertorObjectToScreen), back to the world.
+		cConvertor WorldToView;
+		WorldToView.GetMatrix()=Camera->GetMatrix();
+		WorldToView.BuildMatrix();
+		MatXf ViewToWorld;
+		ViewToWorld.Invert(WorldToView.GetMatrix());
+		CopyMatrix(ViewToWorld,Shadow.viewToWorld);
+		// The light of cMesh::ShadeDynamic: a point z above the ground shades the ground
+		// z/CONST_DYNAMIC_SHADE_MESH towards -x.
+		Vect3f Light(1.f/CONST_DYNAMIC_SHADE_MESH,0,1);
+		Light.normalize(1.f);
+		Shadow.light[0]=Light.x; Shadow.light[1]=Light.y; Shadow.light[2]=Light.z;
+		// The grey BuildShade paints into the ARGB4444 light maps.
+		const int ColorMax=(1<<RenderDevice->GetTexFmt4444().rBitCount)-1;
+		Shadow.darkness=float(round(0.5f*ColorMax))/ColorMax;
+		// The terrain maps, for its static shadow cells.
+		SetGpuTerrain(Graph3d);
+		if(!Graph3d->SetShadowCamera(nCamera,Shadow)) return 0;
+	}
+	GpuShadows=1;
+	return 1;
+}
+
 __forceinline void SetPointMesh(M3D_DRAW_COMMAND &drawCommand,int i,cPolyDispatcher *P3D,cLight *LightObject,
 						cConvertor &ConvertorObjectToScreen,cConvertor &ConvertorObjectToWorld,
 						Vect3f &vLight,Vect3f &vView,float cosLightView,
@@ -502,6 +540,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	// an animated mesh's points and texels every frame, so those go with each draw.
 	const bool Animated=Mesh->IsAnimated()!=0;
 	const bool GpuTiles=(vReflection==0);
+	// With GPU shadows the mesh casts its dynamic shadow as it is drawn, if cM3D::ShadeDynamic
+	// would have cast it: decided by the attributes of the mesh it belongs to.
+	cMesh *RootMesh=Mesh;
+	while(RootMesh->Parent) RootMesh=RootMesh->Parent;
+	const bool CastsShadow=GpuShadows&&GpuTiles&&!RootMesh->GetAttribute(MESH_NOT_SHADE|MESH_STATIC_SHADE);
 	const eDrawSource MeshSource=vReflection?eDrawSource::mesh_reflection:
 		(Animated?eDrawSource::mesh_animated:eDrawSource::mesh_static);
 
@@ -662,6 +705,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 							MeshDraw.metal[0]=Metal.r; MeshDraw.metal[1]=Metal.g; MeshDraw.metal[2]=Metal.b;
 							MeshDraw.renderMetal=RenderMetal;
 							MeshDraw.renderShade=RenderShade&&GpuShade;
+							MeshDraw.shadowCamera=CastsShadow?nCamera:-1;
 
 							Attribute = BaseAttribute;
 							SetProjectionMatrix(Camera, Graph3d, false);
@@ -872,6 +916,8 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						M3D_DRAW_COMMAND drawCommand;
 						Graph3d->BeginDrawCommand(drawCommand);
 						drawCommand.source=eDrawSource::terrain;
+						// With GPU shadows the terrain takes them in place of its light map.
+						drawCommand.shadowCamera=GpuShadows?nCamera:-1;
 
 						int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 						int i;
@@ -935,6 +981,8 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
 				drawCommand.source=eDrawSource::terrain;
+				// With GPU shadows the terrain takes them in place of its light map.
+				drawCommand.shadowCamera=GpuShadows?nCamera:-1;
 
 				int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 				int i;
