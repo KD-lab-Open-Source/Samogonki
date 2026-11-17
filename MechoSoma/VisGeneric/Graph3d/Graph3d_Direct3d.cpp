@@ -108,7 +108,16 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	extern const char* getIniKey(const char* fname,const char* section,const char* key);
 	const bool textureMipmaps = atoi(getIniKey(mch_mainINI,"m3d","TextureMipmaps")) != 0;
 
-	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps);
+	// Meshes kept on the GPU and lit by a shader (CreateMesh). On unless game.ini turns it
+	// off with [m3d] GpuMeshes=0, which draws every mesh the CPU way as before.
+	const char* gpuMeshesKey = getIniKey(mch_mainINI,"m3d","GpuMeshes");
+	const bool gpuMeshes = *gpuMeshesKey == 0 || atoi(gpuMeshesKey) != 0;
+
+	// [m3d] RenderStats=1: a log line every 5 seconds with where the frame time goes.
+	const bool renderStats = atoi(getIniKey(mch_mainINI,"m3d","RenderStats")) != 0;
+
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps,
+													 gpuMeshes, renderStats);
 	_isActive = true;
 
 	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );
@@ -256,6 +265,24 @@ int cGraph3dDirect3D::BeginDrawCommand(M3D_DRAW_COMMAND &command)
 int cGraph3dDirect3D::EndDrawCommand(const M3D_DRAW_COMMAND &command)
 {
 	return _renderer->endDrawCommand(command) == MD3D_OK;
+}
+
+uint32_t cGraph3dDirect3D::CreateMesh(const M3D_MESH_VERTEX *vertices, int vertexCount,
+									  const uint16_t *indices, int indexCount)
+{
+	return _renderer->createMesh(vertices, vertexCount, indices, indexCount);
+}
+void cGraph3dDirect3D::DeleteMesh(uint32_t hMesh)
+{
+	_renderer->deleteMesh(hMesh);
+}
+void cGraph3dDirect3D::DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw)
+{
+	_renderer->drawMesh(hMesh, draw);
+}
+void cGraph3dDirect3D::SetTerrain(const M3D_TERRAIN &terrain)
+{
+	_renderer->setTerrain(terrain);
 }
 
 int cGraph3dDirect3D::SetTexture(int hTexture, uint32_t dwStage)

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 #include <SDL2/SDL.h>
 
@@ -99,21 +100,74 @@ namespace {
     }
     sg_update_buffer(buffer, sg_range{array.data(), count * sizeof(T)});
   }
+
+  template <typename Duration>
+  double milliseconds(Duration duration) {
+    return std::chrono::duration<double, std::milli>(duration).count();
+  }
+
+  // The fragment uniforms, the same for frame geometry and GPU meshes.
+  scene_fs_params_t scene_fs_params(const graphics::RenderState &state) {
+    return scene_fs_params_t{
+        .color_operation_1 = state.color_operation1,
+        .color_operation_2 = state.color_operation2,
+        .alpha_test_enabled = state.is_alpha_test_enabled,
+        .alpha_reference = state.alpha_reference
+    };
+  }
+
+#ifndef EMSCRIPTEN
+  // A 3x4 row-major object matrix (M3D_MESH_DRAW) as a GLSL mat4, which is column-major.
+  void to_mat4(const float (&matrix)[12], float *out) {
+    for (int column = 0; column < 4; column++) {
+      for (int row = 0; row < 3; row++) {
+        out[column * 4 + row] = matrix[row * 4 + column];
+      }
+      out[column * 4 + 3] = column == 3 ? 1.0f : 0.0f;
+    }
+  }
+
+  // A dynamic single-channel image for one terrain map, and its texture view.
+  void make_terrain_map(int width, int height, sg_image &image, sg_view &view) {
+    sg_image_desc description{};
+    description.width = width;
+    description.height = height;
+    description.num_slices = 1;
+    description.num_mipmaps = 1;
+    description.pixel_format = SG_PIXELFORMAT_R8;
+    description.usage.dynamic_update = true;
+    image = sg_make_image(&description);
+
+    sg_view_desc view_description{};
+    view_description.texture.image = image;
+    view = sg_make_view(&view_description);
+  }
+#endif
 }
 
 using namespace graphics;
 
-Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps) {
+Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool renderStats)
+#ifdef EMSCRIPTEN
+    // The web build's shader header (sokol-shader-em.h) has no mesh program.
+    : _gpu_meshes(false),
+#else
+    : _gpu_meshes(gpuMeshes),
+#endif
+      _render_stats(renderStats), _stats_start(Clock::now()), _scene_begin(_stats_start) {
   _display = std::make_unique<Display>(width, height);
 
   {
     sg_desc description{};
-    description.buffer_pool_size = 9;
-    description.image_pool_size = TextureManager::max_textures_count;
-    description.view_pool_size = TextureManager::max_textures_count;
-    description.shader_pool_size = 3;
-    // Pipelines are created once and kept: the scene's (scene_pipeline(), 6 in
-    // practice and at most 26) plus one each for the back buffer and the window copy.
+    // The frame buffers and the back buffer's, plus two for each GPU mesh.
+    description.buffer_pool_size = 9 + 2 * max_meshes;
+    // The textures, plus the two terrain maps of the mesh shadow test.
+    description.image_pool_size = TextureManager::max_textures_count + 2;
+    description.view_pool_size = TextureManager::max_textures_count + 2;
+    description.shader_pool_size = 4;
+    // Pipelines are created once and kept: the scene's (scene_pipeline(), a few in
+    // practice and at most 52 with the mesh ones) plus one each for the back buffer
+    // and the window copy.
     description.pipeline_pool_size = 64;
     description.environment = _display->environment();
 
@@ -127,6 +181,25 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
   if (_sceneShader.id == SG_INVALID_ID) {
     ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
   }
+
+#ifndef EMSCRIPTEN
+  if (_gpu_meshes) {
+    _meshShader = sg_make_shader(mesh_shader_desc(sg_query_backend()));
+    if (sg_query_shader_state(_meshShader) != SG_RESOURCESTATE_VALID) {
+      SDL_Log("Renderer: the mesh shader failed, meshes are drawn on the CPU");
+      _gpu_meshes = false;
+    }
+
+    // The terrain maps are read with texelFetch, so filtering never applies.
+    sg_sampler_desc description{};
+    description.min_filter = SG_FILTER_NEAREST;
+    description.mag_filter = SG_FILTER_NEAREST;
+    description.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+    description.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+    _terrain_sampler = sg_make_sampler(description);
+  }
+#endif
+  SDL_Log("Renderer: GPU meshes %s", _gpu_meshes ? "on" : "off");
 
   {
     sg_range data = {
@@ -222,13 +295,55 @@ bool Renderer::isInScene() const
 }
 
 MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
+  const auto present_start = Clock::now();
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   _offscreenBuffer->flush(_display->swapchain());
   _display->present();
 #ifdef GPX
   frameReady();
 #endif
+  if (_render_stats) {
+    const auto now = Clock::now();
+    _stats.present_ms += milliseconds(now - present_start);
+    _stats.frames++;
+    if (now - _stats_start >= std::chrono::seconds(5)) {
+      report_stats(now);
+    }
+  }
   return MD3D_OK;
+}
+
+void Renderer::report_stats(Clock::time_point now) {
+  if (_stats.frames > 1) {
+    const double frames = _stats.frames;
+    const double frame_ms = milliseconds(now - _stats_start) / frames;
+    const double scene_ms = _stats.scene_ms / frames;
+    const double submit_ms = _stats.submit_ms / frames;
+    const double present_ms = _stats.present_ms / frames;
+    SDL_Log("Renderer stats: %.1f ms/frame = scene %.2f + submit %.2f + present %.2f + other %.2f; "
+            "per frame %.0f draws (%.0f GPU meshes), %.0f vertices and %.0f indices from the CPU; "
+            "%u GPU meshes (%u KiB), %u terrain uploads",
+            frame_ms, scene_ms, submit_ms, present_ms, frame_ms - scene_ms - submit_ms - present_ms,
+            _stats.draws / frames, _stats.mesh_draws / frames, _stats.vertices / frames, _stats.indices / frames,
+            static_cast<unsigned>(_meshes.size()), static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads);
+
+    // Vertices (and draw commands) per frame, by what the game draws with them.
+    const auto per_frame = [&](eDrawSource source, const decltype(Stats::source_vertices) &counts) {
+      return counts[static_cast<size_t>(source)] / frames;
+    };
+    const auto &v = _stats.source_vertices;
+    const auto &c = _stats.source_commands;
+    SDL_Log("Renderer stats: CPU vertices per frame (commands): static meshes %.0f (%.0f), animated meshes "
+            "%.0f (%.0f), reflected meshes %.0f (%.0f), terrain %.0f (%.0f), effects %.0f (%.0f), other %.0f (%.0f)",
+            per_frame(eDrawSource::mesh_static, v), per_frame(eDrawSource::mesh_static, c),
+            per_frame(eDrawSource::mesh_animated, v), per_frame(eDrawSource::mesh_animated, c),
+            per_frame(eDrawSource::mesh_reflection, v), per_frame(eDrawSource::mesh_reflection, c),
+            per_frame(eDrawSource::terrain, v), per_frame(eDrawSource::terrain, c),
+            per_frame(eDrawSource::effects, v), per_frame(eDrawSource::effects, c),
+            per_frame(eDrawSource::other, v), per_frame(eDrawSource::other, c));
+  }
+  _stats = Stats{};
+  _stats_start = now;
 }
 
 MD3DERROR Renderer::setClipRect(const MD3DRECT &lprcClipRect) {
@@ -242,6 +357,7 @@ MD3DERROR Renderer::resetClipRect() {
 }
 
 MD3DERROR Renderer::beginScene() {
+  _scene_begin = Clock::now();
   _commands.clear();
   _render_state = RenderState();
   _texture_manager->delete_textures();
@@ -251,16 +367,25 @@ MD3DERROR Renderer::beginScene() {
 
 MD3DERROR Renderer::endScene() {
   _is_in_scene = false;
+  const auto submit_start = Clock::now();
+  _stats.scene_ms += milliseconds(submit_start - _scene_begin);
 
   if (_commands.empty()) {
+    destroy_deleted_meshes();
     return MD3D_OK;
   }
 
   // Upload only what this frame used, before the pass in case a buffer is recreated.
   const size_t vertex_count = _commands.back().vertex_buffer_view.end();
   const size_t index_count = _commands.back().index_buffer_view.end();
+  _stats.vertices += vertex_count;
+  _stats.indices += index_count;
   upload_frame_buffer(sg_vertex_buffer, _vertex_buffer, vertex_count, false, "vertex");
   upload_frame_buffer(sg_index_buffer, _index_buffer, index_count, true, "index");
+  if (_is_terrain_needed) {
+    upload_terrain();
+    _is_terrain_needed = false;
+  }
 
   _offscreenBuffer->begin_pass(defaultPassAction);
 
@@ -270,59 +395,25 @@ MD3DERROR Renderer::endScene() {
   }
 
   for (const auto& command : _commands) {
+    if (command.mesh != 0) {
+      draw_mesh_command(command);
+      _stats.draws++;
+      _stats.mesh_draws++;
+      continue;
+    }
     if (command.index_buffer_view.length == 0) {
       continue;
     }
+    _stats.draws++;
 
     sg_bindings bindings = {};
 
     auto vs_params = scene_vs_params_t {};
-    const auto m = command.render_state.projection_matrix;
-    if (m) {
-      std::copy(&m->_11, &m->_11 + 16, vs_params.projection_matrix);
-    } else {
-      std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), vs_params.projection_matrix);
-    }
+    copy_projection(command.render_state, vs_params.projection_matrix);
 
-    const auto viewport = command.render_state.viewport;
-    if (viewport) {
-      sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
-    } else {
-      sg_apply_viewport(0, 0, _offscreenBuffer->getWidth(), _offscreenBuffer->getHeight(), true);
-    }
-
-    for (uint32_t i = 0; i < 2; i++) {
-      bindings.views[i] = _nullTextureView;
-
-      auto texture_handle = command.render_state.textures[i];
-      if (texture_handle) {
-        auto texture = _texture_manager->get(*texture_handle);
-        if (texture != nullptr) {
-          bindings.views[i] = *texture;
-        }
-      }
-    }
-
-    switch (command.render_state.texture_address) {
-      case TADDRESS_CLAMP:
-        bindings.samplers[SMP_sampler_1] = _clamp_sampler;
-        break;
-
-      case TADDRESS_WRAP:
-        bindings.samplers[SMP_sampler_1] = _repeat_sampler;
-        break;
-
-      default:
-        bindings.samplers[SMP_sampler_1] = _repeat_sampler;
-        break;
-    }
-
-    auto fs_params = scene_fs_params_t{
-        .color_operation_1 = command.render_state.color_operation1,
-        .color_operation_2 = command.render_state.color_operation2,
-        .alpha_test_enabled = command.render_state.is_alpha_test_enabled,
-        .alpha_reference = command.render_state.alpha_reference
-    };
+    apply_viewport(command.render_state);
+    bind_textures(command.render_state, bindings);
+    const auto fs_params = scene_fs_params(command.render_state);
 
     bindings.vertex_buffers[0] = sg_vertex_buffer;
 
@@ -332,7 +423,7 @@ MD3DERROR Renderer::endScene() {
     bindings.index_buffer = sg_index_buffer;
     bindings.index_buffer_offset = 0;
 
-    sg_apply_pipeline(scene_pipeline(command.render_state));
+    sg_apply_pipeline(scene_pipeline(command.render_state, false));
     sg_apply_bindings(bindings);
     sg_apply_uniforms(UB_scene_vs_params, SG_RANGE(vs_params));
     sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
@@ -342,12 +433,60 @@ MD3DERROR Renderer::endScene() {
 
   sg_end_pass();
   sg_commit();
+  destroy_deleted_meshes();
+  _stats.submit_ms += milliseconds(Clock::now() - submit_start);
 
   if (defaultPassAction.colors[0].load_action == SG_LOADACTION_CLEAR) {
     defaultPassAction.colors[0].load_action = SG_LOADACTION_DONTCARE;
   }
 
   return MD3D_OK;
+}
+
+void Renderer::copy_projection(const RenderState &state, float *matrix) const {
+  const auto &m = state.projection_matrix;
+  if (m) {
+    std::copy(&m->_11, &m->_11 + 16, matrix);
+  } else {
+    std::copy(_projectionMatrix.begin(), _projectionMatrix.end(), matrix);
+  }
+}
+
+void Renderer::apply_viewport(const RenderState &state) const {
+  const auto &viewport = state.viewport;
+  if (viewport) {
+    sg_apply_viewport(viewport->left, viewport->top, viewport->right, viewport->bottom, true);
+  } else {
+    sg_apply_viewport(0, 0, _offscreenBuffer->getWidth(), _offscreenBuffer->getHeight(), true);
+  }
+}
+
+void Renderer::bind_textures(const RenderState &state, sg_bindings &bindings) {
+  for (uint32_t i = 0; i < 2; i++) {
+    bindings.views[i] = _nullTextureView;
+
+    auto texture_handle = state.textures[i];
+    if (texture_handle) {
+      auto texture = _texture_manager->get(*texture_handle);
+      if (texture != nullptr) {
+        bindings.views[i] = *texture;
+      }
+    }
+  }
+
+  switch (state.texture_address) {
+    case TADDRESS_CLAMP:
+      bindings.samplers[SMP_sampler_1] = _clamp_sampler;
+      break;
+
+    case TADDRESS_WRAP:
+      bindings.samplers[SMP_sampler_1] = _repeat_sampler;
+      break;
+
+    default:
+      bindings.samplers[SMP_sampler_1] = _repeat_sampler;
+      break;
+  }
 }
 
 MD3DERROR Renderer::setProjectionMatrix(const D3DMATRIX &matrix) {
@@ -479,7 +618,198 @@ MD3DERROR Renderer::endDrawCommand(const M3D_DRAW_COMMAND &command) {
   last_command.vertex_buffer_view.length += command.positionBuffer.count;
   last_command.index_buffer_view.length += command.indexBuffer.count;
 
+  const auto source = static_cast<size_t>(command.source);
+  _stats.source_vertices[source] += command.positionBuffer.count;
+  _stats.source_commands[source]++;
+
   return MD3D_OK;
+}
+
+uint32_t Renderer::createMesh(const M3D_MESH_VERTEX *vertices, int vertexCount, const uint16_t *indices,
+                              int indexCount) {
+  if (!_gpu_meshes || vertexCount <= 0 || indexCount <= 0 || vertexCount > 65536) {
+    return 0;
+  }
+  if (_meshes.size() >= max_meshes) {
+    if (!_is_mesh_pool_full_logged) {
+      SDL_Log("Renderer: %u GPU meshes, the most there can be; more are drawn on the CPU",
+              static_cast<unsigned>(_meshes.size()));
+      _is_mesh_pool_full_logged = true;
+    }
+    return 0;
+  }
+
+  Mesh mesh{};
+  mesh.index_count = indexCount;
+  mesh.bytes = vertexCount * sizeof(M3D_MESH_VERTEX) + indexCount * sizeof(uint16_t);
+  {
+    sg_buffer_desc description{};
+    description.usage.vertex_buffer = true;
+    description.data = sg_range{vertices, vertexCount * sizeof(M3D_MESH_VERTEX)};
+    mesh.vertices = sg_make_buffer(&description);
+  }
+  {
+    sg_buffer_desc description{};
+    description.usage.index_buffer = true;
+    description.data = sg_range{indices, indexCount * sizeof(uint16_t)};
+    mesh.indices = sg_make_buffer(&description);
+  }
+  if (sg_query_buffer_state(mesh.vertices) != SG_RESOURCESTATE_VALID ||
+      sg_query_buffer_state(mesh.indices) != SG_RESOURCESTATE_VALID) {
+    sg_destroy_buffer(mesh.vertices);
+    sg_destroy_buffer(mesh.indices);
+    return 0;
+  }
+
+  const uint32_t handle = ++_last_mesh;
+  _meshes.emplace(handle, mesh);
+  _mesh_bytes += mesh.bytes;
+  if (_meshes.size() % 256 == 0) {
+    SDL_Log("Renderer: %u GPU meshes, %u KiB", static_cast<unsigned>(_meshes.size()),
+            static_cast<unsigned>(_mesh_bytes / 1024));
+  }
+  return handle;
+}
+
+void Renderer::deleteMesh(uint32_t handle) {
+  if (_meshes.count(handle) != 0) {
+    _deleted_meshes.push_back(handle);
+  }
+}
+
+void Renderer::destroy_deleted_meshes() {
+  for (const auto handle : _deleted_meshes) {
+    const auto mesh = _meshes.find(handle);
+    if (mesh == _meshes.end()) {
+      continue;
+    }
+    sg_destroy_buffer(mesh->second.vertices);
+    sg_destroy_buffer(mesh->second.indices);
+    _mesh_bytes -= mesh->second.bytes;
+    _meshes.erase(mesh);
+  }
+  _deleted_meshes.clear();
+}
+
+void Renderer::drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw) {
+  if (_meshes.count(handle) == 0) {
+    return;
+  }
+
+  // Recorded like frame geometry, so it is drawn in order with it; its buffer views
+  // are empty and only carry the frame arrays' positions on to the next command.
+  const BufferView vertices = _commands.empty() ? BufferView{0, 0} : _commands.back().vertex_buffer_view.next();
+  const BufferView indices = _commands.empty() ? BufferView{0, 0} : _commands.back().index_buffer_view.next();
+  DrawCommand command{_render_state, vertices, indices};
+  command.mesh = handle;
+  command.mesh_draw = draw;
+  if (!_has_terrain) {
+    command.mesh_draw.renderShade = 0;
+  }
+  if (command.mesh_draw.renderShade) {
+    _is_terrain_needed = true;
+  }
+  _commands.push_back(command);
+}
+
+void Renderer::setTerrain(const M3D_TERRAIN &terrain) {
+  _terrain = terrain;
+  _has_terrain = terrain.heights != nullptr && terrain.attributes != nullptr && terrain.width > 0 &&
+                 terrain.height > 0;
+}
+
+void Renderer::upload_terrain() {
+#ifndef EMSCRIPTEN
+  const size_t size = static_cast<size_t>(_terrain.width) * _terrain.height;
+
+  // A map of another size (another world): new images, and an upload whatever it holds.
+  bool changed = false;
+  if (_terrain_width != _terrain.width || _terrain_height != _terrain.height) {
+    if (_terrain_heights.id != SG_INVALID_ID) {
+      sg_destroy_view(_terrain_heights_view);
+      sg_destroy_view(_terrain_attributes_view);
+      sg_destroy_image(_terrain_heights);
+      sg_destroy_image(_terrain_attributes);
+    }
+    make_terrain_map(_terrain.width, _terrain.height, _terrain_heights, _terrain_heights_view);
+    make_terrain_map(_terrain.width, _terrain.height, _terrain_attributes, _terrain_attributes_view);
+    _terrain_width = _terrain.width;
+    _terrain_height = _terrain.height;
+    _terrain_heights_copy.assign(size, 0);
+    _terrain_attributes_copy.assign(size, 0);
+    changed = true;
+    SDL_Log("Renderer: terrain maps %dx%d for the mesh shadow test", _terrain.width, _terrain.height);
+  }
+
+  // The game changes the maps in place (digging, deformation): compare, which costs far
+  // less than uploading every frame.
+  if (changed || std::memcmp(_terrain_heights_copy.data(), _terrain.heights, size) != 0 ||
+      std::memcmp(_terrain_attributes_copy.data(), _terrain.attributes, size) != 0) {
+    std::memcpy(_terrain_heights_copy.data(), _terrain.heights, size);
+    std::memcpy(_terrain_attributes_copy.data(), _terrain.attributes, size);
+
+    sg_image_data data{};
+    data.mip_levels[0] = sg_range{_terrain_heights_copy.data(), size};
+    sg_update_image(_terrain_heights, &data);
+    data.mip_levels[0] = sg_range{_terrain_attributes_copy.data(), size};
+    sg_update_image(_terrain_attributes, &data);
+
+    _is_terrain_uploaded = true;
+    _stats.terrain_uploads++;
+  }
+#endif
+}
+
+void Renderer::draw_mesh_command(const DrawCommand &command) {
+#ifndef EMSCRIPTEN
+  const auto mesh = _meshes.find(command.mesh);
+  if (mesh == _meshes.end()) {
+    return;
+  }
+  const auto &draw = command.mesh_draw;
+  const bool shade = draw.renderShade && _is_terrain_uploaded;
+
+  mesh_vs_params_t vs_params{};
+  copy_projection(command.render_state, vs_params.projection_matrix);
+  to_mat4(draw.objectToView, vs_params.object_to_view);
+  to_mat4(draw.objectToWorld, vs_params.object_to_world);
+  for (int i = 0; i < 3; i++) {
+    vs_params.light[i] = draw.light[i];
+    vs_params.view[i] = draw.view[i];
+    vs_params.ambient[i] = draw.ambient[i];
+    vs_params.add[i] = draw.add[i];
+    vs_params.metal[i] = draw.metal[i];
+  }
+  vs_params.light[3] = draw.cosLightView;
+  for (int i = 0; i < 4; i++) {
+    vs_params.multiply[i] = draw.multiply[i];
+  }
+  vs_params.flags[0] = draw.renderDiffuse;
+  vs_params.flags[1] = draw.renderMetal;
+  vs_params.flags[2] = shade ? 1 : 0;
+  vs_params.flags[3] = draw.clampNearZ;
+  vs_params.terrain[0] = _terrain.worldMaskX;
+  vs_params.terrain[1] = _terrain.worldMaskY;
+  vs_params.terrain[2] = _terrain.heightShift;
+  vs_params.terrain[3] = _terrain.shadeDepth;
+
+  sg_bindings bindings = {};
+  bind_textures(command.render_state, bindings);
+  bindings.views[VIEW_terrain_heights] = shade ? _terrain_heights_view : _nullTextureView;
+  bindings.views[VIEW_terrain_attributes] = shade ? _terrain_attributes_view : _nullTextureView;
+  bindings.samplers[SMP_terrain_sampler] = _terrain_sampler;
+  bindings.vertex_buffers[0] = mesh->second.vertices;
+  bindings.index_buffer = mesh->second.indices;
+
+  const auto fs_params = scene_fs_params(command.render_state);
+
+  apply_viewport(command.render_state);
+  sg_apply_pipeline(scene_pipeline(command.render_state, true));
+  sg_apply_bindings(bindings);
+  sg_apply_uniforms(UB_mesh_vs_params, SG_RANGE(vs_params));
+  sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
+  sg_draw(0, mesh->second.index_count, 1);
+#endif
 }
 
 MD3DERROR Renderer::lockBackBuffer(void **lplpSurface, uint32_t *lpdwPitch) {
@@ -505,8 +835,9 @@ void Renderer::prepare_render_state() {
     return;
   }
 
+  // A GPU mesh command draws only its mesh: geometry after it starts a new command.
   const auto& last_command = _commands.back();
-  if (_render_state == last_command.render_state) {
+  if (last_command.mesh == 0 && _render_state == last_command.render_state) {
     return;
   }
 
@@ -531,11 +862,11 @@ namespace {
   }
 }
 
-sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
+sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
   // RENDERSTATE_ZTEST was D3D's ZENABLE: turned off, the depth buffer is neither tested
   // nor written, whatever RENDERSTATE_ZWRITE says.
   const bool depth_test = state.is_depth_test_enabled;
-  ScenePipelineKey key{depth_test, depth_test && state.is_depth_write_enabled, state.is_alpha_blend_enabled,
+  ScenePipelineKey key{mesh, depth_test, depth_test && state.is_depth_write_enabled, state.is_alpha_blend_enabled,
                        SG_BLENDFACTOR_ONE, SG_BLENDFACTOR_ZERO};
   if (key.blend) {
     key.source = blend_factor(state.source_blend_mode, SG_BLENDFACTOR_ONE);
@@ -550,9 +881,9 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
 
   // Built from the key alone, so commands with the same key share a pipeline.
   sg_pipeline_desc description = {};
-  description.shader = _sceneShader;
+  description.shader = key.mesh ? _meshShader : _sceneShader;
   description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
-  description.index_type = SG_INDEXTYPE_UINT32;
+  description.index_type = key.mesh ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_UINT32;
   description.cull_mode = SG_CULLMODE_BACK;
   description.face_winding = SG_FACEWINDING_CCW;
 
@@ -565,28 +896,45 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state) {
   description.colors[0].blend.dst_factor_rgb = key.destination;
   description.colors[0].blend.dst_factor_alpha = key.destination;
 
-  // One interleaved M3D_VERTEX per vertex; the colour bytes arrive in the shader as 0..1.
-  description.layout.buffers[0].stride = sizeof(M3D_VERTEX);
+  if (key.mesh) {
+#ifndef EMSCRIPTEN
+    // One M3D_MESH_VERTEX per vertex; the normal bytes arrive in the shader as integers.
+    description.layout.buffers[0].stride = sizeof(M3D_MESH_VERTEX);
 
-  description.layout.attrs[ATTR_scene_pos].offset = offsetof(M3D_VERTEX, x);
-  description.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
+    description.layout.attrs[ATTR_mesh_pos].offset = offsetof(M3D_MESH_VERTEX, x);
+    description.layout.attrs[ATTR_mesh_pos].format = SG_VERTEXFORMAT_FLOAT3;
 
-  description.layout.attrs[ATTR_scene_diffuse_in].offset = offsetof(M3D_VERTEX, diffuse);
-  description.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_UBYTE4N;
+    description.layout.attrs[ATTR_mesh_normal_in].offset = offsetof(M3D_MESH_VERTEX, normal);
+    description.layout.attrs[ATTR_mesh_normal_in].format = SG_VERTEXFORMAT_BYTE4;
 
-  description.layout.attrs[ATTR_scene_specular_in].offset = offsetof(M3D_VERTEX, specular);
-  description.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_UBYTE4N;
+    description.layout.attrs[ATTR_mesh_uv_in].offset = offsetof(M3D_MESH_VERTEX, u);
+    description.layout.attrs[ATTR_mesh_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+#endif
+  } else {
+    // One interleaved M3D_VERTEX per vertex; the colour bytes arrive in the shader as 0..1.
+    description.layout.buffers[0].stride = sizeof(M3D_VERTEX);
 
-  description.layout.attrs[ATTR_scene_uv_in].offset = offsetof(M3D_VERTEX, u);
-  description.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+    description.layout.attrs[ATTR_scene_pos].offset = offsetof(M3D_VERTEX, x);
+    description.layout.attrs[ATTR_scene_pos].format = SG_VERTEXFORMAT_FLOAT3;
+
+    description.layout.attrs[ATTR_scene_diffuse_in].offset = offsetof(M3D_VERTEX, diffuse);
+    description.layout.attrs[ATTR_scene_diffuse_in].format = SG_VERTEXFORMAT_UBYTE4N;
+
+    description.layout.attrs[ATTR_scene_specular_in].offset = offsetof(M3D_VERTEX, specular);
+    description.layout.attrs[ATTR_scene_specular_in].format = SG_VERTEXFORMAT_UBYTE4N;
+
+    description.layout.attrs[ATTR_scene_uv_in].offset = offsetof(M3D_VERTEX, u);
+    description.layout.attrs[ATTR_scene_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+  }
 
   const auto pipeline = sg_make_pipeline(description);
   if (sg_query_pipeline_state(pipeline) != SG_RESOURCESTATE_VALID) {
     ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
   }
   _scene_pipelines.emplace_back(key, pipeline);
-  SDL_Log("Renderer: scene pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)",
-          static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
-          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination));
+  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)",
+          key.mesh ? "mesh" : "scene", static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0,
+          key.depth_write ? 1 : 0, key.blend ? 1 : 0, static_cast<int>(key.source),
+          static_cast<int>(key.destination));
   return pipeline;
 }

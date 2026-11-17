@@ -34,6 +34,12 @@ public:
 	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command);
 	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command);
 
+	virtual uint32_t CreateMesh(const M3D_MESH_VERTEX *vertices, int vertexCount,
+								const uint16_t *indices, int indexCount);
+	virtual void DeleteMesh(uint32_t hMesh);
+	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw);
+	virtual void SetTerrain(const M3D_TERRAIN &terrain);
+
 	virtual int SetTexture(int hTexture, uint32_t dwStage);
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine);
 	virtual int UnlockTexture(int hTexture);
