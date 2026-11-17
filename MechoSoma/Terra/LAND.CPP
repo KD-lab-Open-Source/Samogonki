@@ -981,42 +981,6 @@ void RenderStr(int Y)
 }
 ///End Mechosoma version
 */
-/*
-void RenderShadovM3D(int number, float y)
-{
-
-	cShadow Sh;
-	//Sh.dzx=(float)delta_s/65536;
-	Sh.number=number;
-	float f_dzx=(float)1/(delta_s/65536);
-	DrawMeshShadeP(&Sh,10000,round(y),f_dzx);///10000*delta_s>>16);
-	short *shadeBuf=Sh.shade;
-		for (int j=0;j<Sh.yShade;j++,shadeBuf+=Sh.xShade)  
-		{
-			int y=YCYCL(Sh.y+j), x=Sh.x,x_cycl=Sh.x,v;
-			unsigned char *pv0=&(vMap->VxBuf[0][0][y<<H_SIZE_POWER]);
-			unsigned char *pc0=&(vMap->ClTrBuf[0][y][0]);
-			unsigned char *pa0=&(vMap->AtBuf[0][y][0]);
-//			while((Sh.z<(v=*(pv0+(x_cycl))))&&((Sh.x-x)<Sh.xShade))
-//				x_cycl=XCYCL(--x);
-			//if(v>Sh.z) continue;
-			v=*(pv0+(x_cycl));
-			int xshade=round((Sh.x-x)-(Sh.z-v)*f_dzx);
-			while(xshade<Sh.xShade)
-			{
-				if((xshade>0)&&(shadeBuf[xshade]>=(v=*(pv0+(x_cycl))))&&((pa0[x_cycl]&At_SHADOW)==0))
-					*(pc0+x_cycl)>>=1;
-				x_cycl=XCYCL(--x);
-				v=*(pv0+(x_cycl));
-				xshade=round((Sh.x-x)-(Sh.z-v)*f_dzx);
-			}
-		}
-
-	editM3Dyh=YCYCL(Sh.y);
-	editM3Dyd=YCYCL(Sh.y+Sh.yShade);
-
-}
-*/
 //short vClBuf[YS_Buf][XS_Buf];
 
 
