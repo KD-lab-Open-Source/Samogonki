@@ -61,7 +61,8 @@ class Renderer final {
   // Meshes kept on the GPU: uploaded once, drawn with per-draw uniforms only.
   uint32_t createMesh(const M3D_MESH_VERTEX *vertices, int vertexCount, const uint16_t *indices, int indexCount);
   void deleteMesh(uint32_t handle);
-  void drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw);
+  // pose: an animated mesh's positions and texture coordinates this frame, or null.
+  void drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
   void setTerrain(const M3D_TERRAIN &terrain);
 
   MD3DERROR lockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
@@ -125,8 +126,10 @@ private:
     RenderState render_state;
     BufferView vertex_buffer_view;
     BufferView index_buffer_view;
-    // Non-zero: this command draws a GPU mesh (drawMesh) instead of frame geometry.
+    // Non-zero: this command draws a GPU mesh (drawMesh) instead of frame geometry. An
+    // animated mesh's pose is in the frame vertex array, at vertex_buffer_view.
     uint32_t mesh = 0;
+    bool is_animated = false;
     M3D_MESH_DRAW mesh_draw{};
   };
 
@@ -142,6 +145,7 @@ private:
   {
     sg_buffer vertices;
     sg_buffer indices;
+    int vertex_count;
     int index_count;
     size_t bytes;
   };
@@ -171,12 +175,19 @@ private:
   sg_sampler _terrain_sampler{};
   void upload_terrain();
 
-  // The part of a command's render state that a scene pipeline depends on, and whether
-  // it draws a GPU mesh (another shader and vertex layout). Everything else (culling)
-  // is the same for all draws.
+  // What a command draws, which decides the shader and the vertex layout.
+  enum class Geometry
+  {
+    frame,          // the frame vertex and index arrays (scene shader)
+    mesh,           // a GPU mesh (mesh shader)
+    animated_mesh,  // a GPU mesh, positions and texture coordinates from the frame array
+  };
+
+  // The part of a command's render state that a scene pipeline depends on, and what it
+  // draws. Everything else (culling) is the same for all draws.
   struct ScenePipelineKey
   {
-    bool mesh;
+    Geometry geometry;
     bool depth_test;
     bool depth_write;
     bool blend;
@@ -185,13 +196,13 @@ private:
 
     bool operator==(const ScenePipelineKey &other) const
     {
-      return mesh == other.mesh && depth_test == other.depth_test && depth_write == other.depth_write &&
+      return geometry == other.geometry && depth_test == other.depth_test && depth_write == other.depth_write &&
              blend == other.blend && source == other.source && destination == other.destination;
     }
   };
 
   // The pipeline for a command, created the first time it is needed.
-  sg_pipeline scene_pipeline(const RenderState &state, bool mesh);
+  sg_pipeline scene_pipeline(const RenderState &state, Geometry geometry);
 
   // Only a handful of entries, so a list is enough.
   std::vector<std::pair<ScenePipelineKey, sg_pipeline>> _scene_pipelines;
@@ -208,6 +219,8 @@ private:
     double present_ms = 0;
     uint64_t draws = 0;
     uint64_t mesh_draws = 0;
+    uint64_t animated_mesh_draws = 0;
+    uint64_t pose_vertices = 0;
     uint64_t vertices = 0;
     uint64_t indices = 0;
     unsigned terrain_uploads = 0;

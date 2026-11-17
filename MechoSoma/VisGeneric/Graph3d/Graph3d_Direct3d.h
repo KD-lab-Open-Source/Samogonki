@@ -37,7 +37,7 @@ public:
 	virtual uint32_t CreateMesh(const M3D_MESH_VERTEX *vertices, int vertexCount,
 								const uint16_t *indices, int indexCount);
 	virtual void DeleteMesh(uint32_t hMesh);
-	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw);
+	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose);
 	virtual void SetTerrain(const M3D_TERRAIN &terrain);
 
 	virtual int SetTexture(int hTexture, uint32_t dwStage);

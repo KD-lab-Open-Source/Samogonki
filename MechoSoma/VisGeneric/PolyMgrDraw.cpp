@@ -207,11 +207,22 @@ std::vector<unsigned int> &ReleasedGpuMeshes()
 	return *Released;
 }
 
+// For the GPU mesh of an animated ATTRTILE_TEXEL tile: the point and texel behind each of
+// its vertices (point << 16 | texel), to pose it every frame.
+std::unordered_map<unsigned int,std::vector<uint32_t>> &GpuMeshCorners()
+{
+	static auto *Corners=new std::unordered_map<unsigned int,std::vector<uint32_t>>;
+	return *Corners;
+}
+
 void DeleteReleasedGpuMeshes(cInterfaceGraph3d *Graph3d)
 {
 	std::vector<unsigned int> &Released=ReleasedGpuMeshes();
 	for(unsigned int GpuMesh : Released)
+	{
 		Graph3d->DeleteMesh(GpuMesh);
+		GpuMeshCorners().erase(GpuMesh);
+	}
 	Released.clear();
 }
 
@@ -229,14 +240,16 @@ M3D_MESH_VERTEX GpuMeshVertex(const sPoint &Point,sTexel *Texel)
 }
 
 // The tile as one vertex per distinct (point, texel) pair and 16-bit indices, in the order
-// the CPU path sends its polygons (PolygonOrientationCCW). 0 if it can't be made.
-unsigned int CreateGpuMesh(sTile *tile,cInterfaceGraph3d *Graph3d)
+// the CPU path sends its polygons (PolygonOrientationCCW). 0 if it can't be made. An
+// animated tile's vertices are posed every frame (GpuMeshPose).
+unsigned int CreateGpuMesh(sTile *tile,bool Animated,cInterfaceGraph3d *Graph3d)
 {
 	sPoint *Point=tile->GetPoint();
 	sPolygon *Polygon=tile->GetPolygon();
 	const int NumberPolygon=tile->GetNumberPolygon();
 	std::vector<M3D_MESH_VERTEX> Vertices;
 	std::vector<uint16_t> Indices;
+	std::vector<uint32_t> Corners;
 	Indices.reserve(3*NumberPolygon);
 
 	switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
@@ -272,6 +285,7 @@ unsigned int CreateGpuMesh(sTile *tile,cInterfaceGraph3d *Graph3d)
 					{
 						it=Welded.emplace(Key,uint32_t(Vertices.size())).first;
 						Vertices.push_back(GpuMeshVertex(Point[p],&Texel[t]));
+						if(Animated) Corners.push_back(Key);
 					}
 					Indices.push_back(uint16_t(it->second));
 				};
@@ -288,7 +302,52 @@ unsigned int CreateGpuMesh(sTile *tile,cInterfaceGraph3d *Graph3d)
 	}
 	if(Vertices.empty()||Indices.empty()||Vertices.size()>65536)
 		return 0;
-	return Graph3d->CreateMesh(Vertices.data(),int(Vertices.size()),Indices.data(),int(Indices.size()));
+	const unsigned int GpuMesh=Graph3d->CreateMesh(Vertices.data(),int(Vertices.size()),Indices.data(),int(Indices.size()));
+	if(GpuMesh&&!Corners.empty())
+		GpuMeshCorners()[GpuMesh]=std::move(Corners);
+	return GpuMesh;
+}
+
+// This frame's positions and texture coordinates of an animated tile's GPU mesh, in the
+// order CreateGpuMesh gave its vertices. Valid until the next call.
+const M3D_MESH_POSE *GpuMeshPose(sTile *tile)
+{
+	static auto *Pose=new std::vector<M3D_MESH_POSE>;
+	sPoint *Point=tile->GetPoint();
+	auto Set=[](M3D_MESH_POSE &Out,const sPoint &Point,sTexel *Texel)
+	{
+		Out.x=Point.pos.x; Out.y=Point.pos.y; Out.z=Point.pos.z;
+		Out.u=Texel?Texel->u():0.f;
+		Out.v=Texel?Texel->v():0.f;
+	};
+	switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
+	{
+		case ATTRTILE_VERTEX:
+		case ATTRTILE_VERTEX_TEXEL:
+			{
+				sTexel *Texel=tile->Attribute.GetAttribute(ATTRTILE_VERTEX_TEXEL)?tile->GetTexel():0;
+				Pose->resize(tile->GetNumberPoint());
+				for(int i=0;i<tile->GetNumberPoint();i++)
+					Set((*Pose)[i],Point[i],Texel?&Texel[i]:0);
+			}
+			break;
+		case ATTRTILE_TEXEL:
+			{
+				const auto Corners=GpuMeshCorners().find(tile->GpuMesh);
+				if(Corners==GpuMeshCorners().end()) return 0;
+				sTexel *Texel=tile->GetTexel();
+				Pose->resize(Corners->second.size());
+				for(size_t i=0;i<Corners->second.size();i++)
+				{
+					const uint32_t Key=Corners->second[i];
+					Set((*Pose)[i],Point[Key>>16],&Texel[Key&0xFFFF]);
+				}
+			}
+			break;
+		default:
+			return 0;
+	}
+	return Pose->data();
 }
 
 void CopyMatrix(MatXf &Matrix,float (&Out)[12])
@@ -439,11 +498,12 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	ConvertorObjectToWorld.InverseConvertVector(LightObject->GetTangent(),vLight);
 	vLight.normalize(1.f);
 	int PolygonOrientationCCW=(vReflection==0);
-	// The tiles go to the GPU unless they are mirrored for a reflection or rewritten by
-	// animation every frame.
-	const bool GpuTiles=(vReflection==0)&&!Mesh->IsAnimated();
+	// The tiles go to the GPU unless they are mirrored for a reflection. Animation rewrites
+	// an animated mesh's points and texels every frame, so those go with each draw.
+	const bool Animated=Mesh->IsAnimated()!=0;
+	const bool GpuTiles=(vReflection==0);
 	const eDrawSource MeshSource=vReflection?eDrawSource::mesh_reflection:
-		(Mesh->IsAnimated()?eDrawSource::mesh_animated:eDrawSource::mesh_static);
+		(Animated?eDrawSource::mesh_animated:eDrawSource::mesh_static);
 
 	for(int nCamera=0;nCamera<CameraArray.length();nCamera++)
 		if(Mesh->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)
@@ -586,10 +646,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					{
 						if(tile->GpuMesh==0&&!tile->GpuMeshFailed)
 						{
-							tile->GpuMesh=CreateGpuMesh(tile,Graph3d);
+							tile->GpuMesh=CreateGpuMesh(tile,Animated,Graph3d);
 							tile->GpuMeshFailed=(tile->GpuMesh==0);
 						}
-						if(tile->GpuMesh)
+						const M3D_MESH_POSE *Pose=(tile->GpuMesh&&Animated)?GpuMeshPose(tile):0;
+						if(tile->GpuMesh&&(Pose||!Animated))
 						{
 							// As the CPU path below: the ATTRTILE_TEXEL case lights metal with
 							// MetalColor, without the camera's fade.
@@ -605,7 +666,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 							Attribute = BaseAttribute;
 							SetProjectionMatrix(Camera, Graph3d, false);
 							Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-							Graph3d->DrawMesh(tile->GpuMesh,MeshDraw);
+							Graph3d->DrawMesh(tile->GpuMesh,MeshDraw,Pose);
 							Graph3d->ResetProjectionMatrix();
 							continue;
 						}

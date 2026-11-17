@@ -276,9 +276,9 @@ void cGraph3dDirect3D::DeleteMesh(uint32_t hMesh)
 {
 	_renderer->deleteMesh(hMesh);
 }
-void cGraph3dDirect3D::DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw)
+void cGraph3dDirect3D::DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose)
 {
-	_renderer->drawMesh(hMesh, draw);
+	_renderer->drawMesh(hMesh, draw, pose);
 }
 void cGraph3dDirect3D::SetTerrain(const M3D_TERRAIN &terrain)
 {

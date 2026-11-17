@@ -320,12 +320,15 @@ void Renderer::report_stats(Clock::time_point now) {
     const double scene_ms = _stats.scene_ms / frames;
     const double submit_ms = _stats.submit_ms / frames;
     const double present_ms = _stats.present_ms / frames;
+    // The frame vertex array holds the CPU-built vertices and the animated meshes' poses.
     SDL_Log("Renderer stats: %.1f ms/frame = scene %.2f + submit %.2f + present %.2f + other %.2f; "
-            "per frame %.0f draws (%.0f GPU meshes), %.0f vertices and %.0f indices from the CPU; "
-            "%u GPU meshes (%u KiB), %u terrain uploads",
+            "per frame %.0f draws (%.0f GPU meshes, %.0f of them animated), %.0f vertices and %.0f indices "
+            "from the CPU, %.0f pose vertices; %u GPU meshes (%u KiB), %u terrain uploads",
             frame_ms, scene_ms, submit_ms, present_ms, frame_ms - scene_ms - submit_ms - present_ms,
-            _stats.draws / frames, _stats.mesh_draws / frames, _stats.vertices / frames, _stats.indices / frames,
-            static_cast<unsigned>(_meshes.size()), static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads);
+            _stats.draws / frames, _stats.mesh_draws / frames, _stats.animated_mesh_draws / frames,
+            (_stats.vertices - _stats.pose_vertices) / frames, _stats.indices / frames,
+            _stats.pose_vertices / frames, static_cast<unsigned>(_meshes.size()),
+            static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads);
 
     // Vertices (and draw commands) per frame, by what the game draws with them.
     const auto per_frame = [&](eDrawSource source, const decltype(Stats::source_vertices) &counts) {
@@ -399,6 +402,10 @@ MD3DERROR Renderer::endScene() {
       draw_mesh_command(command);
       _stats.draws++;
       _stats.mesh_draws++;
+      if (command.is_animated) {
+        _stats.animated_mesh_draws++;
+        _stats.pose_vertices += command.vertex_buffer_view.length;
+      }
       continue;
     }
     if (command.index_buffer_view.length == 0) {
@@ -423,7 +430,7 @@ MD3DERROR Renderer::endScene() {
     bindings.index_buffer = sg_index_buffer;
     bindings.index_buffer_offset = 0;
 
-    sg_apply_pipeline(scene_pipeline(command.render_state, false));
+    sg_apply_pipeline(scene_pipeline(command.render_state, Geometry::frame));
     sg_apply_bindings(bindings);
     sg_apply_uniforms(UB_scene_vs_params, SG_RANGE(vs_params));
     sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
@@ -640,6 +647,7 @@ uint32_t Renderer::createMesh(const M3D_MESH_VERTEX *vertices, int vertexCount, 
   }
 
   Mesh mesh{};
+  mesh.vertex_count = vertexCount;
   mesh.index_count = indexCount;
   mesh.bytes = vertexCount * sizeof(M3D_MESH_VERTEX) + indexCount * sizeof(uint16_t);
   {
@@ -691,17 +699,35 @@ void Renderer::destroy_deleted_meshes() {
   _deleted_meshes.clear();
 }
 
-void Renderer::drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw) {
-  if (_meshes.count(handle) == 0) {
+void Renderer::drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose) {
+  const auto mesh = _meshes.find(handle);
+  if (mesh == _meshes.end()) {
     return;
   }
 
-  // Recorded like frame geometry, so it is drawn in order with it; its buffer views
-  // are empty and only carry the frame arrays' positions on to the next command.
-  const BufferView vertices = _commands.empty() ? BufferView{0, 0} : _commands.back().vertex_buffer_view.next();
+  // Recorded like frame geometry, so it is drawn in order with it. Its buffer views carry
+  // the frame arrays' positions on to the next command; an animated mesh's pose takes
+  // vertices of the frame array, uploaded with the rest of the frame.
+  BufferView vertices = _commands.empty() ? BufferView{0, 0} : _commands.back().vertex_buffer_view.next();
   const BufferView indices = _commands.empty() ? BufferView{0, 0} : _commands.back().index_buffer_view.next();
+  if (pose != nullptr) {
+    const size_t count = mesh->second.vertex_count;
+    if (_vertex_buffer.size() < vertices.offset + count) {
+      _vertex_buffer.resize(std::max(2 * _vertex_buffer.size(), vertices.offset + count));
+    }
+    M3D_VERTEX *out = _vertex_buffer.data() + vertices.offset;
+    for (size_t i = 0; i < count; i++) {
+      out[i].x = pose[i].x;
+      out[i].y = pose[i].y;
+      out[i].z = pose[i].z;
+      out[i].u = pose[i].u;
+      out[i].v = pose[i].v;
+    }
+    vertices.length = count;
+  }
   DrawCommand command{_render_state, vertices, indices};
   command.mesh = handle;
+  command.is_animated = pose != nullptr;
   command.mesh_draw = draw;
   if (!_has_terrain) {
     command.mesh_draw.renderShade = 0;
@@ -773,38 +799,49 @@ void Renderer::draw_mesh_command(const DrawCommand &command) {
   copy_projection(command.render_state, vs_params.projection_matrix);
   to_mat4(draw.objectToView, vs_params.object_to_view);
   to_mat4(draw.objectToWorld, vs_params.object_to_world);
+  // The integers go as floats (exact for these small whole numbers): an all-float block
+  // is one uniform array in GL, set with a single call.
+  const auto as_float = [](int value) { return static_cast<float>(value); };
   for (int i = 0; i < 3; i++) {
     vs_params.light[i] = draw.light[i];
     vs_params.view[i] = draw.view[i];
-    vs_params.ambient[i] = draw.ambient[i];
-    vs_params.add[i] = draw.add[i];
-    vs_params.metal[i] = draw.metal[i];
+    vs_params.ambient[i] = as_float(draw.ambient[i]);
+    vs_params.add[i] = as_float(draw.add[i]);
+    vs_params.metal[i] = as_float(draw.metal[i]);
   }
   vs_params.light[3] = draw.cosLightView;
   for (int i = 0; i < 4; i++) {
-    vs_params.multiply[i] = draw.multiply[i];
+    vs_params.multiply[i] = as_float(draw.multiply[i]);
   }
-  vs_params.flags[0] = draw.renderDiffuse;
-  vs_params.flags[1] = draw.renderMetal;
-  vs_params.flags[2] = shade ? 1 : 0;
-  vs_params.flags[3] = draw.clampNearZ;
-  vs_params.terrain[0] = _terrain.worldMaskX;
-  vs_params.terrain[1] = _terrain.worldMaskY;
-  vs_params.terrain[2] = _terrain.heightShift;
-  vs_params.terrain[3] = _terrain.shadeDepth;
+  vs_params.flags[0] = as_float(draw.renderDiffuse);
+  vs_params.flags[1] = as_float(draw.renderMetal);
+  vs_params.flags[2] = shade ? 1.0f : 0.0f;
+  vs_params.flags[3] = as_float(draw.clampNearZ);
+  vs_params.terrain[0] = as_float(_terrain.worldMaskX);
+  vs_params.terrain[1] = as_float(_terrain.worldMaskY);
+  vs_params.terrain[2] = as_float(_terrain.heightShift);
+  vs_params.terrain[3] = as_float(_terrain.shadeDepth);
 
   sg_bindings bindings = {};
   bind_textures(command.render_state, bindings);
   bindings.views[VIEW_terrain_heights] = shade ? _terrain_heights_view : _nullTextureView;
   bindings.views[VIEW_terrain_attributes] = shade ? _terrain_attributes_view : _nullTextureView;
   bindings.samplers[SMP_terrain_sampler] = _terrain_sampler;
-  bindings.vertex_buffers[0] = mesh->second.vertices;
+  if (command.is_animated) {
+    // Positions and texture coordinates from this frame's pose, normals from the mesh.
+    bindings.vertex_buffers[0] = sg_vertex_buffer;
+    bindings.vertex_buffer_offsets[0] = static_cast<int>(command.vertex_buffer_view.offset * sizeof(M3D_VERTEX));
+    bindings.vertex_buffers[1] = mesh->second.vertices;
+  } else {
+    bindings.vertex_buffers[0] = mesh->second.vertices;
+  }
   bindings.index_buffer = mesh->second.indices;
 
   const auto fs_params = scene_fs_params(command.render_state);
 
   apply_viewport(command.render_state);
-  sg_apply_pipeline(scene_pipeline(command.render_state, true));
+  sg_apply_pipeline(
+      scene_pipeline(command.render_state, command.is_animated ? Geometry::animated_mesh : Geometry::mesh));
   sg_apply_bindings(bindings);
   sg_apply_uniforms(UB_mesh_vs_params, SG_RANGE(vs_params));
   sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
@@ -862,12 +899,12 @@ namespace {
   }
 }
 
-sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
+sg_pipeline Renderer::scene_pipeline(const RenderState &state, Geometry geometry) {
   // RENDERSTATE_ZTEST was D3D's ZENABLE: turned off, the depth buffer is neither tested
   // nor written, whatever RENDERSTATE_ZWRITE says.
   const bool depth_test = state.is_depth_test_enabled;
-  ScenePipelineKey key{mesh, depth_test, depth_test && state.is_depth_write_enabled, state.is_alpha_blend_enabled,
-                       SG_BLENDFACTOR_ONE, SG_BLENDFACTOR_ZERO};
+  ScenePipelineKey key{geometry, depth_test, depth_test && state.is_depth_write_enabled,
+                       state.is_alpha_blend_enabled, SG_BLENDFACTOR_ONE, SG_BLENDFACTOR_ZERO};
   if (key.blend) {
     key.source = blend_factor(state.source_blend_mode, SG_BLENDFACTOR_ONE);
     key.destination = blend_factor(state.destination_blend_mode, SG_BLENDFACTOR_ZERO);
@@ -880,10 +917,11 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
   }
 
   // Built from the key alone, so commands with the same key share a pipeline.
+  const bool is_mesh = key.geometry != Geometry::frame;
   sg_pipeline_desc description = {};
-  description.shader = key.mesh ? _meshShader : _sceneShader;
+  description.shader = is_mesh ? _meshShader : _sceneShader;
   description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
-  description.index_type = key.mesh ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_UINT32;
+  description.index_type = is_mesh ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_UINT32;
   description.cull_mode = SG_CULLMODE_BACK;
   description.face_winding = SG_FACEWINDING_CCW;
 
@@ -896,7 +934,7 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
   description.colors[0].blend.dst_factor_rgb = key.destination;
   description.colors[0].blend.dst_factor_alpha = key.destination;
 
-  if (key.mesh) {
+  if (key.geometry == Geometry::mesh) {
 #ifndef EMSCRIPTEN
     // One M3D_MESH_VERTEX per vertex; the normal bytes arrive in the shader as integers.
     description.layout.buffers[0].stride = sizeof(M3D_MESH_VERTEX);
@@ -909,6 +947,25 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
 
     description.layout.attrs[ATTR_mesh_uv_in].offset = offsetof(M3D_MESH_VERTEX, u);
     description.layout.attrs[ATTR_mesh_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+#endif
+  } else if (key.geometry == Geometry::animated_mesh) {
+#ifndef EMSCRIPTEN
+    // Buffer 0: this frame's pose in the frame vertex array (position and texture
+    // coordinates of M3D_VERTEX). Buffer 1: the mesh's own vertices, for the normal.
+    description.layout.buffers[0].stride = sizeof(M3D_VERTEX);
+    description.layout.buffers[1].stride = sizeof(M3D_MESH_VERTEX);
+
+    description.layout.attrs[ATTR_mesh_pos].buffer_index = 0;
+    description.layout.attrs[ATTR_mesh_pos].offset = offsetof(M3D_VERTEX, x);
+    description.layout.attrs[ATTR_mesh_pos].format = SG_VERTEXFORMAT_FLOAT3;
+
+    description.layout.attrs[ATTR_mesh_uv_in].buffer_index = 0;
+    description.layout.attrs[ATTR_mesh_uv_in].offset = offsetof(M3D_VERTEX, u);
+    description.layout.attrs[ATTR_mesh_uv_in].format = SG_VERTEXFORMAT_FLOAT2;
+
+    description.layout.attrs[ATTR_mesh_normal_in].buffer_index = 1;
+    description.layout.attrs[ATTR_mesh_normal_in].offset = offsetof(M3D_MESH_VERTEX, normal);
+    description.layout.attrs[ATTR_mesh_normal_in].format = SG_VERTEXFORMAT_BYTE4;
 #endif
   } else {
     // One interleaved M3D_VERTEX per vertex; the colour bytes arrive in the shader as 0..1.
@@ -932,9 +989,11 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, bool mesh) {
     ErrH.Abort("sg_make_pipeline", XERR_USER, 0, "");
   }
   _scene_pipelines.emplace_back(key, pipeline);
-  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)",
-          key.mesh ? "mesh" : "scene", static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0,
-          key.depth_write ? 1 : 0, key.blend ? 1 : 0, static_cast<int>(key.source),
-          static_cast<int>(key.destination));
+  const char *kind = key.geometry == Geometry::frame ? "scene"
+                     : key.geometry == Geometry::mesh ? "mesh"
+                                                      : "animated mesh";
+  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)", kind,
+          static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
+          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination));
   return pipeline;
 }
