@@ -66,6 +66,7 @@ void sTile::CalcLOD()
 void sTile::CalcNormal()
 { // создание нормалей объекта
 	if(GetNumberPoint()==0||GetNumberPolygon()==0) return;
+	ReleaseGpuMesh();
 	Vect3f *Normal3f=new Vect3f[GetNumberPoint()];
 	sPoint *Point=GetPoint();
 	sPolygon *Polygon=GetPolygon();
@@ -1041,7 +1042,7 @@ void cMesh::CreateCopy(unsigned int type,cMesh *Mesh,cMesh *MeshParent)
 	if(StaticMesh) StaticMesh->GetCopy(Mesh->StaticMesh);
 	if(Bound) { Mesh->Bound=new cMesh; Bound->CreateCopy(M3D_BOUND,Mesh->Bound,0); Mesh->Bound->SetParent(Mesh); }
 	if(Frame) Mesh->Frame=new cFrame(Frame);
-	if((Frame)&&((Frame->mkf)||(Frame->GetNumberAnimChain())))
+	if(IsAnimated())
 	{
 		Mesh->Tile=0;
 		Tile->CreateCopy(Mesh->Tile);
@@ -1217,6 +1218,10 @@ void cMesh::Alignment()
 	cBound::SetReal(Box.min,Box.max);
 	for(cList *startList=Child; startList; startList=startList->next)
 		startList->Mesh->Alignment();
+}
+int cMesh::IsAnimated()
+{
+	return Frame&&(Frame->mkf||Frame->GetNumberAnimChain());
 }
 void cMesh::SetFrame()
 {

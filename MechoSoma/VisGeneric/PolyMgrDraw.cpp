@@ -10,6 +10,10 @@
 #include "TexMgr.h"
 #include "Levin.h"
 
+#include <cstdint>
+#include <unordered_map>
+#include <vector>
+
 #ifdef _USE_TILEMAP_
 #include "TileMap.h"
 #include "TileWater.h"
@@ -110,6 +114,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cOmni *Omni)
 			Attribute = RenderAttribute;
 			M3D_DRAW_COMMAND drawCommand;
 			Graph3d->BeginDrawCommand(drawCommand);
+			drawCommand.source=eDrawSource::effects;
 
 			Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 			int CurrentPoint=0,PreviousPoints=0;
@@ -177,8 +182,155 @@ inline int GetAttributePoint(int xg,int yg,int zg)
 			Attribute|=ATTRIBUTE_WATER;
 		if(((attribute&At_SHADOW)&&((zMap+Z_SHADE_MAX)>zv))||(zMap>zv))
 			Attribute|=ATTRIBUTE_SHADOW;
-#endif 
+#endif
 	return Attribute;
+}
+
+// Meshes on the GPU (cInterfaceGraph3d::CreateMesh, game.ini [m3d] GpuMeshes). A tile
+// whose points never change is uploaded once, the first time it is drawn, and the mesh
+// shader then does per vertex what SetPointMesh does below: the same fixed-point
+// lighting, metal highlight and terrain shadow test. Animated meshes and reflections are
+// still drawn the CPU way.
+#ifdef _MECHOSOMA_
+extern int acsShopFlag;
+#endif
+
+namespace
+{
+
+// GPU meshes of tiles that went away or changed, deleted at the next mesh draw, where the
+// graphics interface is at hand. Never destroyed, as tiles of static objects release
+// theirs at exit.
+std::vector<unsigned int> &ReleasedGpuMeshes()
+{
+	static auto *Released=new std::vector<unsigned int>;
+	return *Released;
+}
+
+void DeleteReleasedGpuMeshes(cInterfaceGraph3d *Graph3d)
+{
+	std::vector<unsigned int> &Released=ReleasedGpuMeshes();
+	for(unsigned int GpuMesh : Released)
+		Graph3d->DeleteMesh(GpuMesh);
+	Released.clear();
+}
+
+M3D_MESH_VERTEX GpuMeshVertex(const sPoint &Point,sTexel *Texel)
+{
+	M3D_MESH_VERTEX v;
+	v.x=Point.pos.x; v.y=Point.pos.y; v.z=Point.pos.z;
+	v.normal[0]=static_cast<int8_t>(Point.normal.x);
+	v.normal[1]=static_cast<int8_t>(Point.normal.y);
+	v.normal[2]=static_cast<int8_t>(Point.normal.z);
+	v.normal[3]=0;
+	v.u=Texel?Texel->u():0.f;
+	v.v=Texel?Texel->v():0.f;
+	return v;
+}
+
+// The tile as one vertex per distinct (point, texel) pair and 16-bit indices, in the order
+// the CPU path sends its polygons (PolygonOrientationCCW). 0 if it can't be made.
+unsigned int CreateGpuMesh(sTile *tile,cInterfaceGraph3d *Graph3d)
+{
+	sPoint *Point=tile->GetPoint();
+	sPolygon *Polygon=tile->GetPolygon();
+	const int NumberPolygon=tile->GetNumberPolygon();
+	std::vector<M3D_MESH_VERTEX> Vertices;
+	std::vector<uint16_t> Indices;
+	Indices.reserve(3*NumberPolygon);
+
+	switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
+	{
+		case ATTRTILE_VERTEX:
+		case ATTRTILE_VERTEX_TEXEL:
+			{
+				sTexel *Texel=tile->Attribute.GetAttribute(ATTRTILE_VERTEX_TEXEL)?tile->GetTexel():0;
+				Vertices.reserve(tile->GetNumberPoint());
+				for(int i=0;i<tile->GetNumberPoint();i++)
+					Vertices.push_back(GpuMeshVertex(Point[i],Texel?&Texel[i]:0));
+				for(int i=0;i<NumberPolygon;i++)
+				{
+					Indices.push_back(Polygon[i].p1);
+					Indices.push_back(Polygon[i].p2);
+					Indices.push_back(Polygon[i].p3);
+				}
+			}
+			break;
+		case ATTRTILE_TEXEL:
+			{
+				// The CPU path sends three vertices per polygon; corners with the same point
+				// and texel become one vertex here.
+				sTexel *Texel=tile->GetTexel();
+				sPolygon *TexPoly=tile->GetTexPoly();
+				std::unordered_map<uint32_t,uint32_t> Welded;
+				Welded.reserve(3*NumberPolygon);
+				auto Corner=[&](int p,int t)
+				{
+					const uint32_t Key=(uint32_t(uint16_t(p))<<16)|uint16_t(t);
+					auto it=Welded.find(Key);
+					if(it==Welded.end())
+					{
+						it=Welded.emplace(Key,uint32_t(Vertices.size())).first;
+						Vertices.push_back(GpuMeshVertex(Point[p],&Texel[t]));
+					}
+					Indices.push_back(uint16_t(it->second));
+				};
+				for(int i=0;i<NumberPolygon;i++)
+				{
+					Corner(Polygon[i].p1,TexPoly[i].p1);
+					Corner(Polygon[i].p2,TexPoly[i].p2);
+					Corner(Polygon[i].p3,TexPoly[i].p3);
+				}
+			}
+			break;
+		default:
+			return 0;
+	}
+	if(Vertices.empty()||Indices.empty()||Vertices.size()>65536)
+		return 0;
+	return Graph3d->CreateMesh(Vertices.data(),int(Vertices.size()),Indices.data(),int(Indices.size()));
+}
+
+void CopyMatrix(MatXf &Matrix,float (&Out)[12])
+{
+	// MatXf::xformPoint: rows of rot() dotted with the point, plus trans().
+	Mat3f &R=Matrix.rot();
+	const Vect3f &d=Matrix.trans();
+	const Vect3f &x=R.xrow(),&y=R.yrow(),&z=R.zrow();
+	Out[0]=x.x; Out[1]=x.y; Out[2]=x.z; Out[3]=d.x;
+	Out[4]=y.x; Out[5]=y.y; Out[6]=y.z; Out[7]=d.y;
+	Out[8]=z.x; Out[9]=z.y; Out[10]=z.z; Out[11]=d.z;
+}
+
+// Gives the renderer the maps GetAttributePoint reads. 0 if there are none, or the shadow
+// test is off (the shop).
+int SetGpuTerrain(cInterfaceGraph3d *Graph3d)
+{
+#ifdef _MECHOSOMA_
+	if(acsShopFlag||vMap==0||vMap->VxBuf==0||vMap->AtBuf==0) return 0;
+	M3D_TERRAIN Terrain;
+	Terrain.heights=vMap->VxBuf[0][0];
+	Terrain.attributes=vMap->AtBuf[0][0];
+	Terrain.width=H_SIZE>>kmBuf;
+	Terrain.height=(clip_mask_y+1)>>kmBuf;
+	Terrain.worldMaskX=clip_mask_x;
+	Terrain.worldMaskY=clip_mask_y;
+	Terrain.heightShift=8-SHIFT_FRACTION_VX;
+	Terrain.shadeDepth=Z_SHADE_MAX;
+	Graph3d->SetTerrain(Terrain);
+	return 1;
+#else
+	return 0;
+#endif
+}
+
+}
+
+void sTile::ReleaseGpuMesh()
+{
+	if(GpuMesh) ReleasedGpuMeshes().push_back(GpuMesh);
+	GpuMesh=0;
+	GpuMeshFailed=false;
 }
 
 __forceinline void SetPointMesh(M3D_DRAW_COMMAND &drawCommand,int i,cPolyDispatcher *P3D,cLight *LightObject,
@@ -287,6 +439,11 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	ConvertorObjectToWorld.InverseConvertVector(LightObject->GetTangent(),vLight);
 	vLight.normalize(1.f);
 	int PolygonOrientationCCW=(vReflection==0);
+	// The tiles go to the GPU unless they are mirrored for a reflection or rewritten by
+	// animation every frame.
+	const bool GpuTiles=(vReflection==0)&&!Mesh->IsAnimated();
+	const eDrawSource MeshSource=vReflection?eDrawSource::mesh_reflection:
+		(Mesh->IsAnimated()?eDrawSource::mesh_animated:eDrawSource::mesh_static);
 
 	for(int nCamera=0;nCamera<CameraArray.length();nCamera++)
 		if(Mesh->GetVisibleTotal(nCamera)&CONST_VISIBLE_FRUSTUM)
@@ -363,6 +520,24 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			if(Mesh->GetAttribute(MESH_NOT_WRITEZBUFFER))
 				Graph3d->SetRenderState(RENDERSTATE_ZWRITE,false);
 
+			// What the mesh shader needs for this camera; the colours are set per tile.
+			M3D_MESH_DRAW MeshDraw;
+			int GpuShade=0;
+			if(GpuTiles)
+			{
+				DeleteReleasedGpuMeshes(Graph3d);
+				GpuShade=SetGpuTerrain(Graph3d);
+				memset(&MeshDraw,0,sizeof(MeshDraw));
+				CopyMatrix(ConvertorObjectToScreen.GetMatrix(),MeshDraw.objectToView);
+				CopyMatrix(ConvertorObjectToWorld.GetMatrix(),MeshDraw.objectToWorld);
+				MeshDraw.light[0]=vLight.x; MeshDraw.light[1]=vLight.y; MeshDraw.light[2]=vLight.z;
+				MeshDraw.view[0]=vView.x; MeshDraw.view[1]=vView.y; MeshDraw.view[2]=vView.z;
+				MeshDraw.cosLightView=cosLightView;
+				MeshDraw.renderDiffuse=RenderDiffuse;
+				// cConvertor::ConvertPoint clamps z only with a perspective projection.
+				MeshDraw.clampNearZ=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)?1:0;
+			}
+
 			// собственно расчет координат и освещенности
 			for(int i=0;i<Mesh->GetNumberTile();i++)
 				{
@@ -404,11 +579,41 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(MulTile.a<2) continue;
 					if(AttributeTile&ATTRMAT_ALFABLEND)
 						BaseAttribute|=RENDER_ALPHA_MOD_DIFFUSE;
-					if(AttributeTile&ATTRMAT_TEXTURE_PAL)		
+					if(AttributeTile&ATTRMAT_TEXTURE_PAL)
 						BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
+
+					if(GpuTiles)
+					{
+						if(tile->GpuMesh==0&&!tile->GpuMeshFailed)
+						{
+							tile->GpuMesh=CreateGpuMesh(tile,Graph3d);
+							tile->GpuMeshFailed=(tile->GpuMesh==0);
+						}
+						if(tile->GpuMesh)
+						{
+							// As the CPU path below: the ATTRTILE_TEXEL case lights metal with
+							// MetalColor, without the camera's fade.
+							sColor4s &Metal=tile->Attribute.GetAttribute(ATTRTILE_TEXEL)?MetalColor:MetalTile;
+							MeshDraw.ambient[0]=AmbientMesh.r; MeshDraw.ambient[1]=AmbientMesh.g; MeshDraw.ambient[2]=AmbientMesh.b;
+							MeshDraw.multiply[0]=MulTile.r; MeshDraw.multiply[1]=MulTile.g; MeshDraw.multiply[2]=MulTile.b;
+							MeshDraw.multiply[3]=MulTile.a<255?MulTile.a:255;
+							MeshDraw.add[0]=AddTile.r; MeshDraw.add[1]=AddTile.g; MeshDraw.add[2]=AddTile.b;
+							MeshDraw.metal[0]=Metal.r; MeshDraw.metal[1]=Metal.g; MeshDraw.metal[2]=Metal.b;
+							MeshDraw.renderMetal=RenderMetal;
+							MeshDraw.renderShade=RenderShade&&GpuShade;
+
+							Attribute = BaseAttribute;
+							SetProjectionMatrix(Camera, Graph3d, false);
+							Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+							Graph3d->DrawMesh(tile->GpuMesh,MeshDraw);
+							Graph3d->ResetProjectionMatrix();
+							continue;
+						}
+					}
 
 					M3D_DRAW_COMMAND drawCommand;
 					Graph3d->BeginDrawCommand(drawCommand);
+					drawCommand.source=MeshSource;
 
 					switch(tile->Attribute.GetAttribute(ATTRTILE_VERTEX|ATTRTILE_VERTEX_TEXEL|ATTRTILE_TEXEL))
 					{
@@ -605,6 +810,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 						Attribute = AttributeRender;
 						M3D_DRAW_COMMAND drawCommand;
 						Graph3d->BeginDrawCommand(drawCommand);
+						drawCommand.source=eDrawSource::terrain;
 
 						int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 						int i;
@@ -667,6 +873,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileMap *TileMap)
 				Attribute = AttributeRender;
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
+				drawCommand.source=eDrawSource::terrain;
 
 				int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y);
 				int i;
@@ -765,6 +972,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					Attribute = BaseAttribute;
 					M3D_DRAW_COMMAND drawCommand;
 					Graph3d->BeginDrawCommand(drawCommand);
+					drawCommand.source=eDrawSource::terrain;
 
 					int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y),flag=0;
 					int i;
@@ -877,6 +1085,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 		Attribute = BaseAttribute;
 		M3D_DRAW_COMMAND drawCommand;
 		Graph3d->BeginDrawCommand(drawCommand);
+		drawCommand.source=eDrawSource::terrain;
 		
 		// установка вершин
 		float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -975,6 +1184,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 				Attribute = BaseAttribute;
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
+				drawCommand.source=eDrawSource::terrain;
 
 				// установка вершин
 				float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -1060,6 +1270,7 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 	Attribute = BaseAttribute;
 	M3D_DRAW_COMMAND drawCommand;
 	RenderDevice->GetIGraph3d()->BeginDrawCommand(drawCommand);
+	drawCommand.source=eDrawSource::terrain;
 
 	float xpos=xofs,ypos=yofs, ustep, duPoint0,vstep, duPoint,dvPoint;
 	if(WorldPolyGrid->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))
@@ -1247,6 +1458,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 				Attribute = BaseAttribute;
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
+				drawCommand.source=eDrawSource::effects;
 
 				Vect3f pv1(pv.x-RadiusSun,pv.y-RadiusSun,pv.z);
 
@@ -1298,6 +1510,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cUnkClassDynArrayPointer *
 			Attribute = RenderAttribute;
 			M3D_DRAW_COMMAND drawCommand;
 			Graph3d->BeginDrawCommand(drawCommand);
+			drawCommand.source=eDrawSource::effects;
 
 			for(float height=+limit;height>=-limit;height-=dlimit)
 			{
@@ -1391,6 +1604,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTangentTrail *TangentTrai
 		Attribute = BaseAttribute;
 		M3D_DRAW_COMMAND drawCommand;
 		Graph3d->BeginDrawCommand(drawCommand);
+		drawCommand.source=eDrawSource::effects;
 
 		Vect3f *Point=TangentTrail->Point;
 		Vect3f pv;
@@ -1443,6 +1657,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCamera,cLevin *Levin)
 
 	M3D_DRAW_COMMAND drawCommand;
 	Graph3d->BeginDrawCommand(drawCommand);
+	drawCommand.source=eDrawSource::effects;
 
 	int RenderAttribute = RENDER_COLOR_MOD_DIFFUSE;
 	if (Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE))
@@ -1501,6 +1716,7 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild,MatXf 
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
 	Graph3d->BeginDrawCommand(CurrentDrawCommand);
+	CurrentDrawCommand.source=eDrawSource::effects;
 	CurrentListPointIndex = 0;
 
 	AlphaForSprite=255;
@@ -1631,6 +1847,7 @@ void cPolyDispatcher::BeginListShare(cUnknownClass *UCamera,int idTextureChild,M
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
 	Graph3d->BeginDrawCommand(CurrentDrawCommand);
+	CurrentDrawCommand.source=eDrawSource::effects;
 	CurrentListPointIndex = 0;
 }
 
@@ -1699,6 +1916,7 @@ void cPolyDispatcher::BeginList(cUnknownClass *UCamera,int idTextureChild)
 
 	Attribute = RenderAttribute | RENDER_COLOR_MOD_DIFFUSE | RENDER_COLOR_MOD_TEXTURE1 | RENDER_ALPHA_MOD_DIFFUSE | RENDER_ALPHA_MOD_TEXTURE1;
 	Graph3d->BeginDrawCommand(CurrentDrawCommand);
+	CurrentDrawCommand.source=eDrawSource::effects;
 	CurrentListPointIndex = 0;
 }
 

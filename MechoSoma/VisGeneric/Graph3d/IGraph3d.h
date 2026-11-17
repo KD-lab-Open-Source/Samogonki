@@ -369,6 +369,18 @@ private:
 	}
 };
 
+// What a draw command draws, only for the renderer's statistics ([m3d] RenderStats).
+enum class eDrawSource
+{
+	other,
+	mesh_static,		// a mesh that could be on the GPU, drawn the CPU way
+	mesh_animated,
+	mesh_reflection,
+	terrain,			// tile map, poly grid, water
+	effects,			// light halos, sun, trails, lightning, sprite lists
+	count
+};
+
 // The vertices and indices of one draw. All four vertex attributes go into the same
 // vertex array, each through its own view, so callers may add positions, colours and
 // UVs in any order: the n-th addPosition() and the n-th addUV() fill the same vertex.
@@ -379,6 +391,7 @@ struct M3D_DRAW_COMMAND final
 	M3D_BUFFER_VIEW<M3D_VERTEX> specularColorBuffer;
 	M3D_BUFFER_VIEW<M3D_VERTEX> uvBuffer;
 	M3D_BUFFER_VIEW<uint32_t> indexBuffer;
+	eDrawSource source = eDrawSource::other;
 
 	inline void addPosition(float x, float y, float z)
 	{
@@ -427,6 +440,51 @@ private:
 	}
 };
 
+// A vertex of a mesh kept on the GPU (CreateMesh): one per distinct (point, texel) pair of
+// a tile, uploaded once. The normal is the tile's own char normal (-127..127), unscaled,
+// so the shader can repeat the game's fixed-point lighting exactly.
+struct M3D_MESH_VERTEX
+{
+	float x, y, z;
+	int8_t normal[4];
+	float u, v;
+};
+static_assert(sizeof(M3D_MESH_VERTEX) == 24, "M3D_MESH_VERTEX must match the mesh vertex layout");
+
+// What one draw of a GPU mesh needs besides the render state (material, texture,
+// projection) set the usual way. The colours are the 0..255 values the CPU path uses.
+struct M3D_MESH_DRAW
+{
+	float objectToView[12];		// 3x4 row-major, object to camera space (cConvertor's matrix)
+	float objectToWorld[12];	// 3x4 row-major, object to world, for the terrain shadow test
+	float light[3];				// light direction in object space, unit length
+	float view[3];				// view direction in object space, unit length
+	float cosLightView;
+	int ambient[3];
+	int multiply[4];
+	int add[3];
+	int metal[3];
+	int renderDiffuse;			// vertex lighting by the light direction
+	int renderMetal;			// the metal highlight
+	int renderShade;			// the terrain shadow test (needs SetTerrain)
+	int clampNearZ;				// a perspective camera: z within 1 of the eye becomes 1
+};
+
+// The voxel world's height and attribute maps, as the shadow test reads them (GetAt,
+// GetAlt): 8-bit, width x height cells, a cell per 2 x 2 world units. The renderer copies
+// them when they differ from what it has, at most once a frame.
+struct M3D_TERRAIN
+{
+	const unsigned char *heights;
+	const unsigned char *attributes;
+	int width;
+	int height;
+	int worldMaskX;				// XCYCL mask
+	int worldMaskY;				// YCYCL mask
+	int heightShift;			// a height byte << heightShift is the altitude
+	int shadeDepth;				// Z_SHADE_MAX: how far below shadowed ground still counts
+};
+
 class cInterfaceGraph3d
 {
 public:
@@ -455,6 +513,15 @@ public:
 
 	virtual int BeginDrawCommand(M3D_DRAW_COMMAND &command)=0;
 	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command)=0;
+
+	// Meshes kept on the GPU. CreateMesh returns 0 if it can't keep the mesh, and the
+	// caller then draws it the CPU way. DrawMesh uses the current render state.
+	virtual uint32_t CreateMesh(const M3D_MESH_VERTEX *vertices, int vertexCount,
+								const uint16_t *indices, int indexCount)=0;
+	virtual void DeleteMesh(uint32_t hMesh)=0;
+	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw)=0;
+	// The terrain maps the mesh shadow test reads, for this frame's DrawMesh calls.
+	virtual void SetTerrain(const M3D_TERRAIN &terrain)=0;
 
 	virtual int SetTexture(int hTexture, uint32_t dwStage = 0)=0;
 	virtual int LockTexture(int hTexture,void **TextureBuffer,int *BytePerLine)=0;

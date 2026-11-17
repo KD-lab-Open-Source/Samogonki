@@ -156,8 +156,15 @@ struct sTile : public cMaterial, public sObjTri
 	short					nPolygon;
 	float					size;
 	int						ID;
-	sTile()													{ nPolygon=0; size=0; ID=0; }
-	~sTile()												{ }
+	// The tile's geometry kept on the GPU (cInterfaceGraph3d::CreateMesh), made the first
+	// time the tile is drawn; see PolyMgrDraw.cpp. 0: not made yet, or dropped because the
+	// points changed.
+	unsigned int			GpuMesh;
+	bool					GpuMeshFailed;	// CreateMesh refused it: always draw on the CPU
+	sTile()													{ nPolygon=0; size=0; ID=0; GpuMesh=0; GpuMeshFailed=false; }
+	~sTile()												{ ReleaseGpuMesh(); }
+	// Drops the GPU copy; the next draw makes it again from the points as they are then.
+	void ReleaseGpuMesh();
 	inline sPolygon* GetPolygon()							{ return GET_POLYGON(p,nPolygon,nPoint,nTexel); }
 	inline sPoint* GetPoint()								{ return GET_POINT(p,nPolygon,nPoint,nTexel); }
 	inline sTexel* GetTexel()								{ return GET_TEXEL(p,nPolygon,nPoint,nTexel); }
@@ -174,6 +181,7 @@ struct sTile : public cMaterial, public sObjTri
 	inline cMaterial* GetMaterial()							{ return (cMaterial*)this; }
 	inline void NewTri(int NumberPolygon,int NumberPoint,int NumberTexel,int NumberTexPoly)
 	{
+		ReleaseGpuMesh();
 		nTexel=NumberTexel;
 		nPoint=NumberPoint;
 		nPolygon=NumberPolygon;
@@ -210,9 +218,10 @@ public:
 	{ 
 		for(int nTile=0;nTile<GetNumberTile();nTile++)
 		{
+			GetTile(nTile)->ReleaseGpuMesh();
 			sPoint *Point=GetTile(nTile)->GetPoint();
-			for(int i=0;i<GetTile(nTile)->GetNumberPoint();i++) 
-				Point[i].pos+=dPos;  
+			for(int i=0;i<GetTile(nTile)->GetNumberPoint();i++)
+				Point[i].pos+=dPos;
 		}
 	}
 	inline void ScaleTri(const Vect3f &scale)				
@@ -222,6 +231,7 @@ public:
 		if(MinScale>scale.z) MinScale=scale.z;
 		for(int nTile=0;nTile<GetNumberTile();nTile++)
 		{
+			GetTile(nTile)->ReleaseGpuMesh();
 			GetTile(nTile)->size*=MinScale;
 			sPoint *Point=GetTile(nTile)->GetPoint();
 			for(int i=0;i<GetTile(nTile)->GetNumberPoint();i++) 
@@ -341,6 +351,8 @@ public:
 	void SetFrame(const char *name,const char *parent,float xpivot,float ypivot,float zpivot,float xofs,float yofs,float zofs,
 				  float *PosKXYZ,int nPos,float *RotKWXYZ,int nRot,float *ScaleKXYZ,int nScale);
 	void SetFrame();
+	// The animation rewrites the tiles' points every frame (morph keys or anim chains).
+	int IsAnimated();
 	// работа с матрицей объекта
 	void dSetScale(float dScale)						{ dSetScale(Vect3f(dScale,dScale,dScale)); }
 	void dSetScale(const Vect3f &dScale)				{ Vect3f ds=dScale; if(ds.x<=0) ds.x=1e-10f; if(ds.y<=0) ds.y=1e-10f; if(ds.z<=0) ds.z=1e-10f; ScaleMesh(ds); }
