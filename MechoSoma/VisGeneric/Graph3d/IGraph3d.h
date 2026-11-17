@@ -451,6 +451,15 @@ struct M3D_MESH_VERTEX
 };
 static_assert(sizeof(M3D_MESH_VERTEX) == 24, "M3D_MESH_VERTEX must match the mesh vertex layout");
 
+// This frame's position and texture coordinates of one vertex of an animated GPU mesh,
+// in the order of its M3D_MESH_VERTEX array. The normals stay those of CreateMesh, as the
+// game's animation never changes normals.
+struct M3D_MESH_POSE
+{
+	float x, y, z;
+	float u, v;
+};
+
 // What one draw of a GPU mesh needs besides the render state (material, texture,
 // projection) set the usual way. The colours are the 0..255 values the CPU path uses.
 struct M3D_MESH_DRAW
@@ -515,11 +524,13 @@ public:
 	virtual int EndDrawCommand(const M3D_DRAW_COMMAND &command)=0;
 
 	// Meshes kept on the GPU. CreateMesh returns 0 if it can't keep the mesh, and the
-	// caller then draws it the CPU way. DrawMesh uses the current render state.
+	// caller then draws it the CPU way. DrawMesh uses the current render state. For an
+	// animated mesh, pose gives this frame's positions and texture coordinates, one per
+	// vertex of CreateMesh; for a static one it is null and CreateMesh's are used.
 	virtual uint32_t CreateMesh(const M3D_MESH_VERTEX *vertices, int vertexCount,
 								const uint16_t *indices, int indexCount)=0;
 	virtual void DeleteMesh(uint32_t hMesh)=0;
-	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw)=0;
+	virtual void DrawMesh(uint32_t hMesh, const M3D_MESH_DRAW &draw, const M3D_MESH_POSE *pose)=0;
 	// The terrain maps the mesh shadow test reads, for this frame's DrawMesh calls.
 	virtual void SetTerrain(const M3D_TERRAIN &terrain)=0;
 
