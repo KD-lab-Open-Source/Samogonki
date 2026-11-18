@@ -482,6 +482,57 @@ set(GAME_SOURCES
     RUNTIME/aspect_ratio.cpp
     RUNTIME/aspect_ratio.h)
 
+if (GPU_RENDERER)
+    # The SDL GPU renderer's shaders, compiled with the toolchain the top-level
+    # CMakeLists.txt picked, into one generated header (cmake/compile_shaders.cmake).
+    # <name>:<stage> for app/sdl_gpu/shaders/<name>.hlsl.
+    set(GPU_SHADERS
+        scene_vs:vertex
+        mesh_vs:vertex
+        tile_vs:vertex
+        scene_fs:fragment
+        shadow_vs:vertex
+        shadow_fs:fragment
+        quad_vs:vertex
+        back_buffer_fs:fragment
+        flush_vs:vertex
+        flush_fs:fragment)
+    set(GPU_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/sdl_gpu/shaders")
+    set(GPU_SHADER_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    set(GPU_SHADER_HEADER "${GPU_SHADER_GENERATED_DIR}/sdl_gpu_shaders.h")
+    set(GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/common.hlsl")
+    foreach (_shader IN LISTS GPU_SHADERS)
+        string(REGEX REPLACE ":.*" "" _name "${_shader}")
+        list(APPEND GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/${_name}.hlsl")
+    endforeach ()
+    # | rather than ;, which would split the argument (see the script).
+    string(REPLACE ";" "|" _shader_list "${GPU_SHADERS}")
+    if (SHADER_COMPILER MATCHES "TARGET_FILE")
+        set(_shader_compiler_target shadercross)
+    endif ()
+    add_custom_command(
+        OUTPUT "${GPU_SHADER_HEADER}"
+        COMMAND "${CMAKE_COMMAND}"
+            "-DOUTPUT=${GPU_SHADER_HEADER}"
+            "-DMODE=${SHADER_MODE}"
+            "-DCOMPILER=${SHADER_COMPILER}"
+            "-DFORMAT=${SHADER_FORMAT}"
+            "-DSOURCE_DIR=${GPU_SHADER_DIR}"
+            "-DWORK_DIR=${GPU_SHADER_GENERATED_DIR}/shaders"
+            "-DSHADERS=${_shader_list}"
+            -P "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+        DEPENDS ${GPU_SHADER_SOURCES} ${_shader_compiler_target}
+            "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+        COMMENT "Compiling the SDL GPU shaders to ${SHADER_FORMAT}"
+        VERBATIM)
+
+    list(APPEND GAME_SOURCES
+        app/sdl_gpu/shaders.cpp
+        app/sdl_gpu/shaders.h
+        "${GPU_SHADER_HEADER}")
+    include_directories("${GPU_SHADER_GENERATED_DIR}")
+endif ()
+
 include_directories(app)
 include_directories(FX)
 include_directories(IVisGeneric)

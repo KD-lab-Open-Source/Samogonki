@@ -23,6 +23,8 @@ jobs:
       # extension headers.
       run: sudo apt-get install libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libgl-dev libz-dev
 
+    # The SDL GPU shaders are compiled with SDL_shadercross, which the build makes, with
+    # Microsoft's prebuilt DXC (it needs glibc 2.38) and SPIRV-Cross built from source.
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 

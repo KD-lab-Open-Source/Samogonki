@@ -21,8 +21,57 @@ jobs:
     - name: Install dependencies
       run: brew install cmake ninja zlib
 
+    # The SDL GPU shaders are compiled with SDL_shadercross, and building it means building
+    # DXC (an LLVM fork) from source, since there is no prebuilt one for macOS. So the built
+    # shadercross is cached with the libraries it loads, under the SDL_shadercross revision
+    # the top-level CMakeLists.txt pins, and the game's build is given it with
+    # -DSHADERCROSS_EXECUTABLE. This is VistaEngine's CI step.
+    - name: Shadercross revision
+      id: shadercross
+      run: |
+        revision=$(sed -n 's/.*set(SHADERCROSS_REVISION \([0-9a-f]*\)).*/\1/p' CMakeLists.txt)
+        if [ -z "$revision" ]; then
+          echo "SHADERCROSS_REVISION not found in CMakeLists.txt" >&2
+          exit 1
+        fi
+        echo "revision=$revision" >> "$GITHUB_OUTPUT"
+
+    - name: Restore shadercross
+      id: cache-shadercross
+      uses: actions/cache@v4
+      with:
+        path: ~/shadercross
+        key: macos-shadercross-${{ runner.arch }}-${{ steps.shadercross.outputs.revision }}
+
+    # Only the shadercross target, with three jobs: linking DXC needs a lot of memory. Its
+    # libraries go in lib/ next to bin/, found through an added rpath. The build tree goes
+    # before the test run, so that the copy can't load anything from it.
+    - name: Build shadercross (not cached)
+      if: steps.cache-shadercross.outputs.cache-hit != 'true'
+      run: |
+        set -euo pipefail
+        cmake -G Ninja -B build-shadercross -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-shadercross --target shadercross -j3
+        cli=$(find build-shadercross -type f -perm -111 -name shadercross | head -1)
+        if [ -z "$cli" ]; then
+          echo "shadercross was built, but isn't in build-shadercross" >&2
+          exit 1
+        fi
+        mkdir -p ~/shadercross/bin ~/shadercross/lib
+        cp "$cli" ~/shadercross/bin/
+        find build-shadercross \( -name libdxcompiler.dylib -o -name libdxil.dylib \) -exec cp {} ~/shadercross/lib/ \;
+        install_name_tool -add_rpath @loader_path/../lib ~/shadercross/bin/shadercross
+        if [ -f ~/shadercross/lib/libdxcompiler.dylib ]; then
+          install_name_tool -add_rpath @loader_path ~/shadercross/lib/libdxcompiler.dylib
+        fi
+        rm -rf build-shadercross
+        otool -L ~/shadercross/bin/shadercross
+        ~/shadercross/bin/shadercross --help > /dev/null
+
     - name: Game -- configure
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: >
+        cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DSHADERCROSS_EXECUTABLE=$HOME/shadercross/bin/shadercross
     - name: Game -- build
       run: ninja
       working-directory: ${{github.workspace}}/build

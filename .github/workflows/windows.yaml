@@ -18,7 +18,8 @@ jobs:
         submodules: 'recursive'
 
     # Visual C++ from the runner's Visual Studio, which CMake finds by itself. SDL 3 and
-    # zlib are downloaded and built static by the game's CMake.
+    # zlib are downloaded and built static by the game's CMake, and the SDL GPU shaders
+    # are compiled with the Windows SDK's dxc.exe.
     - name: Configure CMake
       run: cmake -B build -A x64
     - name: Build
