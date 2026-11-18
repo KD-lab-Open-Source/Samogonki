@@ -644,15 +644,17 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 	ConvertorObjectToWorld.InverseConvertVector(LightObject->GetTangent(),vLight);
 	vLight.normalize(1.f);
 	int PolygonOrientationCCW=(vReflection==0);
-	// The tiles go to the GPU unless they are mirrored for a reflection. Animation rewrites
-	// an animated mesh's points and texels every frame, so those go with each draw.
+	// The tiles go to the GPU, reflections too: a reflection is the same GPU mesh drawn with
+	// the mirrored matrix and the reflection's depth range, its triangles turned the other
+	// way (M3D_MESH_DRAW::mirrored) as PolygonOrientationCCW turns them below. Animation
+	// rewrites an animated mesh's points and texels every frame, so those go with each draw.
 	const bool Animated=Mesh->IsAnimated()!=0;
-	const bool GpuTiles=(vReflection==0);
 	// With GPU shadows the mesh casts its dynamic shadow as it is drawn, if cM3D::ShadeDynamic
-	// would have cast it: decided by the attributes of the mesh it belongs to.
+	// would have cast it: decided by the attributes of the mesh it belongs to. A reflection
+	// doesn't cast.
 	cMesh *RootMesh=Mesh;
 	while(RootMesh->Parent) RootMesh=RootMesh->Parent;
-	const bool CastsShadow=GpuShadows&&GpuTiles&&!RootMesh->GetAttribute(MESH_NOT_SHADE|MESH_STATIC_SHADE);
+	const bool CastsShadow=GpuShadows&&vReflection==0&&!RootMesh->GetAttribute(MESH_NOT_SHADE|MESH_STATIC_SHADE);
 	const eDrawSource MeshSource=vReflection?eDrawSource::mesh_reflection:
 		(Animated?eDrawSource::mesh_animated:eDrawSource::mesh_static);
 
@@ -734,20 +736,18 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 			// What the mesh shader needs for this camera; the colours are set per tile.
 			M3D_MESH_DRAW MeshDraw;
 			int GpuShade=0;
-			if(GpuTiles)
-			{
-				DeleteReleasedGpuMeshes(Graph3d);
-				GpuShade=SetGpuTerrain(Graph3d);
-				memset(&MeshDraw,0,sizeof(MeshDraw));
-				CopyMatrix(ConvertorObjectToScreen.GetMatrix(),MeshDraw.objectToView);
-				CopyMatrix(ConvertorObjectToWorld.GetMatrix(),MeshDraw.objectToWorld);
-				MeshDraw.light[0]=vLight.x; MeshDraw.light[1]=vLight.y; MeshDraw.light[2]=vLight.z;
-				MeshDraw.view[0]=vView.x; MeshDraw.view[1]=vView.y; MeshDraw.view[2]=vView.z;
-				MeshDraw.cosLightView=cosLightView;
-				MeshDraw.renderDiffuse=RenderDiffuse;
-				// cConvertor::ConvertPoint clamps z only with a perspective projection.
-				MeshDraw.clampNearZ=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)?1:0;
-			}
+			DeleteReleasedGpuMeshes(Graph3d);
+			GpuShade=SetGpuTerrain(Graph3d);
+			memset(&MeshDraw,0,sizeof(MeshDraw));
+			CopyMatrix(ConvertorObjectToScreen.GetMatrix(),MeshDraw.objectToView);
+			CopyMatrix(ConvertorObjectToWorld.GetMatrix(),MeshDraw.objectToWorld);
+			MeshDraw.light[0]=vLight.x; MeshDraw.light[1]=vLight.y; MeshDraw.light[2]=vLight.z;
+			MeshDraw.view[0]=vView.x; MeshDraw.view[1]=vView.y; MeshDraw.view[2]=vView.z;
+			MeshDraw.cosLightView=cosLightView;
+			MeshDraw.renderDiffuse=RenderDiffuse;
+			// cConvertor::ConvertPoint clamps z only with a perspective projection.
+			MeshDraw.clampNearZ=Camera->GetAttribute(ATTRIBUTE_CAMERA_PERSPECTIVE)?1:0;
+			MeshDraw.mirrored=(vReflection!=0);
 
 			// собственно расчет координат и освещенности
 			for(int i=0;i<Mesh->GetNumberTile();i++)
@@ -793,35 +793,32 @@ void cPolyDispatcher::Draw(cUnknownClass *UScene,cUnknownClass *UCameraList,cMes
 					if(AttributeTile&ATTRMAT_TEXTURE_PAL)
 						BaseAttribute|=RENDER_COLOR_MOD_TEXTURE1;
 
-					if(GpuTiles)
+					if(tile->GpuMesh==0&&!tile->GpuMeshFailed)
 					{
-						if(tile->GpuMesh==0&&!tile->GpuMeshFailed)
-						{
-							tile->GpuMesh=CreateGpuMesh(tile,Animated,Graph3d);
-							tile->GpuMeshFailed=(tile->GpuMesh==0);
-						}
-						const M3D_MESH_POSE *Pose=(tile->GpuMesh&&Animated)?GpuMeshPose(tile):0;
-						if(tile->GpuMesh&&(Pose||!Animated))
-						{
-							// As the CPU path below: the ATTRTILE_TEXEL case lights metal with
-							// MetalColor, without the camera's fade.
-							sColor4s &Metal=tile->Attribute.GetAttribute(ATTRTILE_TEXEL)?MetalColor:MetalTile;
-							MeshDraw.ambient[0]=AmbientMesh.r; MeshDraw.ambient[1]=AmbientMesh.g; MeshDraw.ambient[2]=AmbientMesh.b;
-							MeshDraw.multiply[0]=MulTile.r; MeshDraw.multiply[1]=MulTile.g; MeshDraw.multiply[2]=MulTile.b;
-							MeshDraw.multiply[3]=MulTile.a<255?MulTile.a:255;
-							MeshDraw.add[0]=AddTile.r; MeshDraw.add[1]=AddTile.g; MeshDraw.add[2]=AddTile.b;
-							MeshDraw.metal[0]=Metal.r; MeshDraw.metal[1]=Metal.g; MeshDraw.metal[2]=Metal.b;
-							MeshDraw.renderMetal=RenderMetal;
-							MeshDraw.renderShade=RenderShade&&GpuShade;
-							MeshDraw.shadowCamera=CastsShadow?nCamera:-1;
+						tile->GpuMesh=CreateGpuMesh(tile,Animated,Graph3d);
+						tile->GpuMeshFailed=(tile->GpuMesh==0);
+					}
+					const M3D_MESH_POSE *Pose=(tile->GpuMesh&&Animated)?GpuMeshPose(tile):0;
+					if(tile->GpuMesh&&(Pose||!Animated))
+					{
+						// As the CPU path below: the ATTRTILE_TEXEL case lights metal with
+						// MetalColor, without the camera's fade.
+						sColor4s &Metal=tile->Attribute.GetAttribute(ATTRTILE_TEXEL)?MetalColor:MetalTile;
+						MeshDraw.ambient[0]=AmbientMesh.r; MeshDraw.ambient[1]=AmbientMesh.g; MeshDraw.ambient[2]=AmbientMesh.b;
+						MeshDraw.multiply[0]=MulTile.r; MeshDraw.multiply[1]=MulTile.g; MeshDraw.multiply[2]=MulTile.b;
+						MeshDraw.multiply[3]=MulTile.a<255?MulTile.a:255;
+						MeshDraw.add[0]=AddTile.r; MeshDraw.add[1]=AddTile.g; MeshDraw.add[2]=AddTile.b;
+						MeshDraw.metal[0]=Metal.r; MeshDraw.metal[1]=Metal.g; MeshDraw.metal[2]=Metal.b;
+						MeshDraw.renderMetal=RenderMetal;
+						MeshDraw.renderShade=RenderShade&&GpuShade;
+						MeshDraw.shadowCamera=CastsShadow?nCamera:-1;
 
-							Attribute = BaseAttribute;
-							SetProjectionMatrix(Camera, Graph3d, false);
-							Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
-							Graph3d->DrawMesh(tile->GpuMesh,MeshDraw,Pose);
-							Graph3d->ResetProjectionMatrix();
-							continue;
-						}
+						Attribute = BaseAttribute;
+						SetProjectionMatrix(Camera, Graph3d, Attribute & RENDER_REFLECTION);
+						Graph3d->SetMaterial(eMaterialMode(GET_RENDER_TYPE(Attribute)));
+						Graph3d->DrawMesh(tile->GpuMesh,MeshDraw,Pose);
+						Graph3d->ResetProjectionMatrix();
+						continue;
 					}
 
 					M3D_DRAW_COMMAND drawCommand;
@@ -1207,7 +1204,7 @@ void cPolyDispatcher::DrawReflection(cUnknownClass *UCameraList,cTileMap *TileMa
 					Attribute = BaseAttribute;
 					M3D_DRAW_COMMAND drawCommand;
 					Graph3d->BeginDrawCommand(drawCommand);
-					drawCommand.source=eDrawSource::terrain;
+					drawCommand.source=eDrawSource::terrain_reflection;
 
 					int xofs=round(ShareOfs.x-Camera->GetPos().x),yofs=round(ShareOfs.y-Camera->GetPos().y),flag=0;
 					int i;
@@ -1320,7 +1317,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cPolyGrid *PolyGrid)
 		Attribute = BaseAttribute;
 		M3D_DRAW_COMMAND drawCommand;
 		Graph3d->BeginDrawCommand(drawCommand);
-		drawCommand.source=eDrawSource::terrain;
+		drawCommand.source=eDrawSource::water;
 		
 		// установка вершин
 		float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -1419,7 +1416,7 @@ void cPolyDispatcher::Draw(cUnknownClass *UCameraList,cTileWater *TileWater)
 				Attribute = BaseAttribute;
 				M3D_DRAW_COMMAND drawCommand;
 				Graph3d->BeginDrawCommand(drawCommand);
-				drawCommand.source=eDrawSource::terrain;
+				drawCommand.source=eDrawSource::water;
 
 				// установка вершин
 				float xpos=ShareOfs.x,ypos=ShareOfs.y,duPoint=du+uofs,dvPoint=dv+vofs,ddu=usize/(xsize-1),ddv=vsize/(ysize-1),uLimit=usize/255,vLimit=vsize/255;
@@ -1505,7 +1502,7 @@ void cPolyDispatcher::DrawTilePolyGrid(cRenderDevice *RenderDevice,cCamera *Came
 	Attribute = BaseAttribute;
 	M3D_DRAW_COMMAND drawCommand;
 	RenderDevice->GetIGraph3d()->BeginDrawCommand(drawCommand);
-	drawCommand.source=eDrawSource::terrain;
+	drawCommand.source=eDrawSource::sky;
 
 	float xpos=xofs,ypos=yofs, ustep, duPoint0,vstep, duPoint,dvPoint;
 	if(WorldPolyGrid->GetAttribute(BASEOBJECT_ATTRIBUTE_DRAW_MULTIMATERIAL))

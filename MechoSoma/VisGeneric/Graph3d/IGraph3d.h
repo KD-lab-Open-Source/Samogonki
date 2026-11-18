@@ -376,7 +376,10 @@ enum class eDrawSource
 	mesh_static,		// a mesh that could be on the GPU, drawn the CPU way
 	mesh_animated,
 	mesh_reflection,
-	terrain,			// tile map, poly grid, water
+	terrain,			// the tile map drawn the CPU way
+	terrain_reflection,	// the land mirrored in a reflection surface (cTileMap::DrawReflection)
+	water,				// cTileWater and its poly grids
+	sky,				// the sky and the clouds (cWorldPolyGrid)
 	effects,			// light halos, sun, trails, lightning, sprite lists
 	count
 };
@@ -504,6 +507,7 @@ struct M3D_MESH_DRAW
 	int renderShade;			// the terrain shadow test (needs SetTerrain)
 	int clampNearZ;				// a perspective camera: z within 1 of the eye becomes 1
 	int shadowCamera;			// not -1: casts a dynamic shadow for this camera (SetShadowCamera)
+	int mirrored;				// drawn as a reflection (BuildDrawReflectionMatrix), so its triangles turn the other way
 };
 
 // One camera's dynamic shadows on the GPU (SetShadowCamera). The renderer fits a shadow

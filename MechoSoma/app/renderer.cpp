@@ -388,12 +388,14 @@ void Renderer::report_stats(Clock::time_point now) {
     // The frame vertex array holds the CPU-built vertices and the animated meshes' poses.
     const char *label = _stats_label.c_str();
     SDL_Log("Renderer stats [%s]: %.1f ms/frame = scene %.2f + submit %.2f + present %.2f + other %.2f; "
-            "per frame %.0f draws (%.0f GPU meshes, %.0f of them animated, %.0f GPU tiles), %.0f vertices and "
-            "%.0f indices from the CPU, %.0f pose vertices, %.1f shadow maps (%.0f casters); %u GPU meshes and "
-            "%u tile sets (%u KiB), %u terrain uploads; largest frame %u vertices and %u indices (arrays %u and %u)",
+            "per frame %.0f draws (%.0f GPU meshes, %.0f of them animated and %.0f reflected, %.0f GPU tiles), "
+            "%.0f vertices and %.0f indices from the CPU, %.0f pose vertices, %.1f shadow maps (%.0f casters); "
+            "%u GPU meshes and %u tile sets (%u KiB), %u terrain uploads; largest frame %u vertices and %u indices "
+            "(arrays %u and %u)",
             label, frame_ms, scene_ms, submit_ms, present_ms, frame_ms - scene_ms - submit_ms - present_ms,
             _stats.draws / frames, _stats.mesh_draws / frames, _stats.animated_mesh_draws / frames,
-            _stats.tile_draws / frames, (_stats.vertices - _stats.pose_vertices) / frames,
+            _stats.mirrored_mesh_draws / frames, _stats.tile_draws / frames,
+            (_stats.vertices - _stats.pose_vertices) / frames,
             _stats.indices / frames, _stats.pose_vertices / frames, _stats.shadow_maps / frames,
             _stats.shadow_casters / frames, static_cast<unsigned>(_meshes.size() - _tile_set_count),
             static_cast<unsigned>(_tile_set_count), static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads,
@@ -407,11 +409,15 @@ void Renderer::report_stats(Clock::time_point now) {
     const auto &v = _stats.source_vertices;
     const auto &c = _stats.source_commands;
     SDL_Log("Renderer stats [%s]: CPU vertices per frame (commands): static meshes %.0f (%.0f), animated meshes "
-            "%.0f (%.0f), reflected meshes %.0f (%.0f), terrain %.0f (%.0f), effects %.0f (%.0f), other %.0f (%.0f)",
+            "%.0f (%.0f), reflected meshes %.0f (%.0f), terrain %.0f (%.0f), reflected terrain %.0f (%.0f), "
+            "water %.0f (%.0f), sky %.0f (%.0f), effects %.0f (%.0f), other %.0f (%.0f)",
             label, per_frame(eDrawSource::mesh_static, v), per_frame(eDrawSource::mesh_static, c),
             per_frame(eDrawSource::mesh_animated, v), per_frame(eDrawSource::mesh_animated, c),
             per_frame(eDrawSource::mesh_reflection, v), per_frame(eDrawSource::mesh_reflection, c),
             per_frame(eDrawSource::terrain, v), per_frame(eDrawSource::terrain, c),
+            per_frame(eDrawSource::terrain_reflection, v), per_frame(eDrawSource::terrain_reflection, c),
+            per_frame(eDrawSource::water, v), per_frame(eDrawSource::water, c),
+            per_frame(eDrawSource::sky, v), per_frame(eDrawSource::sky, c),
             per_frame(eDrawSource::effects, v), per_frame(eDrawSource::effects, c),
             per_frame(eDrawSource::other, v), per_frame(eDrawSource::other, c));
   }
@@ -498,6 +504,9 @@ MD3DERROR Renderer::endScene() {
       if (command.is_animated) {
         _stats.animated_mesh_draws++;
         _stats.pose_vertices += command.vertex_buffer_view.length;
+      }
+      if (command.mesh_draw.mirrored) {
+        _stats.mirrored_mesh_draws++;
       }
       continue;
     }
@@ -884,7 +893,8 @@ void Renderer::drawMesh(uint32_t handle, const M3D_MESH_DRAW &draw, const M3D_ME
   command.mesh = handle;
   command.is_animated = pose != nullptr;
   command.mesh_draw = draw;
-  if (!_gpu_shadows || draw.shadowCamera < 0 || draw.shadowCamera >= max_shadow_cameras) {
+  // A reflection never casts: the shadow pass would draw it mirrored, below the ground.
+  if (!_gpu_shadows || draw.mirrored || draw.shadowCamera < 0 || draw.shadowCamera >= max_shadow_cameras) {
     command.mesh_draw.shadowCamera = -1;
   } else if (pose != nullptr) {
     // A shadow caster's box, which the shadow map is fitted to: this frame's pose.
@@ -1054,8 +1064,9 @@ void Renderer::draw_mesh_command(const DrawCommand &command) {
   const auto fs_params = scene_fs_params(command.render_state);
 
   apply_viewport(command.render_state);
-  sg_apply_pipeline(
-      scene_pipeline(command.render_state, command.is_animated ? Geometry::animated_mesh : Geometry::mesh));
+  sg_apply_pipeline(scene_pipeline(command.render_state,
+                                   command.is_animated ? Geometry::animated_mesh : Geometry::mesh,
+                                   draw.mirrored != 0));
   sg_apply_bindings(bindings);
   sg_apply_uniforms(UB_mesh_vs_params, SG_RANGE(vs_params));
   sg_apply_uniforms(UB_scene_fs_params, SG_RANGE(fs_params));
@@ -1361,12 +1372,17 @@ namespace {
   }
 }
 
-sg_pipeline Renderer::scene_pipeline(const RenderState &state, Geometry geometry) {
+sg_pipeline Renderer::scene_pipeline(const RenderState &state, Geometry geometry, bool mirrored) {
   // RENDERSTATE_ZTEST was D3D's ZENABLE: turned off, the depth buffer is neither tested
   // nor written, whatever RENDERSTATE_ZWRITE says.
   const bool depth_test = state.is_depth_test_enabled;
-  ScenePipelineKey key{geometry, depth_test, depth_test && state.is_depth_write_enabled,
-                       state.is_alpha_blend_enabled, SG_BLENDFACTOR_ONE, SG_BLENDFACTOR_ZERO};
+  ScenePipelineKey key{geometry,
+                       depth_test,
+                       depth_test && state.is_depth_write_enabled,
+                       state.is_alpha_blend_enabled,
+                       SG_BLENDFACTOR_ONE,
+                       SG_BLENDFACTOR_ZERO,
+                       mirrored};
   if (key.blend) {
     key.source = blend_factor(state.source_blend_mode, SG_BLENDFACTOR_ONE);
     key.destination = blend_factor(state.destination_blend_mode, SG_BLENDFACTOR_ZERO);
@@ -1385,8 +1401,11 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, Geometry geometry
   description.primitive_type = SG_PRIMITIVETYPE_TRIANGLES;
   description.index_type =
       is_frame || key.geometry == Geometry::tile ? SG_INDEXTYPE_UINT32 : SG_INDEXTYPE_UINT16;
+  // The 2000 renderer culled on the CPU, keeping triangles that wind one way on the screen
+  // (AddPolygonFixTestPointFix, master). A mirror turns them the other way, so it sent a
+  // reflection's corners in the opposite order; a mirrored GPU mesh flips the front face.
   description.cull_mode = SG_CULLMODE_BACK;
-  description.face_winding = SG_FACEWINDING_CCW;
+  description.face_winding = key.mirrored ? SG_FACEWINDING_CW : SG_FACEWINDING_CCW;
 
   description.depth.write_enabled = key.depth_write;
   description.depth.compare = key.depth_test ? SG_COMPAREFUNC_LESS_EQUAL : SG_COMPAREFUNC_ALWAYS;
@@ -1470,8 +1489,9 @@ sg_pipeline Renderer::scene_pipeline(const RenderState &state, Geometry geometry
                      : key.geometry == Geometry::mesh ? "mesh"
                      : key.geometry == Geometry::tile ? "tile"
                                                       : "animated mesh";
-  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d)", kind,
+  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d%s)", kind,
           static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
-          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination));
+          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination),
+          key.mirrored ? ", mirrored" : "");
   return pipeline;
 }
