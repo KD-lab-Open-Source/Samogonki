@@ -178,8 +178,8 @@ extern int mchCurrentTrack;
 extern int mchRacersInitFlag;
 
 extern int acsNumFonts;
-extern char* acsFontDir;
-extern char* acsFontPrefix;
+extern const char* acsFontDir;
+extern const char* acsFontPrefix;
 extern HFont** acsFntTable;
 
 extern int acsCurrentSave;

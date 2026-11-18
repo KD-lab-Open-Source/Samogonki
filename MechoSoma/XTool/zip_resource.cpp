@@ -233,8 +233,7 @@ XZIP_FileHeader* XZIP_Resource::find(const char* fname)
 	XZIP_FileHeader* p = fileList.first();
 
 	while(p){
-// TODO: @caiiiycuk investigate this
-#ifdef WTF
+#ifdef _MSC_VER
 		if(!_stricmp(p -> name(),fname))
 #else
 		if(!strcasecmp(p -> name(),fname))

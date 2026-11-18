@@ -8,12 +8,12 @@
 AspectRatioInfo createAspectRatio(int sc_width, int sc_height, int cameraOffset) {
     int width = 480 / sc_height * sc_width;
 
-    return AspectRatioInfo {
-        .width = width,
-        .offset = width - 640,
-        .cameraOffset = cameraOffset,
-		.ratio = (float)sc_width / sc_height,
-    };
+    AspectRatioInfo info{};
+    info.width = width;
+    info.offset = width - 640;
+    info.cameraOffset = cameraOffset;
+    info.ratio = (float)sc_width / sc_height;
+    return info;
 }
 
 AspectRatioInfo aspectRatios[] = {

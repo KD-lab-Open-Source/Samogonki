@@ -1,6 +1,6 @@
 project(game CXX)
 
-if (CMAKE_BUILD_TYPE MATCHES Debug)
+if (CMAKE_BUILD_TYPE MATCHES Debug AND NOT MSVC)
     add_definitions(-D_DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
     set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
@@ -507,19 +507,16 @@ include_directories(iScreen/SCRIPTS)
 
 include_directories(../3rdparty/sokol)
 
-# SDL's own CMake package, from 3rdparty only, never a system SDL. Asking for the
-# SDL2-static component fails configure if SDL wasn't built static, and
-# SDL2::SDL2-static is the static library itself: -lSDL2 (like SDL2::SDL2) picks the
-# import library and SDL2.dll whenever SDL was also built shared. The target also
-# brings SDL's include directories and the system libraries it needs.
-find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2-static
-    PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/SDL-2.26.5" NO_DEFAULT_PATH)
+# SDL 3 is fetched and built by the top-level CMakeLists.txt. SDL3::SDL3-static brings
+# its include directories and the system libraries it needs.
 
 include_directories(../3rdparty/miniaudio)
 include_directories(../3rdparty/stb)
 
-find_package(ZLIB REQUIRED)
-find_package(Iconv REQUIRED)
+# On Windows the top-level CMakeLists.txt builds zlib.
+if (NOT TARGET ZLIB::ZLIB)
+    find_package(ZLIB REQUIRED)
+endif ()
 
 if (WIN32)
     set(BCRYPT_LIBRARY bcrypt)
@@ -544,14 +541,21 @@ if (STEAM_VERSION)
     endif()
 endif()
 
-set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB Iconv::Iconv ${BCRYPT_LIBRARY} SDL2::SDL2-static ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
+set(COMMON_APPLICATION_LIBRARIES 3dsftk3 iniparser mpcdec ZLIB::ZLIB ${BCRYPT_LIBRARY} SDL3::SDL3-static ${WINDOWS_COMMON_LIBRARIES} ${STEAM_LIBRARY})
 
-if (MINGW)
+if (WIN32)
+    if (NOT MSVC)
+        message(FATAL_ERROR "The Windows build needs Visual C++ (MSVC)")
+    endif ()
+    # A GUI program, so no console window. Without SDL_main.h there is no WinMain, so it
+    # starts at the CRT's main() entry point.
     add_executable(${APPLICATION_NAME} WIN32 ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES})
-    target_link_options(${APPLICATION_NAME} PRIVATE -static-libgcc -static-libstdc++)
-    add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
-            COMMAND cp -v /mingw64/bin/libwinpthread-1.dll "${CMAKE_CURRENT_BINARY_DIR}")
+    # The main thread gets 8 MiB of stack, as on Linux and macOS (MSVC's default is 1 MiB,
+    # MinGW's was 2 MiB). Release builds drop unused code and don't link incrementally.
+    set(OPTIMIZED_CONFIG $<CONFIG:RelWithDebInfo,Release>)
+    target_link_options(${APPLICATION_NAME} PRIVATE /ENTRY:mainCRTStartup /STACK:8388608
+            $<${OPTIMIZED_CONFIG}:/INCREMENTAL:NO> $<${OPTIMIZED_CONFIG}:/OPT:REF> $<${OPTIMIZED_CONFIG}:/OPT:ICF>)
 elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES}
@@ -591,7 +595,7 @@ elseif (APPLE)
             install_name_tool -change "${LOADER_PATH}" "${EXECUTABLE_PATH}" "${APP_BUNDLE_CONTENTS_DIR}/MacOS/${APPLICATION_NAME}"
         )
     endif()
-endif(MINGW)
+endif(WIN32)
 
 if (TARGET ${APPLICATION_NAME})
     # The game links SDL, so crash reports can use SDL_ShowSimpleMessageBox on

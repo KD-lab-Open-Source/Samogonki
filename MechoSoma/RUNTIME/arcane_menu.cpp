@@ -998,10 +998,11 @@ void mchArcaneScreenElement::RedrawFnc(int x0,int y0,float dt)
 			else 
 				sc = mchTimeSpeedCur;
 
+			// "Время" in CP1251, the encoding of the game's fonts.
 			if(fabs(mchTimeSpeedCur - 1.0f) < 0.09f)
-				sprintf(mchA_String,"\C2\F0\E5\EC\FF 1.0");
+				sprintf(mchA_String,"\xC2\xF0\xE5\xEC\xFF 1.0");
 			else
-				sprintf(mchA_String,"\C2\F0\E5\EC\FF %+.1f",sc);
+				sprintf(mchA_String,"\xC2\xF0\xE5\xEC\xFF %+.1f",sc);
 
 			sx = acsStrLen(1,(unsigned char*)mchA_String,0);
 			sy = acsStrHeight(1,(unsigned char*)mchA_String);

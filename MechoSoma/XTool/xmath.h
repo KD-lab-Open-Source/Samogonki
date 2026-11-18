@@ -79,26 +79,6 @@ const int INT_INF = 0x7fffffff;
 #ifndef __ROUND__
 #define __ROUND__
 
-xm_inline int round(double x)
-{
-	int a;
-	_asm {
-		fld x
-		fistp dword ptr a
-	}
-	return a;
-}
-
-xm_inline int round(float x)
-{
-	int a;
-	_asm {
-		fld x
-		fistp dword ptr a
-	}
-	return a;
-}
-
 template <class T> 
 xm_inline T sqr(const T& x){ return x*x; }
 

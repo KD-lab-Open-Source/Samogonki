@@ -1,9 +1,8 @@
 #ifdef GPX
 #include <c/gamepix.h>
-#else
-#define SDL_MAIN_HANDLED
 #endif
-#include <SDL2/SDL.h>
+// Without SDL_main.h, SDL 3 leaves main() to the game.
+#include <SDL3/SDL.h>
 #include "filesystem.h"
 
 #ifdef EMSCRIPTEN
@@ -124,7 +123,16 @@ int main(int argc, char const *argv[]) {
   }
   #endif
 #endif
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+#ifdef _WIN32
+  // SDL 2 left the game DPI-unaware, so Windows scales its window on a HiDPI display.
+  // SDL 3 is DPI-aware by default, which would make the window smaller there and change
+  // the mouse mapping; keep the SDL 2 behaviour until that is done deliberately. SDL 3
+  // still reads this hint, but no longer names it in its headers.
+  SDL_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
+#endif
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init(): %s\n", SDL_GetError());
+  }
   // The window and its GL context are set up by graphics::Display.
 
 #ifdef EMSCRIPTEN

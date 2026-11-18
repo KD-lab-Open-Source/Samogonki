@@ -32,7 +32,7 @@
 #endif
 
 #ifdef XERRH_USE_SDL
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #endif
 
 #ifndef GIT_BRANCH
@@ -65,12 +65,11 @@ std::string executableDirectory() {
 #else
 std::string executableDirectory() {
 #ifdef XERRH_USE_SDL
-  // SDL knows how to locate the executable on every supported desktop OS.
-  char* base = SDL_GetBasePath();
+  // SDL knows how to locate the executable on every supported desktop OS. SDL 3 owns
+  // the string it returns: it must not be freed.
+  const char* base = SDL_GetBasePath();
   if (base) {
-    std::string path(base);
-    SDL_free(base);
-    return path;
+    return std::string(base);
   }
 #endif
   return {};
@@ -178,7 +177,8 @@ void showReport(const std::string& report) {
   const std::string text = report.size() > maxLength ? report.substr(0, maxLength) + "\n...[truncated]" : report;
 
 #ifdef XERRH_USE_SDL
-  if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Moonshine Runners - crash report", text.c_str(), nullptr) == 0) {
+  // SDL 3 returns true when the dialog was shown (SDL 2 returned 0).
+  if (SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Moonshine Runners - crash report", text.c_str(), nullptr)) {
     return;
   }
 #endif

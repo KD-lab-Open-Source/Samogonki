@@ -7,8 +7,8 @@
 #include "fxlabKey.h"
 #include "fxlabSprite.h"
 
-extern char* getIniKey(const char* fname,const char* section,const char* key);
-extern char* mch_mainINI;
+extern const char* getIniKey(const char* fname,const char* section,const char* key);
+extern const char* mch_mainINI;
 
 int* fxlabCosTableType::FXLAB_COS_DATA = NULL;
 
@@ -16,7 +16,7 @@ void fxlabCreateSpriteTable();
 
 void fxlabResourceDispatcher::Open()
 {
-	char* t;
+	const char* t;
 	int i,j,id,type;
 	scrDataBlock* p;
 	scrDataBlock* pp;
@@ -167,7 +167,7 @@ void fxlabUniverseDataType::Open()
 	scrDataBlock* p;
 	scrDataBlock* s;
 	int i;
-	char* t;
+	const char* t;
 
 	WorldCompileScript = atoi(getIniKey(mch_mainINI,"FXLAB","make_world_script"));
 

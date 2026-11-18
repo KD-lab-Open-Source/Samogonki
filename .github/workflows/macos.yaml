@@ -8,7 +8,6 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
-  GH_CACHE_KEY: 3
 
 jobs:
   build:
@@ -21,29 +20,6 @@ jobs:
 
     - name: Install dependencies
       run: brew install cmake ninja zlib
-
-    - uses: actions/cache@v3
-      id: cache
-      with:
-        path: |
-          ${{github.workspace}}/3rdparty/SDL-2.26.5
-        key: ${{runner.os}}-${{env.GH_CACHE_KEY}}
-
-    - name: SDL -- download
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: git clone --depth 1 --branch release-2.26.5 https://github.com/libsdl-org/SDL.git SDL
-    - name: SDL -- configure
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: cmake -B cmake-build-release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-release
-      working-directory: SDL
-    - name: SDL -- build and install
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        cmake --build cmake-build-release --target install
-        mkdir -p ${{github.workspace}}/3rdparty/SDL-2.26.5
-        cp -r target-release/include ${{github.workspace}}/3rdparty/SDL-2.26.5/
-        cp -r target-release/lib ${{github.workspace}}/3rdparty/SDL-2.26.5/
-      working-directory: SDL
 
     - name: Game -- configure
       run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}

@@ -3,27 +3,27 @@
 #include <array>
 #include <memory>
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "xtool.h"
 
 class XJoystick final
 {
 public:
-	explicit XJoystick(int id)
+	explicit XJoystick(SDL_JoystickID id)
 	{
-		_joystick = SDL_JoystickOpen(id);
+		_joystick = SDL_OpenJoystick(id);
 		if (_joystick == nullptr)
 		{
-			ErrH.Abort("SDL_JoystickOpen");
+			ErrH.Abort("SDL_OpenJoystick");
 		}
 
-		_buttonsCount = SDL_JoystickNumButtons(_joystick);
+		_buttonsCount = SDL_GetNumJoystickButtons(_joystick);
 	}
 
 	~XJoystick()
 	{
-		SDL_JoystickClose(_joystick);
+		SDL_CloseJoystick(_joystick);
 	}
 
 	void SetHandler(XJoystickHandler handler)
@@ -40,9 +40,9 @@ public:
 		}
 		_last_clock = time + 20;
 
-		SDL_JoystickUpdate();
-		_x = ConvertAxisToGameRange(SDL_JoystickGetAxis(_joystick, 0), false);
-		_y = ConvertAxisToGameRange(SDL_JoystickGetAxis(_joystick, 1), true);
+		SDL_UpdateJoysticks();
+		_x = ConvertAxisToGameRange(SDL_GetJoystickAxis(_joystick, 0), false);
+		_y = ConvertAxisToGameRange(SDL_GetJoystickAxis(_joystick, 1), true);
 
 		if (_handler != nullptr)
 		{
@@ -52,7 +52,7 @@ public:
 
 		for (int i = 0; i < _buttonsCount; i++)
 		{
-			_buttons[i] = SDL_JoystickGetButton(_joystick, i);
+			_buttons[i] = SDL_GetJoystickButton(_joystick, i);
 			if (_handler != nullptr)
 			{
 				_handler(_buttons[i] ? XJ_PressButton : XJ_UnPressButton, VK_BUTTON_1 + i, 0);
@@ -121,12 +121,17 @@ std::unique_ptr<XJoystick> joystick;
 
 int XJoystickInit(int ErrHUsed)
 {
-	if (SDL_NumJoysticks() == 0)
+	// SDL 3 opens a joystick by its instance id, not by its index: take the first one.
+	int count = 0;
+	SDL_JoystickID* ids = SDL_GetJoysticks(&count);
+	const SDL_JoystickID first = (ids != nullptr && count > 0) ? ids[0] : 0;
+	SDL_free(ids);
+	if (first == 0)
 	{
 		return 0;
 	}
 
-	joystick = std::make_unique<XJoystick>(0);
+	joystick = std::make_unique<XJoystick>(first);
 
 	return 1;
 } 

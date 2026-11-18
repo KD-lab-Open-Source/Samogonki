@@ -87,28 +87,6 @@ const float FLT_COMPARE_TOLERANCE = 1.e-5f;
 #ifndef __ROUND__
 #define __ROUND__
 
-#ifdef _MSC_VER
-xm_inline int round(double x)
-{
-	int a;
-	_asm {
-		fld x
-		fistp dword ptr a
-	}
-	return a;
-}
-
-xm_inline int round(float x)
-{
-	int a;
-	_asm {
-		fld x
-		fistp dword ptr a
-	}
-	return a;
-}
-#endif
-
 template <class T> 
 xm_inline T sqr(const T& x){ return x*x; }
 
