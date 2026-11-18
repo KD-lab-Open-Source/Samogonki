@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cstring>
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "back_buffer.h"
 #include "display.h"

@@ -8,6 +8,27 @@ option(BUILD_SCRIPT_TOOL "Build script tool" OFF)
 
 set(APPLICATION_NAME moonshine-runners)
 
+# SDL 3, downloaded at configure time and built with the game as a static library
+# (SDL3::SDL3-static). It comes before the game's global definitions and warning flags
+# below, which a subdirectory added after them would inherit. To build without a
+# download, pass -DFETCHCONTENT_SOURCE_DIR_SDL3=<an SDL 3.4.20 source tree>.
+include(FetchContent)
+set(SDL_SHARED OFF)
+set(SDL_STATIC ON)
+set(SDL_TEST_LIBRARY OFF)
+# Subsystems the game doesn't use: miniaudio plays the sound and sokol draws.
+set(SDL_AUDIO OFF)
+set(SDL_GPU OFF)
+set(SDL_RENDER OFF)
+set(SDL_CAMERA OFF)
+set(SDL_DIALOG OFF)
+set(SDL_TRAY OFF)
+FetchContent_Declare(SDL3
+    URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.20/SDL3-3.4.20.tar.gz
+    URL_HASH SHA256=f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(SDL3)
+
 # Build identification shown in crash reports.
 if(NOT DEFINED GIT_BRANCH)
     if(DEFINED ENV{GITHUB_REF_NAME} AND NOT "$ENV{GITHUB_REF_NAME}" STREQUAL "")

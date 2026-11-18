@@ -19,29 +19,9 @@ jobs:
         submodules: 'recursive'
 
     - name: Install deps
-      run: sudo apt-get install libx11-dev libxcursor-dev libxi-dev libgl-dev libz-dev
-
-    - name: SDL -- cache
-      id: cache-sdl
-      uses: actions/cache@v3
-      with:
-        path: ${{github.workspace}}/3rdparty/SDL-2.26.5
-        key: ${{ runner.os }}-sdl-2.26.5
-    - name: SDL -- download
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
-      run: git clone --depth 1 --branch release-2.26.5 https://github.com/libsdl-org/SDL.git SDL
-    - name: SDL -- configure
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
-      run: cmake -B cmake-build-debug -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-debug
-      working-directory: SDL
-    - name: SDL -- build and install
-      if: steps.cache-sdl.outputs.cache-hit != 'true'
-      run: |
-        cmake --build cmake-build-debug --target install
-        mkdir -p ${{github.workspace}}/3rdparty/SDL-2.26.5
-        cp -r target-debug/include ${{github.workspace}}/3rdparty/SDL-2.26.5/
-        cp -r target-debug/lib ${{github.workspace}}/3rdparty/SDL-2.26.5/
-      working-directory: SDL
+      # SDL 3 is built by CMake (FetchContent); its X11 video driver needs the X11
+      # extension headers.
+      run: sudo apt-get install libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libgl-dev libz-dev
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}

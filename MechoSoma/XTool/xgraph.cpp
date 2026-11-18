@@ -10,7 +10,7 @@ extern int xtMobileButton;
 #include <cstdlib>
 #include <cstring>
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 void xtRegisterSysMsgFnc(void (*fPtr)(SDL_Event *), int id);
 
@@ -666,15 +666,21 @@ void XGR_OutText(int x,int y,int col,const char* text,int font,int hspace,int vs
 
 void XGR_MouseFnc(SDL_Event *p)
 {
-	auto getScaledMouseMotion = [p]() -> SDL_MouseMotionEvent {
-		auto motion = p->motion;
-		motion.x *= XGR_WindowScaleX;
-		motion.y *= XGR_WindowScaleY;
-		return motion;
+	// The pointer in the game's screen: window coordinates (floats in SDL 3) scaled and
+	// cut to whole pixels, as SDL 2's int coordinates were.
+	struct Position {
+		int x;
+		int y;
+	};
+	auto getScaledMouseMotion = [p]() -> Position {
+		const bool isButton = p->type == SDL_EVENT_MOUSE_BUTTON_DOWN || p->type == SDL_EVENT_MOUSE_BUTTON_UP;
+		const float x = isButton ? p->button.x : p->motion.x;
+		const float y = isButton ? p->button.y : p->motion.y;
+		return Position{static_cast<int>(x * XGR_WindowScaleX), static_cast<int>(y * XGR_WindowScaleY)};
 	};
 
     static int flag = 0;
-	if (p->type == SDL_MOUSEMOTION) {
+	if (p->type == SDL_EVENT_MOUSE_MOTION) {
 		const auto motion = getScaledMouseMotion();
 
 		const auto x1 = XGR_MouseObj.PosX;
@@ -689,13 +695,13 @@ void XGR_MouseFnc(SDL_Event *p)
 		if (XGR_MouseVisible()) {
 			XGR_MouseRedraw();
 		}
-	} else if (p->type == SDL_MOUSEBUTTONDOWN || p->type == SDL_MOUSEBUTTONUP) {
+	} else if (p->type == SDL_EVENT_MOUSE_BUTTON_DOWN || p->type == SDL_EVENT_MOUSE_BUTTON_UP) {
 		const auto motion = getScaledMouseMotion();
 
 #ifdef GPX
         if (gpx()->sys()->isMobile()) {
             p->button.button = xtMobileButton;
-            if (p->type == SDL_MOUSEBUTTONDOWN) {
+            if (p->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
                 const auto x1 = XGR_MouseObj.PosX;
                 const auto y1 = XGR_MouseObj.PosY;
                 XGR_MouseObj.InitPos(motion.x, motion.y);
@@ -733,10 +739,10 @@ void XGR_MouseFnc(SDL_Event *p)
         auto type = p->type;
         auto fn = [type, button, motion]() {
             XGR_MouseInitPos(motion.x, motion.y);
-            if (type == SDL_MOUSEBUTTONDOWN) {
+            if (type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
                 XGR_MousePress(button, flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
             }
-            if (type == SDL_MOUSEBUTTONUP) {
+            if (type == SDL_EVENT_MOUSE_BUTTON_UP) {
                 flag = 0;
                 XGR_MouseUnPress(button, flag, XGR_MouseObj.PosX, XGR_MouseObj.PosY);
             }

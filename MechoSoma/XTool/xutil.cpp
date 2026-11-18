@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "filesystem.h"
 
@@ -24,32 +24,32 @@ static const std::unordered_map<SDL_Keycode, int> keycodeMap{
     { SDLK_8                , VK_8               },
     { SDLK_9                , VK_9               },
 
-    { SDLK_a                , VK_A               },
-    { SDLK_b                , VK_B               },
-    { SDLK_c                , VK_C               },
-    { SDLK_d                , VK_D               },
-    { SDLK_e                , VK_E               },
-    { SDLK_f                , VK_F               },
-    { SDLK_g                , VK_G               },
-    { SDLK_h                , VK_H               },
-    { SDLK_i                , VK_I               },
-    { SDLK_j                , VK_J               },
-    { SDLK_k                , VK_K               },
-    { SDLK_l                , VK_L               },
-    { SDLK_m                , VK_M               },
-    { SDLK_n                , VK_N               },
-    { SDLK_o                , VK_O               },
-    { SDLK_p                , VK_P               },
-    { SDLK_q                , VK_Q               },
-    { SDLK_r                , VK_R               },
-    { SDLK_s                , VK_S               },
-    { SDLK_t                , VK_T               },
-    { SDLK_u                , VK_U               },
-    { SDLK_v                , VK_V               },
-    { SDLK_w                , VK_W               },
-    { SDLK_x                , VK_X               },
-    { SDLK_y                , VK_Y               },
-    { SDLK_z                , VK_Z               },
+    { SDLK_A                , VK_A               },
+    { SDLK_B                , VK_B               },
+    { SDLK_C                , VK_C               },
+    { SDLK_D                , VK_D               },
+    { SDLK_E                , VK_E               },
+    { SDLK_F                , VK_F               },
+    { SDLK_G                , VK_G               },
+    { SDLK_H                , VK_H               },
+    { SDLK_I                , VK_I               },
+    { SDLK_J                , VK_J               },
+    { SDLK_K                , VK_K               },
+    { SDLK_L                , VK_L               },
+    { SDLK_M                , VK_M               },
+    { SDLK_N                , VK_N               },
+    { SDLK_O                , VK_O               },
+    { SDLK_P                , VK_P               },
+    { SDLK_Q                , VK_Q               },
+    { SDLK_R                , VK_R               },
+    { SDLK_S                , VK_S               },
+    { SDLK_T                , VK_T               },
+    { SDLK_U                , VK_U               },
+    { SDLK_V                , VK_V               },
+    { SDLK_W                , VK_W               },
+    { SDLK_X                , VK_X               },
+    { SDLK_Y                , VK_Y               },
+    { SDLK_Z                , VK_Z               },
 
     { SDLK_ESCAPE           , VK_ESCAPE          },
     { SDLK_RETURN           , VK_RETURN          },
@@ -279,25 +279,25 @@ int xtNeedExit()
 
 int xtCallXKey(SDL_Event *event) {
 	switch (event->type) {
-		case SDL_KEYDOWN:
+		case SDL_EVENT_KEY_DOWN:
 		{
-			const auto key = keycodeMap.find(event->key.keysym.sym);
+			const auto key = keycodeMap.find(event->key.key);
 			if (key != keycodeMap.end()) {
 				XKey.PressFnc(key->second, 1);
 			}
 			break;
 		}
 
-		case SDL_KEYUP:
+		case SDL_EVENT_KEY_UP:
 		{
-			const auto key = keycodeMap.find(event->key.keysym.sym);
+			const auto key = keycodeMap.find(event->key.key);
 			if (key != keycodeMap.end()) {
 				XKey.UnPressFnc(key->second, 1);
 			}
 			break;
 		}
 
-		case SDL_TEXTINPUT:
+		case SDL_EVENT_TEXT_INPUT:
 		{
 			if (event->text.text[0] > 0 && event->text.text[0] < 127) {
 				XKey.LastChar = event->text.text[0];
@@ -328,7 +328,7 @@ int xtDispatchMessage(SDL_Event *event) {
 	ret += xtCallXKey(event);
 
 	switch (event->type) {
-		case SDL_QUIT:
+		case SDL_EVENT_QUIT:
 			xtSetExit();
 			break;
 

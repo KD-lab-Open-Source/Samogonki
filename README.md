@@ -26,27 +26,12 @@ Look into buildscripts:
 * [Windows](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/windows.yaml)
 * [macOS](https://github.com/KD-lab-Open-Source/Samogonki/blob/cmake/.github/workflows/macos.yaml)
 
-### SDL 2
-1. Clone
+### SDL 3
+CMake downloads SDL 3 when it configures the game and builds it as a static
+library, so there is nothing to install. To build offline, point CMake at an
+unpacked SDL 3.4.20 source tree:
 ```
-git clone --depth 1 --branch release-2.26.5 https://github.com/libsdl-org/SDL.git SDL
-```
-
-2. Configurate
-```
-cmake -B cmake-build-debug -DSDL_SHARED=0 -DSDL_STATIC=1 -DSDL_TEST=0 -DCMAKE_INSTALL_PREFIX=target-debug
-```
-
-3. Build
-```
-cmake --build cmake-build-debug --target install
-```
-
-4. Copy
-```
-mkdir 3rdparty/SDL-2.26.5
-cp -r 3rdparty/SDL/target-debug/include 3rdparty/SDL-2.26.5/
-cp -r 3rdparty/SDL/target-debug/lib 3rdparty/SDL-2.26.5/
+cmake -B build -DFETCHCONTENT_SOURCE_DIR_SDL3=/path/to/SDL3-3.4.20
 ```
 
 ## How to run
