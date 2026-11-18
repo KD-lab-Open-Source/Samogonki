@@ -109,12 +109,12 @@ namespace {
 
   // The fragment uniforms, the same for frame geometry and GPU meshes.
   scene_fs_params_t scene_fs_params(const graphics::RenderState &state) {
-    return scene_fs_params_t{
-        .color_operation_1 = state.color_operation1,
-        .color_operation_2 = state.color_operation2,
-        .alpha_test_enabled = state.is_alpha_test_enabled,
-        .alpha_reference = state.alpha_reference
-    };
+    scene_fs_params_t params{};
+    params.color_operation_1 = state.color_operation1;
+    params.color_operation_2 = state.color_operation2;
+    params.alpha_test_enabled = state.is_alpha_test_enabled;
+    params.alpha_reference = state.alpha_reference;
+    return params;
   }
 
 #ifndef EMSCRIPTEN
@@ -267,10 +267,9 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
           _gpu_shadows ? "on" : "off", _gpu_terrain ? "on" : "off");
 
   {
-    sg_range data = {
-        .ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f },
-        .size = 4,
-    };
+    sg_range data{};
+    data.ptr = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f };
+    data.size = 4;
     sg_image_desc description{};
     description.width = 1;
     description.height = 1;

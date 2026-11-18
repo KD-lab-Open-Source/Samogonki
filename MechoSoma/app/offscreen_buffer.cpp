@@ -140,9 +140,8 @@ void OffscreenBuffer::flush(const sg_swapchain& swapchain) {
   sg_apply_pipeline(_pipeline);
   sg_apply_bindings(bindings);
 
-  auto vs_params = flush_vs_params_t{
-    .max_x = _clipSpaceMaxX
-  };
+  flush_vs_params_t vs_params{};
+  vs_params.max_x = _clipSpaceMaxX;
   sg_apply_uniforms(UB_flush_vs_params, SG_RANGE(vs_params));
 
   sg_draw(0, 6, 1);

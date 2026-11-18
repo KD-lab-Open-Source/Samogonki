@@ -551,8 +551,11 @@ if (WIN32)
     # starts at the CRT's main() entry point.
     add_executable(${APPLICATION_NAME} WIN32 ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES})
-    target_link_options(${APPLICATION_NAME} PRIVATE /ENTRY:mainCRTStartup
-            $<$<CONFIG:RelWithDebInfo,Release>:/INCREMENTAL:NO /OPT:REF /OPT:ICF>)
+    # The main thread gets 8 MiB of stack, as on Linux and macOS (MSVC's default is 1 MiB,
+    # MinGW's was 2 MiB). Release builds drop unused code and don't link incrementally.
+    set(OPTIMIZED_CONFIG $<CONFIG:RelWithDebInfo,Release>)
+    target_link_options(${APPLICATION_NAME} PRIVATE /ENTRY:mainCRTStartup /STACK:8388608
+            $<${OPTIMIZED_CONFIG}:/INCREMENTAL:NO> $<${OPTIMIZED_CONFIG}:/OPT:REF> $<${OPTIMIZED_CONFIG}:/OPT:ICF>)
 elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES}

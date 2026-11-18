@@ -103,7 +103,10 @@ if (MSVC)
     # char is already signed with MSVC. The POSIX names (stricmp, strdup) and the classic
     # CRT functions stay without deprecation warnings, and math.h defines M_PI.
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS _USE_MATH_DEFINES)
-    add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/bigobj>)
+    # The sources are UTF-8, and their strings stay UTF-8 in the program, as with GCC and
+    # Clang. Without this MSVC reads them in the system's code page. (Text drawn with the
+    # game's CP1251 fonts is written as \x escapes.)
+    add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/utf-8> $<$<COMPILE_LANGUAGE:C,CXX>:/bigobj>)
     if (CMAKE_GENERATOR MATCHES "Visual Studio")
         # Compile a project's files in parallel; Ninja does that by itself.
         add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/MP>)
