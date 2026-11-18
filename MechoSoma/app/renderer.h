@@ -89,10 +89,13 @@ class Renderer final {
   void bind_textures(const RenderState &state, sg_bindings &bindings);
 
 private:
-  // How many vertices the per-frame arrays hold at start. A frame that needs more
-  // grows them (M3D_BUFFER_VIEW), and endScene() then recreates the GPU buffers at
-  // the new size.
-  static constexpr size_t initial_vertex_count = 100000;
+  // How many vertices and indices the per-frame arrays hold at start. A frame that needs
+  // more grows them (M3D_BUFFER_VIEW, drawMesh), and endScene() then recreates the GPU
+  // buffers at the new size. The largest frames seen: about 31k vertices in the menu world
+  // with the GPU paths on (its water reflections are built on the CPU), and 40k vertices
+  // and 51k indices with GpuMeshes=0.
+  static constexpr size_t initial_vertex_count = 65536;
+  static constexpr size_t initial_index_count = 65536;
 
   // The window and its context. Declared first, so it is destroyed last.
   std::unique_ptr<Display> _display;
@@ -284,6 +287,8 @@ private:
     uint64_t shadow_casters = 0;
     uint64_t vertices = 0;
     uint64_t indices = 0;
+    size_t peak_vertices = 0;  // the largest frame
+    size_t peak_indices = 0;
     unsigned terrain_uploads = 0;
     // The CPU-built geometry by what it draws (M3D_DRAW_COMMAND::source).
     std::array<uint64_t, static_cast<size_t>(eDrawSource::count)> source_vertices{};

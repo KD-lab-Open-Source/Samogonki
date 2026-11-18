@@ -296,7 +296,7 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool textureMipmaps
   }
 
   _vertex_buffer.resize(initial_vertex_count);
-  _index_buffer.resize(3 * initial_vertex_count);
+  _index_buffer.resize(initial_index_count);
 
   sg_vertex_buffer = make_frame_buffer<M3D_VERTEX>(_vertex_buffer.size(), false);
   sg_index_buffer = make_frame_buffer<uint32_t>(_index_buffer.size(), true);
@@ -390,13 +390,15 @@ void Renderer::report_stats(Clock::time_point now) {
     SDL_Log("Renderer stats [%s]: %.1f ms/frame = scene %.2f + submit %.2f + present %.2f + other %.2f; "
             "per frame %.0f draws (%.0f GPU meshes, %.0f of them animated, %.0f GPU tiles), %.0f vertices and "
             "%.0f indices from the CPU, %.0f pose vertices, %.1f shadow maps (%.0f casters); %u GPU meshes and "
-            "%u tile sets (%u KiB), %u terrain uploads",
+            "%u tile sets (%u KiB), %u terrain uploads; largest frame %u vertices and %u indices (arrays %u and %u)",
             label, frame_ms, scene_ms, submit_ms, present_ms, frame_ms - scene_ms - submit_ms - present_ms,
             _stats.draws / frames, _stats.mesh_draws / frames, _stats.animated_mesh_draws / frames,
             _stats.tile_draws / frames, (_stats.vertices - _stats.pose_vertices) / frames,
             _stats.indices / frames, _stats.pose_vertices / frames, _stats.shadow_maps / frames,
             _stats.shadow_casters / frames, static_cast<unsigned>(_meshes.size() - _tile_set_count),
-            static_cast<unsigned>(_tile_set_count), static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads);
+            static_cast<unsigned>(_tile_set_count), static_cast<unsigned>(_mesh_bytes / 1024), _stats.terrain_uploads,
+            static_cast<unsigned>(_stats.peak_vertices), static_cast<unsigned>(_stats.peak_indices),
+            static_cast<unsigned>(_vertex_buffer.size()), static_cast<unsigned>(_index_buffer.size()));
 
     // Vertices (and draw commands) per frame, by what the game draws with them.
     const auto per_frame = [&](eDrawSource source, const decltype(Stats::source_vertices) &counts) {
@@ -454,6 +456,8 @@ MD3DERROR Renderer::endScene() {
   const size_t index_count = _commands.back().index_buffer_view.end();
   _stats.vertices += vertex_count;
   _stats.indices += index_count;
+  _stats.peak_vertices = std::max(_stats.peak_vertices, vertex_count);
+  _stats.peak_indices = std::max(_stats.peak_indices, index_count);
   upload_frame_buffer(sg_vertex_buffer, _vertex_buffer, vertex_count, false, "vertex");
   upload_frame_buffer(sg_index_buffer, _index_buffer, index_count, true, "index");
   // The shadow receivers skip the terrain's static shadow cells, read from its map.
