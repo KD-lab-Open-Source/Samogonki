@@ -126,8 +126,9 @@ int main(int argc, char const *argv[]) {
 #ifdef _WIN32
   // SDL 2 left the game DPI-unaware, so Windows scales its window on a HiDPI display.
   // SDL 3 is DPI-aware by default, which would make the window smaller there and change
-  // the mouse mapping; keep the SDL 2 behaviour until that is done deliberately.
-  SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "unaware");
+  // the mouse mapping; keep the SDL 2 behaviour until that is done deliberately. SDL 3
+  // still reads this hint, but no longer names it in its headers.
+  SDL_SetHint("SDL_WINDOWS_DPI_AWARENESS", "unaware");
 #endif
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init(): %s\n", SDL_GetError());

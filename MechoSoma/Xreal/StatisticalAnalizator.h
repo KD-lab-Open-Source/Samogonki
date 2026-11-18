@@ -4,7 +4,9 @@
 #include "math.h"
 #include "_xtool.h"
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #undef min
 #undef max
 

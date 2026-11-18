@@ -101,8 +101,10 @@ endif (LINUX)
 
 if (MSVC)
     # char is already signed with MSVC. The POSIX names (stricmp, strdup) and the classic
-    # CRT functions stay without deprecation warnings, and math.h defines M_PI.
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS _USE_MATH_DEFINES)
+    # CRT functions stay without deprecation warnings, math.h defines M_PI, and windows.h
+    # (which miniaudio includes) defines no min/max macros to break std::min and the game's
+    # own min/max.
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS _USE_MATH_DEFINES NOMINMAX)
     # The sources are UTF-8, and their strings stay UTF-8 in the program, as with GCC and
     # Clang. Without this MSVC reads them in the system's code page. (Text drawn with the
     # game's CP1251 fonts is written as \x escapes.)
