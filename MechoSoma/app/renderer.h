@@ -254,16 +254,18 @@ private:
     bool blend;
     sg_blend_factor source;
     sg_blend_factor destination;
+    bool mirrored;  // a reflection (M3D_MESH_DRAW::mirrored): the front faces wind clockwise
 
     bool operator==(const ScenePipelineKey &other) const
     {
       return geometry == other.geometry && depth_test == other.depth_test && depth_write == other.depth_write &&
-             blend == other.blend && source == other.source && destination == other.destination;
+             blend == other.blend && source == other.source && destination == other.destination &&
+             mirrored == other.mirrored;
     }
   };
 
   // The pipeline for a command, created the first time it is needed.
-  sg_pipeline scene_pipeline(const RenderState &state, Geometry geometry);
+  sg_pipeline scene_pipeline(const RenderState &state, Geometry geometry, bool mirrored = false);
 
   // Only a handful of entries, so a list is enough.
   std::vector<std::pair<ScenePipelineKey, sg_pipeline>> _scene_pipelines;
@@ -281,6 +283,7 @@ private:
     uint64_t draws = 0;
     uint64_t mesh_draws = 0;
     uint64_t animated_mesh_draws = 0;
+    uint64_t mirrored_mesh_draws = 0;
     uint64_t tile_draws = 0;
     uint64_t pose_vertices = 0;
     uint64_t shadow_maps = 0;
