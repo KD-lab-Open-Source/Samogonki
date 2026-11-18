@@ -44,6 +44,26 @@ cmake -B build -A x64
 cmake --build build --config RelWithDebInfo
 ```
 
+### SDL GPU shaders
+The SDL GPU renderer (Metal on macOS, Direct3D 12 on Windows, Vulkan on Linux)
+has its shaders in HLSL, in `MechoSoma/app/sdl_gpu/shaders`. The build compiles
+them to the platform's format and embeds them in the game:
+
+* **Windows:** with `dxc.exe` from the Windows SDK, which comes with Visual
+  Studio's C++ workload. Another one can be given with `-DDXC_EXECUTABLE=...`.
+* **Linux and macOS:** with [SDL_shadercross](https://github.com/libsdl-org/SDL_shadercross),
+  which CMake downloads and builds. On Linux it downloads Microsoft's prebuilt
+  DXC (needs glibc 2.38 or newer). On macOS there is no prebuilt DXC, so it is
+  built from source, which takes a while once. Keep the built
+  `shadercross` (with the `libdxcompiler.dylib` next to it) and pass it to later
+  builds:
+  ```
+  cmake -B build -DSHADERCROSS_EXECUTABLE=/path/to/shadercross
+  ```
+
+`-DGPU_RENDERER=OFF` builds the game without the SDL GPU renderer and needs no
+shader compiler.
+
 ## How to run
 
 Copy *moonshine-runners* binary into original folder of the game and run it.
