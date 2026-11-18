@@ -3762,14 +3762,14 @@ void mchInitWorldsPrm(void)
 
 void mchRacer::SetTractionPrm(int fl,float v)
 {
-	set_traction_by_distance = fl;	// \E7\E0\E2\E8\F1\E8\EC\EE\F1\F2\FC \EE\F2 \F0\E0\F1\F1\F2\EE\FF\ED\E8\FF \EC\E5\E6\E4\F3 \F1\E5\EC\E5\ED\E0\EC\E8
-	traction_modulation = v;	// 0..2 - \EC\EE\E4\F3\EB\FF\F6\E8\FF \F2\FF\E3\E8
+	set_traction_by_distance = fl;	// зависимость от расстояния между семенами
+	traction_modulation = v;	// 0..2 - модуляция тяги
 }
 
 void mchRacer::GetTractionPrm(int& fl,float& v)
 {
-	fl = set_traction_by_distance;	// \E7\E0\E2\E8\F1\E8\EC\EE\F1\F2\FC \EE\F2 \F0\E0\F1\F1\F2\EE\FF\ED\E8\FF \EC\E5\E6\E4\F3 \F1\E5\EC\E5\ED\E0\EC\E8
-	v = traction_modulation;	// 0..2 - \EC\EE\E4\F3\EB\FF\F6\E8\FF \F2\FF\E3\E8
+	fl = set_traction_by_distance;	// зависимость от расстояния между семенами
+	v = traction_modulation;	// 0..2 - модуляция тяги
 }
 
 void mchRacerStats::ReplacePart(int pt)
