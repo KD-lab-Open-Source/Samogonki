@@ -45,7 +45,7 @@ void mchA_d3dMemPutSpr(int x,int y,int sx,int sy,char* p,int bsx,char* buf);
 void mchA_d3dSprPutpixel(int x,int y,int idx,unsigned r,unsigned g,unsigned b);
 void mchA_d3dSaveSprite(int idx);
 
-char* getIniKey(const char* fname,const char* section,const char* key);
+const char* getIniKey(const char* fname,const char* section,const char* key);
 int acsOpenResource(const char* fname,XStream& fh,int res_flag = -1);
 
 int mchA_GetEssenceID(void);

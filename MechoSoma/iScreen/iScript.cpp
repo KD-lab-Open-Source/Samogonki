@@ -15,8 +15,8 @@
 /* ----------------------------- EXTERN SECTION ----------------------------- */
 
 extern int acsNumFonts;
-extern char* acsFontDir;
-extern char* acsFontPrefix;
+extern const char* acsFontDir;
+extern const char* acsFontPrefix;
 
 /* --------------------------- PROTOTYPE SECTION ---------------------------- */
 
@@ -60,12 +60,18 @@ void acsLoadScript(const char* fname)
 				acsScrD -> AddResource(acsCreateResource(p));
 				break;
 			case ASCR_FONTS_DIR:
-				acsFontDir = new char[strlen(p -> c_dataPtr) + 1];
-				strcpy(acsFontDir,p -> c_dataPtr);
+				{
+					char* dir = new char[strlen(p -> c_dataPtr) + 1];
+					strcpy(dir,p -> c_dataPtr);
+					acsFontDir = dir;
+				}
 				break;
 			case ASCR_FONTS_PREFIX:
-				acsFontPrefix = new char[strlen(p -> c_dataPtr) + 1];
-				strcpy(acsFontPrefix,p -> c_dataPtr);
+				{
+					char* prefix = new char[strlen(p -> c_dataPtr) + 1];
+					strcpy(prefix,p -> c_dataPtr);
+					acsFontPrefix = prefix;
+				}
 				break;
 			case ASCR_FONTS_NUM:
 				acsNumFonts = *p -> i_dataPtr;

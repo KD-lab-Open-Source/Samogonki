@@ -109,6 +109,10 @@ if (MSVC)
     # Clang. Without this MSVC reads them in the system's code page. (Text drawn with the
     # game's CP1251 fonts is written as \x escapes.)
     add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/utf-8> $<$<COMPILE_LANGUAGE:C,CXX>:/bigobj>)
+    # Standard C++ rules, as GCC and Clang apply them. Permissive MSVC also finds friend
+    # functions declared only inside a class, so overloads can resolve differently: it
+    # picked xmath's Vect3d stream operator, never compiled anywhere, in pt.cpp.
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/permissive-> $<$<COMPILE_LANGUAGE:CXX>:/Zc:hiddenFriend>)
     if (CMAKE_GENERATOR MATCHES "Visual Studio")
         # Compile a project's files in parallel; Ninja does that by itself.
         add_compile_options($<$<COMPILE_LANGUAGE:C,CXX>:/MP>)

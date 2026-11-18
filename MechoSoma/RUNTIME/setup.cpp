@@ -110,7 +110,7 @@ void mchInitCamera(void);
 
 void xINI_Init(void);
 int xINI_PutKey(const char* fname,const char* section,const char* key,const char* val);
-char* xINI_GetKey(const char* fname,const char* section,const char* key);
+const char* xINI_GetKey(const char* fname,const char* section,const char* key);
 
 const char* getIniKey(const char* fname,const char* section,const char* key);
 void putIniKey(const char* fname,const char* section,const char* key,const char* val);
@@ -197,7 +197,7 @@ char mch_playerNames[15][HS_NAME_LEN + 2];
 
 const char* getIniKey(const char* fname,const char* section,const char* key)
 {
-	char* p = NULL;
+	const char* p = NULL;
 
 	static char buf[256];
 
