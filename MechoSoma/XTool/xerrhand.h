@@ -78,10 +78,6 @@ int DiagAssert(unsigned long dwOverrideOpts, const char* szMsg, const char* szFi
         case 1:                                                              \
           ignore = 1;                                                        \
           break;                                                             \
-        case 2:                                                              \
-          __asm { int 3 }                                                     \
-          ;                                                                  \
-          break;                                                             \
       }                                                                      \
   } while (0)
 

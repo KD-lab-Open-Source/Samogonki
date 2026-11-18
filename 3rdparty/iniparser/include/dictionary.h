@@ -21,7 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _MSC_VER
+/* MSVC has no unistd.h, so no ssize_t. */
+#include <stddef.h>
+typedef ptrdiff_t ssize_t;
+#else
 #include <unistd.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

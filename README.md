@@ -34,6 +34,16 @@ unpacked SDL 3.4.20 source tree:
 cmake -B build -DFETCHCONTENT_SOURCE_DIR_SDL3=/path/to/SDL3-3.4.20
 ```
 
+### Windows
+The Windows build needs Visual C++ (Visual Studio 2022 or newer with the C++
+workload). CMake also downloads zlib there (`FETCHCONTENT_SOURCE_DIR_ZLIB`
+for an offline build), and the runtime is linked in, so the game needs no
+Visual C++ redistributable:
+```
+cmake -B build -A x64
+cmake --build build --config RelWithDebInfo
+```
+
 ## How to run
 
 Copy *moonshine-runners* binary into original folder of the game and run it.
@@ -61,18 +71,11 @@ https://github.com/KD-lab-Open-Source/Samogonki/issues
 ### Symbolized stack traces (PDB)
 
 The stack trace contains function names and `file(line)` only when a matching
-PDB is available next to the executable. MinGW builds carry DWARF debug info,
-which is converted to a PDB with cv2pdb:
-
-```
-.\scripts\make-pdb.ps1 -Exe build-mingw\MechoSoma\moonshine-runners.exe
-```
-
-The script uses `cv2pdb64.exe` from `PATH`/`.tools` or downloads the pinned
-release. Build with `-DCMAKE_BUILD_TYPE=RelWithDebInfo` (the Windows CI does
-this) and keep `moonshine-runners.pdb` next to `moonshine-runners.exe` when
-shipping the build with symbols. PDB files are optional: without them the
-report still lists modules and offsets.
+PDB is available next to the executable. The linker writes it for a
+`RelWithDebInfo` build (the Windows CI builds that), as
+`build/MechoSoma/RelWithDebInfo/moonshine-runners.pdb`; keep it next to
+`moonshine-runners.exe` when shipping the build with symbols. PDB files are
+optional: without them the report still lists modules and offsets.
 
 ### Crash report self-test
 
