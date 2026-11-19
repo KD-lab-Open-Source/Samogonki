@@ -125,7 +125,7 @@ class Renderer final {
   // The scene pass starts from the clear colour after clear() and flip(), and from what
   // the offscreen buffer holds otherwise (a second scene in a frame).
   bool _clear = true;
-  float _clear_color[4]{};
+  float _clear_color[4]{0.0f, 0.0f, 0.0f, 1.0f};  // opaque, as clear() makes it
   RenderState _render_state;
 
   // The game's 2D back buffer: RGB 565, the game's resolution. Uploaded when the frame
