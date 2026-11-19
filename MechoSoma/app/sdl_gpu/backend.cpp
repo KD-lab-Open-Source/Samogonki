@@ -77,7 +77,18 @@ SDL_GPUTexture* make_texture(SDL_GPUDevice* device, SDL_GPUTextureFormat format,
   info.layer_count_or_depth = 1;
   info.num_levels = static_cast<Uint32>(levels);
   info.sample_count = SDL_GPU_SAMPLECOUNT_1;
+  // Direct3D 12 clears a target fastest to the value it was made for, and its debug layer
+  // warns at every other clear. The game only ever clears to opaque black (Fill(0,0,0),
+  // Clear(0)), and the depth maps to 1; SDL's default is 0 for all. Other APIs ignore it.
+  info.props = SDL_CreateProperties();
+  if (usage & SDL_GPU_TEXTUREUSAGE_COLOR_TARGET) {
+    SDL_SetFloatProperty(info.props, SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_A_FLOAT, 1.0f);
+  }
+  if (usage & SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET) {
+    SDL_SetFloatProperty(info.props, SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_DEPTH_FLOAT, 1.0f);
+  }
   SDL_GPUTexture* texture = SDL_CreateGPUTexture(device, &info);
+  SDL_DestroyProperties(info.props);
   if (texture == nullptr) {
     abort_with("SDL_CreateGPUTexture");
   }
