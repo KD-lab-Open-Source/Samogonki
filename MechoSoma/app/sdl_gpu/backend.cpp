@@ -139,19 +139,17 @@ void release(SDL_GPUDevice* device, T*& resource, void (*function)(SDL_GPUDevice
 
 }  // namespace
 
-std::unique_ptr<Backend> Backend::create(int width, int height, Features wanted) {
+std::unique_ptr<Backend> Backend::create(int width, int height, Features wanted, bool debug) {
   std::unique_ptr<Backend> backend(new Backend());
-  if (!backend->init(width, height, wanted)) {
+  if (!backend->init(width, height, wanted, debug)) {
     return nullptr;
   }
   return backend;
 }
 
-bool Backend::init(int width, int height, Features wanted) {
-#ifdef NDEBUG
-  constexpr bool debug = false;
-#else
-  constexpr bool debug = true;  // SDL's checks, and the API's validation where it has it
+bool Backend::init(int width, int height, Features wanted, bool debug) {
+#ifndef NDEBUG
+  debug = true;
 #endif
   // Only the one format the shaders were compiled to, so SDL picks a backend there is
   // code for.
@@ -160,11 +158,33 @@ bool Backend::init(int width, int height, Features wanted) {
     SDL_Log("Renderer: no SDL GPU device (%s)", SDL_GetError());
     return false;
   }
+  {
+    // Which GPU and driver, for bug reports: a laptop may have two GPUs.
+    const SDL_PropertiesID properties = SDL_GetGPUDeviceProperties(_device);
+    const char* device = SDL_GetStringProperty(properties, SDL_PROP_GPU_DEVICE_NAME_STRING, "an unnamed GPU");
+    // Direct3D 12 and Vulkan name the driver and its version; Metal names neither.
+    std::string driver = SDL_GetStringProperty(properties, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING, "");
+    const char* version = SDL_GetStringProperty(properties, SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING, nullptr);
+    if (version == nullptr || *version == '\0') {
+      version = SDL_GetStringProperty(properties, SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING, "");
+    }
+    if (*version != '\0') {
+      driver += driver.empty() ? version : std::string(" ") + version;
+    }
+    SDL_Log("Renderer: SDL GPU %s on %s%s%s%s", SDL_GetGPUDeviceDriver(_device), device,
+            driver.empty() ? "" : ", driver ", driver.c_str(), debug ? ", debug mode" : "");
+  }
 
   _window = std::make_unique<Window>(width, height, 0);
   if (!SDL_ClaimWindowForGPUDevice(_device, _window->sdl())) {
     SDL_Log("Renderer: SDL_ClaimWindowForGPUDevice(): %s", SDL_GetError());
     return false;
+  }
+  // Vsync, as the GL context's swap interval 1: the game's timing expects a frame per
+  // refresh. It is SDL's default, set here so that it stays so; every backend has it.
+  if (!SDL_SetGPUSwapchainParameters(_device, _window->sdl(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
+                                     SDL_GPU_PRESENTMODE_VSYNC)) {
+    SDL_Log("Renderer: SDL_SetGPUSwapchainParameters(): %s", SDL_GetError());
   }
   _swapchain_format = SDL_GetGPUSwapchainTextureFormat(_device, _window->sdl());
   _depth_format = pick_depth_format(_device);
@@ -368,8 +388,10 @@ void Backend::make_target_textures(int width, int height) {
   _color = make_texture(_device, color_format, SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER,
                         width, height, 1);
   _depth = make_texture(_device, _depth_format, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET, width, height, 1);
-  // The 2D back buffer: RGB 565 pixels, read as integers and converted in back_buffer_fs.
-  _back_buffer = make_texture(_device, SDL_GPU_TEXTUREFORMAT_R16_UINT, SDL_GPU_TEXTUREUSAGE_SAMPLER, width,
+  // The 2D back buffer: RGB 565 pixels, converted in back_buffer_fs. SDL GPU cannot sample
+  // an integer texture (R16_UINT), so the pixels go into R8G8_UNORM as their two bytes,
+  // low then high, which the shader reads back exactly.
+  _back_buffer = make_texture(_device, SDL_GPU_TEXTUREFORMAT_R8G8_UNORM, SDL_GPU_TEXTUREUSAGE_SAMPLER, width,
                               height, 1);
   _back_buffer_transfer = make_transfer_buffer(_device, static_cast<size_t>(width) * height * sizeof(uint16_t));
 }
@@ -883,9 +905,9 @@ SDL_GPUGraphicsPipeline* Backend::scene_pipeline(const PipelineKey& key) {
                      : key.geometry == Geometry::mesh ? "mesh"
                      : key.geometry == Geometry::tile ? "tile"
                                                       : "animated mesh";
-  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d%s)", kind,
+  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %s/%s%s)", kind,
           static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
-          key.blend ? 1 : 0, static_cast<int>(key.source), static_cast<int>(key.destination),
+          key.blend ? 1 : 0, blend_factor_name(key.source), blend_factor_name(key.destination),
           key.mirrored ? ", mirrored" : "");
   return pipeline;
 }

@@ -695,9 +695,9 @@ sg_pipeline SokolBackend::scene_pipeline(const PipelineKey& key) {
                      : key.geometry == Geometry::mesh ? "mesh"
                      : key.geometry == Geometry::tile ? "tile"
                                                       : "animated mesh";
-  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %d/%d%s)", kind,
+  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %s/%s%s)", kind,
           static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
-          key.blend ? 1 : 0, static_cast<int>(source), static_cast<int>(destination),
+          key.blend ? 1 : 0, blend_factor_name(key.source), blend_factor_name(key.destination),
           key.mirrored ? ", mirrored" : "");
   return pipeline;
 }

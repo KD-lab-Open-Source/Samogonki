@@ -130,8 +130,11 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	// [m3d] SdlGpu=1: draw with SDL GPU (Metal, Direct3D 12 or Vulkan) instead of OpenGL,
 	// which stays the default and what the renderer falls back to.
 	const bool sdlGpu = atoi(getIniKey(mch_mainINI,"m3d","SdlGpu")) != 0;
+	// [m3d] SdlGpuDebug=1: SDL GPU's debug mode, with the Direct3D 12 debug layer or Vulkan's
+	// validation layers where they are installed. Slower; for finding rendering bugs.
+	const bool sdlGpuDebug = atoi(getIniKey(mch_mainINI,"m3d","SdlGpuDebug")) != 0;
 
-	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, sdlGpu,
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, sdlGpu, sdlGpuDebug,
 													 textureMipmaps, gpuMeshes, gpuShadows, gpuTerrain, renderStats);
 	_isActive = true;
 

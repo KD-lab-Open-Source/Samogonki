@@ -113,14 +113,14 @@ namespace {
 
 using namespace graphics;
 
-Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool textureMipmaps, bool gpuMeshes,
-                   bool gpuShadows, bool gpuTerrain, bool renderStats)
+Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool sdlGpuDebug, bool textureMipmaps,
+                   bool gpuMeshes, bool gpuShadows, bool gpuTerrain, bool renderStats)
     : _gpu_meshes(gpuMeshes), _gpu_terrain(gpuTerrain), _gpu_shadows(gpuMeshes && gpuShadows),
       _render_stats(renderStats), _stats_start(Clock::now()), _scene_begin(_stats_start) {
   const RenderBackend::Features wanted{_gpu_meshes, _gpu_terrain, _gpu_shadows};
 #ifdef GPU_RENDERER
   if (sdlGpu) {
-    _backend = sdl_gpu::Backend::create(width, height, wanted);
+    _backend = sdl_gpu::Backend::create(width, height, wanted, sdlGpuDebug);
     if (_backend == nullptr) {
       SDL_Log("Renderer: SDL GPU is not available here, drawing with OpenGL");
     }
