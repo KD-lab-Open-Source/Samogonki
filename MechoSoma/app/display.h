@@ -1,13 +1,16 @@
 #pragma once
 
+#include <memory>
+
 #include <SDL3/SDL.h>
 #include <sokol_gfx.h>
 
+#include "window.h"
+
 namespace graphics {
 
-// The window the game draws into and the 3D API context that goes with it, an OpenGL
-// context for now. Everything that depends on the window system or on the API sokol
-// runs on lives here, so the renderer only talks to sokol.
+// The window and the OpenGL context sokol draws with. Everything sokol needs to know about
+// the window system lives here, so the sokol backend only talks to sokol.
 class Display final {
  public:
   // A window of the game's screen size; setVideoMode() then picks windowed or full screen.
@@ -19,18 +22,7 @@ class Display final {
   Display& operator=(const Display&) = delete;
   Display& operator=(Display&&) = delete;
 
-  // How the game's screen maps onto the window; the mouse code scales by it.
-  struct Scale {
-    float x;
-    float y;
-  };
-
-  // Sizes the window to the game's screen, or makes it cover the desktop.
-  Scale setVideoMode(int width, int height, bool isFullScreen);
-
-  // The window's size in pixels: on a HiDPI screen, larger than its size in points.
-  int drawableWidth() const;
-  int drawableHeight() const;
+  Window& window() { return *_window; }
 
   // What sg_setup needs to know about the context.
   sg_environment environment() const;
@@ -42,7 +34,7 @@ class Display final {
   void present();
 
  private:
-  SDL_Window* _window = nullptr;
+  std::unique_ptr<Window> _window;
   SDL_GLContext _context = nullptr;
 };
 

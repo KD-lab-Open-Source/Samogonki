@@ -9,9 +9,8 @@
 #include <vector>
 #include <unordered_map>
 
-#include <sokol_gfx.h>
-
 #include "IGraph3d.h"
+#include "render_backend.h"
 
 namespace graphics
 {
@@ -23,14 +22,16 @@ class TextureManager final
 
  public:
   // mipmaps: give each texture a full mip chain (for trilinear filtering).
-  explicit TextureManager(bool mipmaps);
+  TextureManager(RenderBackend& backend, bool mipmaps);
 
   TextureManager(const TextureManager&) = delete;
   TextureManager(TextureManager&&) = delete;
   TextureManager& operator=(const TextureManager&) = delete;
   TextureManager& operator=(TextureManager&&) = delete;
 
-  sg_view* get(uint32_t dwHandle);
+  // The texture to draw with, uploaded first if the game changed it; 0 if it has no
+  // pixels yet. Call it outside a pass.
+  GpuTexture get(uint32_t dwHandle);
   void delete_textures();
 
   MD3DERROR getTextureFormatData(uint32_t dwTexFormatID, M3DTEXTUREFORMAT* pData);
@@ -57,8 +58,7 @@ class TextureManager final
     // Created at the first upload, immutable: most textures are uploaded once, and
     // sokol keeps one GPU copy of an immutable image but two of a dynamic one. A
     // texture uploaded again is one the game draws into, and becomes dynamic.
-    sg_image texture{SG_INVALID_ID};
-    sg_view view{SG_INVALID_ID};
+    GpuTexture texture = 0;
     std::vector<char> lock_buffer;
     uint32_t pitch;
     bool is_locked = false;
@@ -74,6 +74,7 @@ class TextureManager final
   using TextureEntryPtr = std::unique_ptr<TextureEntry>;
   std::unordered_map<uint32_t, TextureEntryPtr> _textures;
   uint32_t _lastTextureKey = 0;
+  RenderBackend& _backend;
   const bool _mipmaps;
 
   // The converted RGBA8 image: level 0, then each mip level, back to back.

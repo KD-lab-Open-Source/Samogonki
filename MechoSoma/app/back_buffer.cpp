@@ -1,7 +1,5 @@
 #include "back_buffer.h"
 
-#include <cassert>
-
 #ifdef EMSCRIPTEN
 #include "sokol-shader-em.h"
 #else
@@ -12,8 +10,7 @@
 
 using namespace graphics;
 
-BackBuffer::BackBuffer(int width, int height) : _buffer(width * height), _pitch(width * sizeof(uint16_t)),
-                                                _width(width), _height(height) {
+BackBuffer::BackBuffer(int width, int height) : _width(width), _height(height) {
   _quadShader = sg_make_shader(back_buffer_shader_desc(sg_query_backend()));
   if (_quadShader.id == SG_INVALID_ID) {
     ErrH.Abort("sg_make_shader", XERR_USER, 0, "");
@@ -87,26 +84,14 @@ BackBuffer::~BackBuffer() {
   sg_destroy_shader(_quadShader);
 }
 
-BackBuffer::Address BackBuffer::lock() {
-  assert(!_isLocked);
-
-  _isLocked = true;
-  return {_buffer.data(), _pitch};
-}
-
-void BackBuffer::unlock() {
-  assert(_isLocked);
-
-  _isLocked = false;
-  sg_image_data data;
-  data.mip_levels[0].ptr = _buffer.data();
-  data.mip_levels[0].size = _buffer.size() * sizeof(uint16_t);
+void BackBuffer::upload(const uint16_t* pixels) {
+  sg_image_data data{};
+  data.mip_levels[0].ptr = pixels;
+  data.mip_levels[0].size = static_cast<size_t>(_width) * _height * sizeof(uint16_t);
   sg_update_image(_texture, data);
 }
 
 void BackBuffer::flush() {
-  assert(!_isLocked);
-
   sg_bindings bindings = {};
   bindings.views[VIEW_texture_1] = _textureView;
   bindings.samplers[SMP_sampler_1] = _sampler;

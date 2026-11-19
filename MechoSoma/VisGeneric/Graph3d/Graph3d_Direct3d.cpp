@@ -127,8 +127,12 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	// [m3d] RenderStats=1: a log line every 5 seconds with where the frame time goes.
 	const bool renderStats = atoi(getIniKey(mch_mainINI,"m3d","RenderStats")) != 0;
 
-	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, textureMipmaps,
-													 gpuMeshes, gpuShadows, gpuTerrain, renderStats);
+	// [m3d] SdlGpu=1: draw with SDL GPU (Metal, Direct3D 12 or Vulkan) instead of OpenGL,
+	// which stays the default and what the renderer falls back to.
+	const bool sdlGpu = atoi(getIniKey(mch_mainINI,"m3d","SdlGpu")) != 0;
+
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, sdlGpu,
+													 textureMipmaps, gpuMeshes, gpuShadows, gpuTerrain, renderStats);
 	_isActive = true;
 
 	_lpSpriteSlots = (TSpriteSlot*)malloc( sizeof(TSpriteSlot)*SLOTS_INITIAL_SIZE );

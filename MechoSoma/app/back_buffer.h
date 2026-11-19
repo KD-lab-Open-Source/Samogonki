@@ -1,22 +1,21 @@
 #pragma once
 
-#include <vector>
+#include <cstdint>
 
 #include <sokol_gfx.h>
 
 namespace graphics {
 
+// The game's 2D back buffer on the GPU (sokol): RGB 565 pixels, drawn over the whole
+// offscreen buffer. Renderer keeps the pixels the game writes.
 class BackBuffer final {
  public:
   BackBuffer(int width, int height);
   ~BackBuffer();
 
-  struct Address {
-    uint16_t *address = nullptr;
-    uint32_t pitch = 0;
-  };
-  Address lock();
-  void unlock();
+  // A whole frame of pixels, width x height.
+  void upload(const uint16_t* pixels);
+  // Draws it, inside the scene pass.
   void flush();
 
  private:
@@ -28,9 +27,6 @@ class BackBuffer final {
   sg_image _texture;
   sg_view _textureView;
   sg_sampler _sampler;
-  std::vector<uint16_t> _buffer;
-  uint32_t _pitch;
-  bool _isLocked = false;
 };
 
 }
