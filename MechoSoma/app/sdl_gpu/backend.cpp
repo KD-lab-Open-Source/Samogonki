@@ -151,6 +151,12 @@ bool Backend::init(int width, int height, Features wanted, bool debug) {
 #ifndef NDEBUG
   debug = true;
 #endif
+  if (debug) {
+    // SDL logs its GPU category's errors only, by default. Below that are whether the
+    // API's validation layers loaded ("Validation layers enabled", "... not found") and
+    // the Direct3D 12 debug layer's warnings.
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_GPU, SDL_LOG_PRIORITY_INFO);
+  }
   // Only the one format the shaders were compiled to, so SDL picks a backend there is
   // code for.
   _device = SDL_CreateGPUDevice(shader_format, debug, nullptr);
