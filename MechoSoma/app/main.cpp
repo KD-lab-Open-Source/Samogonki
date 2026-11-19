@@ -3,6 +3,7 @@
 #endif
 // Without SDL_main.h, SDL 3 leaves main() to the game.
 #include <SDL3/SDL.h>
+#include <cstdio>
 #include "filesystem.h"
 
 #ifdef EMSCRIPTEN
@@ -33,6 +34,39 @@ namespace {
     };
 
     LoopState state;
+
+#if !defined(EMSCRIPTEN) && !defined(GPX)
+    // The log also goes to moonshine-runners.log in the working directory (the game's
+    // data), started afresh each run: on Windows the game has no console of its own
+    // (SDL writes to the parent's, past any redirection), and a Steam player has no
+    // terminal on any platform.
+    FILE *logFile = nullptr;
+    SDL_LogOutputFunction defaultLogOutput = nullptr;
+    void *defaultLogUserdata = nullptr;
+
+    void SDLCALL logOutput(void *userdata, int category, SDL_LogPriority priority, const char *message) {
+        if (defaultLogOutput != nullptr) {
+            defaultLogOutput(defaultLogUserdata, category, priority, message);
+        }
+        if (logFile != nullptr) {
+            if (priority >= SDL_LOG_PRIORITY_WARN) {
+                std::fputs(priority >= SDL_LOG_PRIORITY_ERROR ? "ERROR: " : "WARNING: ", logFile);
+            }
+            std::fputs(message, logFile);
+            std::fputc('\n', logFile);
+            std::fflush(logFile);  // what was logged survives a crash
+        }
+    }
+
+    void startLogFile() {
+        logFile = std::fopen("moonshine-runners.log", "w");
+        if (logFile == nullptr) {
+            return;
+        }
+        SDL_GetLogOutputFunction(&defaultLogOutput, &defaultLogUserdata);
+        SDL_SetLogOutputFunction(logOutput, nullptr);
+    }
+#endif
 
     void loop() {
         if (state.xObjInit) {
@@ -87,6 +121,9 @@ int game_main(int argc, char const *argv[]) {
   localization::setLanguage(gpx()->sys()->getLanguage().c_str());
 #else
 int main(int argc, char const *argv[]) {
+#ifndef EMSCRIPTEN
+  startLogFile();
+#endif
   set_signal_handler();
   run_crash_test_from_env();
 

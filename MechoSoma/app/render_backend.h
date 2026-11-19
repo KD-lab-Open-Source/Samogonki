@@ -68,6 +68,21 @@ enum class Geometry {
 
 enum class BlendFactor { zero, one, source_alpha, one_minus_source_alpha };
 
+// For the logs, the same in every backend.
+inline const char* blend_factor_name(BlendFactor factor) {
+  switch (factor) {
+    case BlendFactor::zero:
+      return "zero";
+    case BlendFactor::one:
+      return "one";
+    case BlendFactor::source_alpha:
+      return "src_alpha";
+    case BlendFactor::one_minus_source_alpha:
+      return "1-src_alpha";
+  }
+  return "?";
+}
+
 // The state a scene pipeline is made from. Everything else (culling) is the same for all.
 struct PipelineKey {
   Geometry geometry;

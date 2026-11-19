@@ -30,8 +30,10 @@ namespace graphics::sdl_gpu {
 class Backend final : public RenderBackend {
  public:
   // Null if SDL GPU has no device for the shaders' format here, or it cannot be set up;
-  // the renderer then draws with OpenGL.
-  static std::unique_ptr<Backend> create(int width, int height, Features wanted);
+  // the renderer then draws with OpenGL. debug: SDL's debug mode, with the API's own
+  // checks where they are installed (the Direct3D 12 debug layer, Vulkan's validation
+  // layers); always on in a debug build.
+  static std::unique_ptr<Backend> create(int width, int height, Features wanted, bool debug);
   ~Backend() override;
 
   Backend(const Backend&) = delete;
@@ -63,7 +65,7 @@ class Backend final : public RenderBackend {
 
  private:
   Backend() = default;
-  bool init(int width, int height, Features wanted);
+  bool init(int width, int height, Features wanted, bool debug);
 
   SDL_GPUCommandBuffer* command_buffer();
   SDL_GPUCopyPass* copy_pass();
