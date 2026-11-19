@@ -473,11 +473,16 @@ set(GAME_SOURCES
     app/main.cpp
     app/offscreen_buffer.cpp
     app/offscreen_buffer.h
+    app/render_backend.h
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
+    app/sokol_backend.cpp
+    app/sokol_backend.h
     app/sokol_gfx.cpp
     app/texture_manager.cpp
+    app/window.cpp
+    app/window.h
     # widescreen fix
     RUNTIME/aspect_ratio.cpp
     RUNTIME/aspect_ratio.h)
@@ -527,10 +532,14 @@ if (GPU_RENDERER)
         VERBATIM)
 
     list(APPEND GAME_SOURCES
+        app/sdl_gpu/backend.cpp
+        app/sdl_gpu/backend.h
         app/sdl_gpu/shaders.cpp
         app/sdl_gpu/shaders.h
         "${GPU_SHADER_HEADER}")
     include_directories("${GPU_SHADER_GENERATED_DIR}")
+    # The renderer offers SDL GPU ([m3d] SdlGpu in game.ini) only in a build that has it.
+    add_definitions(-DGPU_RENDERER)
 endif ()
 
 include_directories(app)

@@ -133,7 +133,8 @@ int main(int argc, char const *argv[]) {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init(): %s\n", SDL_GetError());
   }
-  // The window and its GL context are set up by graphics::Display.
+  // The window is set up by the renderer's backend (graphics::Window, with an OpenGL
+  // context or an SDL GPU device).
 
 #ifdef EMSCRIPTEN
   SDL_SetHint("SDL_EMSCRIPTEN_ASYNCIFY", "0");

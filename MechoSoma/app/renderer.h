@@ -11,30 +11,31 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
-#include <sokol_gfx.h>
-
 #include "IGraph3d.h"
+#include "render_backend.h"
 #include "render_state.h"
 
 namespace graphics {
 
-class BackBuffer;
-class Display;
-class OffscreenBuffer;
 class TextureManager;
 
+// The game's Direct3D-era drawing interface (Graph3d), on top of a RenderBackend. Renderer
+// records the frame's draw commands, keeps the meshes' and the terrain's bookkeeping, fits
+// the shadow maps and counts the stats; the backend only turns resolved draws into API
+// calls.
 class Renderer final {
  public:
+  // sdlGpu: draw with SDL GPU (Metal, Direct3D 12 or Vulkan) where the build has it and
+  // the machine can; otherwise, and off, with OpenGL.
   // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
   // gpuMeshes: keep meshes on the GPU (createMesh); off, createMesh always refuses.
   // gpuShadows: dynamic shadows from shadow maps (setShadowCamera); needs gpuMeshes.
   // gpuTerrain: keep terrain tiles on the GPU (createTiles); off, createTiles always refuses.
   // renderStats: log where the frame time goes, every 5 seconds.
-  Renderer(int width, int height, bool isFullScreen, bool textureMipmaps, bool gpuMeshes, bool gpuShadows,
-           bool gpuTerrain, bool renderStats);
+  Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool textureMipmaps, bool gpuMeshes,
+           bool gpuShadows, bool gpuTerrain, bool renderStats);
   ~Renderer();
 
   Renderer(const Renderer&) = delete;
@@ -83,44 +84,51 @@ class Renderer final {
   MD3DERROR flushBackBuffer(MD3DRECT* lprcRect);
 
  private:
+  struct DrawCommand;
+
   void prepare_render_state();
   void copy_projection(const RenderState &state, float *matrix) const;
-  void apply_viewport(const RenderState &state) const;
-  void bind_textures(const RenderState &state, sg_bindings &bindings);
+  Viewport viewport(const RenderState &state) const;
+  PipelineKey pipeline_key(const RenderState &state, Geometry geometry, bool mirrored = false) const;
+  // Uploads the command's textures if the game changed them: before any pass begins.
+  void resolve_textures(const RenderState &state);
+  // The draw's textures, sampler and fragment uniforms, from the command's render state.
+  void fill_material(const RenderState &state, SceneDraw &draw);
+  void fill_shadow(int camera, SceneDraw &draw) const;
+  void draw_frame_command(const DrawCommand &command);
+  void draw_mesh_command(const DrawCommand &command);
+  void draw_tile_command(const DrawCommand &command);
 
-private:
   // How many vertices and indices the per-frame arrays hold at start. A frame that needs
-  // more grows them (M3D_BUFFER_VIEW, drawMesh), and endScene() then recreates the GPU
-  // buffers at the new size. The largest frames seen: about 31k vertices in the menu world
-  // with the GPU paths on (its water reflections are built on the CPU), and 40k vertices
-  // and 51k indices with GpuMeshes=0.
+  // more grows them (M3D_BUFFER_VIEW, drawMesh), and the backend then grows its buffers.
   static constexpr size_t initial_vertex_count = 65536;
   static constexpr size_t initial_index_count = 65536;
+  static constexpr size_t max_meshes = RenderBackend::max_meshes;
+  static constexpr int max_shadow_cameras = RenderBackend::max_shadow_cameras;
+  static constexpr int shadow_map_size = RenderBackend::shadow_map_size;
 
-  // The window and its context. Declared first, so it is destroyed last.
-  std::unique_ptr<Display> _display;
+  // The backend owns the window. Declared first, so it is destroyed last.
+  std::unique_ptr<RenderBackend> _backend;
+  std::unique_ptr<TextureManager> _texture_manager;
+
+  int _width = 0;
+  int _height = 0;
   std::array<float, 16> _projectionMatrix;
-
-  sg_shader _sceneShader;
-  sg_shader _meshShader{};
-  sg_shader _tileShader{};
-  sg_image _nullTexture;
-  sg_view _nullTextureView;
 
   std::vector<M3D_VERTEX> _vertex_buffer;
   std::vector<uint32_t> _index_buffer;
 
-  sg_buffer sg_vertex_buffer;
-  sg_buffer sg_index_buffer;
-  sg_sampler _clamp_sampler;
-  sg_sampler _repeat_sampler;
-
-  std::unique_ptr<OffscreenBuffer> _offscreenBuffer;
-  std::unique_ptr<BackBuffer> _backBuffer;
-  std::unique_ptr<TextureManager> _texture_manager;
-
-  sg_pass_action defaultPassAction = {};
+  // The scene pass starts from the clear colour after clear() and flip(), and from what
+  // the offscreen buffer holds otherwise (a second scene in a frame).
+  bool _clear = true;
+  float _clear_color[4]{};
   RenderState _render_state;
+
+  // The game's 2D back buffer: RGB 565, the game's resolution. Uploaded when the frame
+  // that flushes it is drawn, if the game changed it.
+  std::vector<uint16_t> _back_buffer;
+  bool _is_back_buffer_locked = false;
+  bool _is_back_buffer_changed = false;
 
   struct BufferView
   {
@@ -156,19 +164,15 @@ private:
   };
 
   std::vector<DrawCommand> _commands;
-  void draw_mesh_command(const DrawCommand &command);
-  void draw_tile_command(const DrawCommand &command);
   bool _is_back_buffer_flush = false;
   bool _is_in_scene = false;
 
-  // GPU meshes and terrain tile sets: two immutable buffers each, made by createMesh and
-  // createTiles. A deleted one is kept until the end of the frame, as a command recorded
-  // before the delete may still use it.
-  static constexpr size_t max_meshes = 4096;
+  // GPU meshes and terrain tile sets, made by createMesh and createTiles. A deleted one
+  // is kept until the end of the frame, as a command recorded before the delete may
+  // still use it.
   struct Mesh
   {
-    sg_buffer vertices;
-    sg_buffer indices;
+    GpuMesh gpu;
     int vertex_count;
     int index_count;
     size_t bytes;
@@ -179,7 +183,7 @@ private:
   bool _gpu_terrain;
   std::unordered_map<uint32_t, Mesh> _meshes;
   size_t _tile_set_count = 0;
-  uint32_t add_mesh(Mesh mesh, sg_range vertices, sg_range indices);
+  uint32_t add_mesh(Mesh mesh, const void *vertices, size_t vertexBytes, const void *indices, size_t indexBytes);
   std::vector<uint32_t> _deleted_meshes;
   uint32_t _last_mesh = 0;
   size_t _mesh_bytes = 0;
@@ -197,18 +201,11 @@ private:
   int _terrain_height = 0;
   std::vector<uint8_t> _terrain_heights_copy;
   std::vector<uint8_t> _terrain_attributes_copy;
-  sg_image _terrain_heights{};
-  sg_image _terrain_attributes{};
-  sg_view _terrain_heights_view{};
-  sg_view _terrain_attributes_view{};
-  sg_sampler _terrain_sampler{};
   void upload_terrain();
 
   // Dynamic shadows: a depth map per camera (split screen has two), fitted each frame to
   // the camera's casters in a light space anchored to the world, and drawn before the
   // scene. The terrain draws that take them sample it with a comparison sampler.
-  static constexpr int max_shadow_cameras = 4;
-  static constexpr int shadow_map_size = 2048;
   struct ShadowCamera
   {
     bool is_set = false;      // setShadowCamera this frame
@@ -218,61 +215,14 @@ private:
     float light_to_clip[12]{};   // 3x4 row-major: light space to the map's clip space
     float filter_step = 0;       // between filter taps, in map texture coordinates
     float depth_bias = 0;        // in map depth
-    sg_image map{};
-    sg_view attachment{};
-    sg_view texture{};
   };
   bool _gpu_shadows;
   std::array<ShadowCamera, max_shadow_cameras> _shadow_cameras;
-  sg_shader _shadowShader{};
-  sg_pipeline _shadow_pipelines[2]{};  // static and animated casters
-  sg_sampler _shadow_sampler{};
-  sg_image _null_shadow_map{};
-  sg_view _null_shadow_map_view{};
   void render_shadow_maps();
-  sg_pipeline shadow_pipeline(bool animated);
-  // The shadow bindings and uniforms every scene_fs draw needs; camera -1 for none.
-  void bind_shadow(int camera, sg_bindings &bindings);
-  void apply_shadow_uniforms(int camera);
-
-  // What a command draws, which decides the shader and the vertex layout.
-  enum class Geometry
-  {
-    frame,          // the frame vertex and index arrays (scene shader)
-    mesh,           // a GPU mesh (mesh shader)
-    animated_mesh,  // a GPU mesh, positions and texture coordinates from the frame array
-    tile,           // a GPU terrain tile (tile shader)
-  };
-
-  // The part of a command's render state that a scene pipeline depends on, and what it
-  // draws. Everything else (culling) is the same for all draws.
-  struct ScenePipelineKey
-  {
-    Geometry geometry;
-    bool depth_test;
-    bool depth_write;
-    bool blend;
-    sg_blend_factor source;
-    sg_blend_factor destination;
-    bool mirrored;  // a reflection (M3D_MESH_DRAW::mirrored): the front faces wind clockwise
-
-    bool operator==(const ScenePipelineKey &other) const
-    {
-      return geometry == other.geometry && depth_test == other.depth_test && depth_write == other.depth_write &&
-             blend == other.blend && source == other.source && destination == other.destination &&
-             mirrored == other.mirrored;
-    }
-  };
-
-  // The pipeline for a command, created the first time it is needed.
-  sg_pipeline scene_pipeline(const RenderState &state, Geometry geometry, bool mirrored = false);
-
-  // Only a handful of entries, so a list is enough.
-  std::vector<std::pair<ScenePipelineKey, sg_pipeline>> _scene_pipelines;
 
   // game.ini [m3d] RenderStats: sums over the frames since the last report. The scene is
   // the game building it (beginScene to endScene: its CPU work, CPU mesh lighting
-  // included), submit is endScene sending it to GL, present is flip.
+  // included), submit is endScene sending it to the backend, present is flip.
   using Clock = std::chrono::steady_clock;
   struct Stats
   {

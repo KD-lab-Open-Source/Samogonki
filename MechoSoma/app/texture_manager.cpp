@@ -206,39 +206,9 @@ namespace {
       }
     }
   }
-
-  sg_image make_image(uint32_t width, uint32_t height, int mipmap_count, const sg_image_data* data) {
-    sg_image_desc description = {};
-    description.width = width;
-    description.height = height;
-    description.num_slices = 1;
-    description.num_mipmaps = mipmap_count;
-    description.pixel_format = SG_PIXELFORMAT_RGBA8;
-    description.sample_count = 1;
-    if (data != nullptr) {
-      description.data = *data;  // immutable, filled at creation
-    } else {
-      description.usage.dynamic_update = true;
-    }
-    const auto image = sg_make_image(description);
-    if (sg_query_image_state(image) != SG_RESOURCESTATE_VALID) {
-      ErrH.Abort("sg_make_image", XERR_USER, 0, "");
-    }
-    return image;
-  }
-
-  sg_view make_view(sg_image image) {
-    sg_view_desc description{};
-    description.texture.image = image;
-    const auto view = sg_make_view(&description);
-    if (sg_query_view_state(view) != SG_RESOURCESTATE_VALID) {
-      ErrH.Abort("sg_make_view", XERR_USER, 0, "");
-    }
-    return view;
-  }
 }
 
-TextureManager::TextureManager(bool mipmaps) : _mipmaps(mipmaps) {
+TextureManager::TextureManager(RenderBackend& backend, bool mipmaps) : _backend(backend), _mipmaps(mipmaps) {
   for (auto& format : texture_formats) {
     format.dwRBitShift = GetMaskBitShift(format.dwRBitMask);
     format.dwGBitShift = GetMaskBitShift(format.dwGBitMask);
@@ -469,7 +439,8 @@ void TextureManager::update_texture(TextureEntry& entry) {
   }
 
   // Level 0 is converted above; each further level halves the one before it.
-  sg_image_data imageData{};
+  TextureLevels data{};
+  data.count = levels;
   size_t offset = 0;
   for (int level = 0; level < levels; level++) {
     const uint32_t width = entry.width >> level;
@@ -479,32 +450,32 @@ void TextureManager::update_texture(TextureEntry& entry) {
     if (level > 0) {
       downsample(pixels - 4 * static_cast<size_t>(2 * width) * (2 * height), 2 * width, pixels);
     }
-    imageData.mip_levels[level] = {pixels, size};
+    data.pixels[level] = pixels;
+    data.sizes[level] = size;
     offset += size;
   }
 
-  if (entry.texture.id == SG_INVALID_ID) {
-    entry.texture = make_image(entry.width, entry.height, levels, &imageData);
-    entry.view = make_view(entry.texture);
+  const int width = static_cast<int>(entry.width);
+  const int height = static_cast<int>(entry.height);
+  if (entry.texture == 0) {
+    entry.texture = _backend.createTexture(width, height, levels, &data);
   } else if (!entry.is_dynamic) {
     // Uploaded a second time: the game draws into this texture (shadows into a light
     // map, a terrain tile rebuilt from the colour map), so it stays dynamic from now on.
-    sg_destroy_view(entry.view);
-    sg_destroy_image(entry.texture);
-    entry.texture = make_image(entry.width, entry.height, levels, nullptr);
-    entry.view = make_view(entry.texture);
+    _backend.destroyTexture(entry.texture);
+    entry.texture = _backend.createTexture(width, height, levels, nullptr);
     entry.is_dynamic = true;
-    sg_update_image(entry.texture, imageData);
+    _backend.updateTexture(entry.texture, data);
   } else {
-    sg_update_image(entry.texture, imageData);
+    _backend.updateTexture(entry.texture, data);
   }
 }
 
-sg_view* TextureManager::get(uint32_t dwHandle) {
+GpuTexture TextureManager::get(uint32_t dwHandle) {
   const auto entry = _textures.find(dwHandle);
   assert(entry != _textures.end());
   if (entry == _textures.end()) {
-    return nullptr;
+    return 0;
   }
 
   if (entry->second->is_need_update) {
@@ -512,20 +483,16 @@ sg_view* TextureManager::get(uint32_t dwHandle) {
     entry->second->is_need_update = false;
   }
 
-  // A texture that was never unlocked has no image yet; the renderer then binds its
-  // empty null texture.
-  if (entry->second->view.id == SG_INVALID_ID) {
-    return nullptr;
-  }
-  return &entry->second->view;
+  // A texture that was never unlocked has no image yet (0); the renderer then binds its
+  // empty texture.
+  return entry->second->texture;
 }
 
 void TextureManager::delete_textures() {
   for (auto i = _textures.begin(); i != _textures.end(); ) {
     if (i->second->is_deleted) {
-      if (i->second->view.id != SG_INVALID_ID) {
-        sg_destroy_view(i->second->view);
-        sg_destroy_image(i->second->texture);
+      if (i->second->texture != 0) {
+        _backend.destroyTexture(i->second->texture);
       }
       i = _textures.erase(i);
     } else {
