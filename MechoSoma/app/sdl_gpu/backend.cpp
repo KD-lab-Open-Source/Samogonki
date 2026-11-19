@@ -140,10 +140,12 @@ void release(SDL_GPUDevice* device, T*& resource, void (*function)(SDL_GPUDevice
 }  // namespace
 
 std::unique_ptr<Backend> Backend::create(int width, int height, Features wanted, bool debug) {
+  const Uint64 start = SDL_GetTicksNS();
   std::unique_ptr<Backend> backend(new Backend());
   if (!backend->init(width, height, wanted, debug)) {
     return nullptr;
   }
+  SDL_Log("Renderer: SDL GPU device, window and shaders set up in %.1f ms", (SDL_GetTicksNS() - start) / 1e6);
   return backend;
 }
 
@@ -259,7 +261,8 @@ bool Backend::init(int width, int height, Features wanted, bool debug) {
     info.target_info.num_color_targets = 1;
     _flush_pipeline = SDL_CreateGPUGraphicsPipeline(_device, &info);
     if (_flush_pipeline == nullptr) {
-      abort_with("SDL_CreateGPUGraphicsPipeline");
+      SDL_Log("Renderer: the window copy pipeline: %s", SDL_GetError());
+      return false;
     }
   }
   {
@@ -277,9 +280,26 @@ bool Backend::init(int width, int height, Features wanted, bool debug) {
     info.target_info.depth_stencil_format = _depth_format;
     _back_buffer_pipeline = SDL_CreateGPUGraphicsPipeline(_device, &info);
     if (_back_buffer_pipeline == nullptr) {
-      abort_with("SDL_CreateGPUGraphicsPipeline");
+      SDL_Log("Renderer: the back buffer pipeline: %s", SDL_GetError());
+      return false;
     }
   }
+  return true;
+}
+
+bool Backend::preparePipelines(const std::vector<PipelineKey>& keys) {
+  const Uint64 start = SDL_GetTicksNS();
+  for (const auto& key : keys) {
+    if (scene_pipeline(key) == nullptr) {
+      return false;
+    }
+  }
+  if (_features.shadows && (shadow_pipeline(false) == nullptr || shadow_pipeline(true) == nullptr)) {
+    return false;
+  }
+  _pipelines_prepared = true;
+  SDL_Log("Renderer: %u scene pipelines%s made in %.1f ms", static_cast<unsigned>(_scene_pipelines.size()),
+          _features.shadows ? " and 2 shadow pipelines" : "", (SDL_GetTicksNS() - start) / 1e6);
   return true;
 }
 
@@ -611,7 +631,11 @@ void Backend::drawShadow(const ShadowDraw& draw) {
     return;
   }
 
-  bind_pipeline(shadow_pipeline(draw.animated));
+  SDL_GPUGraphicsPipeline* pipeline = shadow_pipeline(draw.animated);
+  if (pipeline == nullptr) {
+    return;
+  }
+  bind_pipeline(pipeline);
   const SDL_GPUBufferBinding vertices =
       draw.animated ? SDL_GPUBufferBinding{_vertices.buffer, static_cast<Uint32>(draw.pose_offset * sizeof(M3D_VERTEX))}
                     : SDL_GPUBufferBinding{mesh->second.vertices, 0};
@@ -696,7 +720,11 @@ void Backend::draw(const SceneDraw& draw) {
     }
   }
 
-  bind_pipeline(scene_pipeline(draw.pipeline));
+  SDL_GPUGraphicsPipeline* pipeline = scene_pipeline(draw.pipeline);
+  if (pipeline == nullptr) {
+    return;
+  }
+  bind_pipeline(pipeline);
   const SDL_GPUViewport viewport{static_cast<float>(draw.viewport.x),     static_cast<float>(draw.viewport.y),
                                  static_cast<float>(draw.viewport.width), static_cast<float>(draw.viewport.height),
                                  0.0f,                                    1.0f};
@@ -775,7 +803,7 @@ void Backend::present() {
 
 SDL_GPUGraphicsPipeline* Backend::shadow_pipeline(bool animated) {
   SDL_GPUGraphicsPipeline*& pipeline = _shadow_pipelines[animated ? 1 : 0];
-  if (pipeline != nullptr) {
+  if (pipeline != nullptr || _shadow_pipeline_failed[animated ? 1 : 0]) {
     return pipeline;
   }
 
@@ -809,9 +837,12 @@ SDL_GPUGraphicsPipeline* Backend::shadow_pipeline(bool animated) {
 
   pipeline = SDL_CreateGPUGraphicsPipeline(_device, &info);
   if (pipeline == nullptr) {
-    abort_with("SDL_CreateGPUGraphicsPipeline");
+    _shadow_pipeline_failed[animated ? 1 : 0] = true;
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Renderer: %s shadow pipeline: %s", animated ? "animated" : "static",
+                 SDL_GetError());
+  } else if (_pipelines_prepared) {
+    SDL_Log("Renderer: %s shadow pipeline made at its first draw", animated ? "animated" : "static");
   }
-  SDL_Log("Renderer: %s shadow pipeline created", animated ? "animated" : "static");
   return pipeline;
 }
 
@@ -902,19 +933,25 @@ SDL_GPUGraphicsPipeline* Backend::scene_pipeline(const PipelineKey& key) {
   info.target_info.has_depth_stencil_target = true;
   info.target_info.depth_stencil_format = _depth_format;
 
+  // Kept even if refused, so that it is tried and logged once.
   SDL_GPUGraphicsPipeline* pipeline = SDL_CreateGPUGraphicsPipeline(_device, &info);
-  if (pipeline == nullptr) {
-    abort_with("SDL_CreateGPUGraphicsPipeline");
-  }
   _scene_pipelines.emplace_back(key, pipeline);
   const char* kind = key.geometry == Geometry::frame  ? "scene"
                      : key.geometry == Geometry::mesh ? "mesh"
                      : key.geometry == Geometry::tile ? "tile"
                                                       : "animated mesh";
-  SDL_Log("Renderer: %s pipeline %u created (depth test %d, depth write %d, blend %d, factors %s/%s%s)", kind,
-          static_cast<unsigned>(_scene_pipelines.size()), key.depth_test ? 1 : 0, key.depth_write ? 1 : 0,
-          key.blend ? 1 : 0, blend_factor_name(key.source), blend_factor_name(key.destination),
-          key.mirrored ? ", mirrored" : "");
+  if (pipeline == nullptr) {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                 "Renderer: %s pipeline (depth test %d, depth write %d, blend %d, factors %s/%s%s): %s", kind,
+                 key.depth_test ? 1 : 0, key.depth_write ? 1 : 0, key.blend ? 1 : 0,
+                 blend_factor_name(key.source), blend_factor_name(key.destination),
+                 key.mirrored ? ", mirrored" : "", SDL_GetError());
+  } else if (_pipelines_prepared) {
+    // One preparePipelines wasn't given: Renderer::pipeline_keys() should list it.
+    SDL_Log("Renderer: %s pipeline made at its first draw (depth test %d, depth write %d, blend %d, factors %s/%s%s)",
+            kind, key.depth_test ? 1 : 0, key.depth_write ? 1 : 0, key.blend ? 1 : 0,
+            blend_factor_name(key.source), blend_factor_name(key.destination), key.mirrored ? ", mirrored" : "");
+  }
   return pipeline;
 }
 

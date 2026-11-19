@@ -91,6 +91,9 @@ class Renderer final {
   void copy_projection(const RenderState &state, float *matrix) const;
   Viewport viewport(const RenderState &state) const;
   PipelineKey pipeline_key(const RenderState &state, Geometry geometry, bool mirrored = false) const;
+  // Every key pipeline_key() gives for the states the game sets, for the backend to make
+  // at startup.
+  std::vector<PipelineKey> pipeline_keys(const RenderBackend::Features &features) const;
   // Uploads the command's textures if the game changed them: before any pass begins.
   void resolve_textures(const RenderState &state);
   // The draw's textures, sampler and fragment uniforms, from the command's render state.
