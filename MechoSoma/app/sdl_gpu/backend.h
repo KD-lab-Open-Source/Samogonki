@@ -41,6 +41,10 @@ class Backend final : public RenderBackend {
 
   Features features() const override { return _features; }
   const char* name() const override { return _name.c_str(); }
+  // Direct3D 12 and Vulkan compile a pipeline when it is made: done at its first draw,
+  // that would stall the frame, and a pipeline the driver refuses would leave its draws
+  // out for the rest of the game.
+  bool preparePipelines(const std::vector<PipelineKey>& keys) override;
   Scale setVideoMode(int width, int height, bool isFullScreen) override;
 
   GpuTexture createTexture(int width, int height, int levelCount, const TextureLevels* levels) override;
@@ -88,6 +92,8 @@ class Backend final : public RenderBackend {
 
   SDL_GPUTexture* texture_or_null(GpuTexture texture) const;
   SDL_GPUShader* shader(Shader shader) const { return _shaders[static_cast<size_t>(shader)]; }
+  // Made at their first use if preparePipelines didn't make them. Null if the driver
+  // refuses one: its draws are left out.
   SDL_GPUGraphicsPipeline* scene_pipeline(const PipelineKey& key);
   SDL_GPUGraphicsPipeline* shadow_pipeline(bool animated);
   void make_target_textures(int width, int height);
@@ -145,8 +151,11 @@ class Backend final : public RenderBackend {
   SDL_GPUGraphicsPipeline* _back_buffer_pipeline = nullptr;
   SDL_GPUGraphicsPipeline* _flush_pipeline = nullptr;
   SDL_GPUGraphicsPipeline* _shadow_pipelines[2]{};  // static and animated casters
-  // Created the first time they are needed, and kept; only a handful, so a list is enough.
+  bool _shadow_pipeline_failed[2]{};
+  // Made by preparePipelines, or at their first draw, and kept; a few dozen, so a list is
+  // enough. A null pipeline is one the driver refused.
   std::vector<std::pair<PipelineKey, SDL_GPUGraphicsPipeline*>> _scene_pipelines;
+  bool _pipelines_prepared = false;
 
   // The frame being recorded.
   SDL_GPUCommandBuffer* _commands = nullptr;

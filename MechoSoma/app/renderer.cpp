@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <utility>
 
 #include <SDL3/SDL.h>
 
@@ -121,6 +122,9 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool s
 #ifdef GPU_RENDERER
   if (sdlGpu) {
     _backend = sdl_gpu::Backend::create(width, height, wanted, sdlGpuDebug);
+    if (_backend != nullptr && !_backend->preparePipelines(pipeline_keys(_backend->features()))) {
+      _backend = nullptr;  // and its window with it
+    }
     if (_backend == nullptr) {
       SDL_Log("Renderer: SDL GPU is not available here, drawing with OpenGL");
     }
@@ -387,6 +391,40 @@ PipelineKey Renderer::pipeline_key(const RenderState &state, Geometry geometry, 
     key.destination = blend_factor(state.destination_blend_mode, BlendFactor::zero);
   }
   return key;
+}
+
+std::vector<PipelineKey> Renderer::pipeline_keys(const RenderBackend::Features &features) const {
+  // The game blends only through setMaterial: alpha, or additive (MAT_COLOR_ADD_DIFFUSE).
+  // No game code sets RENDERSTATE_SRCBLEND or DESTBLEND; a pipeline with other factors
+  // would be made at its first draw.
+  const std::pair<eBlendMode, eBlendMode> blends[] = {{BLEND_SRCALPHA, BLEND_INVSRCALPHA}, {BLEND_ONE, BLEND_ONE}};
+  std::vector<PipelineKey> keys;
+  const auto add = [&keys](const PipelineKey &key) {
+    if (std::find(keys.begin(), keys.end(), key) == keys.end()) {
+      keys.push_back(key);
+    }
+  };
+  for (const Geometry geometry : {Geometry::frame, Geometry::mesh, Geometry::animated_mesh, Geometry::tile}) {
+    const bool is_mesh = geometry == Geometry::mesh || geometry == Geometry::animated_mesh;
+    if ((is_mesh && !features.meshes) || (geometry == Geometry::tile && !features.terrain)) {
+      continue;
+    }
+    // Depth test, depth write, blending, and which blending: pipeline_key() folds the
+    // combinations that make the same pipeline into one.
+    for (int bits = 0; bits < 16; bits++) {
+      RenderState state;
+      state.is_depth_test_enabled = (bits & 1) != 0;
+      state.is_depth_write_enabled = (bits & 2) != 0;
+      state.is_alpha_blend_enabled = (bits & 4) != 0;
+      state.source_blend_mode = blends[(bits >> 3) & 1].first;
+      state.destination_blend_mode = blends[(bits >> 3) & 1].second;
+      add(pipeline_key(state, geometry));
+      if (is_mesh) {
+        add(pipeline_key(state, geometry, true));  // a reflection
+      }
+    }
+  }
+  return keys;
 }
 
 void Renderer::resolve_textures(const RenderState &state) {

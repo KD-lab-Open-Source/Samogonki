@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "IGraph3d.h"
 
@@ -179,6 +180,12 @@ class RenderBackend {
   };
   virtual Features features() const = 0;
   virtual const char* name() const = 0;
+
+  // Makes the scene pipelines in keys now, rather than at their first draw, and the shadow
+  // pipelines if the backend draws shadows. False if one cannot be made: the renderer then
+  // draws with another backend instead of failing in the middle of a race. A backend whose
+  // pipelines are cheap and cannot fail need not do anything.
+  virtual bool preparePipelines(const std::vector<PipelineKey>& keys) { return true; }
 
   // The game's screen: the window size, and the offscreen buffer and back buffer, which
   // have the game's resolution. Returns how the game's screen maps onto the window.
