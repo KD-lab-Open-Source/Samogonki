@@ -127,13 +127,15 @@ Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool s
     }
     if (_backend == nullptr) {
       SDL_Log("Renderer: SDL GPU is not available here, drawing with OpenGL");
+    } else {
+      // SDL GPU is the default, so a player who sees it draw wrong may not know there is
+      // anything else: the log says how to get the old renderer back.
+      SDL_Log("Renderer: [m3d] SdlGpu=0 in game.ini draws with OpenGL instead");
     }
   }
-#else
-  if (sdlGpu) {
-    SDL_Log("Renderer: built without SDL GPU, drawing with OpenGL");
-  }
 #endif
+  // A build without SDL GPU (the web's, or -DGPU_RENDERER=OFF) draws with OpenGL whatever
+  // SdlGpu says; the line below names the renderer.
   if (_backend == nullptr) {
     _backend = std::make_unique<SokolBackend>(width, height, wanted);
   }
