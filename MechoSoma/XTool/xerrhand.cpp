@@ -35,6 +35,10 @@
 #include <SDL3/SDL.h>
 #endif
 
+// Made at every build (cmake/build_info.cmake); a build without it says "unknown".
+#if __has_include("build_info.h")
+#include "build_info.h"
+#endif
 #ifndef GIT_BRANCH
 #define GIT_BRANCH "unknown"
 #endif

@@ -175,40 +175,20 @@ if (GPU_RENDERER)
     endif ()
 endif ()
 
-# Build identification shown in crash reports.
-if(NOT DEFINED GIT_BRANCH)
-    if(DEFINED ENV{GITHUB_REF_NAME} AND NOT "$ENV{GITHUB_REF_NAME}" STREQUAL "")
-        set(GIT_BRANCH "$ENV{GITHUB_REF_NAME}")
-    else()
-        execute_process(
-            COMMAND git rev-parse --abbrev-ref HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE GIT_BRANCH
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-    endif()
-endif()
-
-if(NOT DEFINED GIT_COMMIT_HASH)
-    if(DEFINED ENV{GITHUB_SHA} AND NOT "$ENV{GITHUB_SHA}" STREQUAL "")
-        set(GIT_COMMIT_HASH "$ENV{GITHUB_SHA}")
-    else()
-        execute_process(
-            COMMAND git rev-parse --short HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE GIT_COMMIT_HASH
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-    endif()
-endif()
-
-if(NOT GIT_BRANCH)
-    set(GIT_BRANCH "unknown")
-endif()
-if(NOT GIT_COMMIT_HASH)
-    set(GIT_COMMIT_HASH "unknown")
-endif()
-add_compile_definitions(GIT_BRANCH="${GIT_BRANCH}" GIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
+# Build identification for the log and crash reports: build_info.h, with GIT_BRANCH and
+# GIT_COMMIT_HASH, made at every build by cmake/build_info.cmake. -DGIT_BRANCH=... and
+# -DGIT_COMMIT_HASH=... set them instead.
+set(BUILD_INFO_DIR "${CMAKE_BINARY_DIR}/generated/build_info")
+add_custom_target(build_info
+    COMMAND "${CMAKE_COMMAND}"
+        "-DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+        "-DOUTPUT=${BUILD_INFO_DIR}/build_info.h"
+        "-DBRANCH=${GIT_BRANCH}"
+        "-DCOMMIT=${GIT_COMMIT_HASH}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/build_info.cmake"
+    BYPRODUCTS "${BUILD_INFO_DIR}/build_info.h"
+    COMMENT "Build identification"
+    VERBATIM)
 
 if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
@@ -257,7 +237,14 @@ add_subdirectory(3rdparty/3dsftk3)
 add_subdirectory(3rdparty/iniparser)
 add_subdirectory(3rdparty/musepack_src_r475)
 
+# A target whose sources include build_info.h.
+function(use_build_info target)
+    add_dependencies(${target} build_info)
+    target_include_directories(${target} PRIVATE "${BUILD_INFO_DIR}")
+endfunction()
+
 add_subdirectory(MechoSoma)
+use_build_info(${APPLICATION_NAME})
 
 if(BUILD_SCRIPT_TOOL)
     add_subdirectory(ScriptTool)
