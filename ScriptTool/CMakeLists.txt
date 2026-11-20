@@ -51,6 +51,10 @@ include_directories(${PARENT_DIR}/MechoSoma/iScreen)
 
 add_executable(${APPLICATION_NAME} ${SOURCES})
 target_link_libraries(${APPLICATION_NAME} PRIVATE ZLIB::ZLIB Iconv::Iconv)
+# Built from the game's CMakeLists: the crash reporter names the build (build_info.h).
+if(COMMAND use_build_info)
+    use_build_info(${APPLICATION_NAME})
+endif()
 
 if(WIN32)
     # xerrhand.cpp implements the crash reporter with dbghelp + MessageBox.
