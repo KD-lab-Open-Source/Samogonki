@@ -510,33 +510,42 @@ if (GPU_RENDERER)
         string(REGEX REPLACE ":.*" "" _name "${_shader}")
         list(APPEND GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/${_name}.hlsl")
     endforeach ()
-    # | rather than ;, which would split the argument (see the script).
-    string(REPLACE ";" "|" _shader_list "${GPU_SHADERS}")
-    if (SHADER_COMPILER MATCHES "TARGET_FILE")
-        set(_shader_compiler_target shadercross)
+    if (GPU_SHADER_HEADER_PREBUILT)
+        # Compiled by another build (checked in the top CMakeLists): copied in, and copied
+        # again if it changes.
+        configure_file("${GPU_SHADER_HEADER_PREBUILT}" "${GPU_SHADER_HEADER}" COPYONLY)
+    else ()
+        # | rather than ;, which would split the argument (see the script).
+        string(REPLACE ";" "|" _shader_list "${GPU_SHADERS}")
+        if (SHADER_COMPILER MATCHES "TARGET_FILE")
+            set(_shader_compiler_target shadercross)
+        endif ()
+        add_custom_command(
+            OUTPUT "${GPU_SHADER_HEADER}"
+            COMMAND "${CMAKE_COMMAND}"
+                "-DOUTPUT=${GPU_SHADER_HEADER}"
+                "-DMODE=${SHADER_MODE}"
+                "-DCOMPILER=${SHADER_COMPILER}"
+                "-DFORMAT=${SHADER_FORMAT}"
+                "-DSOURCE_DIR=${GPU_SHADER_DIR}"
+                "-DWORK_DIR=${GPU_SHADER_GENERATED_DIR}/shaders"
+                "-DSHADERS=${_shader_list}"
+                -P "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+            DEPENDS ${GPU_SHADER_SOURCES} ${_shader_compiler_target}
+                "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+            COMMENT "Compiling the SDL GPU shaders to ${SHADER_FORMAT}"
+            VERBATIM)
+        # The header alone (cmake --build <dir> --target gpu_shaders), for a build that takes
+        # it prebuilt. The game depends on this target rather than listing the header among
+        # its sources: an output in two targets could be made twice at once.
+        add_custom_target(gpu_shaders DEPENDS "${GPU_SHADER_HEADER}")
     endif ()
-    add_custom_command(
-        OUTPUT "${GPU_SHADER_HEADER}"
-        COMMAND "${CMAKE_COMMAND}"
-            "-DOUTPUT=${GPU_SHADER_HEADER}"
-            "-DMODE=${SHADER_MODE}"
-            "-DCOMPILER=${SHADER_COMPILER}"
-            "-DFORMAT=${SHADER_FORMAT}"
-            "-DSOURCE_DIR=${GPU_SHADER_DIR}"
-            "-DWORK_DIR=${GPU_SHADER_GENERATED_DIR}/shaders"
-            "-DSHADERS=${_shader_list}"
-            -P "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
-        DEPENDS ${GPU_SHADER_SOURCES} ${_shader_compiler_target}
-            "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
-        COMMENT "Compiling the SDL GPU shaders to ${SHADER_FORMAT}"
-        VERBATIM)
 
     list(APPEND GAME_SOURCES
         app/sdl_gpu/backend.cpp
         app/sdl_gpu/backend.h
         app/sdl_gpu/shaders.cpp
-        app/sdl_gpu/shaders.h
-        "${GPU_SHADER_HEADER}")
+        app/sdl_gpu/shaders.h)
     include_directories("${GPU_SHADER_GENERATED_DIR}")
     # The renderer offers SDL GPU ([m3d] SdlGpu in game.ini) only in a build that has it.
     add_definitions(-DGPU_RENDERER)
@@ -675,4 +684,7 @@ if (TARGET ${APPLICATION_NAME})
     # The game links SDL, so crash reports can use SDL_ShowSimpleMessageBox on
     # every desktop platform. ScriptTool has no SDL and keeps the log/stdout path.
     target_compile_definitions(${APPLICATION_NAME} PRIVATE XERRH_USE_SDL)
+    if (TARGET gpu_shaders)
+        add_dependencies(${APPLICATION_NAME} gpu_shaders)
+    endif()
 endif()
