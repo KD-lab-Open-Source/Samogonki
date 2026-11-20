@@ -76,8 +76,32 @@ endif ()
 # is built here, with DXC and SPIRV-Cross under it. Linux downloads Microsoft's prebuilt DXC
 # (it needs glibc 2.38); macOS has none, so DXC is built from source, which takes a while.
 # -DSHADERCROSS_EXECUTABLE=<a built shadercross> skips all of that: the macOS CI caches one.
+#
+# -DGPU_SHADER_HEADER_PREBUILT=<sdl_gpu_shaders.h> takes the shaders compiled by another
+# build (its gpu_shaders target, for the same platform), and this build needs no shader
+# compiler at all. The Steam Linux build uses it: it is made on an older Ubuntu for its
+# glibc, where Microsoft's prebuilt DXC doesn't link.
+set(GPU_SHADER_HEADER_PREBUILT "" CACHE FILEPATH "SDL GPU shaders compiled by another build's gpu_shaders target")
 if (GPU_RENDERER)
     if (WIN32)
+        set(SHADER_FORMAT DXIL)
+    elseif (APPLE)
+        set(SHADER_FORMAT MSL)
+    else ()
+        set(SHADER_FORMAT SPIRV)
+    endif ()
+    if (GPU_SHADER_HEADER_PREBUILT)
+        if (NOT EXISTS "${GPU_SHADER_HEADER_PREBUILT}")
+            message(FATAL_ERROR "GPU_SHADER_HEADER_PREBUILT=${GPU_SHADER_HEADER_PREBUILT} does not exist")
+        endif ()
+        # compile_shaders.cmake names the format on the header's first line.
+        file(STRINGS "${GPU_SHADER_HEADER_PREBUILT}" _prebuilt_first_line LIMIT_COUNT 1)
+        if (NOT _prebuilt_first_line MATCHES ": ${SHADER_FORMAT}\\.$")
+            message(FATAL_ERROR "GPU_SHADER_HEADER_PREBUILT=${GPU_SHADER_HEADER_PREBUILT} is not ${SHADER_FORMAT}, "
+                "this platform's format: '${_prebuilt_first_line}'")
+        endif ()
+        message(STATUS "Shaders: ${SHADER_FORMAT}, prebuilt in ${GPU_SHADER_HEADER_PREBUILT}")
+    elseif (WIN32)
         # dxc.exe comes with the Windows SDK, under Windows Kits\10\bin\<version>\x64. Take
         # the newest SDK's.
         if (NOT DXC_EXECUTABLE)
@@ -100,14 +124,8 @@ if (GPU_RENDERER)
         message(STATUS "Shaders: DXIL, with ${DXC_EXECUTABLE}")
         set(SHADER_MODE dxc)
         set(SHADER_COMPILER "${DXC_EXECUTABLE}")
-        set(SHADER_FORMAT DXIL)
     else ()
         set(SHADER_MODE shadercross)
-        if (APPLE)
-            set(SHADER_FORMAT MSL)
-        else ()
-            set(SHADER_FORMAT SPIRV)
-        endif ()
 
         if (SHADERCROSS_EXECUTABLE)
             if (NOT EXISTS "${SHADERCROSS_EXECUTABLE}")
