@@ -622,6 +622,20 @@ elseif (LINUX)
             X11 Xi Xcursor GL dl pthread)
     # Export symbols so backtrace_symbols() can name functions in crash reports.
     target_link_options(${APPLICATION_NAME} PRIVATE -rdynamic)
+    if (STEAM_VERSION)
+        # The Steam depot puts libsteam_api.so beside the program, so that is where the
+        # program looks for it: an RPATH of $ORIGIN alone, in the build tree too, as the
+        # build tree's program is the one shipped. The default named the SDK folder on the
+        # machine that built it. The library is copied beside it here for a local run.
+        set_target_properties(${APPLICATION_NAME} PROPERTIES
+            BUILD_WITH_INSTALL_RPATH TRUE
+            INSTALL_RPATH "$ORIGIN")
+        add_custom_command(TARGET ${APPLICATION_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/steamworks_sdk_158/lib/linux64/libsteam_api.so"
+                "$<TARGET_FILE_DIR:${APPLICATION_NAME}>"
+            VERBATIM)
+    endif ()
 elseif (APPLE)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
     add_executable(${APPLICATION_NAME} MACOSX_BUNDLE ${GAME_SOURCES})
