@@ -1021,10 +1021,12 @@ int cGraph3dDirect3D::CalibrateGamma( DDGAMMARAMP *lpRampData )
 }
 int cGraph3dDirect3D::SetAdjustedGamma( float fRGamma, float fGGamma, float fBGamma )
 {
+	_renderer->setGamma(fRGamma, fGGamma, fBGamma);
 	return 0;
 }
 int cGraph3dDirect3D::GetAdjustedGamma( float *pfRGamma, float *pfGGamma, float *pfBGamma )
 {
+	_renderer->getGamma(*pfRGamma, *pfGGamma, *pfBGamma);
 	return 0;
 }
 int cGraph3dDirect3D::SetGammaFxHighlight( float fRHilight, float fGHilight, float fBHilight )

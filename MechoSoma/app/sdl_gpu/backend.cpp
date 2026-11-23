@@ -774,7 +774,7 @@ void Backend::endPass() {
   _bound_pipeline = nullptr;
 }
 
-void Backend::present() {
+void Backend::present(const FlushFsParams& flush) {
   end_copy_pass();
   SDL_GPUCommandBuffer* commands = command_buffer();
 
@@ -800,6 +800,7 @@ void Backend::present() {
     // The game's screen at its aspect ratio, as wide as the window's height lets it be.
     const float params[4] = {1.0f * _width / _height * height / width, 0.0f, 0.0f, 0.0f};
     SDL_PushGPUVertexUniformData(commands, 0, params, sizeof(params));
+    SDL_PushGPUFragmentUniformData(commands, 0, &flush, sizeof(flush));
     const SDL_GPUTextureSamplerBinding texture{_color, _clamp_sampler};
     SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
     SDL_DrawGPUPrimitives(pass, 6, 1, 0, 0);
