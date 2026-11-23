@@ -59,6 +59,13 @@ struct ShadowFsParams {
   float alpha_test[4];
 };
 
+// The pass that draws the offscreen buffer to the window applies the game's gamma option,
+// as the original's hardware gamma ramp did to the whole screen: each channel c becomes
+// c^(1 / gamma).
+struct FlushFsParams {
+  float gamma[4];  // x, y, z: each channel's exponent, 1 / its gamma; w: 0 when all are 1
+};
+
 // What a scene draw draws, which decides the shader and the vertex layout.
 enum class Geometry {
   frame,          // the frame vertex and index arrays (scene shader)
@@ -228,8 +235,8 @@ class RenderBackend {
   // Ends a shadow or the scene pass.
   virtual void endPass() = 0;
 
-  // The offscreen buffer to the window, and the frame is shown.
-  virtual void present() = 0;
+  // The offscreen buffer to the window, gamma applied, and the frame is shown.
+  virtual void present(const FlushFsParams& flush) = 0;
 };
 
 }  // namespace graphics

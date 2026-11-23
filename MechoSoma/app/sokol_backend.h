@@ -49,7 +49,7 @@ class SokolBackend final : public RenderBackend {
   void drawBackBuffer() override;
   void draw(const SceneDraw& draw) override;
   void endPass() override;
-  void present() override;
+  void present(const FlushFsParams& flush) override;
 
  private:
   sg_view texture_view(GpuTexture texture) const;

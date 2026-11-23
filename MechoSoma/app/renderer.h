@@ -79,6 +79,10 @@ class Renderer final {
   void setTerrain(const M3D_TERRAIN &terrain);
   // A camera's dynamic shadows for this frame; false if the renderer doesn't draw them.
   bool setShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow);
+  // The game's gamma option for each channel, from 0.2 to 5; 1 changes nothing. It applies
+  // from the next flip, to everything on the screen.
+  void setGamma(float red, float green, float blue);
+  void getGamma(float &red, float &green, float &blue) const;
 
   MD3DERROR lockBackBuffer(void** lplpSurface, uint32_t* lpdwPitch);
   MD3DERROR unlockBackBuffer();
@@ -126,6 +130,7 @@ class Renderer final {
   // the offscreen buffer holds otherwise (a second scene in a frame).
   bool _clear = true;
   float _clear_color[4]{0.0f, 0.0f, 0.0f, 1.0f};  // opaque, as clear() makes it
+  float _gamma[3]{1.0f, 1.0f, 1.0f};
   RenderState _render_state;
 
   // The game's 2D back buffer: RGB 565, the game's resolution. Uploaded when the frame

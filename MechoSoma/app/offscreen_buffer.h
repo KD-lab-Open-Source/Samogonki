@@ -2,6 +2,8 @@
 
 #include <sokol_gfx.h>
 
+#include "render_backend.h"
+
 namespace graphics {
 
 class OffscreenBuffer final {
@@ -10,8 +12,9 @@ class OffscreenBuffer final {
   ~OffscreenBuffer();
 
   void begin_pass(sg_pass_action action);
-  // Draws the buffer into the window (Display::swapchain()) and ends the frame.
-  void flush(const sg_swapchain& swapchain);
+  // Draws the buffer into the window (Display::swapchain()), gamma applied, and ends the
+  // frame.
+  void flush(const sg_swapchain& swapchain, const FlushFsParams& flush);
 
   int getWidth() const;
   int getHeight() const;
