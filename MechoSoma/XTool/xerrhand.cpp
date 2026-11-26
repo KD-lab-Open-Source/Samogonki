@@ -448,8 +448,6 @@ void signalHandler(int sig) {
     case SIGFPE: name = "SIGFPE (arithmetic error)"; break;
     case SIGILL: name = "SIGILL (illegal instruction)"; break;
     case SIGSEGV: name = "SIGSEGV (invalid memory access)"; break;
-    case SIGINT: name = "SIGINT"; break;
-    case SIGTERM: name = "SIGTERM"; break;
     default: break;
   }
 
@@ -468,8 +466,6 @@ void signalHandler(int sig) {
 #ifdef SIGBUS
     case SIGBUS: name = "SIGBUS (bus error)"; break;
 #endif
-    case SIGINT: name = "SIGINT"; break;
-    case SIGTERM: name = "SIGTERM"; break;
     default: break;
   }
 
@@ -577,6 +573,12 @@ void set_signal_handler() {
   // Resolve the log path now, while std::string and the CRT are healthy.
   (void)logPath();
 
+  // No handlers for SIGINT and SIGTERM: they ask the game to quit, they are not crashes.
+  // Steam sends SIGTERM when it closes the game (Exit Game on the Steam Deck), and Ctrl+C
+  // in a terminal is SIGINT. Left at their default, SDL_Init turns both into
+  // SDL_EVENT_QUIT, which quits the game as closing its window does. Before SDL_Init, the
+  // default ends the process without a report.
+
 #ifdef _WIN32
   SetUnhandledExceptionFilter(topLevelExceptionFilter);
   std::set_terminate(terminateHandler);
@@ -585,16 +587,12 @@ void set_signal_handler() {
   // exceptions on Windows; let SetUnhandledExceptionFilter handle them so the
   // report contains registers, a stack trace and a minidump.
   signal(SIGABRT, signalHandler);
-  signal(SIGINT, signalHandler);
-  signal(SIGTERM, signalHandler);
 #else
   std::set_terminate(terminateHandler);
 
   signal(SIGABRT, signalHandler);
   signal(SIGFPE, signalHandler);
   signal(SIGILL, signalHandler);
-  signal(SIGINT, signalHandler);
-  signal(SIGTERM, signalHandler);
 
 #if defined(__linux__) || defined(__APPLE__)
   // Run the fatal-fault handlers on a separate stack so a stack overflow can
