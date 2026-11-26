@@ -546,8 +546,8 @@ void SokolBackend::endPass() {
   }
 }
 
-void SokolBackend::present() {
-  _offscreenBuffer->flush(_display->swapchain());
+void SokolBackend::present(const FlushFsParams& flush) {
+  _offscreenBuffer->flush(_display->swapchain(), flush);
   _display->present();
 }
 

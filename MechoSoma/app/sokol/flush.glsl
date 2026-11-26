@@ -11,7 +11,12 @@ void main() {
 }
 @end
 
+// The game's gamma option, as the original's hardware gamma ramp applied it to the whole
+// screen.
 @fs flush_fs
+layout(std140, binding = 3) uniform flush_fs_params {
+    vec4 gamma;   // x, y, z: each channel's exponent, 1 / its gamma; w: 0 when all are 1
+};
 
 in vec2 uv;
 
@@ -22,6 +27,10 @@ out vec4 result_color;
 
 void main() {
     result_color = texture(sampler2D(texture_1, sampler_1), uv);
+    // Skipped at gamma 1, so the default leaves every pixel exactly as it was.
+    if (gamma.w != 0.0f) {
+        result_color.rgb = pow(result_color.rgb, gamma.xyz);
+    }
 }
 @end
 

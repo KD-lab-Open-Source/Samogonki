@@ -1,5 +1,8 @@
 #include "offscreen_buffer.h"
 
+#include <algorithm>
+#include <iterator>
+
 #ifdef EMSCRIPTEN
 #include "sokol-shader-em.h"
 #else
@@ -122,7 +125,7 @@ void OffscreenBuffer::begin_pass(sg_pass_action action) {
   sg_begin_pass(&pass);
 }
 
-void OffscreenBuffer::flush(const sg_swapchain& swapchain) {
+void OffscreenBuffer::flush(const sg_swapchain& swapchain, const FlushFsParams& flush) {
   sg_pass_action defaultPassAction = {};
   defaultPassAction.colors[0].load_action = SG_LOADACTION_CLEAR;
   defaultPassAction.colors[0].clear_value = {0, 0, 0, 1};
@@ -143,6 +146,12 @@ void OffscreenBuffer::flush(const sg_swapchain& swapchain) {
   flush_vs_params_t vs_params{};
   vs_params.max_x = _clipSpaceMaxX;
   sg_apply_uniforms(UB_flush_vs_params, SG_RANGE(vs_params));
+
+#ifndef EMSCRIPTEN
+  flush_fs_params_t fs_params{};
+  std::copy(std::begin(flush.gamma), std::end(flush.gamma), fs_params.gamma);
+  sg_apply_uniforms(UB_flush_fs_params, SG_RANGE(fs_params));
+#endif
 
   sg_draw(0, 6, 1);
 

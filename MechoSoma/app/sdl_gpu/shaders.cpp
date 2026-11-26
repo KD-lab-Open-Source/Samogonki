@@ -37,7 +37,7 @@ constexpr ShaderCode shaders[] = {
     {quad_vs_code, sizeof(quad_vs_code), SDL_GPU_SHADERSTAGE_VERTEX, 0, 0},
     {back_buffer_fs_code, sizeof(back_buffer_fs_code), SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 0},
     {flush_vs_code, sizeof(flush_vs_code), SDL_GPU_SHADERSTAGE_VERTEX, 0, 1},
-    {flush_fs_code, sizeof(flush_fs_code), SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 0},
+    {flush_fs_code, sizeof(flush_fs_code), SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1},
 };
 static_assert(std::size(shaders) == static_cast<size_t>(Shader::count), "a shader without code, or code without a shader");
 

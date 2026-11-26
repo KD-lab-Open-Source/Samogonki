@@ -76,8 +76,32 @@ endif ()
 # is built here, with DXC and SPIRV-Cross under it. Linux downloads Microsoft's prebuilt DXC
 # (it needs glibc 2.38); macOS has none, so DXC is built from source, which takes a while.
 # -DSHADERCROSS_EXECUTABLE=<a built shadercross> skips all of that: the macOS CI caches one.
+#
+# -DGPU_SHADER_HEADER_PREBUILT=<sdl_gpu_shaders.h> takes the shaders compiled by another
+# build (its gpu_shaders target, for the same platform), and this build needs no shader
+# compiler at all. The Steam Linux build uses it: it is made on an older Ubuntu for its
+# glibc, where Microsoft's prebuilt DXC doesn't link.
+set(GPU_SHADER_HEADER_PREBUILT "" CACHE FILEPATH "SDL GPU shaders compiled by another build's gpu_shaders target")
 if (GPU_RENDERER)
     if (WIN32)
+        set(SHADER_FORMAT DXIL)
+    elseif (APPLE)
+        set(SHADER_FORMAT MSL)
+    else ()
+        set(SHADER_FORMAT SPIRV)
+    endif ()
+    if (GPU_SHADER_HEADER_PREBUILT)
+        if (NOT EXISTS "${GPU_SHADER_HEADER_PREBUILT}")
+            message(FATAL_ERROR "GPU_SHADER_HEADER_PREBUILT=${GPU_SHADER_HEADER_PREBUILT} does not exist")
+        endif ()
+        # compile_shaders.cmake names the format on the header's first line.
+        file(STRINGS "${GPU_SHADER_HEADER_PREBUILT}" _prebuilt_first_line LIMIT_COUNT 1)
+        if (NOT _prebuilt_first_line MATCHES ": ${SHADER_FORMAT}\\.$")
+            message(FATAL_ERROR "GPU_SHADER_HEADER_PREBUILT=${GPU_SHADER_HEADER_PREBUILT} is not ${SHADER_FORMAT}, "
+                "this platform's format: '${_prebuilt_first_line}'")
+        endif ()
+        message(STATUS "Shaders: ${SHADER_FORMAT}, prebuilt in ${GPU_SHADER_HEADER_PREBUILT}")
+    elseif (WIN32)
         # dxc.exe comes with the Windows SDK, under Windows Kits\10\bin\<version>\x64. Take
         # the newest SDK's.
         if (NOT DXC_EXECUTABLE)
@@ -100,14 +124,8 @@ if (GPU_RENDERER)
         message(STATUS "Shaders: DXIL, with ${DXC_EXECUTABLE}")
         set(SHADER_MODE dxc)
         set(SHADER_COMPILER "${DXC_EXECUTABLE}")
-        set(SHADER_FORMAT DXIL)
     else ()
         set(SHADER_MODE shadercross)
-        if (APPLE)
-            set(SHADER_FORMAT MSL)
-        else ()
-            set(SHADER_FORMAT SPIRV)
-        endif ()
 
         if (SHADERCROSS_EXECUTABLE)
             if (NOT EXISTS "${SHADERCROSS_EXECUTABLE}")
@@ -175,40 +193,20 @@ if (GPU_RENDERER)
     endif ()
 endif ()
 
-# Build identification shown in crash reports.
-if(NOT DEFINED GIT_BRANCH)
-    if(DEFINED ENV{GITHUB_REF_NAME} AND NOT "$ENV{GITHUB_REF_NAME}" STREQUAL "")
-        set(GIT_BRANCH "$ENV{GITHUB_REF_NAME}")
-    else()
-        execute_process(
-            COMMAND git rev-parse --abbrev-ref HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE GIT_BRANCH
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-    endif()
-endif()
-
-if(NOT DEFINED GIT_COMMIT_HASH)
-    if(DEFINED ENV{GITHUB_SHA} AND NOT "$ENV{GITHUB_SHA}" STREQUAL "")
-        set(GIT_COMMIT_HASH "$ENV{GITHUB_SHA}")
-    else()
-        execute_process(
-            COMMAND git rev-parse --short HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE GIT_COMMIT_HASH
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-    endif()
-endif()
-
-if(NOT GIT_BRANCH)
-    set(GIT_BRANCH "unknown")
-endif()
-if(NOT GIT_COMMIT_HASH)
-    set(GIT_COMMIT_HASH "unknown")
-endif()
-add_compile_definitions(GIT_BRANCH="${GIT_BRANCH}" GIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
+# Build identification for the log and crash reports: build_info.h, with GIT_BRANCH and
+# GIT_COMMIT_HASH, made at every build by cmake/build_info.cmake. -DGIT_BRANCH=... and
+# -DGIT_COMMIT_HASH=... set them instead.
+set(BUILD_INFO_DIR "${CMAKE_BINARY_DIR}/generated/build_info")
+add_custom_target(build_info
+    COMMAND "${CMAKE_COMMAND}"
+        "-DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+        "-DOUTPUT=${BUILD_INFO_DIR}/build_info.h"
+        "-DBRANCH=${GIT_BRANCH}"
+        "-DCOMMIT=${GIT_COMMIT_HASH}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/build_info.cmake"
+    BYPRODUCTS "${BUILD_INFO_DIR}/build_info.h"
+    COMMENT "Build identification"
+    VERBATIM)
 
 if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
@@ -257,7 +255,14 @@ add_subdirectory(3rdparty/3dsftk3)
 add_subdirectory(3rdparty/iniparser)
 add_subdirectory(3rdparty/musepack_src_r475)
 
+# A target whose sources include build_info.h.
+function(use_build_info target)
+    add_dependencies(${target} build_info)
+    target_include_directories(${target} PRIVATE "${BUILD_INFO_DIR}")
+endfunction()
+
 add_subdirectory(MechoSoma)
+use_build_info(${APPLICATION_NAME})
 
 if(BUILD_SCRIPT_TOOL)
     add_subdirectory(ScriptTool)

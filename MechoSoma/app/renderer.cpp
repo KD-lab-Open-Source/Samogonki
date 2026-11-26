@@ -184,7 +184,14 @@ bool Renderer::isInScene() const
 MD3DERROR Renderer::flip(bool WaitVerticalBlank) {
   const auto present_start = Clock::now();
   _clear = true;
-  _backend->present();
+  FlushFsParams flush{};
+  for (int i = 0; i < 3; i++) {
+    flush.gamma[i] = 1.0f / _gamma[i];
+    if (_gamma[i] != 1.0f) {
+      flush.gamma[3] = 1.0f;
+    }
+  }
+  _backend->present(flush);
 #ifdef GPX
   frameReady();
 #endif
@@ -792,6 +799,19 @@ bool Renderer::setShadowCamera(int camera, const M3D_SHADOW_CAMERA &shadow) {
   _shadow_cameras[camera].is_set = true;
   _shadow_cameras[camera].camera = shadow;
   return true;
+}
+
+void Renderer::setGamma(float red, float green, float blue) {
+  // The original's range (d3dSetAdjustedGamma); it also keeps 1 / gamma finite.
+  _gamma[0] = std::clamp(red, 0.2f, 5.0f);
+  _gamma[1] = std::clamp(green, 0.2f, 5.0f);
+  _gamma[2] = std::clamp(blue, 0.2f, 5.0f);
+}
+
+void Renderer::getGamma(float &red, float &green, float &blue) const {
+  red = _gamma[0];
+  green = _gamma[1];
+  blue = _gamma[2];
 }
 
 void Renderer::upload_terrain() {

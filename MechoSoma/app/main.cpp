@@ -4,6 +4,7 @@
 // Without SDL_main.h, SDL 3 leaves main() to the game.
 #include <SDL3/SDL.h>
 #include <cstdio>
+#include "build_info.h"
 #include "filesystem.h"
 
 #ifdef EMSCRIPTEN
@@ -124,6 +125,16 @@ int main(int argc, char const *argv[]) {
 #ifndef EMSCRIPTEN
   startLogFile();
 #endif
+  // First in the log, so that a log sent from another machine says what it came from: the
+  // branch or release tag and the commit (-dirty: with changes not committed).
+  const int sdlVersion = SDL_GetVersion();
+#ifdef STEAM_VERSION
+  const char* edition = ", Steam";
+#else
+  const char* edition = "";
+#endif
+  SDL_Log("Build: %s %s%s, %s, SDL %d.%d.%d", GIT_BRANCH, GIT_COMMIT_HASH, edition, SDL_GetPlatform(),
+          SDL_VERSIONNUM_MAJOR(sdlVersion), SDL_VERSIONNUM_MINOR(sdlVersion), SDL_VERSIONNUM_MICRO(sdlVersion));
   set_signal_handler();
   run_crash_test_from_env();
 
