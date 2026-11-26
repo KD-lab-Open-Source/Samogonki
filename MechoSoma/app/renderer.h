@@ -28,7 +28,8 @@ class TextureManager;
 class Renderer final {
  public:
   // sdlGpu: draw with SDL GPU (Metal, Direct3D 12 or Vulkan) where the build has it and
-  // the machine can; otherwise, and off, with OpenGL.
+  // the machine can; otherwise, and off, with OpenGL. game.ini has it on unless it says
+  // [m3d] SdlGpu=0.
   // sdlGpuDebug: SDL GPU's debug mode, with the API's own checks where installed.
   // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
   // gpuMeshes: keep meshes on the GPU (createMesh); off, createMesh always refuses.
