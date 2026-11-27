@@ -44,6 +44,17 @@ cmake -B build -A x64
 cmake --build build --config RelWithDebInfo
 ```
 
+### macOS
+The game runs on macOS 12 and newer, the Steam client's own minimum
+(`CMAKE_OSX_DEPLOYMENT_TARGET`). A build is for the architecture of the Mac
+that builds it. One app for both Apple Silicon and Intel, as the Steam build
+ships it:
+```
+cmake -B build "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+```
+shadercross (see below), which only runs during the build, is still built
+for the building Mac alone.
+
 ### SDL GPU shaders
 The SDL GPU renderer (Metal on macOS, Direct3D 12 on Windows, Vulkan on Linux)
 has its shaders in HLSL, in `MechoSoma/app/sdl_gpu/shaders`. The build compiles

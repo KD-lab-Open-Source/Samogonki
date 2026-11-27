@@ -193,7 +193,16 @@ if (GPU_RENDERER)
                 set(SDLSHADERCROSS_VENDORED ON CACHE BOOL "" FORCE)
                 set(ENABLE_SPIRV_CODEGEN ON CACHE BOOL "" FORCE)   # DXC leaves it off
             endif ()
+            # shadercross only runs on the machine that builds the game, so it is built for
+            # that machine's architecture alone, even when the game is built for both
+            # (-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"), which would build DXC twice.
+            if (APPLE)
+                set(CMAKE_OSX_ARCHITECTURES "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+            endif ()
             add_subdirectory("${sdl_shadercross_SOURCE_DIR}" "${sdl_shadercross_BINARY_DIR}" EXCLUDE_FROM_ALL)
+            if (APPLE)
+                unset(CMAKE_OSX_ARCHITECTURES)   # the game's again, from the cache
+            endif ()
             unset(CMAKE_POSITION_INDEPENDENT_CODE)
             # Resolved at build time: the shadercross this build makes.
             set(SHADER_COMPILER "$<TARGET_FILE:shadercross>")
