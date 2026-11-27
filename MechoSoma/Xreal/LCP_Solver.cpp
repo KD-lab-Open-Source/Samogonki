@@ -221,8 +221,15 @@ void LCP_Solver::drive_to_zero(int d)
 		mem_restore();
 
         if(iterations++ > LCP_max_iterations) {
+#ifndef EMSCRIPTEN
+            // As the original: LCP_ContactSolver::resolve_impulse_and_force() catches it
+            // and moves the bodies out of the degenerate contact.
+            abort("LCP_Solver: too many iterations");
+#else
+            // The web build catches no exceptions: keep the solution so far.
             printf("ERR! LCP_Solver: too many iterations, terminating...");
             return;
+#endif
         }
     }
 }
