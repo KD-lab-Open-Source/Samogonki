@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.25)
 
+# The oldest macOS the game runs on, on Apple Silicon and Intel alike: the Steam client's
+# own minimum, macOS 12 Monterey since October 2025. Without it the compiler targets the
+# macOS of the machine that builds the game, and the game doesn't start on anything older.
+# It has to be set before project(); -DCMAKE_OSX_DEPLOYMENT_TARGET=... or the
+# MACOSX_DEPLOYMENT_TARGET environment variable still give another one.
+if (NOT CMAKE_OSX_DEPLOYMENT_TARGET AND NOT DEFINED ENV{MACOSX_DEPLOYMENT_TARGET})
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "The oldest macOS the game runs on" FORCE)
+endif ()
+
 project(MOONSHINE_RUNNERS VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CONFIGURATION_TYPES "Release;Debug;MinSizeRel;RelWithDebInfo")
