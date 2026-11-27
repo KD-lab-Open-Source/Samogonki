@@ -8,6 +8,8 @@
 #include "Statistics.h"
 #include "Xreal_utl.h"
 
+#include <SDL3/SDL_log.h>
+
 //#define _CHECK_RESOLVING_
 
 #ifdef _FINAL_VERSION_
@@ -436,6 +438,20 @@ int LCP_ContactSolver::compute_frictional_forces(int enable_dynamic_friction)
 	return 1;
 }			
 
+// The solver's failures go to the game's log: the 1st to 9th of each kind, then the 10th,
+// 20th... 90th, the 100th, 200th... 900th and so on, as the same contact can fail again
+// every frame. A line for every failure, as the port printed until the solver threw again,
+// grew a tester's log past 1 GB.
+static void log_solver_failure(const char* message, const char* recovery, unsigned& count)
+{
+	unsigned n = ++count;
+	while(n % 10 == 0)
+		n /= 10;
+	if(n < 10)
+		SDL_Log("Physics: %s, %s (failure %u, world %d, track %d)", message, recovery, count,
+			mchCurrentWorld, mchCurrentTrack);
+}
+
 int LCP_ContactSolver::compute_frictional_forces()
 {
 	int success = 1;
@@ -444,7 +460,13 @@ int LCP_ContactSolver::compute_frictional_forces()
 		compute_frictional_forces(1);
 		}
 
-	catch(char*){
+	// LCP_Solver::abort() throws its message, a const char*. A catch(char*), as the
+	// original had it, no longer matched once the message became const, and every failure
+	// of the solver ended the game in std::terminate. (The game's parameters compute no
+	// constraint forces, constraint_force_calculation = 0, so this one doesn't run.)
+	catch(const char* message){
+		static unsigned failures = 0;
+		log_solver_failure(message, "solving again without friction", failures);
 		M_is_calculated = 0;
 		compute_frictional_forces(0);
 		success = 0;
@@ -584,12 +606,14 @@ try {
 		}
 }	
 
-catch(char* str) {
+catch(const char* str) {   // LCP_Solver::abort(), as above
 	#ifndef _FINAL_VERSION_
 	//	fout < "Exception in resolve_impulse_and_force(): " < str < "\n\n";
 	//	fout < "n_contacts: " <= total_contacts.size() < "\n";
 	//	fout < "n_bodies: " <= bodies.size() < "\n";
 	#endif
+	static unsigned failures = 0;
+	log_solver_failure(str, "moving the bodies out of the contact", failures);
 	str = 0;
 	ContactingBodies::iterator bi;
 	FOR_EACH(bodies, bi)
