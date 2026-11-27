@@ -55,16 +55,14 @@ class TextureManager final
     uint32_t original_format_id;
     uint32_t width;
     uint32_t height;
-    // Created at the first upload, immutable: most textures are uploaded once, and
-    // sokol keeps one GPU copy of an immutable image but two of a dynamic one. A
-    // texture uploaded again is one the game draws into, and becomes dynamic.
+    // Created at the first upload. Most textures are uploaded once; one uploaded again is
+    // one the game draws into.
     GpuTexture texture = 0;
     std::vector<char> lock_buffer;
     uint32_t pitch;
     bool is_locked = false;
     bool is_deleted = false;
     bool is_need_update = false;
-    bool is_dynamic = false;
   };
 
   void update_texture(TextureEntry& entry);

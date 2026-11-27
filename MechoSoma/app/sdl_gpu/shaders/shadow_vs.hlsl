@@ -1,5 +1,5 @@
 // A shadow caster: a GPU mesh drawn into a camera's shadow map, depth only. The fragment
-// stage is shadow_fs. Port of shadow_vs in sokol/shadow.glsl.
+// stage is shadow_fs.
 #include "common.hlsl"
 
 cbuffer shadow_vs_params : register(b0, space1) {

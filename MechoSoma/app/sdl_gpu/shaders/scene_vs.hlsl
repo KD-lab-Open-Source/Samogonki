@@ -1,5 +1,5 @@
 // Frame geometry built on the CPU (M3D_DRAW_COMMAND): already in camera space and lit
-// by the game. The fragment stage is scene_fs. Port of sokol/scene_vs.glsl.
+// by the game. The fragment stage is scene_fs.
 #include "common.hlsl"
 
 cbuffer scene_vs_params : register(b0, space1) {

@@ -1,6 +1,6 @@
 // The offscreen buffer drawn to the window: two triangles, six vertices and no vertex
 // buffer, narrowed to max_x to keep the game's aspect ratio. The fragment stage is
-// flush_fs. Port of flush_vs in sokol/flush.glsl.
+// flush_fs.
 #include "common.hlsl"
 
 cbuffer flush_vs_params : register(b0, space1) {

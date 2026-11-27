@@ -466,20 +466,11 @@ set(GAME_SOURCES
     iScreen/iText.cpp
     iScreen/savegame.cpp
     # application
-    app/back_buffer.cpp
-    app/back_buffer.h
-    app/display.cpp
-    app/display.h
     app/main.cpp
-    app/offscreen_buffer.cpp
-    app/offscreen_buffer.h
     app/render_backend.h
     app/render_state.h
     app/renderer.cpp
     app/renderer.h
-    app/sokol_backend.cpp
-    app/sokol_backend.h
-    app/sokol_gfx.cpp
     app/texture_manager.cpp
     app/window.cpp
     app/window.h
@@ -487,69 +478,65 @@ set(GAME_SOURCES
     RUNTIME/aspect_ratio.cpp
     RUNTIME/aspect_ratio.h)
 
-if (GPU_RENDERER)
-    # The SDL GPU renderer's shaders, compiled with the toolchain the top-level
-    # CMakeLists.txt picked, into one generated header (cmake/compile_shaders.cmake).
-    # <name>:<stage> for app/sdl_gpu/shaders/<name>.hlsl.
-    set(GPU_SHADERS
-        scene_vs:vertex
-        mesh_vs:vertex
-        tile_vs:vertex
-        scene_fs:fragment
-        shadow_vs:vertex
-        shadow_fs:fragment
-        quad_vs:vertex
-        back_buffer_fs:fragment
-        flush_vs:vertex
-        flush_fs:fragment)
-    set(GPU_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/sdl_gpu/shaders")
-    set(GPU_SHADER_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
-    set(GPU_SHADER_HEADER "${GPU_SHADER_GENERATED_DIR}/sdl_gpu_shaders.h")
-    set(GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/common.hlsl")
-    foreach (_shader IN LISTS GPU_SHADERS)
-        string(REGEX REPLACE ":.*" "" _name "${_shader}")
-        list(APPEND GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/${_name}.hlsl")
-    endforeach ()
-    if (GPU_SHADER_HEADER_PREBUILT)
-        # Compiled by another build (checked in the top CMakeLists): copied in, and copied
-        # again if it changes.
-        configure_file("${GPU_SHADER_HEADER_PREBUILT}" "${GPU_SHADER_HEADER}" COPYONLY)
-    else ()
-        # | rather than ;, which would split the argument (see the script).
-        string(REPLACE ";" "|" _shader_list "${GPU_SHADERS}")
-        if (SHADER_COMPILER MATCHES "TARGET_FILE")
-            set(_shader_compiler_target shadercross)
-        endif ()
-        add_custom_command(
-            OUTPUT "${GPU_SHADER_HEADER}"
-            COMMAND "${CMAKE_COMMAND}"
-                "-DOUTPUT=${GPU_SHADER_HEADER}"
-                "-DMODE=${SHADER_MODE}"
-                "-DCOMPILER=${SHADER_COMPILER}"
-                "-DFORMAT=${SHADER_FORMAT}"
-                "-DSOURCE_DIR=${GPU_SHADER_DIR}"
-                "-DWORK_DIR=${GPU_SHADER_GENERATED_DIR}/shaders"
-                "-DSHADERS=${_shader_list}"
-                -P "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
-            DEPENDS ${GPU_SHADER_SOURCES} ${_shader_compiler_target}
-                "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
-            COMMENT "Compiling the SDL GPU shaders to ${SHADER_FORMAT}"
-            VERBATIM)
-        # The header alone (cmake --build <dir> --target gpu_shaders), for a build that takes
-        # it prebuilt. The game depends on this target rather than listing the header among
-        # its sources: an output in two targets could be made twice at once.
-        add_custom_target(gpu_shaders DEPENDS "${GPU_SHADER_HEADER}")
+# The SDL GPU renderer's shaders, compiled with the toolchain the top-level
+# CMakeLists.txt picked, into one generated header (cmake/compile_shaders.cmake).
+# <name>:<stage> for app/sdl_gpu/shaders/<name>.hlsl.
+set(GPU_SHADERS
+    scene_vs:vertex
+    mesh_vs:vertex
+    tile_vs:vertex
+    scene_fs:fragment
+    shadow_vs:vertex
+    shadow_fs:fragment
+    quad_vs:vertex
+    back_buffer_fs:fragment
+    flush_vs:vertex
+    flush_fs:fragment)
+set(GPU_SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/sdl_gpu/shaders")
+set(GPU_SHADER_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(GPU_SHADER_HEADER "${GPU_SHADER_GENERATED_DIR}/sdl_gpu_shaders.h")
+set(GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/common.hlsl")
+foreach (_shader IN LISTS GPU_SHADERS)
+    string(REGEX REPLACE ":.*" "" _name "${_shader}")
+    list(APPEND GPU_SHADER_SOURCES "${GPU_SHADER_DIR}/${_name}.hlsl")
+endforeach ()
+if (GPU_SHADER_HEADER_PREBUILT)
+    # Compiled by another build (checked in the top CMakeLists): copied in, and copied
+    # again if it changes.
+    configure_file("${GPU_SHADER_HEADER_PREBUILT}" "${GPU_SHADER_HEADER}" COPYONLY)
+else ()
+    # | rather than ;, which would split the argument (see the script).
+    string(REPLACE ";" "|" _shader_list "${GPU_SHADERS}")
+    if (SHADER_COMPILER MATCHES "TARGET_FILE")
+        set(_shader_compiler_target shadercross)
     endif ()
-
-    list(APPEND GAME_SOURCES
-        app/sdl_gpu/backend.cpp
-        app/sdl_gpu/backend.h
-        app/sdl_gpu/shaders.cpp
-        app/sdl_gpu/shaders.h)
-    include_directories("${GPU_SHADER_GENERATED_DIR}")
-    # The renderer offers SDL GPU ([m3d] SdlGpu in game.ini) only in a build that has it.
-    add_definitions(-DGPU_RENDERER)
+    add_custom_command(
+        OUTPUT "${GPU_SHADER_HEADER}"
+        COMMAND "${CMAKE_COMMAND}"
+            "-DOUTPUT=${GPU_SHADER_HEADER}"
+            "-DMODE=${SHADER_MODE}"
+            "-DCOMPILER=${SHADER_COMPILER}"
+            "-DFORMAT=${SHADER_FORMAT}"
+            "-DSOURCE_DIR=${GPU_SHADER_DIR}"
+            "-DWORK_DIR=${GPU_SHADER_GENERATED_DIR}/shaders"
+            "-DSHADERS=${_shader_list}"
+            -P "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+        DEPENDS ${GPU_SHADER_SOURCES} ${_shader_compiler_target}
+            "${MOONSHINE_RUNNERS_SOURCE_DIR}/cmake/compile_shaders.cmake"
+        COMMENT "Compiling the SDL GPU shaders to ${SHADER_FORMAT}"
+        VERBATIM)
+    # The header alone (cmake --build <dir> --target gpu_shaders), for a build that takes
+    # it prebuilt. The game depends on this target rather than listing the header among
+    # its sources: an output in two targets could be made twice at once.
+    add_custom_target(gpu_shaders DEPENDS "${GPU_SHADER_HEADER}")
 endif ()
+
+list(APPEND GAME_SOURCES
+    app/sdl_gpu/backend.cpp
+    app/sdl_gpu/backend.h
+    app/sdl_gpu/shaders.cpp
+    app/sdl_gpu/shaders.h)
+include_directories("${GPU_SHADER_GENERATED_DIR}")
 
 include_directories(app)
 include_directories(FX)
@@ -573,8 +560,6 @@ include_directories(Xreal/Joystick)
 include_directories(Xreal/TnT)
 include_directories(iScreen)
 include_directories(iScreen/SCRIPTS)
-
-include_directories(../3rdparty/sokol)
 
 # SDL 3 is fetched and built by the top-level CMakeLists.txt. SDL3::SDL3-static brings
 # its include directories and the system libraries it needs.
@@ -628,7 +613,7 @@ if (WIN32)
 elseif (LINUX)
     add_executable(${APPLICATION_NAME} ${GAME_SOURCES})
     target_link_libraries(${APPLICATION_NAME} ${COMMON_APPLICATION_LIBRARIES}
-            X11 Xi Xcursor GL dl pthread)
+            X11 Xi Xcursor dl pthread)
     # Export symbols so backtrace_symbols() can name functions in crash reports.
     target_link_options(${APPLICATION_NAME} PRIVATE -rdynamic)
     if (STEAM_VERSION)
@@ -660,7 +645,6 @@ elseif (APPLE)
         "-framework GameController"
         "-framework IOKit"
         "-framework Metal"
-        "-framework OpenGL" 
         "-framework QuartzCore"
         ${COMMON_APPLICATION_LIBRARIES}
     )

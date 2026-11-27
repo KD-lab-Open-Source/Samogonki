@@ -17,7 +17,7 @@ namespace {
 constexpr size_t max_upload = 0xFFFFFFFFu;
 
 // How many vertices and indices the frame buffers hold at start; a frame that needs more
-// grows them. The same as the sokol backend's.
+// grows them. As many as the renderer's frame arrays hold at start (renderer.h).
 constexpr size_t initial_vertex_bytes = 65536 * sizeof(M3D_VERTEX);
 constexpr size_t initial_index_bytes = 65536 * sizeof(uint32_t);
 
@@ -194,13 +194,13 @@ bool Backend::init(int width, int height, Features wanted, bool debug) {
             driver.empty() ? "" : ", driver ", driver.c_str(), debug ? ", debug mode" : "");
   }
 
-  _window = std::make_unique<Window>(width, height, 0);
+  _window = std::make_unique<Window>(width, height);
   if (!SDL_ClaimWindowForGPUDevice(_device, _window->sdl())) {
     SDL_Log("Renderer: SDL_ClaimWindowForGPUDevice(): %s", SDL_GetError());
     return false;
   }
-  // Vsync, as the GL context's swap interval 1: the game's timing expects a frame per
-  // refresh. It is SDL's default, set here so that it stays so; every backend has it.
+  // Vsync: the game's timing expects a frame per refresh. It is SDL's default, set here
+  // so that it stays so; every SDL GPU backend has it.
   if (!SDL_SetGPUSwapchainParameters(_device, _window->sdl(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
                                      SDL_GPU_PRESENTMODE_VSYNC)) {
     SDL_Log("Renderer: SDL_SetGPUSwapchainParameters(): %s", SDL_GetError());
@@ -935,7 +935,7 @@ SDL_GPUGraphicsPipeline* Backend::scene_pipeline(const PipelineKey& key) {
   info.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_BACK;
   info.rasterizer_state.front_face =
       key.mirrored ? SDL_GPU_FRONTFACE_CLOCKWISE : SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
-  info.rasterizer_state.enable_depth_clip = true;  // as OpenGL: SDL's default clamps
+  info.rasterizer_state.enable_depth_clip = true;  // clipped at near and far; SDL's default clamps
   // Tested always, for its writes: with the test off, Direct3D 12 writes no depth.
   info.depth_stencil_state.enable_depth_test = true;
   info.depth_stencil_state.enable_depth_write = key.depth_write;

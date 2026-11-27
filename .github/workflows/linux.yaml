@@ -20,8 +20,8 @@ jobs:
 
     - name: Install deps
       # SDL 3 is built by CMake (FetchContent); its X11 video driver needs the X11
-      # extension headers.
-      run: sudo apt-get install libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libgl-dev libz-dev
+      # extension headers. Not OpenGL's: SDL is built without it, as SDL GPU draws.
+      run: sudo apt-get install libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libz-dev
 
     # The SDL GPU shaders are compiled with SDL_shadercross, which the build makes, with
     # Microsoft's prebuilt DXC (it needs glibc 2.38) and SPIRV-Cross built from source.
