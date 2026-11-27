@@ -68,13 +68,37 @@ jobs:
         otool -L ~/shadercross/bin/shadercross
         ~/shadercross/bin/shadercross --help > /dev/null
 
+    # One app for Apple Silicon and Intel, as the Steam build ships it.
     - name: Game -- configure
       run: >
         cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DSHADERCROSS_EXECUTABLE=$HOME/shadercross/bin/shadercross
+        "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"
     - name: Game -- build
       run: ninja
       working-directory: ${{github.workspace}}/build
+
+    # Both architectures, and macOS 12 (the Steam client's minimum) in the program and its
+    # Info.plist: the newest of the architectures' minimums counts.
+    - name: Check the program's architectures and minimum macOS
+      run: |
+        set -euo pipefail
+        app=${{github.workspace}}/build/MechoSoma/moonshine-runners.app
+        bin="$app/Contents/MacOS/moonshine-runners"
+        archs=$(lipo -archs "$bin")
+        minos=$(vtool -show-build "$bin" | awk '$1 == "minos" { print $2 }' | sort -uV | tail -1)
+        plist=$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$app/Contents/Info.plist" 2>/dev/null || true)
+        echo "macOS: $archs, minimum macOS $minos, Info.plist ${plist:-without LSMinimumSystemVersion}" >> "$GITHUB_STEP_SUMMARY"
+        for arch in arm64 x86_64; do
+          case " $archs " in
+            *" $arch "*) ;;
+            *) echo "::error::the program is built for $archs, without $arch"; exit 1 ;;
+          esac
+        done
+        if [ "$minos" != 12.0 ] || [ "$plist" != 12.0 ]; then
+          echo "::error::the program needs macOS ${minos:-?} (Info.plist: ${plist:-none}), not 12.0, the Steam client's minimum"
+          exit 1
+        fi
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
