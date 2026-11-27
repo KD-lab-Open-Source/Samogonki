@@ -127,17 +127,13 @@ int cGraph3dDirect3D::Init(int xscr,int yscr,int mode,void *hInst,char *szTitle,
 	// [m3d] RenderStats=1: a log line every 5 seconds with where the frame time goes.
 	const bool renderStats = atoi(getIniKey(mch_mainINI,"m3d","RenderStats")) != 0;
 
-	// [m3d] SdlGpu: draw with SDL GPU (Metal, Direct3D 12 or Vulkan), the default. SdlGpu=0
-	// draws with OpenGL, which is also what the renderer falls back to when SDL GPU can't
-	// start. The default is here, not in game.ini: Steam never replaces a player's game.ini,
-	// and one from before SDL GPU has no SdlGpu line.
-	const char* sdlGpuKey = getIniKey(mch_mainINI,"m3d","SdlGpu");
-	const bool sdlGpu = *sdlGpuKey == '\0' || atoi(sdlGpuKey) != 0;
+	// The game draws with SDL GPU (Metal, Direct3D 12 or Vulkan). An [m3d] SdlGpu line, from
+	// when SdlGpu=0 chose OpenGL, means nothing now.
 	// [m3d] SdlGpuDebug=1: SDL GPU's debug mode, with the Direct3D 12 debug layer or Vulkan's
 	// validation layers where they are installed. Slower; for finding rendering bugs.
 	const bool sdlGpuDebug = atoi(getIniKey(mch_mainINI,"m3d","SdlGpuDebug")) != 0;
 
-	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, sdlGpu, sdlGpuDebug,
+	_renderer = std::make_unique<graphics::Renderer>(xscr, yscr, DriverMode & MD3D_FULLSCREEN, sdlGpuDebug,
 													 textureMipmaps, gpuMeshes, gpuShadows, gpuTerrain, renderStats);
 	_isActive = true;
 

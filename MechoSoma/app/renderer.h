@@ -27,16 +27,15 @@ class TextureManager;
 // calls.
 class Renderer final {
  public:
-  // sdlGpu: draw with SDL GPU (Metal, Direct3D 12 or Vulkan) where the build has it and
-  // the machine can; otherwise, and off, with OpenGL. game.ini has it on unless it says
-  // [m3d] SdlGpu=0.
+  // It draws with SDL GPU: Metal, Direct3D 12 or Vulkan. Where SDL GPU can't start, the
+  // player is told so and the game quits.
   // sdlGpuDebug: SDL GPU's debug mode, with the API's own checks where installed.
   // textureMipmaps: build a mip chain for every texture, for trilinear filtering.
   // gpuMeshes: keep meshes on the GPU (createMesh); off, createMesh always refuses.
   // gpuShadows: dynamic shadows from shadow maps (setShadowCamera); needs gpuMeshes.
   // gpuTerrain: keep terrain tiles on the GPU (createTiles); off, createTiles always refuses.
   // renderStats: log where the frame time goes, every 5 seconds.
-  Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool sdlGpuDebug, bool textureMipmaps,
+  Renderer(int width, int height, bool isFullScreen, bool sdlGpuDebug, bool textureMipmaps,
            bool gpuMeshes, bool gpuShadows, bool gpuTerrain, bool renderStats);
   ~Renderer();
 

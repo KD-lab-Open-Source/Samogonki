@@ -1,6 +1,6 @@
-// The game's 2D back buffer: 16-bit RGB 565 pixels, converted here. Port of back_buffer_fs
-// in sokol/back_buffer.glsl. SDL GPU cannot sample an integer texture, so the pixels
-// arrive as an R8G8_UNORM texture: each pixel's low byte in red, its high byte in green.
+// The game's 2D back buffer: 16-bit RGB 565 pixels, converted here. SDL GPU cannot
+// sample an integer texture, so the pixels arrive as an R8G8_UNORM texture: each pixel's
+// low byte in red, its high byte in green.
 #include "common.hlsl"
 
 Texture2D<float2> texture_1 : register(t0, space2);

@@ -1,6 +1,5 @@
 // A shadow caster's fragment stage: depth only. Tiles with a texture mask (ATTRMAT_MASK)
-// cast through it, as cMesh::DrawShadeDynamic does. Port of shadow_fs in
-// sokol/shadow.glsl.
+// cast through it, as cMesh::DrawShadeDynamic does.
 #include "common.hlsl"
 
 cbuffer shadow_fs_params : register(b0, space3) {

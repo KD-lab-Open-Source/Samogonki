@@ -1,6 +1,6 @@
 // A terrain tile kept on the GPU. It does per vertex what cPolyDispatcher::Draw(cTileMap)
 // does on the CPU: bend the flat world into the planet around the camera, then move it
-// to camera space. The fragment stage is scene_fs. Port of sokol/tile_vs.glsl.
+// to camera space. The fragment stage is scene_fs.
 #include "common.hlsl"
 
 cbuffer tile_vs_params : register(b0, space1) {

@@ -303,7 +303,7 @@ typedef uint32_t D3DCOLOR;
 #define MD3D_ALTDEVICE	   0x00000010 // Use alternative device (add-in card)
 
 // One vertex as the renderer uploads it, interleaved: 28 bytes. Colours are bytes, as
-// Direct3D's D3DCOLOR was, and the GPU turns them into 0..1 (SG_VERTEXFORMAT_UBYTE4N),
+// Direct3D's D3DCOLOR was, and the GPU turns them into 0..1 (SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM),
 // which is exactly the c / 255 the CPU used to compute.
 struct M3D_VERTEX
 {

@@ -72,8 +72,14 @@ them to the platform's format and embeds them in the game:
   cmake -B build -DSHADERCROSS_EXECUTABLE=/path/to/shadercross
   ```
 
-`-DGPU_RENDERER=OFF` builds the game without the SDL GPU renderer and needs no
-shader compiler.
+SDL GPU is the game's only renderer, so every build needs a shader compiler,
+and a computer without Metal, Direct3D 12 or Vulkan can't run the game. It
+says so in a message box and quits.
+
+### Web
+There is no web build for now. The web version drew with OpenGL (WebGL 2),
+and that renderer is gone; the web build comes back when SDL GPU has a web
+backend. The version on GamePix is from before.
 
 ## How to run
 

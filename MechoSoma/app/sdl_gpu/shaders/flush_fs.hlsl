@@ -1,6 +1,5 @@
 // The offscreen buffer drawn to the window, with the game's gamma option applied, as the
-// original's hardware gamma ramp did to the whole screen. Port of flush_fs in
-// sokol/flush.glsl.
+// original's hardware gamma ramp did to the whole screen.
 #include "common.hlsl"
 
 cbuffer flush_fs_params : register(b0, space3) {

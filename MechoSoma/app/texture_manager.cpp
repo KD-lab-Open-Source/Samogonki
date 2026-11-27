@@ -459,14 +459,9 @@ void TextureManager::update_texture(TextureEntry& entry) {
   const int height = static_cast<int>(entry.height);
   if (entry.texture == 0) {
     entry.texture = _backend.createTexture(width, height, levels, &data);
-  } else if (!entry.is_dynamic) {
-    // Uploaded a second time: the game draws into this texture (shadows into a light
-    // map, a terrain tile rebuilt from the colour map), so it stays dynamic from now on.
-    _backend.destroyTexture(entry.texture);
-    entry.texture = _backend.createTexture(width, height, levels, nullptr);
-    entry.is_dynamic = true;
-    _backend.updateTexture(entry.texture, data);
   } else {
+    // Uploaded again: the game draws into this texture (shadows into a light map, a
+    // terrain tile rebuilt from the colour map).
     _backend.updateTexture(entry.texture, data);
   }
 }

@@ -6,13 +6,11 @@
 
 namespace graphics {
 
-// The game's window, the same for every backend; the backend adds its API to it (an
-// OpenGL context, or an SDL GPU device's swapchain).
+// The game's window. The SDL GPU backend claims it for its device's swapchain.
 class Window final {
  public:
   // A window of the game's screen size; setVideoMode() then picks windowed or full screen.
-  // flags: what the backend's API needs, such as SDL_WINDOW_OPENGL.
-  Window(int width, int height, SDL_WindowFlags flags);
+  Window(int width, int height);
   ~Window();
 
   Window(const Window&) = delete;

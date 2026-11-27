@@ -1,6 +1,6 @@
 // The fragment stage every scene draw shares: frame geometry, GPU meshes and GPU tiles.
 // The texture stages as the game set them up for Direct3D, the dynamic shadows, and the
-// specular colour added last. Port of sokol/scene_fs.glsl.
+// specular colour added last.
 #include "common.hlsl"
 
 cbuffer scene_fs_params : register(b0, space3) {

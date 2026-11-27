@@ -7,16 +7,15 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
+#include <string>
 #include <utility>
 
 #include <SDL3/SDL.h>
 
-#include "sokol_backend.h"
-#include "texture_manager.h"
-#ifdef GPU_RENDERER
 #include "sdl_gpu/backend.h"
-#endif
+#include "texture_manager.h"
 #include "xgraph.h"
 #include "xtool.h"
 
@@ -110,36 +109,44 @@ namespace {
         return fallback;
     }
   }
+
+  // SDL GPU can't draw here: no driver for this platform's API, or one that lacks what SDL
+  // needs. The game has no other renderer, so the player is told so, and it quits. The
+  // log already has SDL's reasons. It quits as the crash handler does (reportFatal),
+  // without the game's static destructors, which this early in the startup have objects
+  // to tear down that were never set up.
+  [[noreturn]] void quit_without_gpu() {
+#if defined(_WIN32)
+    const char* api = "Direct3D 12";
+#elif defined(__APPLE__)
+    const char* api = "Metal";
+#else
+    const char* api = "Vulkan";
+#endif
+    const std::string message = std::string("Moonshine Runners can't draw on this computer: it needs ") + api +
+                                ", from the graphics card's driver. Updating the graphics driver may help.\n\n"
+                                "The details are in moonshine-runners.log, in the game's folder.";
+    SDL_Log("Renderer: no SDL GPU, so nothing to draw with; quitting");
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Moonshine Runners", message.c_str(), nullptr);
+    std::_Exit(1);
+  }
 }
 
 using namespace graphics;
 
-Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpu, bool sdlGpuDebug, bool textureMipmaps,
+Renderer::Renderer(int width, int height, bool isFullScreen, bool sdlGpuDebug, bool textureMipmaps,
                    bool gpuMeshes, bool gpuShadows, bool gpuTerrain, bool renderStats)
     : _gpu_meshes(gpuMeshes), _gpu_terrain(gpuTerrain), _gpu_shadows(gpuMeshes && gpuShadows),
       _render_stats(renderStats), _stats_start(Clock::now()), _scene_begin(_stats_start) {
   const RenderBackend::Features wanted{_gpu_meshes, _gpu_terrain, _gpu_shadows};
-#ifdef GPU_RENDERER
-  if (sdlGpu) {
-    _backend = sdl_gpu::Backend::create(width, height, wanted, sdlGpuDebug);
-    if (_backend != nullptr && !_backend->preparePipelines(pipeline_keys(_backend->features()))) {
-      _backend = nullptr;  // and its window with it
-    }
-    if (_backend == nullptr) {
-      SDL_Log("Renderer: SDL GPU is not available here, drawing with OpenGL");
-    } else {
-      // SDL GPU is the default, so a player who sees it draw wrong may not know there is
-      // anything else: the log says how to get the old renderer back.
-      SDL_Log("Renderer: [m3d] SdlGpu=0 in game.ini draws with OpenGL instead");
-    }
+  _backend = sdl_gpu::Backend::create(width, height, wanted, sdlGpuDebug);
+  if (_backend != nullptr && !_backend->preparePipelines(pipeline_keys(_backend->features()))) {
+    _backend = nullptr;  // and its window with it
   }
-#endif
-  // A build without SDL GPU (the web's, or -DGPU_RENDERER=OFF) draws with OpenGL whatever
-  // SdlGpu says; the line below names the renderer.
   if (_backend == nullptr) {
-    _backend = std::make_unique<SokolBackend>(width, height, wanted);
+    quit_without_gpu();
   }
-  // What the backend could set up: shaders that failed, or a build without them.
+  // What game.ini asked for and the backend set up.
   const auto features = _backend->features();
   _gpu_meshes = features.meshes;
   _gpu_terrain = features.terrain;

@@ -1,5 +1,5 @@
 // One triangle covering the target, for the 2D back buffer (back_buffer_fs). Drawn with
-// three vertices and no vertex buffer. Port of quad_vs in sokol/back_buffer.glsl.
+// three vertices and no vertex buffer.
 #include "common.hlsl"
 
 TexturedVaryings main(uint vertex_index : SV_VertexID) {

@@ -1,7 +1,7 @@
 // A mesh kept on the GPU. It does per vertex what cPolyDispatcher::Draw(cMesh) does on
 // the CPU (SetPointMesh): the same fixed-point lighting, the metal highlight and the
 // terrain shadow test, so the colours match the CPU path. The fragment stage is
-// scene_fs. Port of sokol/mesh_vs.glsl.
+// scene_fs.
 #include "common.hlsl"
 
 // The last six vectors hold whole numbers, which floats keep exactly; main() makes them

@@ -4,10 +4,10 @@
 
 using namespace graphics;
 
-Window::Window(int width, int height, SDL_WindowFlags flags) {
+Window::Window(int width, int height) {
   // A window is shown when created; on a HiDPI screen its back buffer has the screen's
   // pixels (drawableWidth/Height), while its size and the mouse stay in points.
-  _window = SDL_CreateWindow("Moonshine Runners", width, height, SDL_WINDOW_HIGH_PIXEL_DENSITY | flags);
+  _window = SDL_CreateWindow("Moonshine Runners", width, height, SDL_WINDOW_HIGH_PIXEL_DENSITY);
   if (_window == nullptr) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_CreateWindow(): %s\n", SDL_GetError());
     ErrH.Abort("SDL_CreateWindow", XERR_USER, 0, "");

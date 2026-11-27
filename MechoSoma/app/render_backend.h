@@ -8,9 +8,9 @@
 
 namespace graphics {
 
-// The uniform blocks of the scene and shadow shaders. Both shader sets lay them out the
-// same way (std140 in the sokol GLSL, cbuffers in the SDL GPU HLSL), because they hold
-// only 16-byte vectors and column-major 4x4 matrices.
+// The uniform blocks of the scene and shadow shaders. The shaders' cbuffers
+// (sdl_gpu/shaders) have the same layout, because they hold only 16-byte vectors and
+// column-major 4x4 matrices.
 struct SceneVsParams {
   float projection_matrix[16];
   float view_to_shadow[16];
@@ -163,8 +163,7 @@ struct ShadowDraw {
 
 // What a graphics API does for the Renderer: the window, GPU resources and the passes of
 // a frame. Renderer builds each frame and resolves every draw; a backend turns them into
-// API calls. Implemented with sokol (OpenGL; sokol_backend.cpp) and SDL GPU (Metal,
-// Direct3D 12, Vulkan; sdl_gpu/backend.cpp).
+// API calls. Implemented with SDL GPU (Metal, Direct3D 12, Vulkan; sdl_gpu/backend.cpp).
 //
 // A frame, from endScene() on: uploads (frame arrays, terrain maps, textures, the back
 // buffer) can come any time outside a pass; then the shadow passes, the scene pass, and
@@ -189,9 +188,9 @@ class RenderBackend {
   virtual const char* name() const = 0;
 
   // Makes the scene pipelines in keys now, rather than at their first draw, and the shadow
-  // pipelines if the backend draws shadows. False if one cannot be made: the renderer then
-  // draws with another backend instead of failing in the middle of a race. A backend whose
-  // pipelines are cheap and cannot fail need not do anything.
+  // pipelines if the backend draws shadows. False if one cannot be made: the game then
+  // tells the player and quits at startup, instead of failing in the middle of a race. A
+  // backend whose pipelines are cheap and cannot fail need not do anything.
   virtual bool preparePipelines(const std::vector<PipelineKey>& keys) { return true; }
 
   // The game's screen: the window size, and the offscreen buffer and back buffer, which
@@ -202,8 +201,8 @@ class RenderBackend {
   };
   virtual Scale setVideoMode(int width, int height, bool isFullScreen) = 0;
 
-  // Textures. One created with levels is uploaded once; one created without is uploaded
-  // with updateTexture, as often as the game changes it.
+  // Textures: created with their first upload, or empty without levels, and uploaded
+  // again with updateTexture as often as the game changes them.
   virtual GpuTexture createTexture(int width, int height, int levelCount, const TextureLevels* levels) = 0;
   virtual void updateTexture(GpuTexture texture, const TextureLevels& levels) = 0;
   virtual void destroyTexture(GpuTexture texture) = 0;

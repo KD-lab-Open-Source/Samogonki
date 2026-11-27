@@ -30,9 +30,9 @@ namespace graphics::sdl_gpu {
 class Backend final : public RenderBackend {
  public:
   // Null if SDL GPU has no device for the shaders' format here, or it cannot be set up;
-  // the renderer then draws with OpenGL. debug: SDL's debug mode, with the API's own
-  // checks where they are installed (the Direct3D 12 debug layer, Vulkan's validation
-  // layers); always on in a debug build.
+  // the game then tells the player and quits (Renderer). debug: SDL's debug mode, with
+  // the API's own checks where they are installed (the Direct3D 12 debug layer, Vulkan's
+  // validation layers); always on in a debug build.
   static std::unique_ptr<Backend> create(int width, int height, Features wanted, bool debug);
   ~Backend() override;
 
